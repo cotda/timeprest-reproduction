@@ -1,6 +1,8 @@
 """Datasets and loaders. Data order depends only on (seed, epoch), so resume is reproducible."""
 from __future__ import annotations
 
+import os
+
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset, TensorDataset
 
@@ -30,6 +32,10 @@ def build_datasets(data_cfg: dict, num_classes: int, seed: int, input_shape=(3, 
         train_tf = T.Compose(([T.RandomCrop(32, padding=4), T.RandomHorizontalFlip()]
                               if data_cfg.get("augment", True) else []) + norm)
         cls = torchvision.datasets.CIFAR100 if name == "cifar100" else torchvision.datasets.CIFAR10
+        folder = os.path.join(data_cfg["root"], cls.base_folder)
+        if not data_cfg.get("download", True) and not os.path.isdir(folder):
+            raise FileNotFoundError(f"{folder} not found (data.download=false). Mount Drive or fix data.root; "
+                                    f"the folder must contain the files of the original CIFAR python archive")
         train = cls(data_cfg["root"], train=True, download=data_cfg.get("download", True), transform=train_tf)
         test = cls(data_cfg["root"], train=False, download=data_cfg.get("download", True),
                    transform=T.Compose(norm))

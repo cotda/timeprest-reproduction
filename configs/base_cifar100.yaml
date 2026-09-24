@@ -4,7 +4,8 @@
 seed: 0
 data:
   dataset: cifar100
-  root: /content/data            # Colab local disk (fast); override for local runs
+  root: /content/drive/MyDrive/datasets   # must contain cifar-100-python/{train,test,meta}
+  download: false                # use the copy on Drive, never download
   augment: true                  # choice: random crop 32 pad 4 + horizontal flip
   num_workers: 2
 model:
