@@ -34,10 +34,12 @@ from ..schedule import build_schedule
 
 class Handle:
     """Pollable wrapper of an async p2p work. NCCL works report completion from the CUDA event;
-    gloo works only complete inside wait(), so a helper thread waits for them."""
+    gloo works only complete inside wait(), so a helper thread waits for them (as PipeDream's
+    receive helper threads do). With a gloo channel a GPU tensor travels through a CPU copy:
+    `staged` is that copy, `dst` the GPU tensor filled from it on the first wait()."""
 
-    def __init__(self, work, threaded: bool):
-        self.work = work
+    def __init__(self, work, threaded: bool, staged=None, dst=None):
+        self.work, self.staged, self.dst = work, staged, dst
         self.event = None
         if threaded:
             self.event = threading.Event()
@@ -55,29 +57,38 @@ class Handle:
             self.event.wait()
         else:
             self.work.wait()
+        if self.dst is not None:
+            self.dst.copy_(self.staged)
+            self.dst = None
 
 
 class Channels:
     """Point-to-point channels between neighbouring stages. Forward activations and backward
-    gradients use separate process groups, so their message orders never interfere."""
+    gradients use separate process groups, so their message orders never interfere.
 
-    def __init__(self, rank: int, world: int):
+    backend "gloo" (default, as PipeDream's runtime for pipelined configs): tensors are staged
+    through CPU memory and every pending receive waits on a CPU thread. Nothing ever sits on the
+    GPU waiting for the peer, so no GPU-side deadlock is possible. With NCCL a posted receive is a
+    GPU kernel that only ends when the peer sends; any context-wide sync in the meantime (e.g. a
+    kernel's first launch loading its module) then deadlocks both stages (seen on Kaggle T4 x2).
+    backend None: same backend as the default process group."""
+
+    def __init__(self, rank: int, world: int, backend: str | None = "gloo"):
         self.rank, self.world = rank, world
-        self.fwd = [dist.new_group([s, s + 1]) for s in range(world - 1)]
-        self.bwd = [dist.new_group([s, s + 1]) for s in range(world - 1)]
-        self.threaded = dist.get_backend() != "nccl"
+        self.backend = backend or dist.get_backend()
+        kw = {} if backend is None else {"backend": backend}
+        self.fwd = [dist.new_group([s, s + 1], **kw) for s in range(world - 1)]
+        self.bwd = [dist.new_group([s, s + 1], **kw) for s in range(world - 1)]
+        self.threaded = self.backend != "nccl"
+        self.stage = self.backend != "nccl"      # gloo p2p needs CPU tensors
         self._warm_up()
 
     def _warm_up(self):
-        """NCCL creates a p2p communicator lazily at the first op of a group, and creation blocks
-        until both ranks join. Without this, rank s would first touch the backward group (posting a
-        gradient receive) while rank s+1 first touches the forward group -> deadlock. Create every
-        communicator here, in the same order on all ranks.
-        NCCL also connects each direction (a -> b) of a communicator lazily at its first send/recv,
-        and that handshake blocks the host until the peer joins it. The backward groups carry
-        s+1 -> s, so warming only s -> s+1 left rank s blocked inside its first gradient irecv while
-        rank s+1 waited for an activation that rank s never sent. Warm up both directions."""
-        nccl = dist.get_backend() == "nccl"
+        """Create every communicator and connect both directions of each group up front, in the same
+        order on all ranks. NCCL creates a group's communicator, and connects each direction a -> b,
+        lazily at the first send/recv, blocking the host until the peer joins: a gradient receive
+        (s+1 -> s) posted first on one rank while the other waits for an activation deadlocks."""
+        nccl = self.backend == "nccl"
         dev = torch.device("cuda", torch.cuda.current_device()) if nccl else torch.device("cpu")
         t = torch.zeros(1, device=dev)
         for groups in (self.fwd, self.bwd):
@@ -87,32 +98,39 @@ class Channels:
                         dist.send(t, dst, group=g)
                     elif self.rank == dst:
                         dist.recv(t, src, group=g)
-                    # finish this transfer completely before any rank starts the next handshake:
-                    # setting up an NCCL connection while another NCCL op is in flight can deadlock
+                    # finish this transfer completely before any rank starts the next handshake
                     if nccl:
                         torch.cuda.synchronize(dev)
                     dist.barrier()
 
-    def _h(self, work):
-        return Handle(work, self.threaded)
+    def _isend(self, t, peer, g):
+        if self.stage and t.is_cuda:
+            t = t.cpu()
+        return Handle(dist.isend(t, peer, group=g), self.threaded, staged=t)
+
+    def _irecv(self, t, peer, g):
+        if self.stage and t.is_cuda:
+            cpu = torch.empty(t.shape, dtype=t.dtype)
+            return Handle(dist.irecv(cpu, peer, group=g), self.threaded, staged=cpu, dst=t)
+        return Handle(dist.irecv(t, peer, group=g), self.threaded)
 
     def isend_fwd(self, t):
-        return self._h(dist.isend(t, self.rank + 1, group=self.fwd[self.rank]))
+        return self._isend(t, self.rank + 1, self.fwd[self.rank])
 
     def irecv_fwd(self, t):
-        return self._h(dist.irecv(t, self.rank - 1, group=self.fwd[self.rank - 1]))
+        return self._irecv(t, self.rank - 1, self.fwd[self.rank - 1])
 
     def isend_bwd(self, t):
-        return self._h(dist.isend(t, self.rank - 1, group=self.bwd[self.rank - 1]))
+        return self._isend(t, self.rank - 1, self.bwd[self.rank - 1])
 
     def irecv_bwd(self, t):
-        return self._h(dist.irecv(t, self.rank + 1, group=self.bwd[self.rank]))
+        return self._irecv(t, self.rank + 1, self.bwd[self.rank])
 
     def send_fwd(self, t):
-        dist.send(t, self.rank + 1, group=self.fwd[self.rank])
+        self.isend_fwd(t).wait()
 
     def recv_fwd(self, t):
-        dist.recv(t, self.rank - 1, group=self.fwd[self.rank - 1])
+        self.irecv_fwd(t).wait()
 
 
 def _done(work) -> bool:

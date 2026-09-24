@@ -57,6 +57,7 @@ DEFAULTS: dict[str, Any] = {
         "timeout_s": 600,
     },
     "dist": {"backend": None,      # None -> nccl on GPU, gloo on CPU
+             "p2p_backend": "gloo",  # stage-to-stage transfers: gloo (CPU-staged, as PipeDream) | null (= backend)
              "timeout_s": 300,     # collective / p2p timeout
              "env": {}},           # environment set before NCCL init, e.g. {NCCL_P2P_DISABLE: "1"}
     "training": {

@@ -65,7 +65,7 @@ def make_runtime(cfg, rank, W, device, train, K):
     sample = train[0][0].unsqueeze(0)
     stages, _ = build_stages(cfg["model"], W, cfg["pipeline"]["partition"], sample)
     feats = boundary_features(stages, sample)
-    ch = Channels(rank, W)
+    ch = Channels(rank, W, cfg["dist"].get("p2p_backend", "gloo"))
     rt = StageRuntime(rank, W, copy.deepcopy(stages[rank]), cfg["pipeline"], cfg["training"], device, K,
                       feats[rank - 1] if rank else tuple(sample.shape[1:]), feats[rank] if rank < W - 1 else None, ch,
                       cfg["training"]["batch_size"])
@@ -225,7 +225,7 @@ def main(argv=None):
            "systems": cfg["checks"].get("systems", ["pipedream", "timeprest"])}
     if rank == 0:
         print("env:", json.dumps(utils.env_info()), "| code", utils.code_hash(), "| gpus", torch.cuda.device_count(),
-              "| module_loading", os.environ.get("CUDA_MODULE_LOADING"), flush=True)
+              "| p2p", cfg["dist"].get("p2p_backend", "gloo"), flush=True)
     ctx["data"] = build_datasets(cfg["data"], cfg["model"]["num_classes"], cfg["seed"])
     ids = args.only or [c[0] for c in CHECKS]
     results = []

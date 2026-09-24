@@ -73,3 +73,27 @@ def test_dynamic_order_gradients_follow_rule(tmp_path, system):
         for s in range(2):
             for n, g in res[s]["grads"][(0, i)][0].items():
                 torch.testing.assert_close(g, ref[s][n], **TOL)
+
+
+def test_handle_staged_receive_copies_once_after_completion():
+    """gloo channel with a GPU tensor: the receive lands in a CPU buffer, copied into the target on
+    wait() (exercised here with CPU tensors and a fake work that completes on a helper thread)."""
+    import threading
+    from timeprest.dist.runtime import Handle
+
+    go = threading.Event()
+
+    class Work:
+        def wait(self):
+            go.wait()
+            staged.fill_(7.0)
+
+    staged, dst = torch.zeros(3), torch.zeros(3)
+    h = Handle(Work(), threaded=True, staged=staged, dst=dst)
+    assert not h.is_completed()
+    go.set()
+    h.wait()
+    assert h.is_completed() and torch.equal(dst, torch.full((3,), 7.0))
+    dst.zero_()
+    h.wait()                                   # second wait must not copy again
+    assert torch.equal(dst, torch.zeros(3))

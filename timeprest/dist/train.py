@@ -78,7 +78,7 @@ class DistTrainer:
     def __init__(self, cfg: dict, out_dir: str, datasets=None, verbose: bool = True):
         self.cfg, self.out_dir, self.verbose = cfg, out_dir, verbose
         self.rank, self.world, self.device = init_dist(cfg)
-        self.channels = Channels(self.rank, self.world)
+        self.channels = Channels(self.rank, self.world, cfg["dist"].get("p2p_backend", "gloo"))
         torch.manual_seed(cfg["seed"])
         if datasets is None:
             datasets = build_datasets(cfg["data"], cfg["model"]["num_classes"], cfg["seed"])
@@ -294,7 +294,7 @@ def main(argv=None):
     if rank == 0:
         print("env:", json.dumps(utils.env_info()), "| code", utils.code_hash(),
               "| gpus", torch.cuda.device_count(),
-              "| module_loading", os.environ.get("CUDA_MODULE_LOADING"), flush=True)
+              "| p2p", cfg["dist"].get("p2p_backend", "gloo"), flush=True)
         if cfg["output"].get("require_checks") and os.path.exists(cfg["output"]["checks_file"]):
             import shutil
             os.makedirs(out_dir, exist_ok=True)

@@ -6,9 +6,10 @@ data:
   download: false
   num_workers: 2
 dist:
+  p2p_backend: gloo               # stage-to-stage transfers through CPU + helper threads (as PipeDream)
   env:
-    # Kaggle T4 x2: NCCL's GPU peer-to-peer transport hangs after the first transfer; route
-    # p2p/collectives through host shared memory instead (tiny cost at these message sizes)
+    GLOO_SOCKET_IFNAME: lo        # single node: gloo p2p over loopback
+    # default process group (barrier / all_gather) via host shared memory: verified on Kaggle
     NCCL_P2P_DISABLE: "1"
     # each fwd/bwd process group is one-directional, so per-group serialization is intended
     TORCH_NCCL_SHOW_EAGER_INIT_P2P_SERIALIZATION_WARNING: "false"

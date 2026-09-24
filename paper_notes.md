@@ -992,7 +992,7 @@ Code: `timeprest/dist/` (`runtime.py`, `train.py`, `checks.py`), config `configs
 
 | Hạng mục | Lựa chọn `[I]` |
 |---|---|
-| Tiến trình | 1 tiến trình = 1 stage = 1 GPU; `torchrun`, NCCL p2p (`isend`/`irecv`). Activation (s→s+1) và gradient (s+1→s) dùng hai process group riêng, nên thứ tự message không chặn nhau |
+| Tiến trình | 1 tiến trình = 1 stage = 1 GPU; `torchrun`. Process group mặc định NCCL (barrier, gather); truyền giữa stage bằng **gloo** p2p (`isend`/`irecv`, `dist.p2p_backend`), xem §21.1. Activation (s→s+1) và gradient (s+1→s) dùng hai process group riêng, nên thứ tự message không chặn nhau |
 | Lịch | `order: dynamic` theo §3.2: stage rảnh thì chạy B nếu gradient đã đến (stage cuối: đủ N forward), nếu không thì chạy F nếu input đã đến và số mini-batch đang chạy < W−s, nếu không thì chờ. Quyết định lấy lúc GPU rảnh (`sync_each_op`). `order: static` phát lại đúng lịch Fig.2 (dùng để đối chiếu với GĐ1) |
 | Version | Gán lúc chạy: stage 0 gắn tag version cho mỗi micro-batch; vertical sync thì stage sau dùng version theo tag (giữ bản cũ tới khi không forward nào còn cần). Backward TiMePReSt = version live của stage, luôn bằng `base + i` cho mini-batch i (= "committed" khi v=1). PipeDream = version của forward tại chính stage đó |
 | Backward | Cùng quy tắc toán như GĐ1. Nếu version F = version B thì giữ graph của forward (không tính lại); nếu khác thì lưu input và tính lại forward lúc B. Khi giữ graph, forward chạy trên **bản sao buffer BN** rồi chép lại: BN lưu running stats cho backward, mà các forward sau cập nhật chúng in-place (lỗi đã gặp và sửa khi test) |
@@ -1003,3 +1003,10 @@ Code: `timeprest/dist/` (`runtime.py`, `train.py`, `checks.py`), config `configs
 | Checkpoint | Cuối epoch (pipeline đã drain): mỗi rank lưu stage của mình (§3.3) + `meta.json` ghi sau barrier; `--resume` |
 
 Kiểm chứng local (CPU, gloo, 2 tiến trình): static trùng bit-exact với engine GĐ1 cho cả hai hệ (MLP và VGG-BN, graph và recompute); dynamic cho gradient đúng quy tắc với version đã log. Trên Kaggle: `timeprest.dist.checks` D1–D4.
+
+### 21.1. Truyền giữa stage bằng gloo thay vì NCCL (2026-09-25)
+
+- **Paper không nêu backend** (§13: "Framework/library versions và backend: UNKNOWN"; tìm trong PDF không có gloo/NCCL/MPI). Paper chạy trên cụm 2–4 máy, mỗi máy 1 GPU, xây trên PipeDream, nên theo thứ tự ưu tiên paper → source PipeDream, lấy lựa chọn của PipeDream.
+- **Giống PipeDream gốc**: `pipedream/runtime/README.md` chạy mọi cấu hình pipeline (MP/hybrid) với `--distributed_backend gloo`, chỉ cấu hình thuần DP dùng NCCL. Mỗi tensor nhận bằng một helper thread (`recv_helper_thread`), tensor chép qua CPU (`communication.py`, `_send`: `tensor.cpu()`).
+- **Lý do đổi**: với NCCL, một `irecv` đăng ký trước là một kernel nằm trên GPU cho tới khi peer gửi. Lịch dynamic cần đăng ký trước (để biết gradient đã tới mà không phải chặn). Trên Kaggle T4×2 (torch 2.10, NCCL 2.27.5) đã gặp lần lượt: (1) deadlock khi NCCL kết nối lười từng chiều của communicator; (2) deadlock khi kernel chạy lần đầu (CUDA lazy loading cần đồng bộ cả context) trong lúc `irecv` đang chờ; (3) `CUDA_MODULE_LOADING=EAGER` làm NCCL init lỗi `invalid resource handle`. Với gloo, lệnh nhận chờ trên thread CPU, GPU không bao giờ có kernel chờ peer nên không còn loại deadlock này.
+- **Ảnh hưởng**: mỗi message thêm một lần chép GPU↔CPU (vài ms/mini-batch với activation VGG-16/CIFAR). Như nhau cho PipeDream và TiMePReSt nên so sánh thời gian vẫn công bằng; số byte/message vẫn log như cũ. `dist.p2p_backend: null` quay lại NCCL.

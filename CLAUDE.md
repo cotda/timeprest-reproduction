@@ -46,7 +46,8 @@ nếu val loss tăng liên tục trong khi train loss giảm), thời gian, peak
 ## Ràng buộc kỹ thuật
 - PipeDream gốc cần PyTorch cũ + `pre_hook.patch` (build lại PyTorch), không làm được trên Colab/Kaggle.
   KHÔNG chạy `pipedream/runtime`; chỉ tham khảo logic (1F1B, weight stashing).
-- GĐ1 dùng 1 GPU Colab; GĐ2 dùng `torch.distributed` (NCCL) + `torchrun` trên Kaggle T4 ×2
+- GĐ1 dùng 1 GPU Colab; GĐ2 dùng `torch.distributed` + `torchrun` trên Kaggle T4 ×2 (group mặc định NCCL;
+  truyền giữa stage bằng gloo như PipeDream gốc, xem paper_notes.md §21.1)
   (~15GB/GPU, không bf16 → fp32 hoặc fp16 AMP). Viết code GĐ1 sao cho mở rộng sang GĐ2 dễ dàng.
 - Dataset/model có thể nhỏ hơn paper (vd. CIFAR-10 thay ImageNet). Mọi sai khác ghi vào mục
   "Sai khác so với paper" trong `paper_notes.md`.
