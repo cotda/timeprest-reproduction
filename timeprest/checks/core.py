@@ -265,7 +265,8 @@ def check_overfit(ctx: Ctx):
     for system in ctx.systems:
         cfg = ctx.sys_cfg(system, **{"training.batch_size": M, "training.epochs": 1,
                                      "training.lr": ctx.cc.get("overfit_lr", 0.02),
-                                     "training.weight_decay": 0.0, "training.lr_schedule": "constant"})
+                                     "training.weight_decay": 0.0, "training.lr_schedule": "constant",
+                                     "training.warmup_epochs": 0})
         utils.set_seed(cfg["seed"])
         eng, *_ = build(cfg, ctx.device, ctx.data())
         chunk = 50

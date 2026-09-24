@@ -76,9 +76,9 @@ def rng_state() -> dict:
 def set_rng_state(st: dict):
     random.setstate(st["python"])
     np.random.set_state(st["numpy"])
-    torch.set_rng_state(st["torch"])
+    torch.set_rng_state(st["torch"].cpu())
     if "cuda" in st and torch.cuda.is_available():
-        torch.cuda.set_rng_state_all(st["cuda"])
+        torch.cuda.set_rng_state_all([s.cpu() for s in st["cuda"]])
 
 
 def save_json(obj, path: str):

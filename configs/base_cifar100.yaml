@@ -26,7 +26,7 @@ training:
   nesterov: false
   weight_decay: 5.0e-4
   lr_schedule: cosine            # per update step
-  warmup_epochs: 0
+  warmup_epochs: 5                # choice: linear warmup (lr 0.1 from step 0 made PipeDream unstable, loss > ln100)
   drop_last: true
 runtime:
   device: cuda

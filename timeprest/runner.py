@@ -126,7 +126,7 @@ class Trainer:
     def try_resume(self) -> bool:
         if not os.path.exists(self.ckpt_path):
             return False
-        state = torch.load(self.ckpt_path, map_location=self.device, weights_only=False)
+        state = torch.load(self.ckpt_path, map_location="cpu", weights_only=False)
         if state.get("config_hash") != config_hash(self.cfg):
             raise RuntimeError("checkpoint was produced with a different config; "
                                "use a new output.dir or the same config")

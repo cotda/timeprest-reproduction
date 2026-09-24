@@ -3,10 +3,11 @@ base: base_cifar100.yaml
 name: quick
 system: timeprest
 data:
-  train_subset: 5000
+  train_subset: 10000
   test_subset: 1000
 training:
-  epochs: 2
+  epochs: 4                      # 4 x 52 = 208 updates
+  warmup_epochs: 1
 output:
   dir: results/runs/quick_timeprest
   require_checks: false

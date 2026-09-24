@@ -891,7 +891,7 @@ Main PDF p.14 nói dữ liệu sẽ được cung cấp khi yêu cầu. Đây kh
 | Model | VGG-16, biến thể không nêu | VGG-16-BN kiểu CIFAR (13 conv 3×3 + BN + ReLU, head `Linear(512,100)`, không dropout), Kaiming init |
 | Dữ liệu | CIFAR-100, split/augment không nêu | Train 50k / test 10k chuẩn; random crop 32 (pad 4) + flip; normalize. Accuracy báo trên **test set** (paper không rõ train hay test) + train acc chạy dọc |
 | Mini-batch M | Không có số | M = 192 cho cả hai hệ; TiMePReSt: N=3 micro-batch × 64; PipeDream: 1F1B với nguyên M |
-| Optimizer | Eq.1 chỉ là dạng update | SGD momentum 0.9, lr 0.1, cosine theo step, wd 5e-4, 160 epoch, fp32, seed 0 |
+| Optimizer | Eq.1 chỉ là dạng update | SGD momentum 0.9, lr 0.1, warmup tuyến tính 5 epoch rồi cosine theo step, wd 5e-4, 160 epoch, fp32, seed 0. Warmup được thêm sau lần chạy check đầu trên Colab: lr 0.1 ngay từ bước 0 làm loss của PipeDream vượt ln(100) (6.1–6.7) |
 | Phân hoạch | "Cân bằng bộ nhớ" (p.3), không có số | Cân bằng MACs: blocks `[0, 8, 19]`; stage 1 ≈ 1.15M tham số, stage 2 ≈ 13.6M |
 | Lịch | Fig.2 + mô tả §3.2 | Slot lý tưởng, backward ưu tiên, stage s giữ ≤ W−s mini-batch đang chạy (NOAM của PipeDream). **Khớp đúng Fig.2a–e** (test `test_matches_paper_fig2`); giới hạn NOAM không bao giờ thay đổi lịch nF1B |
 | Phiên bản forward | Vertical sync (p.3), giữ bản cũ tới khi forward dùng nó xong (p.5) | Micro-batch lấy version mới nhất của stage 0 lúc vào pipeline; mọi stage sau dùng đúng version đó |
