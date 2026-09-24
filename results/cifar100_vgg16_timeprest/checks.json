@@ -1,0 +1,293 @@
+{
+  "code_hash": "0adce31ede18",
+  "config": "configs/quick.yaml",
+  "overrides": [],
+  "systems": [
+    "pipedream",
+    "timeprest"
+  ],
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "all_pass": true,
+  "results": [
+    {
+      "id": 1,
+      "name": "seed_reproducibility",
+      "status": "PASS",
+      "seconds": 21.1,
+      "message": "12 mini-batches twice with the same seed (tol loss 1e-6, params 1e-5)",
+      "metrics": {
+        "pipedream": {
+          "loss": 4.633202,
+          "loss_diff": 0.0,
+          "param_max_diff": 0.0
+        },
+        "timeprest": {
+          "loss": 4.637077,
+          "loss_diff": 0.0,
+          "param_max_diff": 0.0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "initial_loss",
+      "status": "PASS",
+      "seconds": 1.2,
+      "message": "|loss - ln(100)| <= 0.3, shape (B,100), no NaN/Inf",
+      "metrics": {
+        "loss": 4.6371,
+        "ln_C": 4.6052,
+        "shape": [
+          256,
+          100
+        ],
+        "finite": true
+      }
+    },
+    {
+      "id": 3,
+      "name": "gradient_equivalence",
+      "status": "PASS",
+      "seconds": 10.8,
+      "message": "float64, torch.allclose rtol=1e-05 atol=1e-08",
+      "metrics": {
+        "sequential_nF1B_N3_vs_plain_rel_err": 0.0,
+        "sequential_1F1B_N1_vs_plain_rel_err": 0.0,
+        "pipedream_stashed_grad_max_rel_err": 0.0,
+        "pipedream_stale_minibatches": 5
+      }
+    },
+    {
+      "id": 4,
+      "name": "timeprest_mechanism",
+      "status": "PASS",
+      "seconds": 13.0,
+      "message": "Eq.(3) differs from the simulated schedule for some W>5 (outside the paper's experiments)",
+      "metrics": {
+        "fig2_W3_N2": true,
+        "fig2_W4_N2": true,
+        "fig2_W4_N4": true,
+        "fig2_W5_N2": true,
+        "fig2_W5_N3": true,
+        "eq2_violations": [],
+        "eq3_violations_W<=5": [],
+        "eq3_differences_W>5(info)": [
+          [
+            6,
+            2,
+            2,
+            3
+          ],
+          [
+            8,
+            2,
+            3,
+            4
+          ],
+          [
+            8,
+            3,
+            2,
+            3
+          ]
+        ],
+        "pipedream": {
+          "schedule": "1F1B",
+          "W": 2,
+          "N": 1,
+          "vertical_sync_forward": false,
+          "max_weight_versions_per_stage": [
+            2,
+            1
+          ],
+          "v_measured": 1,
+          "backward_uses_forward_version": true,
+          "vertical_sync_enabled": false,
+          "trace_first_minibatches": [
+            "mb1A F@stage1 slot1 ver=0 live=0",
+            "mb2A F@stage1 slot2 ver=0 live=0",
+            "mb1A F@stage2 slot2 ver=0 live=0",
+            "mb1 B@stage2 slot3 ver=[0] live=0",
+            "mb1 B@stage1 slot4 ver=[0] live=0",
+            "mb2A F@stage2 slot4 ver=1 live=1",
+            "mb3A F@stage1 slot5 ver=1 live=1",
+            "mb2 B@stage2 slot5 ver=[1] live=1",
+            "mb2 B@stage1 slot6 ver=[0] live=1",
+            "mb3A F@stage2 slot6 ver=2 live=2",
+            "mb3 B@stage2 slot7 ver=[2] live=2",
+            "mb3 B@stage1 slot8 ver=[1] live=2"
+          ]
+        },
+        "timeprest": {
+          "schedule": "nF1B",
+          "W": 2,
+          "N": 3,
+          "vertical_sync_forward": true,
+          "max_weight_versions_per_stage": [
+            1,
+            2
+          ],
+          "v_measured": 1,
+          "backward_uses_live_weights": true,
+          "micro_batches_forwarded_with_older_version": 14,
+          "v_formula": 1,
+          "vertical_sync_enabled": true,
+          "trace_first_minibatches": [
+            "mb1A F@stage1 slot1 ver=0 live=0",
+            "mb1B F@stage1 slot2 ver=0 live=0",
+            "mb1A F@stage2 slot2 ver=0 live=0",
+            "mb1C F@stage1 slot3 ver=0 live=0",
+            "mb1B F@stage2 slot3 ver=0 live=0",
+            "mb2A F@stage1 slot4 ver=0 live=0",
+            "mb1C F@stage2 slot4 ver=0 live=0",
+            "mb2B F@stage1 slot5 ver=0 live=0",
+            "mb1 B@stage2 slot5 ver=[0, 0, 0] live=0",
+            "mb1 B@stage1 slot6 ver=[0, 0, 0] live=0",
+            "mb2A F@stage2 slot6 ver=0 live=1",
+            "mb2C F@stage1 slot7 ver=1 live=1",
+            "mb2B F@stage2 slot7 ver=0 live=1",
+            "mb3A F@stage1 slot8 ver=1 live=1",
+            "mb2C F@stage2 slot8 ver=1 live=1",
+            "mb3B F@stage1 slot9 ver=1 live=1",
+            "mb2 B@stage2 slot9 ver=[1, 1, 1] live=1",
+            "mb2 B@stage1 slot10 ver=[1, 1, 1] live=1",
+            "mb3A F@stage2 slot10 ver=1 live=2",
+            "mb3C F@stage1 slot11 ver=2 live=2",
+            "mb3B F@stage2 slot11 ver=1 live=2",
+            "mb3C F@stage2 slot12 ver=2 live=2",
+            "mb3 B@stage2 slot13 ver=[2, 2, 2] live=2",
+            "mb3 B@stage1 slot14 ver=[2, 2, 2] live=2"
+          ]
+        },
+        "mixed_version_rule_max_rel_err": 0.0,
+        "mixed_version_micro_batches": 10
+      }
+    },
+    {
+      "id": 5,
+      "name": "overfit_one_batch",
+      "status": "PASS",
+      "seconds": 42.8,
+      "message": "one fixed batch of 96, 300 updates, loss < 0.05",
+      "metrics": {
+        "pipedream": {
+          "loss_curve_per_50_steps": [
+            1.0313,
+            0.0012,
+            0.0007,
+            0.0005,
+            0.0005,
+            0.0004
+          ],
+          "final_loss": 0.0004,
+          "final_acc1": 100.0
+        },
+        "timeprest": {
+          "loss_curve_per_50_steps": [
+            1.0325,
+            0.0012,
+            0.0007,
+            0.0006,
+            0.0005,
+            0.0004
+          ],
+          "final_loss": 0.0004,
+          "final_acc1": 100.0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "short_run",
+      "status": "PASS",
+      "seconds": 56.3,
+      "message": "train loss decreases, test top-1 > 2.0%",
+      "metrics": {
+        "pipedream": {
+          "train_loss_by_epoch": [
+            4.5034,
+            4.13149,
+            3.76132,
+            3.50854
+          ],
+          "test_acc1_by_epoch": [
+            3.2,
+            8.9,
+            12.1,
+            15.6
+          ],
+          "epoch_time_1gpu_s": 5.483,
+          "epoch_time_est_2gpu_s": 2.759,
+          "peak_mem_mb": 717.4,
+          "stage_mem_mb": "13.2|76.0",
+          "max_weight_versions": "2|1",
+          "est_full_run_hours_1gpu": 1.22,
+          "est_full_epoch_min_2gpu": 0.23
+        },
+        "timeprest": {
+          "train_loss_by_epoch": [
+            4.51388,
+            4.11899,
+            3.79921,
+            3.53417
+          ],
+          "test_acc1_by_epoch": [
+            4.8,
+            7.8,
+            12.5,
+            15.0
+          ],
+          "epoch_time_1gpu_s": 6.353,
+          "epoch_time_est_2gpu_s": 5.213,
+          "peak_mem_mb": 601.0,
+          "stage_mem_mb": "8.1|111.9",
+          "max_weight_versions": "1|2",
+          "est_full_run_hours_1gpu": 1.41,
+          "est_full_epoch_min_2gpu": 0.44
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "checkpoint_resume",
+      "status": "PASS",
+      "seconds": 10.1,
+      "message": "2 epochs continuous vs 1 epoch + resume (tol 1e-5)",
+      "metrics": {
+        "pipedream": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "loss_max_diff": 0.0,
+          "loss_continuous": [
+            4.64654,
+            4.61495
+          ],
+          "loss_resumed": [
+            4.64654,
+            4.61495
+          ]
+        },
+        "timeprest": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "loss_max_diff": 0.0,
+          "loss_continuous": [
+            4.63874,
+            4.59223
+          ],
+          "loss_resumed": [
+            4.63874,
+            4.59223
+          ]
+        }
+      }
+    }
+  ]
+}

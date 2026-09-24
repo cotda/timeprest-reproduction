@@ -1,0 +1,39 @@
+{
+  "name": "cifar100_vgg16_timeprest",
+  "system": "timeprest",
+  "epochs_done": 160,
+  "final": {
+    "epoch": "160",
+    "train_loss": "0.00507",
+    "train_acc1": "99.97",
+    "test_loss": "1.10708",
+    "test_acc1": "73.86",
+    "test_acc5": "91.76",
+    "gap_loss": "1.10201",
+    "lr": "5.134894137179269e-06",
+    "wall_time_s": "31.863",
+    "data_time_s": "0.699",
+    "est_pipe_time_s": "26.419",
+    "est_pipe_time_comm_s": "26.882",
+    "peak_mem_mb": "553.6",
+    "stage_mem_mb": "8.1|111.9",
+    "max_weight_versions": "1|2",
+    "v_max": "1",
+    "samples": "49920",
+    "cum_wall_s": "5208.66",
+    "cum_est_pipe_s": "4308.17",
+    "overfit_warn": "0"
+  },
+  "best_test_acc1": 74.33,
+  "best_epoch": 148,
+  "mean_epoch_wall_s": 32.554125,
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "code_hash": "0adce31ede18"
+}

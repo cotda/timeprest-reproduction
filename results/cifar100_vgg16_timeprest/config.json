@@ -1,0 +1,54 @@
+{
+  "name": "cifar100_vgg16_timeprest",
+  "seed": 0,
+  "system": "timeprest",
+  "data": {
+    "dataset": "cifar100",
+    "root": "/content/drive/MyDrive/datasets",
+    "train_subset": null,
+    "test_subset": null,
+    "augment": true,
+    "num_workers": 2,
+    "download": false
+  },
+  "model": {
+    "name": "vgg16_bn_cifar",
+    "num_classes": 100,
+    "width": 1.0
+  },
+  "pipeline": {
+    "num_stages": 2,
+    "num_microbatches": 3,
+    "partition": "auto",
+    "max_inflight": "pipedream",
+    "schedule": "nF1B",
+    "vertical_sync": true,
+    "backward_version": "committed"
+  },
+  "training": {
+    "epochs": 160,
+    "batch_size": 192,
+    "optimizer": "sgd",
+    "lr": 0.05,
+    "momentum": 0.9,
+    "nesterov": false,
+    "weight_decay": 0.0005,
+    "lr_schedule": "cosine",
+    "warmup_epochs": 5,
+    "drop_last": true
+  },
+  "runtime": {
+    "device": "cuda",
+    "deterministic": false,
+    "profile_ops": true,
+    "eval_batch_size": 500,
+    "comm_bandwidth_gbps": 10.0,
+    "comm_latency_ms": 0.05
+  },
+  "output": {
+    "dir": "/content/drive/MyDrive/timeprest/runs/cifar100_vgg16_timeprest",
+    "require_checks": true,
+    "checks_file": "results/checks/latest.json"
+  },
+  "checks": {}
+}

@@ -32,6 +32,7 @@ def build_datasets(data_cfg: dict, num_classes: int, seed: int, input_shape=(3, 
         train_tf = T.Compose(([T.RandomCrop(32, padding=4), T.RandomHorizontalFlip()]
                               if data_cfg.get("augment", True) else []) + norm)
         cls = torchvision.datasets.CIFAR100 if name == "cifar100" else torchvision.datasets.CIFAR10
+        data_cfg = dict(data_cfg, root=resolve_root(data_cfg["root"], cls.base_folder))
         folder = os.path.join(data_cfg["root"], cls.base_folder)
         if not data_cfg.get("download", True) and not os.path.isdir(folder):
             raise FileNotFoundError(f"{folder} not found (data.download=false). Mount Drive or fix data.root; "
@@ -82,3 +83,32 @@ class RepeatBatch(Dataset):
 
 def fixed_batch_loader(x: torch.Tensor, y: torch.Tensor, repeats: int) -> DataLoader:
     return DataLoader(RepeatBatch(x, y, repeats), batch_size=None, shuffle=False)
+
+
+def resolve_root(root: str, base_folder: str) -> str:
+    """`root` may contain a glob (e.g. /kaggle/input/**): return the first directory that
+    contains `base_folder` (cifar-100-python)."""
+    if "*" not in root:
+        return root
+    import glob
+    hits = sorted(glob.glob(os.path.join(root, base_folder), recursive=True))
+    if not hits:
+        raise FileNotFoundError(f"no {base_folder} under {root}")
+    return os.path.dirname(hits[0])
+
+
+def dataset_targets(ds) -> torch.Tensor:
+    """All labels of a dataset without loading images (CIFAR, TensorDataset, Subset)."""
+    if isinstance(ds, Subset):
+        return dataset_targets(ds.dataset)[torch.as_tensor(ds.indices)]
+    if isinstance(ds, TensorDataset):
+        return ds.tensors[1].long()
+    if hasattr(ds, "targets"):
+        return torch.as_tensor(ds.targets).long()
+    return torch.as_tensor([ds[i][1] for i in range(len(ds))]).long()
+
+
+def epoch_order(n: int, seed: int, epoch: int) -> torch.Tensor:
+    """Sample order of an epoch, identical on every rank."""
+    g = torch.Generator().manual_seed(seed * 100003 + epoch)
+    return torch.randperm(n, generator=g)

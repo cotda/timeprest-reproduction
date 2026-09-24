@@ -17,6 +17,7 @@ Tiến độ được theo dõi qua git: mỗi thay đổi là một commit nh�
 ## Quy trình chạy (người dùng tự chạy trên Colab)
 Agent viết code ở máy local; người dùng push lên git rồi chạy trên Colab. Agent KHÔNG chạy được Colab,
 nên mọi thứ phải chạy được bằng vài lệnh copy-paste, và in kết quả rõ ràng để người dùng dán lại cho agent.
+GĐ2 dùng `notebooks/phase2_kaggle.ipynb` (torchrun 2 GPU, check `python -m timeprest.dist.checks`, config `configs/kaggle_*.yaml`).
 Notebook `notebooks/phase1_colab.ipynb` gồm các cell theo thứ tự:
 1. Mount Google Drive, clone/pull repo, `pip install -e .`
 2. In môi trường: GPU, VRAM, phiên bản torch/CUDA.

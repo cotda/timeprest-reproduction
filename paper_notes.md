@@ -924,3 +924,82 @@ Main PDF p.14 nói dữ liệu sẽ được cung cấp khi yêu cầu. Đây kh
 - Vertical sync làm stage 2 (13.6M/14.8M tham số) cũng dùng gradient trễ 1 bước. Baseline khi đó rất nhạy với lr và kém hẳn. Không vertical sync thì PipeDream bám sát TiMePReSt (khớp Fig.4b: theo epoch, hai hệ gần nhau).
 - **Quyết định (người dùng xác nhận):** baseline = PipeDream không vertical sync; lr = 0.05 chung cho cả hai hệ. Chênh lệch 0.02 vs 0.05 nằm trong nhiễu 1 seed.
 - Thời gian ước lượng 2 GPU trong sweep: TiMePReSt ~10.2 s/epoch, PipeDream ~5.2 s/epoch (1 GPU: 12.5 vs 10.4 s). Giả thuyết cần kiểm chứng: với W=2, N=3, lịch nF1B làm B của hai stage chạy nối tiếp. Stage 1 chỉ làm F(i,C) sau B(i−1), còn stage 2 phải chờ F(i,C) mới làm được B(i), mà op B dài gấp 5–7 lần op F. Fig.2 vẽ các ô dài bằng nhau nên không thấy hiệu ứng này.
+
+## 20. Kết quả thí nghiệm 1 — VGG-16-BN / CIFAR-100, W=2, mô phỏng 1 GPU (Colab T4, 2026-09-25)
+
+Nguồn: `results/cifar100_vgg16_timeprest/`, `results/pipedream_result_160/` (cùng code `0adce31ede18`, cùng T4, seed 0, 1 seed/hệ). Hình: `results/compare_cifar100.png`. Cấu hình: §19 (lr 0.05, warmup 5, cosine, M=192, N=3; PipeDream không vertical sync).
+
+### 20.1. Chất lượng (test set 10k)
+
+| Chỉ số | TiMePReSt | PipeDream | Paper Fig.4b `[F≈]` |
+|---|---|---|---|
+| Top-1 cuối (ep 160) | 73.86 | 73.48 | TiMePReSt ~72–75, PipeDream ~73–77 |
+| Top-1 trung bình 10 epoch cuối | 74.00 ± 0.09 | 73.56 ± 0.06 | |
+| Best top-1 (epoch) | 74.33 (148) | 73.73 (149) | |
+| Top-5 cuối | 91.76 | 91.97 | Fig.4d |
+| Test loss cuối | 1.107 | 1.100 | |
+| Train acc cuối | 99.97 | 99.97 | |
+| Epoch đạt 50 / 60 / 65 / 70 / 73 % | 9 / 24 / 69 / 105 / 122 | 11 / 29 / 87 / 103 / 122 | |
+
+- Theo epoch, hai hệ **ngang nhau** ở cuối (chênh 0.4 điểm, cỡ nhiễu 1 seed). Điều này khớp với "comparable epoch-wise" của paper, và cả hai nằm trong khoảng đọc từ Fig.4b.
+- Giữa quá trình (epoch 21–80), TiMePReSt cao hơn trung bình +3.3 điểm và đường cong mượt hơn; PipeDream dao động mạnh. Paper nói TiMePReSt cần **nhiều** epoch hơn (§4.6); ở đây **không** thấy điều đó.
+- Có hai yếu tố gây nhiễu chưa tách được: (a) BN dùng batch 64 (TiMePReSt) so với 192 (PipeDream); (b) kiểu trễ khác nhau (TiMePReSt: activation cũ + trọng số mới; PipeDream: trọng số stage 1 trễ 1 bước).
+- Train acc cuối ~99.97% ở cả hai hệ. Nếu đường cong của paper là *training* accuracy (abstract nói vậy) thì chúng khó dừng ở ~73%. Đây là bằng chứng yếu rằng Fig.4 vẽ accuracy trên tập held-out.
+
+### 20.2. Thời gian (ước lượng 2 GPU, không phải đo thật)
+
+| | TiMePReSt | PipeDream |
+|---|---|---|
+| Wall-clock 1 GPU / epoch | 32.6 s | 29.3 s |
+| Ước lượng 2 GPU / epoch (tính toán; +comm 10 GB/s gần như không đổi) | 26.9 s | 14.5 s |
+| Tăng tốc từ pipeline (1 GPU / ước lượng 2 GPU) | 1.21× | 2.02× |
+| Ước lượng thời gian tới 70% / 73% top-1 | 0.79 h / 0.91 h | 0.42 h / 0.49 h |
+
+- **Không tái hiện được** ưu thế thời gian của Fig.4a/Fig.16. Tổng tính toán gần như bằng nhau. Nhìn chung các op có thời gian tương đương: F theo micro-batch 64 ≈ 1/3 F theo 192. Khác biệt đến từ lịch nF1B với W=2, N=3: B của hai stage bị nối tiếp (stage 1 làm F(i,C) sau B(i−1), còn stage 2 phải chờ F(i,C) mới làm B(i)), nên mỗi GPU chỉ bận ~60%. 1F1B thì chồng lấp gần hoàn hảo.
+- Byte truyền bằng nhau giữa hai hệ: backward của nF1B gửi 1 message chứa N gradient. Vì vậy mô hình Eq.(19) với D cố định không áp dụng về byte (xem §7).
+- Kết luận thời gian cuối cùng phải chờ GĐ2 (2×T4 thật).
+
+### 20.3. Bộ nhớ
+
+| | TiMePReSt | PipeDream |
+|---|---|---|
+| Số version trọng số giữ tối đa (stage 1 / 2) | 1 / 2 | 2 / 1 |
+| Bộ nhớ sổ sách stage 1 / 2 (tham số × version + activation giữ) | 8.1 / 111.9 MB | 13.2 / 76.0 MB |
+| Peak allocated cả tiến trình (epoch > 1) | 554 MB | 673 MB |
+
+- Stage 1: bỏ horizontal stashing tiết kiệm đúng như paper (1 version thay vì 2).
+- Stage 2: TiMePReSt tốn **hơn**, vì vertical sync của forward buộc stage 2 giữ thêm version cũ (micro-batch A/B đến sau khi stage 2 đã update). Stage 2 chứa 13.6M/14.8M tham số nên tổng bộ nhớ trọng số của TiMePReSt lớn hơn (~120 so với ~89 MB).
+- Peak của cả tiến trình thấp hơn với TiMePReSt, chủ yếu nhờ activation theo micro-batch 64. Đây là tổng của 2 stage trên 1 GPU, không phải peak từng GPU.
+
+### 20.4. Mức tuyên bố
+
+Single-GPU simulation, 1 seed. Tái hiện được: chất lượng theo epoch ngang nhau, v=1, lịch Fig.2, giảm version ở stage đầu. Chưa tái hiện / trái chiều: ưu thế thời gian, "cần nhiều epoch hơn", tổng bộ nhớ trọng số.
+
+### 20.5. Đính chính §20.2: thứ tự op cố định và thứ tự động (2026-09-25)
+
+Ước lượng ở §20.2 giữ thứ tự op của lịch slot Fig.2, tức ngầm giả định mọi op dài bằng nhau. §3.2 của paper mô tả quy tắc **động**: backward được ưu tiên khi gradient đã đến, nếu không thì chạy forward. Mô phỏng sự kiện với thời gian op đo được (epoch 1, T4, 260 mini-batch, bỏ qua truyền thông):
+
+| | Tổng tính toán | Thứ tự Fig.2 cố định | Quy tắc động (giới hạn W−s) |
+|---|---|---|---|
+| TiMePReSt nF1B N=3 | 32.4 s | 27.0 s (1.20×) | 18.0 s (1.80×) |
+| PipeDream 1F1B | 33.9 s | 17.8 s (1.90×) | 17.8 s (1.90×) |
+
+Kết luận sửa lại: phần lớn độ chậm của TiMePReSt trong §20.2 là do cách ước lượng (ép thứ tự Fig.2), không phải do cơ chế. Với quy tắc động, thời gian hai hệ gần như bằng nhau; vẫn **chưa** thấy ưu thế thời gian của paper. Với quy tắc động, phiên bản dùng ở forward (và có thể cả v) phụ thuộc thời gian thực, nên runtime GĐ2 phải gắn tag version lúc chạy thay vì dùng trace tĩnh.
+
+## 21. GĐ2 — lựa chọn triển khai pipeline thật (Kaggle T4×2)
+
+Code: `timeprest/dist/` (`runtime.py`, `train.py`, `checks.py`), config `configs/kaggle_*.yaml`, notebook `notebooks/phase2_kaggle.ipynb`. Công thức huấn luyện giữ nguyên GĐ1 (§19).
+
+| Hạng mục | Lựa chọn `[I]` |
+|---|---|
+| Tiến trình | 1 tiến trình = 1 stage = 1 GPU; `torchrun`, NCCL p2p (`isend`/`irecv`). Activation (s→s+1) và gradient (s+1→s) dùng hai process group riêng, nên thứ tự message không chặn nhau |
+| Lịch | `order: dynamic` theo §3.2: stage rảnh thì chạy B nếu gradient đã đến (stage cuối: đủ N forward), nếu không thì chạy F nếu input đã đến và số mini-batch đang chạy < W−s, nếu không thì chờ. Quyết định lấy lúc GPU rảnh (`sync_each_op`). `order: static` phát lại đúng lịch Fig.2 (dùng để đối chiếu với GĐ1) |
+| Version | Gán lúc chạy: stage 0 gắn tag version cho mỗi micro-batch; vertical sync thì stage sau dùng version theo tag (giữ bản cũ tới khi không forward nào còn cần). Backward TiMePReSt = version live của stage, luôn bằng `base + i` cho mini-batch i (= "committed" khi v=1). PipeDream = version của forward tại chính stage đó |
+| Backward | Cùng quy tắc toán như GĐ1. Nếu version F = version B thì giữ graph của forward (không tính lại); nếu khác thì lưu input và tính lại forward lúc B. Khi giữ graph, forward chạy trên **bản sao buffer BN** rồi chép lại: BN lưu running stats cho backward, mà các forward sau cập nhật chúng in-place (lỗi đã gặp và sửa khi test) |
+| Truyền dữ liệu | Forward: 1 message/micro-batch (+ tag 8 byte). Backward: **1 message/mini-batch** gộp N gradient. Log số message và số byte thật |
+| Dữ liệu | Thứ tự mẫu mỗi epoch = `randperm(seed, epoch)`, giống nhau trên mọi rank. Rank 0 đọc ảnh, rank cuối lấy nhãn trực tiếp (không truyền). Thứ tự khác GĐ1 (khác seed stream), không ảnh hưởng phép so sánh |
+| Đo lường | Thời gian epoch thật (barrier hai đầu); tỉ lệ bận của từng GPU (CUDA event từng op); peak bộ nhớ **từng GPU**; `bwd_overlap_minibatches` = số lần B(i) bắt đầu ở stage cuối trước khi stage 0 xong B(i−1) (tức v>1 theo định nghĩa của paper) |
+| Eval | Đồng bộ qua pipeline, không overlap |
+| Checkpoint | Cuối epoch (pipeline đã drain): mỗi rank lưu stage của mình (§3.3) + `meta.json` ghi sau barrier; `--resume` |
+
+Kiểm chứng local (CPU, gloo, 2 tiến trình): static trùng bit-exact với engine GĐ1 cho cả hai hệ (MLP và VGG-BN, graph và recompute); dynamic cho gradient đúng quy tắc với version đã log. Trên Kaggle: `timeprest.dist.checks` D1–D4.

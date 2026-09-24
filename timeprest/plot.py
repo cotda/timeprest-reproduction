@@ -16,6 +16,15 @@ def load_run(path: str) -> dict:
     cfg_path = os.path.join(path, "config.json")
     cfg = json.load(open(cfg_path, encoding="utf-8")) if os.path.exists(cfg_path) else {}
     f = lambda k: [float(r[k]) if r.get(k) not in (None, "", "None") else float("nan") for r in rows]
+    if rows and "epoch_time_s" in rows[0]:
+        # phase-2 log (real multi-GPU): measured epoch time, per-GPU memory "a|b"
+        mem = [max(float(x) for x in r["peak_mem_mb"].split("|")) for r in rows]
+        return {"name": cfg.get("system", os.path.basename(path.rstrip("/\\"))), "path": path, "cfg": cfg,
+                "epoch": f("epoch"), "test_acc1": f("test_acc1"), "test_acc5": f("test_acc5"),
+                "test_loss": f("test_loss"), "train_loss": f("train_loss"), "train_acc1": f("train_acc1"),
+                "wall": f("epoch_time_s"), "est": f("epoch_time_s"), "cum_wall": f("cum_time_s"),
+                "cum_est": f("cum_time_s"), "peak_mem_mb": mem,
+                "stage_mem": [r.get("peak_mem_mb") for r in rows], "versions": [r.get("max_snapshots") for r in rows]}
     return {"name": cfg.get("system", os.path.basename(path.rstrip("/\\"))), "path": path, "cfg": cfg,
             "epoch": f("epoch"), "test_acc1": f("test_acc1"), "test_acc5": f("test_acc5"),
             "test_loss": f("test_loss"), "train_loss": f("train_loss"), "train_acc1": f("train_acc1"),
@@ -54,7 +63,8 @@ def summarize(runs: list[dict], targets=(50.0, 60.0, 70.0)) -> list[dict]:
     return out
 
 
-def plot(runs: list[dict], out_prefix: str):
+def plot(runs: list[dict], out_prefix: str,
+         title: str = "VGG-16 / CIFAR-100, W=2 (single-GPU simulation; time = estimated 2-GPU pipeline time)"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -74,7 +84,7 @@ def plot(runs: list[dict], out_prefix: str):
             ax.set_ylabel(label)
             ax.grid(alpha=0.3)
             ax.legend()
-    fig.suptitle("VGG-16 / CIFAR-100, W=2 (single-GPU simulation; time = estimated 2-GPU pipeline time)")
+    fig.suptitle(title)
     fig.tight_layout()
     fig.savefig(out_prefix + ".png", dpi=120)
     print("saved", out_prefix + ".png")
@@ -84,6 +94,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--runs", nargs="+", required=True)
     ap.add_argument("--out", default="results/compare")
+    ap.add_argument("--title", default=None)
     args = ap.parse_args(argv)
     runs = [load_run(p) for p in args.runs]
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
@@ -94,7 +105,7 @@ def main(argv=None):
     print("|" + "---|" * len(keys))
     for s in summ:
         print("| " + " | ".join(f"{s[k]:.3f}" if isinstance(s[k], float) else str(s[k]) for k in keys) + " |")
-    plot(runs, args.out)
+    plot(runs, args.out, *([args.title] if args.title else []))
 
 
 if __name__ == "__main__":

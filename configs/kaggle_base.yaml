@@ -1,0 +1,14 @@
+# Phase 2: real 2-stage pipeline on Kaggle T4 x2 (one process per GPU, NCCL).
+# Same training recipe as phase 1 (base_cifar100.yaml); only data/output paths and runtime differ.
+base: base_cifar100.yaml
+data:
+  root: /kaggle/input/**          # searched recursively for cifar-100-python/ (your Kaggle Dataset)
+  download: false
+  num_workers: 2
+pipeline:
+  order: dynamic                  # paper §3.2: backward first when its gradient has arrived
+  backward_mode: auto             # keep the forward graph when F/B versions match, else recompute
+  sync_each_op: true
+output:
+  dir: /kaggle/working/runs/{name}
+  checks_file: results/checks/dist_latest.json

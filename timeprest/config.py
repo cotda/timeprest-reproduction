@@ -49,7 +49,14 @@ DEFAULTS: dict[str, Any] = {
         "partition": "auto",        # "auto" (balanced MACs) or list of block boundaries
         "max_inflight": "pipedream",  # "pipedream" (W - s per stage), int, or null
         "schedule": None, "vertical_sync": None, "backward_version": None,
+        # phase-2 runtime only (timeprest.dist); ignored by the single-GPU engine
+        "order": "dynamic",         # dynamic (paper §3.2 rule on real arrivals) | static (Fig.2 slot order)
+        "backward_mode": "auto",    # auto (keep graph when F/B versions match) | recompute
+        "sync_each_op": True,       # decide the next op only when the GPU is idle
+        "recv_prefetch": None,
+        "timeout_s": 600,
     },
+    "dist": {"backend": None},     # None -> nccl on GPU, gloo on CPU
     "training": {
         "epochs": 160,
         "batch_size": 192,          # mini-batch M (same for all systems, paper §4.5)

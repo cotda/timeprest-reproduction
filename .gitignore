@@ -30,3 +30,4 @@ results/runs/
 *.egg-info/
 .pytest_cache/
 results/sweep/
+results/checks/dist_work/

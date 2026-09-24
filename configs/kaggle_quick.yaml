@@ -1,0 +1,23 @@
+# Settings for `timeprest.dist.checks` (D1-D4) on Kaggle.
+base: kaggle_base.yaml
+name: kaggle_quick
+system: timeprest
+data:
+  train_subset: 10000
+  test_subset: 1000
+training:
+  epochs: 3
+  warmup_epochs: 1
+output:
+  dir: /kaggle/working/runs/kaggle_quick
+  require_checks: false
+checks:
+  systems: [pipedream, timeprest]
+  num_microbatches: 3
+  static_batch: 48
+  static_steps: 6
+  dynamic_steps: 20
+  resume_subset: 960
+  short_min_acc1: 2.0
+  full_train_samples: 50000
+  full_epochs: 160
