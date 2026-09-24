@@ -73,7 +73,8 @@ class Channels:
         until both ranks join. Without this, rank s would first touch the backward group (posting a
         gradient receive) while rank s+1 first touches the forward group -> deadlock. Create every
         communicator here, in the same order on all ranks."""
-        dev = torch.device("cuda", torch.cuda.current_device()) if dist.get_backend() == "nccl" else torch.device("cpu")
+        nccl = dist.get_backend() == "nccl"
+        dev = torch.device("cuda", torch.cuda.current_device()) if nccl else torch.device("cpu")
         t = torch.zeros(1, device=dev)
         for groups in (self.fwd, self.bwd):
             for s, g in enumerate(groups):
@@ -81,6 +82,11 @@ class Channels:
                     dist.send(t, s + 1, group=g)
                 elif self.rank == s + 1:
                     dist.recv(t, s, group=g)
+                # finish this transfer completely before any rank creates the next communicator:
+                # creating an NCCL communicator while another NCCL op is still in flight can deadlock
+                if nccl:
+                    torch.cuda.synchronize(dev)
+                dist.barrier()
 
     def _h(self, work):
         return Handle(work, self.threaded)

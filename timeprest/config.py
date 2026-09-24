@@ -56,7 +56,9 @@ DEFAULTS: dict[str, Any] = {
         "recv_prefetch": None,
         "timeout_s": 600,
     },
-    "dist": {"backend": None},     # None -> nccl on GPU, gloo on CPU
+    "dist": {"backend": None,      # None -> nccl on GPU, gloo on CPU
+             "timeout_s": 300,     # collective / p2p timeout
+             "env": {}},           # environment set before NCCL init, e.g. {NCCL_P2P_DISABLE: "1"}
     "training": {
         "epochs": 160,
         "batch_size": 192,          # mini-batch M (same for all systems, paper §4.5)

@@ -23,6 +23,13 @@ from .runtime import Channels, StageRuntime
 
 
 def init_dist(cfg: dict):
+    # `kill -USR1 <pid>` (or `pkill -USR1 -f timeprest.dist`) prints every thread's stack: hang diagnosis
+    import faulthandler
+    import signal
+    if hasattr(signal, "SIGUSR1"):
+        faulthandler.register(signal.SIGUSR1, all_threads=True)
+    for k, v in (cfg.get("dist", {}).get("env") or {}).items():   # e.g. NCCL_P2P_DISABLE: "1"
+        os.environ.setdefault(k, str(v))
     if not dist.is_initialized():
         want_cuda = cfg["runtime"]["device"] == "cuda" and torch.cuda.is_available()
         backend = cfg.get("dist", {}).get("backend") or ("nccl" if want_cuda else "gloo")
@@ -33,7 +40,17 @@ def init_dist(cfg: dict):
             dist.init_process_group(backend, init_method="file:///" + init_file.replace("\\", "/").lstrip("/"),
                                     rank=int(os.environ["RANK"]), world_size=int(os.environ["WORLD_SIZE"]))
         else:
-            dist.init_process_group(backend)   # torchrun (env://)
+            from datetime import timedelta
+            kw = {"timeout": timedelta(seconds=cfg.get("dist", {}).get("timeout_s", 300))}
+            if backend == "nccl":
+                # eager NCCL init: communicators (also of later new_group calls) are created up front
+                # instead of lazily at the first send/recv
+                kw["device_id"] = torch.device("cuda", int(os.environ.get("LOCAL_RANK", 0)))
+            try:
+                dist.init_process_group(backend, **kw)
+            except TypeError:   # older torch without device_id
+                kw.pop("device_id", None)
+                dist.init_process_group(backend, **kw)
     rank, world = dist.get_rank(), dist.get_world_size()
     if world != cfg["pipeline"]["num_stages"]:
         raise ValueError(f"world size {world} != pipeline.num_stages {cfg['pipeline']['num_stages']}")
