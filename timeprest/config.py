@@ -12,10 +12,13 @@ import yaml
 # Presets map a system name to the pipeline mechanism it uses (paper §3, §4.10).
 # Keys set explicitly in `pipeline:` override the preset (used for ablations).
 SYSTEM_PRESETS = {
-    # PipeDream baseline: 1F1B, whole mini-batch per op, horizontal stashing
-    # (backward uses the forward's version) + vertical sync of the forward version.
+    # PipeDream baseline as in the official runtime (main_with_runtime.py:208, W-s versions per
+    # stage): 1F1B, whole mini-batch per op, horizontal stashing only (no vertical sync).
     "pipedream": {"schedule": "1F1B", "num_microbatches": 1,
-                  "vertical_sync": True, "backward_version": "stashed"},
+                  "vertical_sync": False, "backward_version": "stashed"},
+    # PipeDream with vertical sync as described in the TiMePReSt paper (p.2); ablation only.
+    "pipedream_vsync": {"schedule": "1F1B", "num_microbatches": 1,
+                        "vertical_sync": True, "backward_version": "stashed"},
     # TiMePReSt: nF1B, backward uses the latest version committed across the pipeline
     # (no horizontal stashing), forward keeps vertical sync.
     "timeprest": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "committed"},

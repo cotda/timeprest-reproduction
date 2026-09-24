@@ -51,7 +51,8 @@ nếu val loss tăng liên tục trong khi train loss giảm), thời gian, peak
   "Sai khác so với paper" trong `paper_notes.md`.
 
 ## Các cơ chế cần cài đặt (đối chiếu paper, mục 3)
-1. Baseline: PipeDream 1F1B + weight stashing (horizontal + vertical).
+1. Baseline: PipeDream 1F1B + weight stashing (horizontal; KHÔNG vertical sync, đúng code PipeDream chính thức —
+   quyết định 2026-09-24 sau sweep lr, xem paper_notes.md §19.4; bản có vertical sync là `system: pipedream_vsync`).
 2. TiMePReSt: bỏ horizontal weight stashing, giữ vertical synchronization.
 3. Lịch nF1B: chia mini-batch thành N micro-batch, forward hết N, lấy loss trung bình, một lượt backward.
 4. Điều kiện W ≤ N+1 để version difference v = 1 (W = số worker/GPU).

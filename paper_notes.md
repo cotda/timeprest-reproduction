@@ -891,12 +891,12 @@ Main PDF p.14 nói dữ liệu sẽ được cung cấp khi yêu cầu. Đây kh
 | Model | VGG-16, biến thể không nêu | VGG-16-BN kiểu CIFAR (13 conv 3×3 + BN + ReLU, head `Linear(512,100)`, không dropout), Kaiming init |
 | Dữ liệu | CIFAR-100, split/augment không nêu | Train 50k / test 10k chuẩn; random crop 32 (pad 4) + flip; normalize. Accuracy báo trên **test set** (paper không rõ train hay test) + train acc chạy dọc |
 | Mini-batch M | Không có số | M = 192 cho cả hai hệ; TiMePReSt: N=3 micro-batch × 64; PipeDream: 1F1B với nguyên M |
-| Optimizer | Eq.1 chỉ là dạng update | SGD momentum 0.9, lr 0.1, warmup tuyến tính 5 epoch rồi cosine theo step, wd 5e-4, 160 epoch, fp32, seed 0. Warmup được thêm sau lần chạy check đầu trên Colab: lr 0.1 ngay từ bước 0 làm loss của PipeDream vượt ln(100) (6.1–6.7) |
+| Optimizer | Eq.1 chỉ là dạng update | SGD momentum 0.9, lr **0.05** (chọn bằng sweep §19.4), warmup tuyến tính 5 epoch rồi cosine theo step, wd 5e-4, 160 epoch, fp32, seed 0. Warmup được thêm sau lần chạy check đầu trên Colab: lr 0.1 ngay từ bước 0 làm loss của PipeDream vượt ln(100) (6.1–6.7) |
 | Phân hoạch | "Cân bằng bộ nhớ" (p.3), không có số | Cân bằng MACs: blocks `[0, 8, 19]`; stage 1 ≈ 1.15M tham số, stage 2 ≈ 13.6M |
 | Lịch | Fig.2 + mô tả §3.2 | Slot lý tưởng, backward ưu tiên, stage s giữ ≤ W−s mini-batch đang chạy (NOAM của PipeDream). **Khớp đúng Fig.2a–e** (test `test_matches_paper_fig2`); giới hạn NOAM không bao giờ thay đổi lịch nF1B |
 | Phiên bản forward | Vertical sync (p.3), giữ bản cũ tới khi forward dùng nó xong (p.5) | Micro-batch lấy version mới nhất của stage 0 lúc vào pipeline; mọi stage sau dùng đúng version đó |
 | Phiên bản backward, TiMePReSt | "latest updated version" (p.4) + vertical sync | `committed` = version đã áp dụng trên **mọi** stage (= version của stage 0) lúc backward bắt đầu ở stage cuối. Khi W ≤ N+1 version này trùng version live ở từng stage (đã kiểm chứng) |
-| Phiên bản backward, PipeDream | Horizontal + vertical stashing (p.2) | `stashed` = version của forward + vertical sync (theo CLAUDE.md). PipeDream gốc mặc định **không** bật vertical sync; bật nó làm stage 2 giữ 2 version thay vì 1 |
+| Phiên bản backward, PipeDream | Horizontal + vertical stashing (p.2) | `stashed` = version forward của **chính stage đó**, **không** vertical sync, đúng code chính thức (`pipedream/runtime/image_classification/main_with_runtime.py:208`: `num_versions = num_warmup_minibatches + 1`, tức W−s version; repo không có vertical sync). Bản có vertical sync giữ lại dưới tên `pipedream_vsync` để làm ablation |
 | Cách tính gradient khi F/B khác version | Không mô tả | Mỗi stage chỉ lưu **input** của stage; khi backward thì chạy lại forward cục bộ bằng version được chọn rồi VJP với gradient từ stage sau. Áp dụng cho **cả hai hệ**, nên khác biệt duy nhất là version. Hệ quả: activation memory là input của stage (giống nhau giữa hai hệ); op B tốn thêm 1 forward |
 | "Một backward" | Một backward trên loss trung bình | Một op B mỗi mini-batch/stage; bên trong lặp N chunk để BN dùng đúng batch-stat của từng micro-batch. Về toán học bằng backward trên tổng loss |
 | Loss | Trung bình loss N micro-batch | Σ_j CE_sum_j / M (trung bình có trọng số theo số mẫu; bằng trung bình thường khi chia đều) |
@@ -910,3 +910,17 @@ Main PDF p.14 nói dữ liệu sẽ được cung cấp khi yêu cầu. Đây kh
 - Eq.(2) (v = 1 ⇔ W ≤ N+1) đúng trên toàn lưới W = 2..8, N = 2..7.
 - Eq.(3) v = ⌊(W+N−2)/N⌋ khớp mọi cặp W ≤ 5 (bao gồm mọi hình của paper). Với lịch của project, nó **khác** ở (W,N) = (6,2): mô phỏng v=2, công thức 3; (8,2): 3 vs 4; (8,3): 2 vs 3. Các cặp này nằm ngoài thí nghiệm của paper, và phép suy diễn Eq.(11)–(16) có dùng xấp xỉ `x ~ 1/N`. Không kết luận paper sai: đây là quan sát trên lịch tổng quát hóa từ Fig.2.
 - Số version trọng số cần giữ (trace): PipeDream 1F1B, W=2: [2, 2] khi có vertical sync, [2, 1] khi không (đúng W−s của PipeDream). TiMePReSt W=2, N=3: [1, 2]. Stage 2 vẫn cần tạm giữ version cũ vì vertical sync của forward (micro-batch 2A/2B vào stage 2 sau khi stage 2 đã update).
+
+### 19.4. Sweep learning rate (Colab T4, 2026-09-24)
+
+`configs/sweep_lr.yaml`: subset 20k ảnh train / 2k test, 8 epoch, warmup 2 epoch, cosine, M=192, 1 seed. Top-1 test (%):
+
+| lr | TiMePReSt | PipeDream không vertical sync | PipeDream có vertical sync |
+|---|---|---|---|
+| 0.1 | 33.6 | 31.8 | 14.8 |
+| 0.05 | 37.1 | 35.1 | 26.6 |
+| 0.02 | 36.3 | 35.8 | 31.2 |
+
+- Vertical sync làm stage 2 (13.6M/14.8M tham số) cũng dùng gradient trễ 1 bước. Baseline khi đó rất nhạy với lr và kém hẳn. Không vertical sync thì PipeDream bám sát TiMePReSt (khớp Fig.4b: theo epoch, hai hệ gần nhau).
+- **Quyết định (người dùng xác nhận):** baseline = PipeDream không vertical sync; lr = 0.05 chung cho cả hai hệ. Chênh lệch 0.02 vs 0.05 nằm trong nhiễu 1 seed.
+- Thời gian ước lượng 2 GPU trong sweep: TiMePReSt ~10.2 s/epoch, PipeDream ~5.2 s/epoch (1 GPU: 12.5 vs 10.4 s). Giả thuyết cần kiểm chứng: với W=2, N=3, lịch nF1B làm B của hai stage chạy nối tiếp. Stage 1 chỉ làm F(i,C) sau B(i−1), còn stage 2 phải chờ F(i,C) mới làm được B(i), mà op B dài gấp 5–7 lần op F. Fig.2 vẽ các ô dài bằng nhau nên không thấy hiệu ứng này.

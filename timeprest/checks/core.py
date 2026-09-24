@@ -149,9 +149,9 @@ def check_grad_equivalence(ctx: Ctx):
     eng.run_epoch(batches)
     worst, stale = 0.0, 0
     for i, (x, y) in enumerate(batches):
-        k = got[(eng.W - 1, i)][1][0]
-        stale += k < i
-        refg = full_grad_at(eng.stages, eng.version_params, [k] * eng.W, x, y, 1)
+        ks = [got[(s, i)][1][0] for s in range(eng.W)]  # stashed version of each stage
+        stale += any(k < i for k in ks)
+        refg = full_grad_at(eng.stages, eng.version_params, ks, x, y, 1)
         for s in range(eng.W):
             for n, g in got[(s, i)][0].items():
                 worst = max(worst, max_rel_err(g, refg[s][n]))
@@ -216,7 +216,9 @@ def check_mechanism(ctx: Ctx):
             if W >= 2 and N >= 2:
                 m["v_formula"] = version_difference_formula(W, N)
                 ok &= v_meas == m["v_formula"] and ((v_meas == 1) == (W <= N + 1))
-        ok &= vertical
+        if cfg["pipeline"]["vertical_sync"]:
+            ok &= vertical
+        m["vertical_sync_enabled"] = cfg["pipeline"]["vertical_sync"]
         m["trace_first_minibatches"] = [
             f"mb{r['mb'] + 1}{'' if r['kind'] == 'B' else chr(65 + r['micro'])} {r['kind']}@stage{r['stage'] + 1} "
             f"slot{r['slot'] + 1} ver={r.get('version', r.get('versions'))} live={r['live']}"

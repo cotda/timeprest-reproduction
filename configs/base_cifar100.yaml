@@ -21,7 +21,7 @@ training:
   epochs: 160                    # choice: ~x-axis of Fig.4b
   batch_size: 192                # choice (paper gives no number): mini-batch M = 3 x 64
   optimizer: sgd                 # choice
-  lr: 0.1
+  lr: 0.05                       # chosen from configs/sweep_lr.yaml (best TiMePReSt, ~best PipeDream)
   momentum: 0.9
   nesterov: false
   weight_decay: 5.0e-4

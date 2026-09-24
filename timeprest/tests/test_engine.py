@@ -76,18 +76,19 @@ def test_sequential_equals_plain_training_with_warmup():
     torch.testing.assert_close(flat_params(eng.stages), flat_params(ref), **TOL)
 
 
-@pytest.mark.parametrize("kind", ["mlp", "vgg"])
-def test_pipedream_stashed_gradients_are_consistent(kind):
-    """1F1B + stashing + vertical sync: each gradient equals the full-model gradient at the
-    single version used by that mini-batch's forward, on every stage."""
+@pytest.mark.parametrize("kind,vsync", [("mlp", True), ("vgg", True), ("mlp", False), ("vgg", False)])
+def test_pipedream_stashed_gradients_are_consistent(kind, vsync):
+    """1F1B + stashing: each stage's gradient equals the full-model gradient at the versions the
+    forward used (one version for all stages with vertical sync, per-stage versions without)."""
     batches = make_batches(kind, K=6, M=12)
-    eng, got = run_recorded(make_model(kind), batches, pipe_cfg("1F1B", 1, "stashed"))
+    eng, got = run_recorded(make_model(kind), batches, pipe_cfg("1F1B", 1, "stashed", vertical_sync=vsync))
     stale = 0
     for i, (x, y) in enumerate(batches):
-        k = got[(eng.W - 1, i)][1][0]
-        assert all(got[(s, i)][1] == [k] for s in range(eng.W))
-        stale += k < i
-        ref = full_grad_at(eng.stages, eng.version_params, [k] * eng.W, x, y, 1)
+        ks = [got[(s, i)][1][0] for s in range(eng.W)]
+        if vsync:
+            assert len(set(ks)) == 1
+        stale += any(k < i for k in ks)
+        ref = full_grad_at(eng.stages, eng.version_params, ks, x, y, 1)
         for s in range(eng.W):
             for n, g in got[(s, i)][0].items():
                 torch.testing.assert_close(g, ref[s][n], **TOL)

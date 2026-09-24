@@ -15,5 +15,5 @@ sweep:
   lrs: [0.1, 0.05, 0.02]
   variants:                       # name -> config overrides
     timeprest: {system: timeprest}
-    pipedream: {system: pipedream}
-    pipedream_novsync: {system: pipedream, pipeline.vertical_sync: false}   # PipeDream's own default
+    pipedream: {system: pipedream}             # official PipeDream: no vertical sync
+    pipedream_vsync: {system: pipedream_vsync}
