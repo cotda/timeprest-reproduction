@@ -65,6 +65,17 @@ def test_sequential_pipeline_equals_plain_training(kind, N):
         torch.testing.assert_close(a, b)
 
 
+def test_sequential_equals_plain_training_with_warmup():
+    stages = make_model("mlp")
+    batches = make_batches("mlp", K=6, M=12)
+    tc = dict(TRAIN, warmup_epochs=0.5)
+    ref = plain_training(stages, batches, 3, tc, len(batches), warmup_steps=3)
+    eng = PipelineEngine([copy.deepcopy(s) for s in stages], pipe_cfg("nF1B", 3, "stashed", max_inflight=1),
+                         tc, "cpu", len(batches))
+    eng.run_epoch(batches)
+    torch.testing.assert_close(flat_params(eng.stages), flat_params(ref), **TOL)
+
+
 @pytest.mark.parametrize("kind", ["mlp", "vgg"])
 def test_pipedream_stashed_gradients_are_consistent(kind):
     """1F1B + stashing + vertical sync: each gradient equals the full-model gradient at the

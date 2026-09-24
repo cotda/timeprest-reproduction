@@ -40,14 +40,16 @@ def fig2_grid(W: int, N: int) -> list[list[str]]:
     return [row.split() for row in FIG2[(W, N)].strip().splitlines()]
 
 
-def plain_training(stages, batches, N: int, training_cfg: dict, total_steps: int) -> nn.Sequential:
+def plain_training(stages, batches, N: int, training_cfg: dict, total_steps: int,
+                   warmup_steps: int = 0) -> nn.Sequential:
     """Ordinary (non-pipelined) training of the concatenated model with the same optimizer,
     LR schedule and micro-batch loss weighting (sum over chunks of CE_sum / M)."""
     model = nn.Sequential(*[copy.deepcopy(s) for s in stages])
     opt = torch.optim.SGD(model.parameters(), lr=training_cfg["lr"], momentum=training_cfg["momentum"],
                           weight_decay=training_cfg["weight_decay"],
                           nesterov=training_cfg.get("nesterov", False))
-    sch = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda_factory(total_steps, 0, training_cfg["lr_schedule"]))
+    sch = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda_factory(total_steps, warmup_steps,
+                                                                    training_cfg["lr_schedule"]))
     model.train()
     for x, y in batches:
         opt.zero_grad()

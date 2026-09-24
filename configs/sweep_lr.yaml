@@ -1,0 +1,19 @@
+# Short LR sweep to pick ONE learning rate used by both systems (paper gives none).
+# 20k-image subset, 8 epochs (832 updates), 2 warmup epochs, cosine.  ~15 min on a T4.
+base: base_cifar100.yaml
+name: sweep_lr
+data:
+  train_subset: 20000
+  test_subset: 2000
+training:
+  epochs: 8
+  warmup_epochs: 2
+output:
+  dir: results/sweep
+  require_checks: false
+sweep:
+  lrs: [0.1, 0.05, 0.02]
+  variants:                       # name -> config overrides
+    timeprest: {system: timeprest}
+    pipedream: {system: pipedream}
+    pipedream_novsync: {system: pipedream, pipeline.vertical_sync: false}   # PipeDream's own default

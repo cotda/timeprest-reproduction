@@ -129,7 +129,9 @@ def check_grad_equivalence(ctx: Ctx):
         pc = dict(cfg["pipeline"], max_inflight=1)
         seq = PipelineEngine([copy.deepcopy(m) for m in stages0], pc, cfg["training"], ctx.device, K)
         seq.run_epoch(batches[:K])
-        ref = plain_training(stages0, batches[:K], n_micro, cfg["training"], K)
+        # same LR schedule as the engine (epochs=1, steps_per_epoch=K, warmup in epochs)
+        ref = plain_training(stages0, batches[:K], n_micro, cfg["training"], K,
+                             int(cfg["training"].get("warmup_epochs", 0) * K))
         a, b = _params(seq.stages).double(), _params(ref).double()
         err = max_rel_err(a, b)
         good = torch.allclose(a, b, rtol=rtol, atol=atol)
