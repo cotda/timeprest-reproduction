@@ -66,6 +66,21 @@ class Channels:
         self.fwd = [dist.new_group([s, s + 1]) for s in range(world - 1)]
         self.bwd = [dist.new_group([s, s + 1]) for s in range(world - 1)]
         self.threaded = dist.get_backend() != "nccl"
+        self._warm_up()
+
+    def _warm_up(self):
+        """NCCL creates a p2p communicator lazily at the first op of a group, and creation blocks
+        until both ranks join. Without this, rank s would first touch the backward group (posting a
+        gradient receive) while rank s+1 first touches the forward group -> deadlock. Create every
+        communicator here, in the same order on all ranks."""
+        dev = torch.device("cuda", torch.cuda.current_device()) if dist.get_backend() == "nccl" else torch.device("cpu")
+        t = torch.zeros(1, device=dev)
+        for groups in (self.fwd, self.bwd):
+            for s, g in enumerate(groups):
+                if self.rank == s:
+                    dist.send(t, s + 1, group=g)
+                elif self.rank == s + 1:
+                    dist.recv(t, s, group=g)
 
     def _h(self, work):
         return Handle(work, self.threaded)
