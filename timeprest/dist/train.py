@@ -35,6 +35,11 @@ def init_dist(cfg: dict):
     if not dist.is_initialized():
         want_cuda = cfg["runtime"]["device"] == "cuda" and torch.cuda.is_available()
         backend = cfg.get("dist", {}).get("backend") or ("nccl" if want_cuda else "gloo")
+        if backend == "nccl":
+            # PyTorch defaults to LAZY: a kernel's first launch loads its module, which needs a
+            # context-wide sync and blocks behind a posted NCCL receive -> deadlock (CUDA docs,
+            # "Lazy Loading: concurrent execution"). Must be set before CUDA initialises.
+            os.environ.setdefault("CUDA_MODULE_LOADING", "EAGER")
         if want_cuda:
             torch.cuda.set_device(int(os.environ.get("LOCAL_RANK", 0)))
         init_file = os.environ.get("TIMEPREST_INIT_FILE")   # local launcher (Windows/CPU tests)
@@ -92,7 +97,7 @@ class DistTrainer:
         self.steps = len(self.train_ds) // self.M
         s = self.rank
         self.rt = StageRuntime(s, self.world, stages[s], pc, cfg["training"], self.device, self.steps,
-                               in_feat=feats[s - 1] if s > 0 else None,
+                               in_feat=feats[s - 1] if s > 0 else tuple(sample.shape[1:]),
                                out_feat=feats[s] if s < self.world - 1 else None,
                                channels=self.channels, batch_size=self.M)
         self.rt.profile_ops = cfg["runtime"].get("profile_ops", True)
@@ -169,6 +174,7 @@ class DistTrainer:
     # ---------------------------------------------------------------- epoch
     def run_epoch(self, epoch: int) -> dict:
         K, xs, labels = self._train_inputs(epoch)
+        self.rt.warm_up_kernels()   # once; kept out of the epoch's time and peak memory
         if self.device.type == "cuda":
             torch.cuda.reset_peak_memory_stats(self.device)
         lr = self.rt.opt.param_groups[0]["lr"]

@@ -69,7 +69,7 @@ def main():
             feats.append(tuple(x.shape[1:]))
     ch = Channels(rank, W)
     tc = dict(TRAIN, epochs=args.epochs)
-    rt = StageRuntime(rank, W, stages[rank], pc, tc, device, args.K, feats[rank - 1] if rank else None,
+    rt = StageRuntime(rank, W, stages[rank], pc, tc, device, args.K, feats[rank - 1] if rank else tuple(batches[0][0].shape[1:]),
                       feats[rank] if rank < W - 1 else None, ch, TRAIN["batch_size"], dtype=torch.float64)
     rt.profile_ops = False
     rt.record_versions = True

@@ -67,7 +67,7 @@ def make_runtime(cfg, rank, W, device, train, K):
     feats = boundary_features(stages, sample)
     ch = Channels(rank, W)
     rt = StageRuntime(rank, W, copy.deepcopy(stages[rank]), cfg["pipeline"], cfg["training"], device, K,
-                      feats[rank - 1] if rank else None, feats[rank] if rank < W - 1 else None, ch,
+                      feats[rank - 1] if rank else tuple(sample.shape[1:]), feats[rank] if rank < W - 1 else None, ch,
                       cfg["training"]["batch_size"])
     return rt, stages
 

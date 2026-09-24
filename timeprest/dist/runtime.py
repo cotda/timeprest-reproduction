@@ -159,6 +159,7 @@ class StageRuntime:
         self.record_versions = False
         self.version_params: dict = {}
         self.op_log: list = []
+        self._kernels_warm = False
 
     # ------------------------------------------------------------------ versions
     def _live(self) -> dict:
@@ -191,11 +192,51 @@ class StageRuntime:
                 b.copy_(bufs[n])
         return out
 
+    def warm_up_kernels(self):
+        """Run every kind of compute of this stage once (train forward/backward for each micro-batch
+        size, an optimizer step, eval forward) before any NCCL receive is posted. First launches load
+        CUDA modules / cuDNN sub-libraries, which needs a context-wide sync: done later while a
+        posted receive is still waiting for the peer, it would deadlock. No side effects: buffers,
+        parameters, optimizer and RNG state are left untouched."""
+        if self._kernels_warm or self.device.type != "cuda" or self.in_feat is None:
+            return
+        cpu_rng, cuda_rng = torch.get_rng_state(), torch.cuda.get_rng_state(self.device)
+        was = self.module.training
+        params = {n: p.detach().clone().requires_grad_(True) for n, p in self.named}
+        bufs = {n: b.clone() for n, b in self.module.named_buffers()}
+        opt = torch.optim.SGD(list(params.values()), **{k: self.opt.defaults[k] for k in
+                                                        ("lr", "momentum", "weight_decay", "nesterov")})
+        for train in (True, False):
+            self.module.train(train)
+            for m in sorted(set(self.micro) | {self.M}):
+                x = torch.randn((m, *self.in_feat), dtype=self.dtype, device=self.device,
+                                requires_grad=train and self.s > 0)
+                with torch.enable_grad() if train else torch.no_grad():
+                    out = functional_call(self.module, {**params, **bufs}, (x,))
+                    if not train:
+                        continue
+                    if self.s == self.last:
+                        y = torch.randint(0, out.shape[1], (m,), device=self.device)
+                        l = F.cross_entropy(_upcast(out), y, reduction="sum")
+                        (out.detach().argmax(1) == y).sum().item()
+                        l.backward()
+                    else:
+                        out.backward(torch.randn_like(out))
+            if train:
+                opt.step()
+                opt.zero_grad(set_to_none=True)
+        self.module.train(was)
+        torch.cuda.synchronize(self.device)
+        torch.set_rng_state(cpu_rng)
+        torch.cuda.set_rng_state(cuda_rng, self.device)
+        self._kernels_warm = True
+
     # ------------------------------------------------------------------ epoch
     def run_epoch(self, K: int, batches=None, labels=None) -> dict:
         """batches: iterable of input mini-batches (stage 0); labels: list of label mini-batches
         (last stage). Returns local statistics."""
         s, N, last = self.s, self.N, self.last
+        self.warm_up_kernels()
         base = self.version
         self.module.train()
         if self.record_versions:
