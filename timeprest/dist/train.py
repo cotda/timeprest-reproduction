@@ -28,6 +28,8 @@ def init_dist(cfg: dict):
     import signal
     if hasattr(signal, "SIGUSR1"):
         faulthandler.register(signal.SIGUSR1, all_threads=True)
+    if os.environ.get("TIMEPREST_STACK_DUMP_S"):   # one-shot stack dump of every thread after N seconds
+        faulthandler.dump_traceback_later(float(os.environ["TIMEPREST_STACK_DUMP_S"]), exit=False)
     for k, v in (cfg.get("dist", {}).get("env") or {}).items():   # e.g. NCCL_P2P_DISABLE: "1"
         os.environ.setdefault(k, str(v))
     if not dist.is_initialized():

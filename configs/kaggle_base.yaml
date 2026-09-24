@@ -5,6 +5,13 @@ data:
   root: /kaggle/input/datasets/fedesoriano/cifar100   # Kaggle dataset; files train/test/meta may sit directly here
   download: false
   num_workers: 2
+dist:
+  env:
+    # Kaggle T4 x2: NCCL's GPU peer-to-peer transport hangs after the first transfer; route
+    # p2p/collectives through host shared memory instead (tiny cost at these message sizes)
+    NCCL_P2P_DISABLE: "1"
+    # each fwd/bwd process group is one-directional, so per-group serialization is intended
+    TORCH_NCCL_SHOW_EAGER_INIT_P2P_SERIALIZATION_WARNING: "false"
 pipeline:
   order: dynamic                  # paper §3.2: backward first when its gradient has arrived
   backward_mode: auto             # keep the forward graph when F/B versions match, else recompute
