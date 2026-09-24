@@ -225,7 +225,7 @@ def main(argv=None):
            "systems": cfg["checks"].get("systems", ["pipedream", "timeprest"])}
     if rank == 0:
         print("env:", json.dumps(utils.env_info()), "| code", utils.code_hash(), "| gpus", torch.cuda.device_count(),
-              flush=True)
+              "| module_loading", os.environ.get("CUDA_MODULE_LOADING"), flush=True)
     ctx["data"] = build_datasets(cfg["data"], cfg["model"]["num_classes"], cfg["seed"])
     ids = args.only or [c[0] for c in CHECKS]
     results = []

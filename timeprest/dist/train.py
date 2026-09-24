@@ -35,11 +35,6 @@ def init_dist(cfg: dict):
     if not dist.is_initialized():
         want_cuda = cfg["runtime"]["device"] == "cuda" and torch.cuda.is_available()
         backend = cfg.get("dist", {}).get("backend") or ("nccl" if want_cuda else "gloo")
-        if backend == "nccl":
-            # PyTorch defaults to LAZY: a kernel's first launch loads its module, which needs a
-            # context-wide sync and blocks behind a posted NCCL receive -> deadlock (CUDA docs,
-            # "Lazy Loading: concurrent execution"). Must be set before CUDA initialises.
-            os.environ.setdefault("CUDA_MODULE_LOADING", "EAGER")
         if want_cuda:
             torch.cuda.set_device(int(os.environ.get("LOCAL_RANK", 0)))
         init_file = os.environ.get("TIMEPREST_INIT_FILE")   # local launcher (Windows/CPU tests)
@@ -298,7 +293,8 @@ def main(argv=None):
     tr = DistTrainer(cfg, out_dir)
     if rank == 0:
         print("env:", json.dumps(utils.env_info()), "| code", utils.code_hash(),
-              "| gpus", torch.cuda.device_count(), flush=True)
+              "| gpus", torch.cuda.device_count(),
+              "| module_loading", os.environ.get("CUDA_MODULE_LOADING"), flush=True)
         if cfg["output"].get("require_checks") and os.path.exists(cfg["output"]["checks_file"]):
             import shutil
             os.makedirs(out_dir, exist_ok=True)

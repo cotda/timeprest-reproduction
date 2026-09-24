@@ -215,13 +215,21 @@ class StageRuntime:
                     out = functional_call(self.module, {**params, **bufs}, (x,))
                     if not train:
                         continue
-                    if self.s == self.last:
+                    if self.s == self.last:   # same bookkeeping ops as do_forward
                         y = torch.randint(0, out.shape[1], (m,), device=self.device)
                         l = F.cross_entropy(_upcast(out), y, reduction="sum")
-                        (out.detach().argmax(1) == y).sum().item()
-                        l.backward()
+                        acc_l = torch.zeros((), device=self.device, dtype=torch.float64)
+                        acc_c = torch.zeros((), device=self.device, dtype=torch.long)
+                        acc_l += l.detach().double()
+                        acc_c += (out.detach().argmax(1) == y).sum()
+                        (l / self.M).backward()
+                        acc_l.item(), acc_c.item()
                     else:
                         out.backward(torch.randn_like(out))
+                    if self.s > 0:            # do_backward: summed grads, concatenated input grads
+                        g = [p.grad + p.grad for p in params.values()]
+                        torch.cat([x.grad, x.grad]).contiguous()
+                        del g
             if train:
                 opt.step()
                 opt.zero_grad(set_to_none=True)
