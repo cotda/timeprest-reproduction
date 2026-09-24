@@ -1,0 +1,6 @@
+base: base_cifar100.yaml
+name: cifar100_vgg16_timeprest
+system: timeprest
+output:
+  dir: /content/drive/MyDrive/timeprest/runs/{name}
+  require_checks: true

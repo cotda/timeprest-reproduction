@@ -1,0 +1,26 @@
+# Short sanity run + settings used by `python -m timeprest.checks`.
+base: base_cifar100.yaml
+name: quick
+system: timeprest
+data:
+  train_subset: 5000
+  test_subset: 1000
+training:
+  epochs: 2
+output:
+  dir: results/runs/quick_timeprest
+  require_checks: false
+checks:
+  systems: [pipedream, timeprest]
+  seed_steps: 12                 # check 1: mini-batches per repeated run
+  init_loss_tol: 0.3             # check 2: |loss - ln(C)| tolerance
+  equiv_batch: 12                # check 3: mini-batch size for the gradient equivalence tests
+  equiv_steps: 4
+  equiv_rtol: 1.0e-5             # check 3 runs in float64
+  equiv_atol: 1.0e-8
+  overfit_batch: 96              # check 5: one fixed batch
+  overfit_steps: 300
+  overfit_lr: 0.02
+  overfit_target_loss: 0.05
+  short_min_acc1: 2.0            # check 6: test top-1 (%) must beat 2x chance
+  resume_subset: 960             # check 7

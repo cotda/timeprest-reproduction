@@ -2,15 +2,15 @@
 
 ## Mục tiêu
 Tái hiện TiMePReSt (Time and memory efficient pipeline parallel DNN training with removed staleness,
-FGCS vol.178, 2026) dựa trên PipeDream. Paper: `paper/timeprest.pdf`.
-Ghi chú tóm tắt paper: `docs/paper_notes.md` (đọc file này trước, chỉ mở PDF khi cần chi tiết).
+FGCS vol.178, 2026) dựa trên PipeDream. Paper: `1-s2.0-S0167739X25005540-main.pdf` (thư mục gốc).
+Ghi chú tóm tắt paper: `paper_notes.md` (đọc file này trước, chỉ mở PDF khi cần chi tiết).
 Tiến độ được theo dõi qua git: mỗi thay đổi là một commit nhỏ, message rõ ràng (tiếng Việt hoặc Anh).
 
 ## Cấu trúc
 - `pipedream/` — code gốc PipeDream (msr-fiddle). CHỈ ĐỌC ĐỂ THAM KHẢO, KHÔNG SỬA.
 - `timeprest/` — code mới (PyTorch hiện đại), là một package import được.
 - `timeprest/checks/` — các bước kiểm tra trước khi chạy dài (xem mục "Kiểm tra trước khi chạy dài").
-- `configs/` — file cấu hình YAML (quick.yaml cho kiểm tra, full.yaml cho chạy dài).
+- `configs/` — file cấu hình YAML (quick.yaml cho kiểm tra; full_timeprest.yaml / full_pipedream.yaml cho chạy dài, kế thừa base_cifar100.yaml).
 - `notebooks/` — notebook Colab / Kaggle, chỉ chứa các cell gọi lệnh, không chứa logic.
 - `results/` — log CSV/JSON, biểu đồ (không commit checkpoint).
 
@@ -22,7 +22,7 @@ Notebook `notebooks/phase1_colab.ipynb` gồm các cell theo thứ tự:
 2. In môi trường: GPU, VRAM, phiên bản torch/CUDA.
 3. `python -m timeprest.checks --all` → in bảng PASS/FAIL từng bước.
 4. Chạy ngắn: `python -m timeprest.train --config configs/quick.yaml`
-5. Chạy dài: `python -m timeprest.train --config configs/full.yaml`
+5. Chạy dài: `python -m timeprest.train --config configs/full_timeprest.yaml --resume` (và full_pipedream.yaml)
 Checkpoint và log của chạy dài lưu vào Google Drive (Colab có thể ngắt), hỗ trợ `--resume`.
 Script chạy dài từ chối chạy nếu file kết quả của bước 3 chưa PASS hết (trừ khi có cờ `--force`).
 
@@ -48,7 +48,7 @@ nếu val loss tăng liên tục trong khi train loss giảm), thời gian, peak
 - GĐ1 dùng 1 GPU Colab; GĐ2 dùng `torch.distributed` (NCCL) + `torchrun` trên Kaggle T4 ×2
   (~15GB/GPU, không bf16 → fp32 hoặc fp16 AMP). Viết code GĐ1 sao cho mở rộng sang GĐ2 dễ dàng.
 - Dataset/model có thể nhỏ hơn paper (vd. CIFAR-10 thay ImageNet). Mọi sai khác ghi vào mục
-  "Sai khác so với paper" trong `docs/paper_notes.md`.
+  "Sai khác so với paper" trong `paper_notes.md`.
 
 ## Các cơ chế cần cài đặt (đối chiếu paper, mục 3)
 1. Baseline: PipeDream 1F1B + weight stashing (horizontal + vertical).

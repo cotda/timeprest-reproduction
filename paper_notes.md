@@ -872,3 +872,41 @@ Main PDF p.14 nói dữ liệu sẽ được cung cấp khi yêu cầu. Đây kh
 8. Số hình ở mục 11 là ước lượng, time points không phải giờ; không tạo exact targets từ chúng.
 9. Một GPU kiểm tra prototype/simulation, hai GPU kiểm tra distributed runtime; không đồng nhất hardware với paper.
 10. Khi còn UNKNOWN trọng yếu, gọi kết quả là **partial reproduction với giả định công khai**. Cần mở PDF/supplementary hoặc hỏi tác giả để nâng mức xác nhận.
+
+## 19. Sai khác so với paper và lựa chọn triển khai (GĐ1 — thí nghiệm 1: VGG-16 / CIFAR-100)
+
+> Mục này ghi các quyết định của project tái hiện `[I]`, không phải mô tả của tác giả. Code: `timeprest/`, config: `configs/base_cifar100.yaml`.
+
+### 19.1. Mục tiêu so sánh
+
+Đối chiếu Fig.4 (p.9): VGG-16 / CIFAR-100 / Cluster A (W=2), N=3 (§4.1). Giai đoạn 1 chạy **mô phỏng trên 1 GPU**, nên:
+- Đường cong theo **epoch** (Fig.4b/d/f) so trực tiếp được: ngữ nghĩa phiên bản trọng số và thứ tự update giống pipeline thật.
+- Đường cong theo **thời gian** (Fig.4a/c/e) chỉ là **ước lượng**: đo thời gian từng op trên 1 GPU, rồi mô phỏng sự kiện cho 2 GPU (`timeprest/timing.py`). Số thật chờ GĐ2.
+
+### 19.2. Bảng sai khác / lựa chọn
+
+| Hạng mục | Paper | Project (GĐ1) |
+|---|---|---|
+| Phần cứng | Quadro RTX 6000 + RTX 2080, 2 máy | 1 GPU Colab; 2 stage chạy tuần tự trên cùng GPU |
+| Model | VGG-16, biến thể không nêu | VGG-16-BN kiểu CIFAR (13 conv 3×3 + BN + ReLU, head `Linear(512,100)`, không dropout), Kaiming init |
+| Dữ liệu | CIFAR-100, split/augment không nêu | Train 50k / test 10k chuẩn; random crop 32 (pad 4) + flip; normalize. Accuracy báo trên **test set** (paper không rõ train hay test) + train acc chạy dọc |
+| Mini-batch M | Không có số | M = 192 cho cả hai hệ; TiMePReSt: N=3 micro-batch × 64; PipeDream: 1F1B với nguyên M |
+| Optimizer | Eq.1 chỉ là dạng update | SGD momentum 0.9, lr 0.1, cosine theo step, wd 5e-4, 160 epoch, fp32, seed 0 |
+| Phân hoạch | "Cân bằng bộ nhớ" (p.3), không có số | Cân bằng MACs: blocks `[0, 8, 19]`; stage 1 ≈ 1.15M tham số, stage 2 ≈ 13.6M |
+| Lịch | Fig.2 + mô tả §3.2 | Slot lý tưởng, backward ưu tiên, stage s giữ ≤ W−s mini-batch đang chạy (NOAM của PipeDream). **Khớp đúng Fig.2a–e** (test `test_matches_paper_fig2`); giới hạn NOAM không bao giờ thay đổi lịch nF1B |
+| Phiên bản forward | Vertical sync (p.3), giữ bản cũ tới khi forward dùng nó xong (p.5) | Micro-batch lấy version mới nhất của stage 0 lúc vào pipeline; mọi stage sau dùng đúng version đó |
+| Phiên bản backward, TiMePReSt | "latest updated version" (p.4) + vertical sync | `committed` = version đã áp dụng trên **mọi** stage (= version của stage 0) lúc backward bắt đầu ở stage cuối. Khi W ≤ N+1 version này trùng version live ở từng stage (đã kiểm chứng) |
+| Phiên bản backward, PipeDream | Horizontal + vertical stashing (p.2) | `stashed` = version của forward + vertical sync (theo CLAUDE.md). PipeDream gốc mặc định **không** bật vertical sync; bật nó làm stage 2 giữ 2 version thay vì 1 |
+| Cách tính gradient khi F/B khác version | Không mô tả | Mỗi stage chỉ lưu **input** của stage; khi backward thì chạy lại forward cục bộ bằng version được chọn rồi VJP với gradient từ stage sau. Áp dụng cho **cả hai hệ**, nên khác biệt duy nhất là version. Hệ quả: activation memory là input của stage (giống nhau giữa hai hệ); op B tốn thêm 1 forward |
+| "Một backward" | Một backward trên loss trung bình | Một op B mỗi mini-batch/stage; bên trong lặp N chunk để BN dùng đúng batch-stat của từng micro-batch. Về toán học bằng backward trên tổng loss |
+| Loss | Trung bình loss N micro-batch | Σ_j CE_sum_j / M (trung bình có trọng số theo số mẫu; bằng trung bình thường khi chia đều) |
+| BatchNorm | Không nêu | Batch-stat theo micro-batch (64) cho TiMePReSt, theo 192 cho PipeDream; running stats cập nhật 1 lần/forward, đóng băng khi recompute |
+| Biên epoch | Checkpoint cuối epoch (§3.3) | Pipeline drain cuối mỗi epoch; `drop_last`; checkpoint gồm model/optimizer/scheduler/RNG, resume khớp bit-exact (check 7) |
+| Bộ nhớ | GB theo stage (Fig.15), phương pháp đo không nêu | (a) `torch.cuda.max_memory_allocated` của cả tiến trình; (b) bộ nhớ "sổ sách" theo stage = tham số × số version đang giữ + activation/gradient đang giữ (chưa tính momentum) |
+| Thời gian | Phút/epoch, time points | (a) wall-clock 1 GPU; (b) ước lượng 2 GPU: mô phỏng sự kiện với thời gian op đo được, truyền thông 10 GB/s + 50 µs, không tranh chấp link. Trục "time points" trong plot = thời gian ước lượng tích lũy / thời gian epoch trung bình của TiMePReSt |
+
+### 19.3. Phát hiện khi kiểm chứng công thức (`[D]`, simulator của project)
+
+- Eq.(2) (v = 1 ⇔ W ≤ N+1) đúng trên toàn lưới W = 2..8, N = 2..7.
+- Eq.(3) v = ⌊(W+N−2)/N⌋ khớp mọi cặp W ≤ 5 (bao gồm mọi hình của paper). Với lịch của project, nó **khác** ở (W,N) = (6,2): mô phỏng v=2, công thức 3; (8,2): 3 vs 4; (8,3): 2 vs 3. Các cặp này nằm ngoài thí nghiệm của paper, và phép suy diễn Eq.(11)–(16) có dùng xấp xỉ `x ~ 1/N`. Không kết luận paper sai: đây là quan sát trên lịch tổng quát hóa từ Fig.2.
+- Số version trọng số cần giữ (trace): PipeDream 1F1B, W=2: [2, 2] khi có vertical sync, [2, 1] khi không (đúng W−s của PipeDream). TiMePReSt W=2, N=3: [1, 2]. Stage 2 vẫn cần tạm giữ version cũ vì vertical sync của forward (micro-batch 2A/2B vào stage 2 sau khi stage 2 đã update).

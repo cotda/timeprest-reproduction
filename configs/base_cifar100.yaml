@@ -1,0 +1,36 @@
+# Common settings for experiment 1: VGG-16 on CIFAR-100, W=2 (paper Cluster A, Fig.4), N=3 (paper §4.1).
+# Every value that is NOT stated in the paper is an implementation choice (see paper_notes.md,
+# section "Sai khác so với paper").
+seed: 0
+data:
+  dataset: cifar100
+  root: /content/data            # Colab local disk (fast); override for local runs
+  augment: true                  # choice: random crop 32 pad 4 + horizontal flip
+  num_workers: 2
+model:
+  name: vgg16_bn_cifar           # choice: VGG-16 with BN, 32x32 input, Linear(512,100) head
+  num_classes: 100
+  width: 1.0
+pipeline:
+  num_stages: 2                  # paper Cluster A: 2 workers
+  num_microbatches: 3            # paper §4.1: N=3 (ignored by 1F1B systems)
+  partition: auto                # choice: balanced MACs -> blocks [0, 8, 19]
+  max_inflight: pipedream        # stage s keeps <= W-s mini-batches in flight (reproduces Fig.2)
+training:
+  epochs: 160                    # choice: ~x-axis of Fig.4b
+  batch_size: 192                # choice (paper gives no number): mini-batch M = 3 x 64
+  optimizer: sgd                 # choice
+  lr: 0.1
+  momentum: 0.9
+  nesterov: false
+  weight_decay: 5.0e-4
+  lr_schedule: cosine            # per update step
+  warmup_epochs: 0
+  drop_last: true
+runtime:
+  device: cuda
+  deterministic: false
+  profile_ops: true
+  eval_batch_size: 500
+  comm_bandwidth_gbps: 10.0      # only used for the estimated 2-GPU time
+  comm_latency_ms: 0.05
