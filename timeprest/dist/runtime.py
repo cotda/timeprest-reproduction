@@ -72,21 +72,26 @@ class Channels:
         """NCCL creates a p2p communicator lazily at the first op of a group, and creation blocks
         until both ranks join. Without this, rank s would first touch the backward group (posting a
         gradient receive) while rank s+1 first touches the forward group -> deadlock. Create every
-        communicator here, in the same order on all ranks."""
+        communicator here, in the same order on all ranks.
+        NCCL also connects each direction (a -> b) of a communicator lazily at its first send/recv,
+        and that handshake blocks the host until the peer joins it. The backward groups carry
+        s+1 -> s, so warming only s -> s+1 left rank s blocked inside its first gradient irecv while
+        rank s+1 waited for an activation that rank s never sent. Warm up both directions."""
         nccl = dist.get_backend() == "nccl"
         dev = torch.device("cuda", torch.cuda.current_device()) if nccl else torch.device("cpu")
         t = torch.zeros(1, device=dev)
         for groups in (self.fwd, self.bwd):
             for s, g in enumerate(groups):
-                if self.rank == s:
-                    dist.send(t, s + 1, group=g)
-                elif self.rank == s + 1:
-                    dist.recv(t, s, group=g)
-                # finish this transfer completely before any rank creates the next communicator:
-                # creating an NCCL communicator while another NCCL op is still in flight can deadlock
-                if nccl:
-                    torch.cuda.synchronize(dev)
-                dist.barrier()
+                for src, dst in ((s, s + 1), (s + 1, s)):
+                    if self.rank == src:
+                        dist.send(t, dst, group=g)
+                    elif self.rank == dst:
+                        dist.recv(t, src, group=g)
+                    # finish this transfer completely before any rank starts the next handshake:
+                    # setting up an NCCL connection while another NCCL op is in flight can deadlock
+                    if nccl:
+                        torch.cuda.synchronize(dev)
+                    dist.barrier()
 
     def _h(self, work):
         return Handle(work, self.threaded)
