@@ -2,7 +2,7 @@
 # Same training recipe as phase 1 (base_cifar100.yaml); only data/output paths and runtime differ.
 base: base_cifar100.yaml
 data:
-  root: /kaggle/input/**          # searched recursively for cifar-100-python/ (your Kaggle Dataset)
+  root: /kaggle/input/datasets/fedesoriano/cifar100   # Kaggle dataset; files train/test/meta may sit directly here
   download: false
   num_workers: 2
 pipeline:

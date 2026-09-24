@@ -85,16 +85,58 @@ def fixed_batch_loader(x: torch.Tensor, y: torch.Tensor, repeats: int) -> DataLo
     return DataLoader(RepeatBatch(x, y, repeats), batch_size=None, shuffle=False)
 
 
-def resolve_root(root: str, base_folder: str) -> str:
-    """`root` may contain a glob (e.g. /kaggle/input/**): return the first directory that
-    contains `base_folder` (cifar-100-python)."""
-    if "*" not in root:
+def resolve_root(root: str, base_folder: str, cache: str | None = None) -> str:
+    """Return a directory that contains `base_folder` (e.g. cifar-100-python/).
+
+    `root` may contain a glob (e.g. /kaggle/input/**): the tree is searched (following symlinks)
+    for (1) a folder named `base_folder`, (2) any folder holding the CIFAR python files
+    (train, test, meta / batches.meta) -- Kaggle drops the uploaded folder's own name -- or
+    (3) the original archive `<base_folder>.tar.gz`. Cases 2-3 are exposed under `cache`
+    (symlink / extraction) so torchvision finds `<cache>/<base_folder>`."""
+    if os.path.isdir(os.path.join(root, base_folder)):
         return root
-    import glob
-    hits = sorted(glob.glob(os.path.join(root, base_folder), recursive=True))
-    if not hits:
-        raise FileNotFoundError(f"no {base_folder} under {root}")
-    return os.path.dirname(hits[0])
+    if "*" not in root and not os.path.isdir(root):
+        return root   # e.g. download target that does not exist yet
+    import tarfile
+    top = root.split("*")[0].rstrip("/\\") or "/"
+    files = {"cifar-100-python": {"train", "test", "meta"},
+             "cifar-10-batches-py": {"data_batch_1", "test_batch", "batches.meta"}}.get(base_folder, set())
+    cache = cache or os.path.join(os.environ.get("TMPDIR", "/tmp"), "timeprest_data")
+    named = plain = archive = None
+    for d, subdirs, fnames in os.walk(top, followlinks=True):
+        subdirs.sort()
+        if os.path.basename(d) == base_folder and named is None:
+            named = d
+        if files and files <= set(fnames) and plain is None:
+            plain = d
+        if base_folder + ".tar.gz" in fnames and archive is None:
+            archive = os.path.join(d, base_folder + ".tar.gz")
+    if named:
+        return os.path.dirname(named)
+    target = os.path.join(cache, base_folder)
+    os.makedirs(cache, exist_ok=True)
+    if plain:
+        if not os.path.exists(target):
+            try:
+                os.symlink(plain, target, target_is_directory=True)
+            except FileExistsError:   # another rank was faster
+                pass
+            except OSError:           # no symlink permission (e.g. Windows): copy the files
+                import shutil
+                shutil.copytree(plain, target, dirs_exist_ok=True)
+        return cache
+    if archive:
+        if not os.path.exists(target):
+            tmp = os.path.join(cache, f".extract_{os.getpid()}")
+            with tarfile.open(archive) as tf:
+                tf.extractall(tmp)
+            try:
+                os.rename(os.path.join(tmp, base_folder), target)
+            except OSError:           # another rank finished first
+                pass
+        return cache
+    raise FileNotFoundError(f"no {base_folder}/ (nor its files train/test/meta, nor {base_folder}.tar.gz) "
+                            f"under {top}; check that the Kaggle Dataset is attached (Add Input)")
 
 
 def dataset_targets(ds) -> torch.Tensor:
