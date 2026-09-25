@@ -56,3 +56,12 @@ def test_vgg_global_pool_head_on_64px():
     n64 = sum(p.numel() for p in build_blocks(cfg)[-1].parameters())
     n32 = sum(p.numel() for p in build_blocks(dict(cfg, global_pool=False))[-1].parameters())
     assert n64 == n32                                 # same head size as the CIFAR model
+
+
+def test_channel_stats_match_full_computation():
+    from timeprest.data import _channel_stats
+    x = np.random.default_rng(1).integers(0, 256, (37, 8, 8, 3), dtype=np.uint8)
+    mean, std = _channel_stats(x, chunk=5)
+    f = x.reshape(-1, 3).astype(np.float64) / 255.0
+    np.testing.assert_allclose(mean, f.mean(0), rtol=1e-12)
+    np.testing.assert_allclose(std, f.std(0), rtol=1e-9)

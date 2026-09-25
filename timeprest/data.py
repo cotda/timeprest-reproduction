@@ -122,6 +122,22 @@ def _load_tinyimagenet_arrays(folder: str):
     return load(tr_paths), np.asarray(tr_y, dtype=np.int64), load(va_paths), np.asarray(va_y, dtype=np.int64)
 
 
+def _channel_stats(x, chunk: int = 5000) -> tuple[list[float], list[float]]:
+    """Per-channel mean/std of uint8 images (N, H, W, 3) scaled to [0, 1], accumulated in chunks
+    (a float64 copy of all 100k Tiny-ImageNet images would need ~9 GiB)."""
+    import numpy as np
+    s = np.zeros(3)
+    s2 = np.zeros(3)
+    n = 0
+    for i in range(0, len(x), chunk):
+        c = x[i:i + chunk].reshape(-1, 3).astype(np.float64) / 255.0
+        s += c.sum(0)
+        s2 += (c * c).sum(0)
+        n += c.shape[0]
+    mean = s / n
+    return mean.tolist(), np.sqrt(np.maximum(s2 / n - mean * mean, 0.0)).tolist()
+
+
 def tinyimagenet(data_cfg: dict):
     """Tiny-ImageNet-200 decoded once into uint8 arrays cached as .npy (data.cache_dir), then held
     in memory. Normalisation statistics are computed on the training images."""
@@ -152,10 +168,9 @@ def tinyimagenet(data_cfg: dict):
                 time.sleep(2)
     if not ready():
         arrays = dict(zip(names, _load_tinyimagenet_arrays(folder)))
-        x = arrays["train_x"].reshape(-1, 3).astype(np.float64) / 255.0
-        stats = {"mean": x.mean(0).tolist(), "std": x.std(0).tolist(), "source": folder,
+        mean, std = _channel_stats(arrays["train_x"])
+        stats = {"mean": mean, "std": std, "source": folder,
                  "n_train": len(arrays["train_y"]), "n_val": len(arrays["val_y"])}
-        del x
         for n, a in arrays.items():       # write-then-rename; stats.json last marks completion
             tmp = f"{paths[n]}.{os.getpid()}.tmp.npy"
             np.save(tmp, a)
