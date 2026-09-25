@@ -1,0 +1,5 @@
+# Phase-3 checks (D1-D4) also covering the ablation variants of paper §4.10.
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.checks --config configs/kaggle_quick_gd3.yaml
+base: kaggle_quick.yaml
+checks:
+  systems: [pipedream, timeprest, variant1, variant2]

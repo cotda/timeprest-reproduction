@@ -1,0 +1,11 @@
+# Phase 3, E2 (paper §4.9 "N = 2 with a larger mini-batch"): N = 2, M = 384 (x2; the paper gives no
+# factor, our choice), lr unchanged (0.02). Half the updates per epoch; see paper_notes §23.
+base: kaggle_base.yaml
+name: kaggle_cifar100_vgg16_timeprest_n2_m384
+system: timeprest
+pipeline:
+  num_microbatches: 2
+training:
+  batch_size: 384
+output:
+  require_checks: true

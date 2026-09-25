@@ -1,0 +1,6 @@
+# Phase 3, E1 (paper §4.10 Variant 1): nF1B schedule but horizontal weight stashing kept.
+base: kaggle_base.yaml
+name: kaggle_cifar100_vgg16_variant1
+system: variant1
+output:
+  require_checks: true

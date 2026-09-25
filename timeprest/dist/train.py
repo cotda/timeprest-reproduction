@@ -30,8 +30,9 @@ def init_dist(cfg: dict):
         faulthandler.register(signal.SIGUSR1, all_threads=True)
     if os.environ.get("TIMEPREST_STACK_DUMP_S"):   # one-shot stack dump of every thread after N seconds
         faulthandler.dump_traceback_later(float(os.environ["TIMEPREST_STACK_DUMP_S"]), exit=False)
-    for k, v in (cfg.get("dist", {}).get("env") or {}).items():   # e.g. NCCL_P2P_DISABLE: "1"
-        os.environ.setdefault(k, str(v))
+    for k, v in (cfg.get("dist", {}).get("env") or {}).items():   # e.g. NCCL_P2P_DISABLE: "1"; null = unset
+        if v is not None:
+            os.environ.setdefault(k, str(v))
     if not dist.is_initialized():
         want_cuda = cfg["runtime"]["device"] == "cuda" and torch.cuda.is_available()
         backend = cfg.get("dist", {}).get("backend") or ("nccl" if want_cuda else "gloo")
@@ -61,6 +62,13 @@ def init_dist(cfg: dict):
     return rank, world, device
 
 
+def channels_from_cfg(cfg: dict, rank: int, world: int) -> Channels:
+    d = cfg.get("dist", {})
+    return Channels(rank, world, d.get("p2p_backend", "gloo"),
+                    emulate_bandwidth_gbps=d.get("emulate_bandwidth_gbps"),
+                    emulate_latency_ms=d.get("emulate_latency_ms") or 0.0)
+
+
 def boundary_features(stages, sample) -> list[tuple]:
     """Per-sample feature shape leaving every stage (computed on CPU with one sample)."""
     feats, x = [], sample
@@ -78,7 +86,7 @@ class DistTrainer:
     def __init__(self, cfg: dict, out_dir: str, datasets=None, verbose: bool = True):
         self.cfg, self.out_dir, self.verbose = cfg, out_dir, verbose
         self.rank, self.world, self.device = init_dist(cfg)
-        self.channels = Channels(self.rank, self.world, cfg["dist"].get("p2p_backend", "gloo"))
+        self.channels = channels_from_cfg(cfg, self.rank, self.world)
         torch.manual_seed(cfg["seed"])
         if datasets is None:
             datasets = build_datasets(cfg["data"], cfg["model"]["num_classes"], cfg["seed"])
@@ -240,7 +248,7 @@ class DistTrainer:
                 eta = (epochs - epoch - 1) * row["epoch_time_s"] / 3600
                 self.log(f"ep {row['epoch']:>3}/{epochs} | train {row['train_loss']:.4f} / {row['train_acc1']:.2f}% | "
                          f"test {row['test_loss']:.4f} / top1 {row['test_acc1']:.2f}% top5 {row['test_acc5']:.2f}% | "
-                         f"lr {row['lr']:.4f} | epoch {row['epoch_time_s']:.1f}s busy[{row['busy_frac']}] "
+                         f"lr {row['lr']:.2e} | epoch {row['epoch_time_s']:.1f}s busy[{row['busy_frac']}] "
                          f"peak[{row['peak_mem_mb']}]MB sent[{row['mb_sent']}]MB recompute[{row['recompute_micro']}] "
                          f"bwd_overlap={row['bwd_overlap_minibatches']} | ETA {eta:.2f}h")
                 if not math.isfinite(row["train_loss"]):

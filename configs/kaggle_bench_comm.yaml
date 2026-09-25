@@ -1,0 +1,15 @@
+# Phase 3, E3: epoch time vs emulated stage-to-stage bandwidth (paper_notes §23).
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.bench_comm --config configs/kaggle_bench_comm.yaml
+# Each (bandwidth, system) trains `epochs` epochs on the full training set; the last epoch is timed.
+base: kaggle_base.yaml
+name: bench_comm
+data:
+  test_subset: 500                 # evaluation is not timed; keep it short
+output:
+  dir: /kaggle/working/bench_comm
+  require_checks: false
+bench:
+  systems: [timeprest, pipedream]
+  bandwidths_gbps: [null, 10, 5, 2, 1, 0.5]   # null = no emulation (same host)
+  latency_ms: 0.1                  # per message, typical LAN
+  epochs: 2

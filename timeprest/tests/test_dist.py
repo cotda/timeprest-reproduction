@@ -102,3 +102,44 @@ def test_handle_staged_receive_copies_once_after_completion():
     dst.zero_()
     h.wait()                                   # second wait must not copy again
     assert torch.equal(dst, torch.zeros(3))
+
+
+def test_emulated_link_timing_and_order():
+    """Phase-3 network emulation: messages leave in order, one at a time, each after
+    bytes/bandwidth of link time plus the latency."""
+    import time
+    from timeprest.dist.runtime import EmulatedLink
+
+    sent = []
+
+    class Done:
+        def wait(self):
+            pass
+
+    def real(t, peer, g):
+        sent.append((time.perf_counter(), int(t[0])))
+        return Done()
+
+    bw_gbps, lat_ms = 0.008, 20.0            # 1 MB/s, 20 ms
+    link = EmulatedLink(bw_gbps, lat_ms, real)
+    t0 = time.perf_counter()
+    ws = [link.send(torch.full((25_000,), float(k)), 1, None) for k in range(3)]   # 100 kB each -> 0.1 s
+    for w in ws:
+        w.wait()
+    assert [k for _, k in sent] == [0, 1, 2]
+    arrivals = [t - t0 for t, _ in sent]
+    for k, a in enumerate(arrivals):          # k-th message: (k+1) transfers + latency
+        assert a >= 0.1 * (k + 1) + 0.02 - 5e-3
+    assert arrivals[-1] < 0.6                 # latency overlaps the next transfer (pipelined link)
+
+
+def test_emulated_network_does_not_change_training(tmp_path):
+    """Same static-order run with and without the emulated link -> identical parameters."""
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    a = run_dist(tmp_path / "a", system="timeprest", model="mlp", order="static", backward_mode="auto", K=4, N=3)
+    b = run_dist(tmp_path / "b", system="timeprest", model="mlp", order="static", backward_mode="auto", K=4, N=3,
+                 emulate_bw=0.05, emulate_latency_ms=1.0)
+    for s in range(2):
+        for n in a[s]["final"]:
+            torch.testing.assert_close(a[s]["final"][n], b[s]["final"][n], rtol=0, atol=0)

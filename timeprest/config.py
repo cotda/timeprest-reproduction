@@ -64,6 +64,8 @@ DEFAULTS: dict[str, Any] = {
     },
     "dist": {"backend": None,      # None -> nccl on GPU, gloo on CPU
              "p2p_backend": "gloo",  # stage-to-stage transfers: gloo (CPU-staged, as PipeDream) | null (= backend)
+             "emulate_bandwidth_gbps": None,  # phase 3 (E3): emulated slower link per direction; null = off
+             "emulate_latency_ms": 0.0,       # per-message latency of the emulated link
              "timeout_s": 300,     # collective / p2p timeout
              "env": {}},           # environment set before NCCL init, e.g. {NCCL_P2P_DISABLE: "1"}
     "training": {

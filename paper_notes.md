@@ -1129,3 +1129,18 @@ Nguồn: `results/phase2/run2_lr0.02_timeprest-graph/` (code `bdf5b8b3ebbc`, D1�
 - **Bộ nhớ**: với `graph`, GPU0 chỉ giảm 6 % (853 so với 905 MB), GPU1 tăng 25 % (vertical sync giữ 2 version). Mức giảm 41 % trước đây đến từ `recompute` (chỉ giữ input của stage).
 - **lr**: sweep 8 epoch chọn 0.02, nhưng với 160 epoch thì lr 0.05 cho PipeDream cao hơn 1.2 điểm (73.46 so với 72.25). Sweep ngắn thiên về lr nhỏ. Chưa biết `graph` ở lr 0.05 với warmup 5 epoch cho kết quả thế nào.
 - **GĐ2 đạt tiêu chí** (ổn định, không deadlock, so sánh được thời gian/epoch và peak memory). Mức tuyên bố: tái hiện được chất lượng ngang nhau; **không tái hiện được** ưu thế thời gian và bộ nhớ trên 2 GPU cùng một máy.
+
+## 23. GĐ3 — thiết kế thí nghiệm (Kaggle 2×T4, 2026-09-25)
+
+Chung: VGG-16-BN / CIFAR-100, W=2, 160 epoch, lr 0.02, warmup 5, cosine, `backward_rule: graph`, seed 0, 1 seed/cấu hình. Baseline = `results/phase2/run2_lr0.02_timeprest-graph` (TiMePReSt N=3, PipeDream). Notebook `notebooks/phase3_kaggle.ipynb`; check `configs/kaggle_quick_gd3.yaml` (D1–D4 cho cả variant1/2); tổng hợp `python -m timeprest.report` → `results/phase3/report.md`.
+
+| Thí nghiệm | Config | Nội dung | Căn cứ paper | Lựa chọn của mình `[I]` |
+|---|---|---|---|---|
+| E1 Variant 1 | `kaggle_variant1.yaml` | nF1B, **giữ** horizontal stashing, vertical sync | §4.10, Fig.13–14 | Paper chạy VGG-16/Tiny-ImageNet, W=4; mình CIFAR-100, W=2 |
+| E1 Variant 2 | `kaggle_variant2.yaml` | **1F1B**, bỏ horizontal stashing, vertical sync | §4.10 | như trên |
+| E2 N=2 | `kaggle_timeprest_n2.yaml` | N=2, M=192 (micro 96) | §4.9, Fig.11–12 | W=2 nên v vẫn = 1 (paper W=4 → v=2): chỉ đo tác động của N/micro-batch, không đo v |
+| E2 N=2, M lớn | `kaggle_timeprest_n2_m384.yaml` | N=2, M=384, lr giữ 0.02 | §4.9 ("larger mini-batch", không cho hệ số) | Hệ số ×2 và không đổi lr là lựa chọn của mình; số update/epoch giảm một nửa |
+| E3 Mạng chậm | `kaggle_bench_comm.yaml`, `timeprest.dist.bench_comm` | Thời gian/epoch của TiMePReSt và PipeDream khi băng thông giữa stage là ∞ (cùng máy), 10, 5, 2, 1, 0.5 Gbit/s, latency 0.1 ms/message | §3.8 (mô hình truyền), §4.1 (cụm nhiều máy, mỗi máy 1 GPU) | Mạng của paper không rõ (§13). Giả lập bằng `EmulatedLink`: mỗi chiều một link, các message truyền lần lượt, `bytes/bandwidth` rồi mới tới đích sau latency. Toán học train không đổi (có test). 2 epoch, đo epoch cuối |
+| E4 lr 0.05 | (để sau) | `graph` và PipeDream ở lr 0.05 | — | Kiểm tra độ nhạy theo lr (§22.10) |
+
+Lượng dữ liệu truyền mỗi epoch và mỗi chiều ≈ 3120 MB ở cả hai hệ (§22.2), nên ở 1 Gbit/s riêng việc truyền đã mất ~26 s/epoch, lớn hơn thời gian tính (~15 s). Câu hỏi của E3 là: ở mức băng thông trung gian, việc chia micro-batch của TiMePReSt (Fig.3) có che thời gian truyền tốt hơn 1F1B không.

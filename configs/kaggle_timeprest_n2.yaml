@@ -1,0 +1,9 @@
+# Phase 3, E2 (paper §4.9): N = 2 micro-batches, same mini-batch M = 192 (micro-batch 96).
+# With W = 2 this keeps v = 1 (paper: W = 4, N = 2 -> v = 2); see paper_notes §23.
+base: kaggle_base.yaml
+name: kaggle_cifar100_vgg16_timeprest_n2
+system: timeprest
+pipeline:
+  num_microbatches: 2
+output:
+  require_checks: true

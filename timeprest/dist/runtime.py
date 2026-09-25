@@ -21,6 +21,7 @@ Backward math is the phase-1 rule (`pipeline.backward_rule`, see engine.py):
 """
 from __future__ import annotations
 
+import queue
 import threading
 import time
 from collections import deque
@@ -66,6 +67,57 @@ class Handle:
             self.dst = None
 
 
+class EmulatedLink:
+    """A slower network in front of one direction of a channel (phase 3, paper_notes §23): each
+    message is transmitted after the previous one (a link carries one message at a time), takes
+    `bytes / bandwidth`, and arrives `latency` later; only then is it handed to the real send.
+    Transfers are serialised per link, and the fwd and bwd links are independent (full duplex).
+    Contents and order are unchanged, so training is identical; only timing changes."""
+
+    def __init__(self, bandwidth_gbps: float | None, latency_ms: float, send_fn):
+        self.bytes_per_s = None if not bandwidth_gbps else bandwidth_gbps * 1e9 / 8
+        self.latency_s = latency_ms / 1000.0
+        self.send_fn = send_fn           # (tensor, peer, group) -> work with wait()
+        self.q: queue.Queue = queue.Queue()
+        self.free_at = 0.0
+        threading.Thread(target=self._loop, daemon=True).start()
+
+    class _Work:
+        def __init__(self):
+            self.event = threading.Event()
+            self.error = None
+
+        def wait(self):
+            self.event.wait()
+            if self.error is not None:
+                raise self.error
+
+        def is_completed(self):
+            return self.event.is_set()
+
+    def send(self, t, peer, group):
+        w = self._Work()
+        self.q.put((t, peer, group, w, time.perf_counter()))
+        return w
+
+    def transfer_s(self, nbytes: int) -> float:
+        return nbytes / self.bytes_per_s if self.bytes_per_s else 0.0
+
+    def _loop(self):
+        while True:
+            t, peer, group, w, t_post = self.q.get()
+            try:
+                start = max(t_post, self.free_at)
+                self.free_at = start + self.transfer_s(t.numel() * t.element_size())
+                delay = self.free_at + self.latency_s - time.perf_counter()
+                if delay > 0:
+                    time.sleep(delay)
+                self.send_fn(t, peer, group).wait()
+            except Exception as e:  # surfaced to whoever waits on the send
+                w.error = e
+            w.event.set()
+
+
 class Channels:
     """Point-to-point channels between neighbouring stages. Forward activations and backward
     gradients use separate process groups, so their message orders never interfere.
@@ -75,9 +127,12 @@ class Channels:
     GPU waiting for the peer, so no GPU-side deadlock is possible. With NCCL a posted receive is a
     GPU kernel that only ends when the peer sends; any context-wide sync in the meantime (e.g. a
     kernel's first launch loading its module) then deadlocks both stages (seen on Kaggle T4 x2).
-    backend None: same backend as the default process group."""
+    backend None: same backend as the default process group.
+    emulate_bandwidth_gbps / emulate_latency_ms: put an `EmulatedLink` in front of every send
+    (gloo only), to reproduce slower inter-machine networks (phase 3, E3)."""
 
-    def __init__(self, rank: int, world: int, backend: str | None = "gloo"):
+    def __init__(self, rank: int, world: int, backend: str | None = "gloo",
+                 emulate_bandwidth_gbps: float | None = None, emulate_latency_ms: float = 0.0):
         self.rank, self.world = rank, world
         self.backend = backend or dist.get_backend()
         kw = {} if backend is None else {"backend": backend}
@@ -86,6 +141,13 @@ class Channels:
         self.threaded = self.backend != "nccl"
         self.stage = self.backend != "nccl"      # gloo p2p needs CPU tensors
         self._warm_up()
+        self.links = {}
+        if emulate_bandwidth_gbps or emulate_latency_ms:
+            if self.backend == "nccl":
+                raise ValueError("network emulation needs the gloo p2p backend")
+            real = lambda t, peer, g: dist.isend(t, peer, group=g)
+            for g in self.fwd + self.bwd:   # one link per direction actually used by this rank
+                self.links[id(g)] = EmulatedLink(emulate_bandwidth_gbps, emulate_latency_ms, real)
 
     def _warm_up(self):
         """Create every communicator and connect both directions of each group up front, in the same
@@ -110,7 +172,9 @@ class Channels:
     def _isend(self, t, peer, g):
         if self.stage and t.is_cuda:
             t = t.cpu()
-        return Handle(dist.isend(t, peer, group=g), self.threaded, staged=t)
+        link = self.links.get(id(g))
+        work = link.send(t, peer, g) if link is not None else dist.isend(t, peer, group=g)
+        return Handle(work, self.threaded, staged=t)
 
     def _irecv(self, t, peer, g):
         if self.stage and t.is_cuda:

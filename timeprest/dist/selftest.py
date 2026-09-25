@@ -51,6 +51,8 @@ def main():
     ap.add_argument("--order", default="static")
     ap.add_argument("--backward-mode", default="recompute")
     ap.add_argument("--backward-rule", default="graph")
+    ap.add_argument("--emulate-bw", type=float, default=None)
+    ap.add_argument("--emulate-latency-ms", type=float, default=0.0)
     ap.add_argument("--model", default="mlp")
     ap.add_argument("--K", type=int, default=6)
     ap.add_argument("--N", type=int, default=3)
@@ -69,7 +71,7 @@ def main():
             x = m.eval()(x)
             m.train()
             feats.append(tuple(x.shape[1:]))
-    ch = Channels(rank, W)
+    ch = Channels(rank, W, emulate_bandwidth_gbps=args.emulate_bw, emulate_latency_ms=args.emulate_latency_ms)
     tc = dict(TRAIN, epochs=args.epochs)
     rt = StageRuntime(rank, W, stages[rank], pc, tc, device, args.K, feats[rank - 1] if rank else tuple(batches[0][0].shape[1:]),
                       feats[rank] if rank < W - 1 else None, ch, TRAIN["batch_size"], dtype=torch.float64)

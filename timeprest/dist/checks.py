@@ -27,8 +27,8 @@ from ..config import load_config, resolve
 from ..data import build_datasets
 from ..engine import PipelineEngine
 from ..models import build_stages
-from .runtime import Channels, StageRuntime
-from .train import DistTrainer, boundary_features, init_dist
+from .runtime import StageRuntime
+from .train import DistTrainer, boundary_features, channels_from_cfg, init_dist
 
 PASS, FAIL = "PASS", "FAIL"
 
@@ -65,7 +65,7 @@ def make_runtime(cfg, rank, W, device, train, K):
     sample = train[0][0].unsqueeze(0)
     stages, _ = build_stages(cfg["model"], W, cfg["pipeline"]["partition"], sample)
     feats = boundary_features(stages, sample)
-    ch = Channels(rank, W, cfg["dist"].get("p2p_backend", "gloo"))
+    ch = channels_from_cfg(cfg, rank, W)
     rt = StageRuntime(rank, W, copy.deepcopy(stages[rank]), cfg["pipeline"], cfg["training"], device, K,
                       feats[rank - 1] if rank else tuple(sample.shape[1:]), feats[rank] if rank < W - 1 else None, ch,
                       cfg["training"]["batch_size"])

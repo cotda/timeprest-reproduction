@@ -1,0 +1,6 @@
+# Phase 3, E1 (paper §4.10 Variant 2): 1F1B schedule, no horizontal weight stashing (vertical sync kept).
+base: kaggle_base.yaml
+name: kaggle_cifar100_vgg16_variant2
+system: variant2
+output:
+  require_checks: true
