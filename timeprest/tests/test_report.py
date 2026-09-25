@@ -23,4 +23,4 @@ def test_summarize_and_render(tmp_path):
                       {"system": "timeprest", "bandwidth_gbps": 1, "epoch_time_s": 20.0},
                       {"system": "pipedream", "bandwidth_gbps": 1, "epoch_time_s": 25.0}]}
     text = render([r], [("b", bench)])
-    assert "| 2 / 2 / 3 / - |" in text and "| 1 | 20.00 | 25.00 | 0.800 |" in text and "1.250" in text
+    assert "| run1_x | kaggle_a |" in text and "| 2 / 2 / 3 / - |" in text and "| 1 | 20.00 | 25.00 | 0.800 |" in text and "1.250" in text

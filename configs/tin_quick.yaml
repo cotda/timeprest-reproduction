@@ -1,0 +1,23 @@
+# D1-D4 on Tiny-ImageNet for every system of the Tiny-ImageNet runs (one Kaggle machine is enough).
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.checks --config configs/tin_quick.yaml
+base: tin_base.yaml
+name: tin_quick
+data:
+  train_subset: 10000
+  test_subset: 1000
+training:
+  epochs: 3
+  warmup_epochs: 1
+output:
+  dir: /kaggle/working/runs/tin_quick
+  require_checks: false
+checks:
+  systems: [pipedream, pipedream_vsync, timeprest, variant1, variant2]
+  num_microbatches: 3
+  static_batch: 48
+  static_steps: 6
+  dynamic_steps: 20
+  resume_subset: 960
+  short_min_acc1: 1.5              # 3x chance (200 classes) after 3 short epochs
+  full_train_samples: 100000
+  full_epochs: 80

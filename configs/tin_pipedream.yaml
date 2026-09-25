@@ -1,0 +1,6 @@
+# VGG-16 / Tiny-ImageNet-200, 80 epochs, paper_notes §24. PipeDream as in the official code (no vertical sync).
+base: tin_base.yaml
+name: tin_vgg16_pipedream
+system: pipedream
+output:
+  require_checks: true

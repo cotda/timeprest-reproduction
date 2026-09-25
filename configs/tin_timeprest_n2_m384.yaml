@@ -1,0 +1,10 @@
+# NOT RUN (dropped to fit ~10 h per Kaggle account, paper_notes §24). VGG-16 / Tiny-ImageNet-200, 80 epochs. Paper §4.9: N = 2 with a larger mini-batch, M = 384 (x2, our choice), same lr.
+base: tin_base.yaml
+name: tin_vgg16_timeprest_n2_m384
+system: timeprest
+pipeline:
+  num_microbatches: 2
+training:
+  batch_size: 384
+output:
+  require_checks: true

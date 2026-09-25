@@ -1,0 +1,6 @@
+# VGG-16 / Tiny-ImageNet-200, 80 epochs, paper_notes §24. PipeDream as described in the paper (p.2: horizontal + vertical stashing).
+base: tin_base.yaml
+name: tin_vgg16_pipedream_vsync
+system: pipedream_vsync
+output:
+  require_checks: true

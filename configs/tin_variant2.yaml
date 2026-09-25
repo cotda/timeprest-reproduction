@@ -1,0 +1,6 @@
+# VGG-16 / Tiny-ImageNet-200, 80 epochs, paper_notes §24. Paper §4.10 Variant 2: 1F1B, no horizontal stashing.
+base: tin_base.yaml
+name: tin_vgg16_variant2
+system: variant2
+output:
+  require_checks: true

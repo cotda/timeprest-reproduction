@@ -154,7 +154,7 @@ def d3_resume(ctx):
     n = ctx["cc"].get("resume_subset", 960)
     from torch.utils.data import Subset
     train, test = ctx["data"]
-    small = (Subset(train, range(n)), Subset(test, range(256)))
+    small = (Subset(train, range(min(n, len(train)))), Subset(test, range(min(256, len(test)))))
     metrics, ok = {}, True
     for system in ctx["systems"]:
         cfg = sys_cfg(ctx["cfg"], system, **{"training.epochs": 2, "pipeline.order": "static",

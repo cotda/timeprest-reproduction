@@ -1,0 +1,20 @@
+# Short LR sweep for Tiny-ImageNet (single GPU, phase-1 engine; paper gives no lr, each system
+# then uses its own best value, paper_notes §22.9). Reduced to fit ~10 h per Kaggle account: lr 0.05 was
+# worse than 0.02 on CIFAR (§22.8), pipedream_vsync takes the PipeDream value. ~30 min on one T4:
+#     python -m timeprest.sweep --config configs/tin_sweep.yaml
+base: tin_base.yaml
+name: tin_sweep
+data:
+  train_subset: 20000
+  test_subset: 2000
+training:
+  epochs: 6
+  warmup_epochs: 2
+output:
+  dir: /kaggle/working/tin_sweep
+  require_checks: false
+sweep:
+  lrs: [0.02, 0.01]
+  variants:
+    timeprest: {system: timeprest}
+    pipedream: {system: pipedream}

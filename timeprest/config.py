@@ -38,7 +38,7 @@ DEFAULTS: dict[str, Any] = {
     "seed": 0,
     "system": "timeprest",
     "data": {
-        "dataset": "cifar100",      # cifar100 | cifar10 | synthetic
+        "dataset": "cifar100",      # cifar100 | cifar10 | tinyimagenet | synthetic
         "root": "./data",
         "train_subset": None,       # int -> first-k of a fixed permutation
         "test_subset": None,
@@ -46,7 +46,7 @@ DEFAULTS: dict[str, Any] = {
         "num_workers": 2,
         "download": True,
     },
-    "model": {"name": "vgg16_bn_cifar", "num_classes": 100, "width": 1.0},
+    "model": {"name": "vgg16_bn_cifar", "num_classes": 100, "width": 1.0, "global_pool": False},
     "pipeline": {
         "num_stages": 2,
         "num_microbatches": 3,

@@ -1,0 +1,18 @@
+# Epoch time vs emulated bandwidth on Tiny-ImageNet, every system on the SAME machine (the long runs
+# are split over two Kaggle accounts, so their times are not compared). 20k-image subset keeps it
+# short; ratios between systems are what matters. Bandwidths reduced to same host + the 1-2 Gbit/s
+# range where CIFAR showed the effect (§23.1). ~15 min:
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.bench_comm --config configs/tin_bench_comm.yaml
+base: tin_base.yaml
+name: tin_bench_comm
+data:
+  train_subset: 20000
+  test_subset: 500
+output:
+  dir: /kaggle/working/tin_bench_comm
+  require_checks: false
+bench:
+  systems: [timeprest, pipedream, pipedream_vsync]
+  bandwidths_gbps: [null, 2, 1]
+  latency_ms: 0.1
+  epochs: 2

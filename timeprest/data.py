@@ -40,10 +40,138 @@ def build_datasets(data_cfg: dict, num_classes: int, seed: int, input_shape=(3, 
         train = cls(data_cfg["root"], train=True, download=data_cfg.get("download", True), transform=train_tf)
         test = cls(data_cfg["root"], train=False, download=data_cfg.get("download", True),
                    transform=T.Compose(norm))
+    elif name == "tinyimagenet":
+        train, test = tinyimagenet(data_cfg)
     else:
         raise ValueError(f"unknown dataset {name!r}")
     train = _subset(train, data_cfg.get("train_subset"), seed)
     test = _subset(test, data_cfg.get("test_subset"), seed + 1)
+    return train, test
+
+
+class ArrayImages(Dataset):
+    """uint8 images (N, 3, H, W) + labels held in memory; optional random crop (zero padding) and
+    horizontal flip, then normalisation. Same augmentation as the CIFAR pipeline."""
+
+    def __init__(self, x: torch.Tensor, y: torch.Tensor, mean, std, augment: bool, pad: int = 4):
+        self.x, self.targets = x, y.long()
+        self.mean = torch.tensor(mean).view(3, 1, 1)
+        self.std = torch.tensor(std).view(3, 1, 1)
+        self.augment, self.pad = augment, pad
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, i):
+        img = self.x[i].float().div_(255.0)
+        if self.augment:
+            h, w = img.shape[1:]
+            p = self.pad
+            img = torch.nn.functional.pad(img, (p, p, p, p))
+            top, left = torch.randint(0, 2 * p + 1, (2,)).tolist()
+            img = img[:, top:top + h, left:left + w]
+            if torch.rand(()) < 0.5:
+                img = img.flip(2)
+        return (img - self.mean) / self.std, int(self.targets[i])
+
+
+def _find_dir_with(root: str, marker: str) -> str:
+    """First directory under `root` (following symlinks) that contains the file `marker`."""
+    top = root.split("*")[0].rstrip("/\\") or "/"
+    if os.path.exists(os.path.join(top, marker)):
+        return top
+    for d, subdirs, files in os.walk(top, followlinks=True):
+        subdirs.sort()
+        if marker in files:
+            return d
+    raise FileNotFoundError(f"no {marker} under {top}; attach the Tiny-ImageNet-200 dataset (folder tiny-imagenet-200/)")
+
+
+def _load_tinyimagenet_arrays(folder: str):
+    """Decode the original Tiny-ImageNet-200 layout: train/<wnid>/images/*.JPEG and
+    val/images/*.JPEG labelled by val/val_annotations.txt (the test/ split has no labels, so the
+    labelled val split is used as the test set). Class index = position in sorted wnids.txt."""
+    import numpy as np
+    from PIL import Image
+    wnids = sorted(l.strip() for l in open(os.path.join(folder, "wnids.txt")) if l.strip())
+    index = {w: k for k, w in enumerate(wnids)}
+
+    def load(paths):
+        out = np.empty((len(paths), 64, 64, 3), dtype=np.uint8)
+        for k, path in enumerate(paths):
+            with Image.open(path) as im:
+                im = im.convert("RGB")
+                if im.size != (64, 64):
+                    raise ValueError(f"{path}: expected 64x64, got {im.size}")
+                out[k] = np.asarray(im)
+        return out
+
+    tr_paths, tr_y = [], []
+    for w in wnids:
+        d = os.path.join(folder, "train", w, "images")
+        for f in sorted(os.listdir(d)):
+            if f.lower().endswith((".jpeg", ".jpg", ".png")):
+                tr_paths.append(os.path.join(d, f))
+                tr_y.append(index[w])
+    va_paths, va_y = [], []
+    for line in open(os.path.join(folder, "val", "val_annotations.txt")):
+        parts = line.strip().split("\t")
+        if len(parts) >= 2:
+            va_paths.append(os.path.join(folder, "val", "images", parts[0]))
+            va_y.append(index[parts[1]])
+    return load(tr_paths), np.asarray(tr_y, dtype=np.int64), load(va_paths), np.asarray(va_y, dtype=np.int64)
+
+
+def tinyimagenet(data_cfg: dict):
+    """Tiny-ImageNet-200 decoded once into uint8 arrays cached as .npy (data.cache_dir), then held
+    in memory. Normalisation statistics are computed on the training images."""
+    import json
+
+    import numpy as np
+    folder = _find_dir_with(data_cfg["root"], "wnids.txt")
+    cache = data_cfg.get("cache_dir") or os.path.join(os.environ.get("TMPDIR", "/tmp"), "timeprest_tin")
+    os.makedirs(cache, exist_ok=True)
+    names = ["train_x", "train_y", "val_x", "val_y"]
+    paths = {n: os.path.join(cache, n + ".npy") for n in names}
+    stats_path = os.path.join(cache, "stats.json")
+    ready = lambda: all(os.path.exists(p) for p in list(paths.values()) + [stats_path])
+    if not ready():
+        # one process decodes (lock file), the others wait for the finished cache
+        lock = os.path.join(cache, ".building")
+        try:
+            os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+            owner = True
+        except FileExistsError:
+            owner = False
+        if not owner:
+            import time
+            t0 = time.time()
+            while not ready():
+                if time.time() - t0 > 3600:
+                    raise TimeoutError(f"waited 1 h for {cache}; delete {lock} if a previous run crashed")
+                time.sleep(2)
+    if not ready():
+        arrays = dict(zip(names, _load_tinyimagenet_arrays(folder)))
+        x = arrays["train_x"].reshape(-1, 3).astype(np.float64) / 255.0
+        stats = {"mean": x.mean(0).tolist(), "std": x.std(0).tolist(), "source": folder,
+                 "n_train": len(arrays["train_y"]), "n_val": len(arrays["val_y"])}
+        del x
+        for n, a in arrays.items():       # write-then-rename; stats.json last marks completion
+            tmp = f"{paths[n]}.{os.getpid()}.tmp.npy"
+            np.save(tmp, a)
+            os.replace(tmp, paths[n])
+        tmp = f"{stats_path}.{os.getpid()}.tmp"
+        with open(tmp, "w") as fh:
+            json.dump(stats, fh)
+        os.replace(tmp, stats_path)          # written last: marks the cache as complete
+        os.remove(lock)
+    with open(stats_path) as fh:
+        stats = json.load(fh)
+    arr = {n: np.load(paths[n]) for n in names}
+    to_chw = lambda a: torch.from_numpy(a).permute(0, 3, 1, 2).contiguous()
+    augment = data_cfg.get("augment", True)
+    train = ArrayImages(to_chw(arr["train_x"]), torch.from_numpy(arr["train_y"]), stats["mean"], stats["std"], augment)
+    test = ArrayImages(to_chw(arr["val_x"]), torch.from_numpy(arr["val_y"]), stats["mean"], stats["std"], False)
     return train, test
 
 

@@ -1188,3 +1188,20 @@ Nguồn: `results/phase3/run1_gd3/` (runs/ + bench_comm/), bảng đầy đủ `
 | Variant 2 chậm hơn theo thời gian | Ngược ở cùng máy (nhanh hơn 4 %). Chưa đo với mạng giả lập |
 | N=3 tốt hơn N=2; N=2 + batch lớn kém nhất | Cùng chiều; chỉ trường hợp batch lớn vượt mức nhiễu |
 | v = 1 khi W ≤ N+1 | Đúng với lịch lý tưởng (GĐ1); trên phần cứng thật B(i) và B(i−1) chồng nhau ở 81/260 (TiMePReSt) mini-batch |
+
+## 24. VGG-16 / Tiny-ImageNet-200 — thiết kế (Kaggle 2×T4, 2026-09-25)
+
+Mục tiêu: lặp lại workload paper dùng nhiều nhất (Fig.S4 Cluster A, Fig.8 B, Fig.9 C, ablation Fig.13), với W=2. Phân chia: tài khoản A (sweep, `timeprest`, `variant1`, bench) và B (`pipedream`, `pipedream_vsync`, `variant2`), mỗi tài khoản ~8.5 h. Notebook `notebooks/tinyimagenet_kaggle.ipynb` (chia 2 tài khoản Kaggle), config `configs/tin_*.yaml`, kết quả `results/tinyimagenet/runN_.../`.
+
+| Hạng mục | Paper | Lựa chọn `[I]` |
+|---|---|---|
+| Dữ liệu | Tiny-ImageNet-200, không nêu split/tiền xử lý | Train 100k (500 × 200 lớp). **Đánh giá trên `val/` 10k** (nhãn từ `val_annotations.txt`; `test/` không có nhãn). Giải mã 1 lần vào uint8 `.npy` (`data.cache_dir`). Augmentation như CIFAR: random crop 64 pad 4 + lật ngang; mean/std tính trên train |
+| Model | VGG-16, không nêu biến thể | VGG-16-BN như CIFAR; ảnh 64×64 cho feature 2×2×512, **global average pooling** rồi Linear(512, 200) (số tham số head bằng bản CIFAR). Partition `auto` vẫn `[0, 8, 19]`; activation ở biên 256×16×16 = 256 KB/ảnh (CIFAR 64 KB) |
+| Số epoch | Fig.8b ~140 | **80** (người dùng chọn), warmup 5, cosine. Accuracy tuyệt đối có thể thấp hơn paper; mọi hệ cùng số epoch |
+| lr | Không nêu | Sweep `configs/tin_sweep.yaml` (20k ảnh, 6 epoch, lr 0.02/0.01 × TiMePReSt, PipeDream; 0.05 bị bỏ vì kém hơn 0.02 trên CIFAR §22.8); mỗi hệ dùng lr tốt nhất của nó (§22.9). `pipedream_vsync` dùng lr của PipeDream, các variant dùng lr của TiMePReSt |
+| PipeDream | p.2: horizontal + vertical stashing; code chính thức: không vertical sync | **Chạy cả hai** (người dùng chọn): `pipedream` (code) và `pipedream_vsync` (paper). Với VGG-16, stage 2 chứa 92 % tham số nên vsync làm gần như cả model dùng gradient trễ 1 bước; sweep CIFAR §19.4: kém 4.6–17 điểm |
+| Ablation | §4.9 N=2 (W=4 → v=2), N=2 + batch lớn; §4.10 Variant 1/2 (Cluster C) | `variant1`, `variant2`. **Bỏ thí nghiệm N** (người dùng chọn, để mỗi tài khoản Kaggle ≤ ~10 h): với W=2 thì v luôn = 1 nên không kiểm tra được ý chính của §4.9, và CIFAR (§23.1) đã cho xu hướng. Config `tin_timeprest_n2*.yaml` giữ lại nhưng không chạy |
+| Thời gian | Fig.16–17 phút/epoch trên B/C | Run dài chạy trên 2 tài khoản (máy khác nhau) → **không so thời gian giữa chúng**. Thời gian so trong `configs/tin_bench_comm.yaml`: cả 3 hệ trên cùng máy, băng thông ∞/2/1 Gbit/s (vùng CIFAR cho thấy hiệu ứng), tập con 20k ảnh, 2 epoch |
+| Check | — | `configs/tin_quick.yaml`: D1–D4 cho 5 hệ trên 10k ảnh; D4 yêu cầu top-1 > 1.5 % (3 × ngẫu nhiên) |
+
+Số liệu paper để so (§11.1, `[F≈]`): Fig.8b (Cluster B, W=3, ~140 epoch) TiMePReSt ~68–72 %, PipeDream ~73–77 %; Fig.13a (Cluster C) TiMePReSt ~63–67 %, Variant 1 ~78–82 %, Variant 2 ~33–37 % (cùng số time point). Các mức này cao so với VGG-16 train từ đầu trên Tiny-ImageNet 64×64 (thường ~55–60 %), nên paper có thể đã resize ảnh hoặc dùng pretrained (không nêu, §8.3). Chỉ so **xu hướng** giữa các hệ, không so số tuyệt đối.

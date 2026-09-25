@@ -16,15 +16,21 @@ class ConvBNReLU(nn.Sequential):
 
 
 class Head(nn.Module):
-    def __init__(self, cin: int, num_classes: int):
+    """Linear classifier. global_pool: average the final feature map first (inputs larger than
+    32x32, e.g. Tiny-ImageNet 64x64 -> 2x2x512), so the head keeps the CIFAR parameter count."""
+
+    def __init__(self, cin: int, num_classes: int, global_pool: bool = False):
         super().__init__()
+        self.global_pool = global_pool
         self.fc = nn.Linear(cin, num_classes)
 
     def forward(self, x):
+        if self.global_pool:
+            x = x.mean((2, 3))
         return self.fc(torch.flatten(x, 1))
 
 
-def vgg16_bn_blocks(num_classes: int = 100, width: float = 1.0) -> list[nn.Module]:
+def vgg16_bn_blocks(num_classes: int = 100, width: float = 1.0, global_pool: bool = False) -> list[nn.Module]:
     blocks: list[nn.Module] = []
     cin = 3
     for v in VGG16_CFG:
@@ -34,7 +40,7 @@ def vgg16_bn_blocks(num_classes: int = 100, width: float = 1.0) -> list[nn.Modul
             cout = max(4, int(round(v * width)))
             blocks.append(ConvBNReLU(cin, cout))
             cin = cout
-    blocks.append(Head(cin, num_classes))
+    blocks.append(Head(cin, num_classes, global_pool))
     _init(blocks)
     return blocks
 
@@ -65,8 +71,9 @@ def _init(blocks):
 
 def build_blocks(model_cfg: dict) -> list[nn.Module]:
     name = model_cfg["name"]
-    if name == "vgg16_bn_cifar":
-        return vgg16_bn_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0))
+    if name in ("vgg16_bn_cifar", "vgg16_bn"):
+        return vgg16_bn_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0),
+                               model_cfg.get("global_pool", False))
     if name == "mlp":
         return mlp_blocks(model_cfg.get("in_dim", 12), model_cfg.get("hidden", 16),
                           model_cfg["num_classes"], model_cfg.get("depth", 4))
