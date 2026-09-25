@@ -1,0 +1,150 @@
+{
+  "code_hash": "573f49af60d8",
+  "config": "configs/kaggle_quick.yaml",
+  "overrides": [],
+  "systems": [
+    "pipedream",
+    "timeprest"
+  ],
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "all_pass": true,
+  "results": [
+    {
+      "id": 1,
+      "name": "static_equals_engine",
+      "status": "PASS",
+      "seconds": 4.5,
+      "message": "static (Fig.2) order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4",
+      "metrics": {
+        "pipedream": {
+          "max_rel_param_diff_vs_engine": 0.0
+        },
+        "timeprest": {
+          "max_rel_param_diff_vs_engine": 0.0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "dynamic_versions",
+      "status": "PASS",
+      "seconds": 8.3,
+      "message": "dynamic order, 20 mini-batches, version invariants",
+      "metrics": {
+        "pipedream": {
+          "wall_s": 2.35,
+          "drained": true,
+          "recompute_micro": [
+            0,
+            0
+          ],
+          "graph_micro": [
+            20,
+            20
+          ],
+          "wait_time_s": [
+            1.085,
+            0.0
+          ],
+          "backward_uses_forward_version": true
+        },
+        "timeprest": {
+          "wall_s": 2.49,
+          "drained": true,
+          "recompute_micro": [
+            57,
+            57
+          ],
+          "graph_micro": [
+            3,
+            3
+          ],
+          "wait_time_s": [
+            0.897,
+            0.0
+          ],
+          "forward_vertical_sync": true,
+          "backward_uses_live_version": true,
+          "micro_forwarded_with_older_version": 57
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "checkpoint_resume",
+      "status": "PASS",
+      "seconds": 10.1,
+      "message": "2 epochs vs 1 + resume (static order, deterministic), tol 1e-5",
+      "metrics": {
+        "pipedream": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0
+        },
+        "timeprest": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "short_run",
+      "status": "PASS",
+      "seconds": 29.5,
+      "message": "short run per system on the real pipeline",
+      "metrics": {
+        "pipedream": {
+          "train_loss_by_epoch": [
+            4.52054,
+            4.16515,
+            3.75035
+          ],
+          "test_acc1_by_epoch": [
+            2.0,
+            7.9,
+            13.0
+          ],
+          "epoch_time_s": 3.091,
+          "busy_frac_per_gpu": "0.963|0.679",
+          "peak_mem_mb_per_gpu": "970.5|399.5",
+          "mb_sent_per_gpu": "624.0|624.0",
+          "msgs_sent_per_gpu": "52|52",
+          "recompute_micro": "0|0",
+          "bwd_overlap_minibatches": 50,
+          "est_full_epoch_s": 15.5,
+          "est_full_run_h": 0.69
+        },
+        "timeprest": {
+          "train_loss_by_epoch": [
+            4.55606,
+            4.17154,
+            3.78928
+          ],
+          "test_acc1_by_epoch": [
+            5.2,
+            8.7,
+            11.4
+          ],
+          "epoch_time_s": 3.847,
+          "busy_frac_per_gpu": "0.899|0.883",
+          "peak_mem_mb_per_gpu": "550.6|491.7",
+          "mb_sent_per_gpu": "624.0|624.0",
+          "msgs_sent_per_gpu": "156|52",
+          "recompute_micro": "151|151",
+          "bwd_overlap_minibatches": 49,
+          "est_full_epoch_s": 19.3,
+          "est_full_run_h": 0.86
+        }
+      }
+    }
+  ]
+}

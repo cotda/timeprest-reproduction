@@ -8,7 +8,7 @@ import torch.nn as nn
 from timeprest.config import load_config
 from timeprest.engine import PipelineEngine
 from timeprest.models import mlp_blocks, vgg16_bn_blocks
-from timeprest.reference import full_grad_at, mixed_rule_grads, plain_training
+from timeprest.reference import full_grad_at, mixed_rule_grads, pipedream_swap_grads, plain_training
 from timeprest.runner import Trainer
 
 TRAIN = {"epochs": 1, "batch_size": 12, "optimizer": "sgd", "lr": 0.05, "momentum": 0.9,
@@ -16,10 +16,11 @@ TRAIN = {"epochs": 1, "batch_size": 12, "optimizer": "sgd", "lr": 0.05, "momentu
 TOL = dict(rtol=1e-9, atol=1e-12)
 
 
-def pipe_cfg(schedule, N, backward_version, vertical_sync=True, max_inflight="pipedream", W=2):
+def pipe_cfg(schedule, N, backward_version, vertical_sync=True, max_inflight="pipedream", W=2,
+             backward_rule="graph"):
     return {"num_stages": W, "num_microbatches": N, "schedule": schedule,
             "backward_version": backward_version, "vertical_sync": vertical_sync,
-            "max_inflight": max_inflight}
+            "max_inflight": max_inflight, "backward_rule": backward_rule}
 
 
 def make_model(kind, W=2):
@@ -49,14 +50,15 @@ def run_recorded(stages, batches, pc):
     return eng, got
 
 
+@pytest.mark.parametrize("rule", ["graph", "recompute"])
 @pytest.mark.parametrize("kind,N", [("mlp", 1), ("mlp", 3), ("vgg", 3), ("vgg", 1)])
-def test_sequential_pipeline_equals_plain_training(kind, N):
+def test_sequential_pipeline_equals_plain_training(kind, N, rule):
     """No staleness (one mini-batch in flight) -> identical to ordinary training (check 3)."""
     stages = make_model(kind)
     batches = make_batches(kind, K=4, M=12)
     ref = plain_training(stages, batches, N, TRAIN, len(batches))
     eng = PipelineEngine([copy.deepcopy(s) for s in stages],
-                         pipe_cfg("nF1B" if N > 1 else "1F1B", N, "stashed", max_inflight=1),
+                         pipe_cfg("nF1B" if N > 1 else "1F1B", N, "stashed", max_inflight=1, backward_rule=rule),
                          TRAIN, "cpu", len(batches))
     eng.run_epoch(batches)
     torch.testing.assert_close(flat_params(eng.stages), flat_params(ref), **TOL)
@@ -76,12 +78,14 @@ def test_sequential_equals_plain_training_with_warmup():
     torch.testing.assert_close(flat_params(eng.stages), flat_params(ref), **TOL)
 
 
+@pytest.mark.parametrize("rule", ["graph", "recompute"])
 @pytest.mark.parametrize("kind,vsync", [("mlp", True), ("vgg", True), ("mlp", False), ("vgg", False)])
-def test_pipedream_stashed_gradients_are_consistent(kind, vsync):
+def test_pipedream_stashed_gradients_are_consistent(kind, vsync, rule):
     """1F1B + stashing: each stage's gradient equals the full-model gradient at the versions the
     forward used (one version for all stages with vertical sync, per-stage versions without)."""
     batches = make_batches(kind, K=6, M=12)
-    eng, got = run_recorded(make_model(kind), batches, pipe_cfg("1F1B", 1, "stashed", vertical_sync=vsync))
+    eng, got = run_recorded(make_model(kind), batches,
+                            pipe_cfg("1F1B", 1, "stashed", vertical_sync=vsync, backward_rule=rule))
     stale = 0
     for i, (x, y) in enumerate(batches):
         ks = [got[(s, i)][1][0] for s in range(eng.W)]
@@ -95,12 +99,15 @@ def test_pipedream_stashed_gradients_are_consistent(kind, vsync):
     assert stale > 0  # really ran with stale (stashed) versions
 
 
+@pytest.mark.parametrize("rule", ["graph", "recompute"])
 @pytest.mark.parametrize("kind,W,N", [("mlp", 2, 3), ("vgg", 2, 3), ("mlp", 3, 2)])
-def test_timeprest_mixed_version_rule(kind, W, N):
-    """TiMePReSt: gradients follow the declared rule (local VJP at the committed version on the
-    stage input produced with the micro-batch's forward version)."""
+def test_timeprest_mixed_version_rule(kind, W, N, rule):
+    """TiMePReSt: gradients follow the declared rule for the committed backward version:
+    graph = PipeDream's stored graph with the new weights copied in (reference: in-place copy on
+    plain modules); recompute = local VJP at that version on the stage input."""
     batches = make_batches(kind, K=6, M=12)
-    eng, got = run_recorded(make_model(kind, W), batches, pipe_cfg("nF1B", N, "committed", W=W))
+    eng, got = run_recorded(make_model(kind, W), batches,
+                            pipe_cfg("nF1B", N, "committed", W=W, backward_rule=rule))
     tr = eng.last_trace
     mixed = 0
     for i, (x, y) in enumerate(batches):
@@ -108,11 +115,45 @@ def test_timeprest_mixed_version_rule(kind, W, N):
         assert all(got[(s, i)][1] == [kb] * N for s in range(W))  # vertical sync in backward
         kf = [tr.fwd_version[(0, i, j)] for j in range(N)]
         mixed += sum(k != kb for k in kf)
-        ref = mixed_rule_grads(eng.stages, eng.version_params, kf, kb, x, y, N)
+        ref = (pipedream_swap_grads if rule == "graph" else mixed_rule_grads)(
+            eng.stages, eng.version_params, kf, kb, x, y, N)
         for s in range(W):
             for n, g in got[(s, i)][0].items():
                 torch.testing.assert_close(g, ref[s][n], **TOL)
     assert mixed > 0  # some micro-batches really were forwarded with an older version
+
+
+@pytest.mark.parametrize("kind", ["mlp", "vgg"])
+def test_rules_differ_only_when_versions_differ(kind):
+    """PipeDream (forward = backward version): graph and recompute train identically.
+    TiMePReSt (newer backward version): they really are different rules."""
+    batches = make_batches(kind, K=6, M=12)
+    runs = {}
+    for system, cfg in (("pipedream", ("1F1B", 1, "stashed")), ("timeprest", ("nF1B", 3, "committed"))):
+        for rule in ("graph", "recompute"):
+            eng = PipelineEngine(make_model(kind), pipe_cfg(*cfg, backward_rule=rule), TRAIN, "cpu", len(batches))
+            eng.run_epoch(batches)
+            runs[(system, rule)] = flat_params(eng.stages)
+    torch.testing.assert_close(runs[("pipedream", "graph")], runs[("pipedream", "recompute")], **TOL)
+    assert not torch.allclose(runs[("timeprest", "graph")], runs[("timeprest", "recompute")], rtol=1e-6, atol=0)
+
+
+def test_graph_rule_frees_released_versions(monkeypatch):
+    """With the graph rule a released weight version really frees its memory (graphs keep those
+    tensors only as gradient leaves) and training still matches the reference rule."""
+    import timeprest.engine as E
+    freed = []
+    orig = E.release_storage
+    monkeypatch.setattr(E, "release_storage", lambda p: (freed.append(sum(t.numel() for t in p.values())), orig(p)))
+    batches = make_batches("vgg", K=6, M=12)
+    eng, got = run_recorded(make_model("vgg"), batches, pipe_cfg("nF1B", 3, "committed"))
+    assert freed and all(n > 0 for n in freed)
+    x, y = batches[3]
+    kf = [eng.last_trace.fwd_version[(0, 3, j)] for j in range(3)]
+    ref = pipedream_swap_grads(eng.stages, eng.version_params, kf, got[(1, 3)][1][0], x, y, 3)
+    for s in range(2):
+        for n, g in got[(s, 3)][0].items():
+            torch.testing.assert_close(g, ref[s][n], **TOL)
 
 
 def test_versions_continue_across_epochs():

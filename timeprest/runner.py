@@ -85,7 +85,7 @@ def describe(cfg: dict, engine: PipelineEngine, bounds) -> str:
     W, N = engine.W, engine.N
     lines = [
         f"system={cfg['system']} schedule={pc['schedule']} W={W} N={N} "
-        f"vertical_sync={pc['vertical_sync']} backward_version={pc['backward_version']}",
+        f"vertical_sync={pc['vertical_sync']} backward_version={pc['backward_version']} backward_rule={pc['backward_rule']}",
         f"partition blocks={bounds} params/stage="
         + ",".join(f"{sum(p.numel() for p in m.parameters()) / 1e6:.2f}M" for m in engine.stages),
     ]

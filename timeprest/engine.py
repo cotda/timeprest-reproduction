@@ -1,14 +1,16 @@
 """Single-process pipeline simulator: executes a 1F1B / nF1B schedule stage by stage with
 explicit weight versions, so the version semantics are exactly those of a real W-stage pipeline.
 
-Backward rule (implementation choice, paper does not specify how a backward with newer weights
-than the forward is computed, see paper_notes.md §5.5, §14.4):
-  each stage keeps only its *input* for every in-flight micro-batch; at backward time it
-  re-runs its own forward on that input with the weight version chosen by the policy and
-  back-propagates the gradient received from the next stage (local VJP at the chosen version).
-  The last stage recomputes the loss the same way. BN running statistics are updated only in
-  the original forward (frozen during recompute). Both PipeDream and TiMePReSt use this rule, so
-  the only difference between them is the weight version (stashed vs committed/latest).
+Backward rule (`pipeline.backward_rule`; the paper does not spell out how a backward with newer
+weights than the forward is computed, see paper_notes.md §14.4, §22.5):
+  graph (default, PipeDream's mechanism): every stage keeps the autograd graph of its in-flight
+      forwards and runs the backward on it with the weight version chosen by the policy: saved
+      activations and BN batch statistics are those of the forward, every saved weight is read at
+      the backward version (`swap.GraphForward`). For PipeDream (stashed) both versions coincide.
+  recompute (ablation): each stage keeps only its input; at backward time it re-runs its own
+      forward on that input with the chosen version and back-propagates the gradient received from
+      the next stage (local VJP at the chosen version); BN running statistics frozen during it.
+BN running statistics are updated once, in the original forward.
 """
 from __future__ import annotations
 
@@ -23,6 +25,7 @@ import torch.nn.functional as F
 from torch.func import functional_call
 
 from .schedule import Op, build_schedule, trace_versions
+from .swap import GraphForward, release_storage
 
 
 @contextlib.contextmanager
@@ -77,6 +80,9 @@ class PipelineEngine:
         self.vertical_sync = bool(pipeline_cfg["vertical_sync"])
         self.backward_version = pipeline_cfg["backward_version"]
         self.max_inflight = pipeline_cfg.get("max_inflight", "pipedream")
+        self.backward_rule = pipeline_cfg.get("backward_rule") or "graph"
+        if self.backward_rule not in ("graph", "recompute"):
+            raise ValueError("pipeline.backward_rule must be graph|recompute")
         self.profile_ops = profile_ops
         self.named = [list(m.named_parameters()) for m in self.stages]
         tc = training_cfg
@@ -119,6 +125,22 @@ class PipelineEngine:
     def _run(self, s: int, params: dict, x: torch.Tensor) -> torch.Tensor:
         return functional_call(self.stages[s], params, (x,))
 
+    def _run_keep_graph(self, s: int, params: dict, x: torch.Tensor) -> torch.Tensor:
+        """Forward whose graph is kept until the backward. BN running-stat buffers are passed as
+        private copies and written back (same running-stat trajectory), so later forwards never
+        modify a tensor this graph saved."""
+        bufs = {n: b.clone() for n, b in self.stages[s].named_buffers()}
+        out = functional_call(self.stages[s], {**params, **bufs}, (x,))
+        with torch.no_grad():
+            for n, b in self.stages[s].named_buffers():
+                b.copy_(bufs[n])
+        return out
+
+    def _drop_version(self, s: int, stored: list[dict], k: int):
+        params = stored[s].pop(k)
+        if self.backward_rule == "graph":   # graphs keep these only as gradient leaves
+            release_storage(params)
+
     def _snapshot_version(self, s: int):
         if self.record_versions:
             self.version_params[(s, self.version[s])] = {n: p.detach().clone() for n, p in self.named[s]}
@@ -149,7 +171,7 @@ class PipelineEngine:
         stored = [dict() for _ in range(W)]   # stage -> absolute version -> params
         pending_x, labels, sizes = {}, {}, {}
         inputs = {}      # (s, i, j) -> activation waiting for forward at stage s
-        saved = {}       # (s, i, j) -> stage input kept for the backward
+        saved = {}       # (s, i, j) -> stage input (recompute) or forward graph record (graph)
         grads_in = {}    # (s, i, j) -> gradient w.r.t. stage-s output
         loss_sum = torch.zeros((), device=self.device, dtype=torch.float64)
         correct = torch.zeros((), device=self.device, dtype=torch.long)
@@ -186,9 +208,21 @@ class PipelineEngine:
                 j = op.micro
                 k = base + trace.fwd_version[(s, i, j)]
                 x = pending_x[i][j] if s == 0 else inputs.pop((s, i, j))
-                with torch.no_grad():
-                    out = self._run(s, self._params(s, k, stored), x)
-                saved[(s, i, j)] = x
+                params = self._params(s, k, stored)
+                if self.backward_rule == "graph":
+                    xin = x.detach().requires_grad_(s > 0)
+                    gf = GraphForward(params)
+                    with torch.enable_grad():
+                        out = gf.run(lambda: self._run_keep_graph(s, params, xin))
+                        rec = {"x": xin, "gf": gf, "leaves": [params[n] for n, _ in self.named[s]],
+                               "target": out if s < last else
+                               F.cross_entropy(_upcast(out), labels[i][j], reduction="sum") / sizes[i]}
+                    saved[(s, i, j)] = rec
+                    out = out.detach()
+                else:
+                    with torch.no_grad():
+                        out = self._run(s, params, x)
+                    saved[(s, i, j)] = x
                 if s < last:
                     inputs[(s + 1, i, j)] = out
                     comm_bytes[idx] = _nbytes(out)
@@ -210,6 +244,18 @@ class PipelineEngine:
                     k = base + trace.bwd_version[(s, i, j)]
                     used.append(k)
                     params = self._params(s, k, stored)
+                    if self.backward_rule == "graph":
+                        rec = saved.pop((s, i, j))
+                        rec["gf"].use(params)
+                        gout = None if s == last else grads_in.pop((s, i, j))
+                        g = torch.autograd.grad(rec["target"], rec["leaves"] + ([rec["x"]] if s > 0 else []),
+                                                grad_outputs=gout)
+                        for n in range(len(rec["leaves"])):
+                            grads[n] = g[n] if grads[n] is None else grads[n] + g[n]
+                        if s > 0:
+                            grads_in[(s - 1, i, j)] = g[-1]
+                            comm_bytes[idx] += _nbytes(g[-1])
+                        continue
                     plist = [params[n] for n, _ in self.named[s]]
                     x = saved.pop((s, i, j))
                     if s > 0:
@@ -238,7 +284,7 @@ class PipelineEngine:
                     self.op_log.append({"kind": "B", "stage": s, "mb": i, "versions": used,
                                         "live": self.version[s], "slot": op.slot})
                 for kk in [kk for kk in stored[s] if trace.last_use.get((s, kk - base), -1) <= idx]:
-                    del stored[s][kk]   # release before cloning so copies never pile up
+                    self._drop_version(s, stored, kk)   # release before cloning so copies never pile up
                 cur = self.version[s]
                 if trace.last_use.get((s, cur - base), -1) > idx:
                     stored[s][cur] = self._clone_live(s)
@@ -258,9 +304,11 @@ class PipelineEngine:
                     timers.append(time.perf_counter() - t0)
             # release weight versions that no later op needs
             for kk in [kk for kk in stored[s] if trace.last_use.get((s, kk - base), -1) <= idx]:
-                del stored[s][kk]
+                self._drop_version(s, stored, kk)
             # memory accounting for this stage (weights incl. stored versions + held activations)
-            held = sum(_nbytes(t) for (ss, _, _), t in saved.items() if ss == s)
+            # (graph rule: only the stage input of each kept graph is counted; the real total is
+            #  the measured CUDA peak)
+            held = sum(_nbytes(t["x"] if isinstance(t, dict) else t) for (ss, _, _), t in saved.items() if ss == s)
             held += sum(_nbytes(t) for (ss, _, _), t in inputs.items() if ss == s)
             held += sum(_nbytes(t) for (ss, _, _), t in grads_in.items() if ss == s)
             mem = param_bytes[s] * (1 + len(stored[s])) + held

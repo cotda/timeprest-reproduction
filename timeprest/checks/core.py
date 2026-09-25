@@ -15,7 +15,7 @@ from .. import utils
 from ..config import resolve
 from ..data import build_datasets, fixed_batch_loader
 from ..engine import PipelineEngine, frozen_bn_stats
-from ..reference import fig2_grid, FIG2, full_grad_at, max_rel_err, mixed_rule_grads, plain_training
+from ..reference import fig2_grid, FIG2, full_grad_at, max_rel_err, mixed_rule_grads, pipedream_swap_grads, plain_training
 from ..runner import Trainer, build, make_train_loader
 from ..schedule import (build_schedule, render_grid, steady_state_v, trace_versions,
                         version_difference_formula)
@@ -43,7 +43,7 @@ class Ctx:
     def sys_cfg(self, system: str, **over) -> dict:
         raw = copy.deepcopy(self.cfg)
         raw["system"] = system
-        for k in ("schedule", "vertical_sync", "backward_version"):
+        for k in ("schedule", "vertical_sync", "backward_version", "backward_rule"):
             raw["pipeline"][k] = None  # re-apply the preset of the new system
         if system in ("timeprest", "variant1"):
             raw["pipeline"]["num_microbatches"] = self.nf1b_N
@@ -243,10 +243,13 @@ def check_mechanism(ctx: Ctx):
             kb = got[(eng.W - 1, i)][1][0]
             kf = [eng.last_trace.fwd_version[(0, i, j)] for j in range(eng.N)]
             mixed += sum(k != kb for k in kf)
-            refg = mixed_rule_grads(eng.stages, eng.version_params, kf, kb, x, y, eng.N)
+            rule = cfg["pipeline"]["backward_rule"]
+            refg = (pipedream_swap_grads if rule == "graph" else mixed_rule_grads)(
+                eng.stages, eng.version_params, kf, kb, x, y, eng.N)
             for s in range(eng.W):
                 for n, g in got[(s, i)][0].items():
                     worst = max(worst, max_rel_err(g, refg[s][n]))
+        metrics["backward_rule"] = cfg["pipeline"]["backward_rule"]
         metrics["mixed_version_rule_max_rel_err"] = worst
         metrics["mixed_version_micro_batches"] = mixed
         ok &= worst < 1e-6 and mixed > 0

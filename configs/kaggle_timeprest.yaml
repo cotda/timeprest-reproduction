@@ -1,5 +1,5 @@
 base: kaggle_base.yaml
-name: kaggle_cifar100_vgg16_timeprest
+name: kaggle_cifar100_vgg16_timeprest_graph   # backward_rule graph (paper_notes §22.6); the recompute run kept the old name
 system: timeprest
 output:
   require_checks: true

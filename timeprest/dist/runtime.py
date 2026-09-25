@@ -12,9 +12,12 @@ Weight versions are decided at run time:
             "latest"  -> the stage's live version, which is always `epoch_base + i` for mini-batch i
                          because each stage updates in mini-batch order (TiMePReSt; equals
                          phase-1 "committed" whenever v = 1).
-Backward math is the phase-1 rule (local VJP at the backward version on the stored stage input).
-When forward and backward versions coincide the forward graph is kept (no recompute; identical
-math); otherwise the stage input is kept and the forward is recomputed at backward time.
+Backward math is the phase-1 rule (`pipeline.backward_rule`, see engine.py):
+  graph (default, PipeDream's mechanism): the forward graph is kept and its backward reads every
+      saved weight at the backward version (`swap.GraphForward`); no recompute.
+  recompute (ablation): local VJP at the backward version on the stored stage input; when forward
+      and backward versions coincide the forward graph is kept instead (`backward_mode: auto`,
+      identical math).
 """
 from __future__ import annotations
 
@@ -30,6 +33,7 @@ from torch.func import functional_call
 
 from ..engine import _upcast, frozen_bn_stats, lr_lambda_factory
 from ..schedule import build_schedule
+from ..swap import GraphForward, release_storage
 
 
 class Handle:
@@ -151,7 +155,8 @@ class StageRuntime:
             bv = "latest"   # identical when v = 1; the dynamic runtime has no global commit
         self.backward_version = bv
         self.order = pipeline_cfg.get("order", "dynamic")
-        self.backward_mode = pipeline_cfg.get("backward_mode", "auto")  # auto | recompute
+        self.backward_rule = pipeline_cfg.get("backward_rule") or "graph"
+        self.backward_mode = pipeline_cfg.get("backward_mode", "auto")  # recompute rule only: auto | recompute
         mi = pipeline_cfg.get("max_inflight", "pipedream")
         self.cap = (world - rank) if mi == "pipedream" else (float("inf") if mi in (None, "none") else int(mi))
         self.max_inflight_cfg = mi
@@ -172,6 +177,7 @@ class StageRuntime:
             self.opt, lr_lambda_factory(total, int(tc.get("warmup_epochs", 0) * steps_per_epoch), tc["lr_schedule"]))
         self.version = 0
         self.snaps: dict = {}          # version -> detached params (never modified in place)
+        self.pins: dict = {}           # version -> number of pending backwards that read it
         self.profile_ops = True
         self.on_backward = None        # debug hook fn(mb, grads, versions)
         self.record_versions = False
@@ -193,8 +199,10 @@ class StageRuntime:
         return snap
 
     def _prune(self, keep_from: int):
-        for k in [k for k in self.snaps if k < keep_from and k != self.version]:
-            del self.snaps[k]
+        for k in [k for k in self.snaps if k < keep_from and k != self.version and not self.pins.get(k)]:
+            snap = self.snaps.pop(k)
+            if self.backward_rule == "graph":   # kept graphs hold these only as gradient leaves
+                release_storage(snap)
 
     def _run(self, params: dict, x):
         return functional_call(self.module, params, (x,))
@@ -349,7 +357,20 @@ class StageRuntime:
             vi = base + i                       # live version when B(i) runs on this stage
             kb = k if self.backward_version == "stashed" else vi
             graph = self.backward_mode == "auto" and kb == k
-            if graph:
+            if self.backward_rule == "graph":
+                fparams = self._live() if k == self.version else self._snapshot(k)
+                # backward version: live at B time when it will be kb (= base + i), else kept
+                bparams = None if kb == vi else self._snapshot(kb)
+                if bparams is not None:
+                    self.pins[kb] = self.pins.get(kb, 0) + 1
+                xin = x.detach().requires_grad_(s > 0)
+                gf = GraphForward(fparams)
+                with torch.enable_grad():
+                    out = gf.run(lambda: self._run_keep_graph(fparams, xin))
+                rec = {"mode": "graph", "x": xin, "gf": gf, "bparams": bparams,
+                       "plist": [fparams[n] for n, _ in self.named], "k": k, "kb": kb}
+                stats["graph_micro"] += 1
+            elif graph:
                 params = self._live() if (k == self.version == vi) else self._snapshot(k)
                 xin = x.detach().requires_grad_(s > 0)
                 out = self._run_keep_graph(params, xin)
@@ -402,6 +423,10 @@ class StageRuntime:
                 rec = records.pop((i, j))
                 used.append(rec["kb"])
                 if rec["mode"] == "graph":
+                    if "gf" in rec:
+                        rec["gf"].use(self._live() if rec["bparams"] is None else rec["bparams"])
+                        if rec["bparams"] is not None:
+                            self.pins[rec["kb"]] -= 1
                     target = rec["loss"] if s == last else rec["out"]
                     wrt = rec["plist"] + ([rec["x"]] if s > 0 else [])
                     g = torch.autograd.grad(target, wrt, grad_outputs=None if s == last else gchunks[j])
@@ -502,6 +527,7 @@ class StageRuntime:
         if records or chunks or lab or act_q or grad_q:
             raise AssertionError(f"stage {s}: pipeline not drained")
         self.snaps.clear()
+        self.pins.clear()
         ops = []
         if on_cuda and self.profile_ops:
             for (kind, i, j), a, b in ev_log:

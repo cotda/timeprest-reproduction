@@ -104,5 +104,31 @@ def mixed_rule_grads(stages, version_params: dict, fwd_versions: list[int], bwd_
     return grads
 
 
+def pipedream_swap_grads(stages, version_params: dict, fwd_versions: list, bwd_versions, x, y,
+                         N: int) -> list[dict]:
+    """Backward rule "graph", computed the way PipeDream's runtime does it: forward micro-batch j
+    through plain modules holding version fwd_versions[j] (an int for all stages, or one per stage),
+    then copy the backward version into those same modules in place (as `load_old_params` /
+    `load_state_dict` do) and run autograd on the stored graph. Saved activations and BN batch
+    statistics stay those of the forward; every saved weight is read at the backward version.
+    bwd_versions: an int for all stages, or one per stage."""
+    W = len(stages)
+    per_stage = lambda v: list(v) if isinstance(v, (list, tuple)) else [v] * W
+    kb = per_stage(bwd_versions)
+    grads = [{n: torch.zeros_like(p) for n, p in m.named_parameters()} for m in stages]
+    for j, (xc, yc) in enumerate(zip(torch.tensor_split(x, N), torch.tensor_split(y, N))):
+        kf = per_stage(fwd_versions[j])
+        mods = [_loaded_copy(stages[s], version_params[(s, kf[s])]).train() for s in range(W)]
+        loss = F.cross_entropy(nn.Sequential(*mods)(xc), yc, reduction="sum") / x.shape[0]
+        for s, m in enumerate(mods):
+            for n, p in m.named_parameters():
+                p.data.copy_(version_params[(s, kb[s])][n])   # in place: saved weights see it
+        loss.backward()
+        for s, m in enumerate(mods):
+            for n, p in m.named_parameters():
+                grads[s][n] += p.grad
+    return grads
+
+
 def max_rel_err(a: torch.Tensor, b: torch.Tensor) -> float:
     return ((a - b).abs().max() / b.abs().max().clamp_min(1e-30)).item()

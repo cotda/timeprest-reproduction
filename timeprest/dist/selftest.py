@@ -34,8 +34,9 @@ def make_batches(kind: str, K: int, M: int, seed: int = 1):
              torch.randint(0, 5, (M,), generator=g)) for _ in range(K)]
 
 
-def pipeline_cfg(system: str, N: int, order: str, backward_mode: str, W: int) -> dict:
+def pipeline_cfg(system: str, N: int, order: str, backward_mode: str, W: int, backward_rule: str = "graph") -> dict:
     p = dict(SYSTEM_PRESETS[system])
+    p.setdefault("backward_rule", backward_rule)
     if p["schedule"] == "nF1B":
         p["num_microbatches"] = N
     p.update(num_stages=W, order=order, backward_mode=backward_mode, max_inflight="pipedream",
@@ -49,6 +50,7 @@ def main():
     ap.add_argument("--system", default="timeprest")
     ap.add_argument("--order", default="static")
     ap.add_argument("--backward-mode", default="recompute")
+    ap.add_argument("--backward-rule", default="graph")
     ap.add_argument("--model", default="mlp")
     ap.add_argument("--K", type=int, default=6)
     ap.add_argument("--N", type=int, default=3)
@@ -58,7 +60,7 @@ def main():
         torch.autograd.set_detect_anomaly(True)
     from .train import init_dist
     rank, W, device = init_dist({"runtime": {"device": "cpu"}, "pipeline": {"num_stages": int(os.environ["WORLD_SIZE"])}})
-    pc = pipeline_cfg(args.system, args.N, args.order, args.backward_mode, W)
+    pc = pipeline_cfg(args.system, args.N, args.order, args.backward_mode, W, args.backward_rule)
     stages = make_model(args.model, W)
     batches = make_batches(args.model, args.K, TRAIN["batch_size"])
     feats, x = [], batches[0][0][:1]

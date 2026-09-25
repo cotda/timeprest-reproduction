@@ -897,7 +897,7 @@ Main PDF p.14 nói dữ liệu sẽ được cung cấp khi yêu cầu. Đây kh
 | Phiên bản forward | Vertical sync (p.3), giữ bản cũ tới khi forward dùng nó xong (p.5) | Micro-batch lấy version mới nhất của stage 0 lúc vào pipeline; mọi stage sau dùng đúng version đó |
 | Phiên bản backward, TiMePReSt | "latest updated version" (p.4) + vertical sync | `committed` = version đã áp dụng trên **mọi** stage (= version của stage 0) lúc backward bắt đầu ở stage cuối. Khi W ≤ N+1 version này trùng version live ở từng stage (đã kiểm chứng) |
 | Phiên bản backward, PipeDream | Horizontal + vertical stashing (p.2) | `stashed` = version forward của **chính stage đó**, **không** vertical sync, đúng code chính thức (`pipedream/runtime/image_classification/main_with_runtime.py:208`: `num_versions = num_warmup_minibatches + 1`, tức W−s version; repo không có vertical sync). Bản có vertical sync giữ lại dưới tên `pipedream_vsync` để làm ablation |
-| Cách tính gradient khi F/B khác version | Không mô tả | Mỗi stage chỉ lưu **input** của stage; khi backward thì chạy lại forward cục bộ bằng version được chọn rồi VJP với gradient từ stage sau. Áp dụng cho **cả hai hệ**, nên khác biệt duy nhất là version. Hệ quả: activation memory là input của stage (giống nhau giữa hai hệ); op B tốn thêm 1 forward |
+| Cách tính gradient khi F/B khác version | Không mô tả trực tiếp (xem §22.5) | **Từ 2026-09-25: `backward_rule: graph`** (cơ chế PipeDream): giữ graph của forward, backward đọc mọi weight đã lưu ở version backward; activation và thống kê batch của BN là của forward; không tính lại. **Trước đó** (các run §20, §22, nay là ablation `system: timeprest_recompute`): mỗi stage chỉ lưu input, lúc backward chạy lại forward cục bộ bằng version được chọn rồi VJP; op B tốn thêm 1 forward. Với PipeDream hai quy tắc cho cùng gradient |
 | "Một backward" | Một backward trên loss trung bình | Một op B mỗi mini-batch/stage; bên trong lặp N chunk để BN dùng đúng batch-stat của từng micro-batch. Về toán học bằng backward trên tổng loss |
 | Loss | Trung bình loss N micro-batch | Σ_j CE_sum_j / M (trung bình có trọng số theo số mẫu; bằng trung bình thường khi chia đều) |
 | BatchNorm | Không nêu | Batch-stat theo micro-batch (64) cho TiMePReSt, theo 192 cho PipeDream; running stats cập nhật 1 lần/forward, đóng băng khi recompute |
@@ -1010,3 +1010,73 @@ Kiểm chứng local (CPU, gloo, 2 tiến trình): static trùng bit-exact với
 - **Giống PipeDream gốc**: `pipedream/runtime/README.md` chạy mọi cấu hình pipeline (MP/hybrid) với `--distributed_backend gloo`, chỉ cấu hình thuần DP dùng NCCL. Mỗi tensor nhận bằng một helper thread (`recv_helper_thread`), tensor chép qua CPU (`communication.py`, `_send`: `tensor.cpu()`).
 - **Lý do đổi**: với NCCL, một `irecv` đăng ký trước là một kernel nằm trên GPU cho tới khi peer gửi. Lịch dynamic cần đăng ký trước (để biết gradient đã tới mà không phải chặn). Trên Kaggle T4×2 (torch 2.10, NCCL 2.27.5) đã gặp lần lượt: (1) deadlock khi NCCL kết nối lười từng chiều của communicator; (2) deadlock khi kernel chạy lần đầu (CUDA lazy loading cần đồng bộ cả context) trong lúc `irecv` đang chờ; (3) `CUDA_MODULE_LOADING=EAGER` làm NCCL init lỗi `invalid resource handle`. Với gloo, lệnh nhận chờ trên thread CPU, GPU không bao giờ có kernel chờ peer nên không còn loại deadlock này.
 - **Ảnh hưởng**: mỗi message thêm một lần chép GPU↔CPU (vài ms/mini-batch với activation VGG-16/CIFAR). Như nhau cho PipeDream và TiMePReSt nên so sánh thời gian vẫn công bằng; số byte/message vẫn log như cũ. `dist.p2p_backend: null` quay lại NCCL.
+
+## 22. Kết quả GĐ2 — VGG-16-BN / CIFAR-100, W=2, pipeline thật 2×T4 (Kaggle, 2026-09-25)
+
+Nguồn: `results/results/results_phase2/` (code `573f49af60d8`, seed 0, 1 seed/hệ, cấu hình như §19–§21, truyền giữa stage bằng gloo). Check D1–D4 đều PASS trước khi chạy dài. Cả hai hệ chạy hết 160 epoch, không treo, không NaN.
+
+### 22.1. Chất lượng
+
+| Chỉ số | TiMePReSt | PipeDream | GĐ1 (§20) TiMePReSt / PipeDream |
+|---|---|---|---|
+| Top-1 cuối (ep 160) | 73.99 | 73.46 | 73.86 / 73.48 |
+| Best top-1 (epoch) | 74.15 (152) | 73.58 (132) | 74.33 / 73.73 |
+| Top-5 cuối | 91.96 | 92.08 | 91.76 / 91.97 |
+| Test loss cuối / thấp nhất (epoch) | 1.123 / 1.119 (147) | 1.102 / 1.099 (147) | |
+| Epoch đạt 50 / 60 / 70 % | 9 / 28 / 105 | 11 / 38 / 105 | |
+
+- Runtime 2 tiến trình khớp engine 1 GPU (lệch < 0.2 điểm), nên hai cài đặt độc lập kiểm chứng lẫn nhau.
+- Lặp lại quan sát của §20.1: ngang nhau ở cuối, TiMePReSt cao hơn và ổn định hơn ở epoch 20–80.
+- Test loss không tăng lại ở cuối (thấp nhất ở ep 147), nên không có cảnh báo overfit.
+
+### 22.2. Thời gian (đo thật)
+
+| | TiMePReSt | PipeDream |
+|---|---|---|
+| Thời gian/epoch (trung bình) | 19.1 s | 15.0 s |
+| Tổng 160 epoch | 0.85 h | 0.67 h |
+| Tới 60 % / 70 % top-1 | 0.149 h / 0.557 h | 0.157 h / 0.437 h |
+| Tỉ lệ bận GPU0 / GPU1 | 0.91 / 0.94 | 0.98 / 0.73 |
+| Micro-batch recompute / epoch / stage | 777 / 780 | 0 |
+| Byte gửi / epoch / GPU | 3120 MB | 3120 MB |
+
+- Lịch dynamic giữ cả hai GPU của TiMePReSt bận ~92 % (ước lượng lịch cố định ở §20.2 chỉ ~60 %). Vì vậy thời gian thật 19.1 s tốt hơn nhiều so với ước lượng 26.9 s. PipeDream khớp ước lượng (15.0 so với 14.5 s).
+- TiMePReSt chậm hơn ~27 % chủ yếu vì **recompute**: mỗi micro-batch chạy lại forward của stage lúc backward (quy tắc §19.2). Recompute thêm ~1 forward ≈ 1/3 của F+B. Ước lượng thô, **chưa đo**: bỏ recompute còn ~14–15 s/epoch. PipeDream bị giới hạn bởi GPU0 (partition `[0, 8, 19]` lệch với 1F1B).
+- `bwd_overlap_minibatches` = 259/260 ở cả hai hệ: trên phần cứng thật, B(i) ở stage cuối gần như luôn bắt đầu trước khi stage 0 xong B(i−1). Nghĩa là v = 1 của công thức paper (W ≤ N+1) chỉ đúng với lịch lý tưởng.
+
+### 22.3. Bộ nhớ (peak allocated từng GPU)
+
+| | TiMePReSt | PipeDream |
+|---|---|---|
+| GPU0 (stage 1) | 537 MB | 905 MB |
+| GPU1 (stage 2) | 441 MB | 353 MB |
+| Max qua các GPU | 537 MB (−41 %) | 905 MB |
+| Số version giữ thêm tối đa (stage 1 / 2) | 0 / 2 | 1 / 0 |
+
+- Stage 1 giảm mạnh, đúng claim của paper. Stage 2 của TiMePReSt tốn hơn vì vertical sync (giống §20.3).
+- Một phần mức giảm đến từ recompute: TiMePReSt chỉ giữ input của stage, còn PipeDream giữ graph. Khi đổi sang backward kiểu PipeDream (§22.5), bộ nhớ của TiMePReSt sẽ tăng.
+
+### 22.4. Mức tuyên bố
+
+Pipeline thật 2 GPU, 1 seed. Tái hiện được: chất lượng ngang nhau theo epoch, giảm bộ nhớ ở GPU chịu tải nặng nhất. Chưa tái hiện: ưu thế thời gian (chậm hơn 27 %, do lựa chọn recompute của mình, xem §22.5). Trái chiều: v = 1 trên phần cứng thật.
+
+### 22.5. Xét lại quy tắc backward: recompute là lựa chọn lệch khỏi paper
+
+Paper không mô tả cơ chế tính gradient khi forward và backward dùng version khác nhau (§13). Nhưng các câu sau đều chỉ về việc **giữ activation của forward, lấy đạo hàm theo weight mới nhất, không tính lại**:
+- p.4, §3: "each mini-batch backpropagates gradients of the **prediction error** with respect to the latest updated version of weights rather than the version that was considered during forward propagation (prediction)". Gradient là của sai số của **chính lượt forward đó**; recompute tạo ra một dự đoán mới.
+- p.7: "It computes gradients on the most recent version of weights once the forward pass is over. When a newer version of the weights becomes available, the previous version is stored until a forward pass, that uses it, is completed." Weight cũ chỉ giữ tới hết forward.
+- §4.7: "Memory footprint is directly proportional to the number of weights and **activations to be stashed**". Activation được lưu, không tính lại.
+- Mô hình thời gian §3.8 (Eq.17–21) không có forward phụ nào.
+
+Source PipeDream lấp phần cơ chế: `main_with_runtime.py:410-413` chạy `load_old_params()` → `run_backward()` → `load_new_params()` → `step()`, và `runtime.py:606` gọi `torch.autograd.backward` trên graph đã lưu (recompute chỉ là cờ tùy chọn, mặc định tắt). Bỏ horizontal stashing thì `load_old_params` không làm gì, và backward chạy trên graph cũ với weight hiện tại. Đó là phương án 2 (mixed-version) của §14.4.
+
+Quyết định (2026-09-25, người dùng xác nhận): chuyển TiMePReSt sang backward kiểu PipeDream (giữ graph, dùng weight live, không recompute) ở cả GĐ1 và GĐ2. Giữ bản recompute làm ablation. Run TiMePReSt ở §22 là dữ liệu của ablation đó. Đây là cách hiểu **suy ra** từ paper cùng cơ chế PipeDream, không phải paper mô tả trực tiếp.
+
+### 22.6. Cài đặt `backward_rule: graph` (2026-09-25)
+
+- `timeprest/swap.py`, `GraphForward`: trong forward, `torch.autograd.graph.saved_tensors_hooks` thay mọi tensor được lưu mà là tham số (hoặc view của tham số, như `weight.t()` của Linear) bằng tên và layout. Lúc backward, tensor đó được dựng lại từ version backward (`use(params)`). Kết quả như PipeDream chép weight vào module tại chỗ trước `torch.autograd.backward`, nhưng không đụng version counter. Không hỗ trợ autocast (weight bị lưu dưới dạng bản sao fp16); có kiểm tra để báo lỗi.
+- Graph không giữ giá trị weight của forward. Version cũ được giải phóng (`release_storage`) ngay khi không op nào còn đọc nó, đúng p.7 của paper. Graph chỉ giữ nó làm leaf nhận gradient.
+- Engine GĐ1 và runtime GĐ2 dùng chung cơ chế. Runtime giữ ("pin") version backward của PipeDream cho tới B.
+- Kiểm chứng (CPU, float64): ví dụ scalar §14.4 khớp công thức giải tích; Linear/Conv+BN khớp cách chép tại chỗ; engine khớp reference độc lập `reference.pipedream_swap_grads` (module thường + `p.data.copy_` + `backward`) cho TiMePReSt (MLP, VGG-BN, W=2/3); PipeDream `graph` = `recompute`; runtime 2 tiến trình static trùng engine, dynamic đúng quy tắc. Check 4 của GĐ1 trên VGG thật: sai lệch 0.0.
+- Run cũ: TiMePReSt ở §20 (GĐ1) và §22 (GĐ2) dùng quy tắc `recompute`, nay là dữ liệu cho ablation `timeprest_recompute`. Run PipeDream vẫn hợp lệ.
+

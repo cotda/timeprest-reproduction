@@ -223,7 +223,7 @@ class DistTrainer:
         pc = self.cfg["pipeline"]
         self.log(f"[dist] W={self.world} system={self.cfg['system']} schedule={pc['schedule']} N={pc['num_microbatches']} "
                  f"order={pc['order']} vertical_sync={pc['vertical_sync']} backward={pc['backward_version']} "
-                 f"backward_mode={pc['backward_mode']} partition={self.bounds} params/stage="
+                 f"backward_rule={pc['backward_rule']} partition={self.bounds} params/stage="
                  + ",".join(f"{n / 1e6:.2f}M" for n in self.n_params) + f" device={self.device}")
         prev = utils.read_csv(self.csv_path) if (self.rank == 0 and os.path.exists(self.csv_path)) else []
         cum = float(prev[-1]["cum_time_s"]) if prev else 0.0

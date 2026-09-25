@@ -36,7 +36,7 @@ PASS, FAIL = "PASS", "FAIL"
 def sys_cfg(base: dict, system: str, **over) -> dict:
     raw = copy.deepcopy(base)
     raw["system"] = system
-    for k in ("schedule", "vertical_sync", "backward_version"):
+    for k in ("schedule", "vertical_sync", "backward_version", "backward_rule"):
         raw["pipeline"][k] = None
     raw["pipeline"]["num_microbatches"] = base["checks"].get("num_microbatches", 3)
     for path, v in over.items():
@@ -127,7 +127,11 @@ def d2_dynamic(ctx):
             m = {"wall_s": round(wall, 2), "drained": True,
                  "recompute_micro": [L["st"]["recompute_micro"] for L in logs],
                  "graph_micro": [L["st"]["graph_micro"] for L in logs],
-                 "wait_time_s": [round(L["st"]["wait_time_s"], 3) for L in logs]}
+                 "wait_time_s": [round(L["st"]["wait_time_s"], 3) for L in logs],
+                 "backward_rule": pc["backward_rule"]}
+            if pc["backward_rule"] == "graph":   # PipeDream mechanism: never re-runs a forward
+                m["no_recompute"] = all(L["st"]["recompute_micro"] == 0 for L in logs)
+                ok &= m["no_recompute"]
             if pc["vertical_sync"]:
                 m["forward_vertical_sync"] = all(f[s][key] == f[0][key] for s in range(W) for key in f[s])
                 ok &= m["forward_vertical_sync"]

@@ -22,6 +22,10 @@ SYSTEM_PRESETS = {
     # TiMePReSt: nF1B, backward uses the latest version committed across the pipeline
     # (no horizontal stashing), forward keeps vertical sync.
     "timeprest": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "committed"},
+    # Ablation: TiMePReSt with the stage-local recompute backward used before 2026-09-25
+    # (paper_notes §22.5); every other system uses backward_rule "graph" (PipeDream's mechanism).
+    "timeprest_recompute": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "committed",
+                            "backward_rule": "recompute"},
     # Ablation Variant 1 (§4.10): nF1B but keep weight stashing.
     "variant1": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "stashed"},
     # Ablation Variant 2 (§4.10): 1F1B without weight stashing.
@@ -49,6 +53,8 @@ DEFAULTS: dict[str, Any] = {
         "partition": "auto",        # "auto" (balanced MACs) or list of block boundaries
         "max_inflight": "pipedream",  # "pipedream" (W - s per stage), int, or null
         "schedule": None, "vertical_sync": None, "backward_version": None,
+        "backward_rule": None,      # graph (PipeDream: backward on the stored graph, weights at the
+                                    # backward version) | recompute (ablation); null -> preset / graph
         # phase-2 runtime only (timeprest.dist); ignored by the single-GPU engine
         "order": "dynamic",         # dynamic (paper §3.2 rule on real arrivals) | static (Fig.2 slot order)
         "backward_mode": "auto",    # auto (keep graph when F/B versions match) | recompute
@@ -135,6 +141,10 @@ def resolve(cfg: dict) -> dict:
         # num_microbatches from the preset wins for 1F1B systems; other keys only if unset
         if k == "num_microbatches" or user_pipe.get(k) is None:
             pipe[k] = v
+    if pipe.get("backward_rule") is None:
+        pipe["backward_rule"] = "graph"
+    if pipe["backward_rule"] not in ("graph", "recompute"):
+        raise ValueError("pipeline.backward_rule must be graph|recompute")
     if pipe["schedule"] not in ("1F1B", "nF1B"):
         raise ValueError("pipeline.schedule must be 1F1B or nF1B")
     if pipe["backward_version"] not in ("stashed", "committed", "latest"):

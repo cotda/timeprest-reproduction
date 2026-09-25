@@ -58,6 +58,9 @@ nếu val loss tăng liên tục trong khi train loss giảm), thời gian, peak
 2. TiMePReSt: bỏ horizontal weight stashing, giữ vertical synchronization.
 3. Lịch nF1B: chia mini-batch thành N micro-batch, forward hết N, lấy loss trung bình, một lượt backward.
 4. Điều kiện W ≤ N+1 để version difference v = 1 (W = số worker/GPU).
+5. Backward khi F/B khác version: `pipeline.backward_rule: graph` (mặc định) = cơ chế PipeDream (giữ graph forward,
+   weight đọc ở version backward, không recompute); `recompute` chỉ để ablation (`system: timeprest_recompute`).
+   Quyết định 2026-09-25, xem paper_notes.md §22.5–22.6.
 Khi không chắc chi tiết nào, trích đúng mục/trang trong paper hoặc hỏi lại, không tự suy đoán.
 
 ## Giai đoạn (chỉ sang giai đoạn sau khi giai đoạn trước đạt tiêu chí)
