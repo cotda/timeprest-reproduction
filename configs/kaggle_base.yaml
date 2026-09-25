@@ -5,6 +5,11 @@ data:
   root: /kaggle/input/datasets/fedesoriano/cifar100   # Kaggle dataset; files train/test/meta may sit directly here
   download: false
   num_workers: 2
+training:
+  # paper gives no learning rate and only fixes a common mini-batch size (§4.5, p.8): each system
+  # uses its own best lr from configs/kaggle_sweep_graph.yaml, which is 0.02 for both
+  # (TiMePReSt graph 34.7 %, PipeDream 35.95 %; paper_notes §22.8-22.9)
+  lr: 0.02
 dist:
   p2p_backend: gloo               # stage-to-stage transfers through CPU + helper threads (as PipeDream)
   env:

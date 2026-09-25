@@ -1087,3 +1087,25 @@ Quyết định (2026-09-25, người dùng xác nhận): chuyển TiMePReSt san
 - Tái hiện trên CPU bằng engine GĐ1 (VGG-BN width 1/8, 20 lớp tổng hợp, M=96, N=3, SGD momentum 0.9, lr hằng): `graph` học chậm hơn ở lr 0.05, và **sụp về ln(20)** (dự đoán đều) ở lr 0.1 và 0.2. `recompute` và PipeDream đều học được. Engine khớp reference độc lập (module thường + chép weight tại chỗ), nên đây là tính chất của quy tắc, không phải bug cài đặt.
 - Diễn giải: `graph` là PipeDream **bỏ weight stashing**. Gradient của weight dùng activation, mask ReLU và thống kê BN của forward cũ, nhân với tín hiệu lan truyền qua weight mới; các thành phần này không còn thuộc cùng một hàm. `recompute` thì tính gradient chính xác của stage tại weight mới trên input cũ.
 - Bước tiếp theo: sweep lr cho `graph` (`configs/kaggle_sweep_graph.yaml`, lr 0.05/0.02/0.01/0.005, kèm `timeprest_recompute` và PipeDream) trước khi chọn quy tắc/lr cho chạy dài.
+
+### 22.8. Sweep lr sau khi đổi sang `graph` (Kaggle T4, engine GĐ1, 2026-09-25)
+
+`configs/kaggle_sweep_graph.yaml`: 20k ảnh train / 2k test, 8 epoch, warmup 2 epoch, cosine, M=192, 1 seed. Top-1 test (%) và thời gian tính toán 1 GPU / epoch:
+
+| lr | TiMePReSt `graph` | TiMePReSt `recompute` | PipeDream |
+|---|---|---|---|
+| 0.05 | 31.9 | **38.3** | 35.05 |
+| 0.02 | **34.7** | 36.6 | **35.95** |
+| 0.01 | 31.4 | 32.9 | 31.95 |
+| 0.005 | 26.6 | 26.75 | 28.05 |
+| Tính toán 1 GPU / epoch | 8.9 s | 11.6 s | 7.6 s |
+
+- Với warmup 2 epoch, `graph` không phân kỳ ở lr nào trong sweep. Tốt nhất ở lr 0.02, kém PipeDream 1.3 điểm (cỡ nhiễu 1 seed). D4 phân kỳ do warmup 1 epoch (lr lên 0.05 ngay trong epoch đầu). Runtime dynamic trên CPU tái hiện đúng hành vi của engine (static khớp từng số; dynamic sụp về ln 20 ở lr 0.1 giống static), nên không phải bug của runtime.
+- `graph` kém hơn theo epoch, khớp với câu của paper "statistical efficiency (number of epochs needed to achieve a particular accuracy) is compromised" (p.9). `recompute` thì **tốt hơn** PipeDream theo epoch, trái với paper. Đây là thêm một bằng chứng cho cách hiểu `graph`.
+- Tính toán: `graph` bỏ được ~23 % so với `recompute` (8.9 so với 11.6 s), đúng với dự đoán ở §22.2.
+
+### 22.9. Chọn lr cho GĐ2 với `graph` (2026-09-25, người dùng xác nhận quy tắc)
+
+- Paper không cho giá trị lr (Eq.1 chỉ có ký hiệu η) và không nói hai hệ dùng chung lr. Paper chỉ cố định **mini-batch size chung** "for fair comparison" (§4.5, p.8).
+- Quy tắc: paper nói gì thì theo paper; không nói thì mỗi hệ dùng lr tốt nhất của nó theo sweep. Theo §22.8, lr tốt nhất là **0.02 cho cả hai** (TiMePReSt `graph` 34.7 %, PipeDream 35.95 %). Sweep §19.4 cũng cho PipeDream tốt nhất ở 0.02 (35.8 %). Chênh lệch với 0.05 của PipeDream nằm trong nhiễu 1 seed.
+- `configs/kaggle_base.yaml`: `training.lr: 0.02`, warmup 5 epoch như cũ. Run mới: `kaggle_cifar100_vgg16_timeprest_graph`, `kaggle_cifar100_vgg16_pipedream_lr002`. Các run lr 0.05 ở §22 (PipeDream, TiMePReSt `recompute`) giữ làm tham khảo/ablation.

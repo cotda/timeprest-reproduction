@@ -1,5 +1,5 @@
 base: kaggle_base.yaml
-name: kaggle_cifar100_vgg16_pipedream
+name: kaggle_cifar100_vgg16_pipedream_lr002   # lr 0.02 (§22.9); the lr 0.05 run kept the old name
 system: pipedream
 output:
   require_checks: true
