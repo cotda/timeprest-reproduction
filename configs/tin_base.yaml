@@ -5,6 +5,8 @@ data:
   dataset: tinyimagenet
   root: /kaggle/input              # searched for tiny-imagenet-200/wnids.txt (any attached dataset)
   cache_dir: /kaggle/working/tin_cache   # decoded uint8 arrays (.npy, ~1.3 GB), reused by later runs
+  cache_search: /kaggle/input      # a ready cache attached as a dataset (train_x/train_y/val_x/val_y.npy +
+                                   # stats.json) is found and used first: no image folder, no decoding
   download: false
   augment: true                    # choice: random crop 64 pad 4 + horizontal flip (as CIFAR)
   num_workers: 2
@@ -15,6 +17,6 @@ model:
 training:
   epochs: 80                       # choice (user, 2026-09-25): paper Fig.8b runs ~140 epochs
   warmup_epochs: 5
-  lr: 0.02                         # placeholder until configs/tin_sweep.yaml; per-system values below
+  lr: 0.02                         # best of configs/tin_sweep.yaml for BOTH TiMePReSt and PipeDream (paper_notes §24.1)
 output:
   dir: /kaggle/working/runs/{name}

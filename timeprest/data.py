@@ -138,20 +138,39 @@ def _channel_stats(x, chunk: int = 5000) -> tuple[list[float], list[float]]:
     return mean.tolist(), np.sqrt(np.maximum(s2 / n - mean * mean, 0.0)).tolist()
 
 
+def _find_complete_cache(root: str, complete) -> str | None:
+    top = root.split("*")[0].rstrip("/\\") or "/"
+    if not os.path.isdir(top):
+        return None
+    for d, subdirs, files in os.walk(top, followlinks=True):
+        subdirs.sort()
+        if "stats.json" in files and complete(d):
+            return d
+    return None
+
+
 def tinyimagenet(data_cfg: dict):
     """Tiny-ImageNet-200 decoded once into uint8 arrays cached as .npy (data.cache_dir), then held
-    in memory. Normalisation statistics are computed on the training images."""
+    in memory. Normalisation statistics are computed on the training images. A complete cache found
+    under data.cache_search (e.g. the 5 files uploaded as a Kaggle dataset) is used directly."""
     import json
 
     import numpy as np
-    folder = _find_dir_with(data_cfg["root"], "wnids.txt")
-    cache = data_cfg.get("cache_dir") or os.path.join(os.environ.get("TMPDIR", "/tmp"), "timeprest_tin")
-    os.makedirs(cache, exist_ok=True)
     names = ["train_x", "train_y", "val_x", "val_y"]
+    complete = lambda d: all(os.path.exists(os.path.join(d, f)) for f in [n + ".npy" for n in names] + ["stats.json"])
+    cache = data_cfg.get("cache_dir") or os.path.join(os.environ.get("TMPDIR", "/tmp"), "timeprest_tin")
+    if not complete(cache) and data_cfg.get("cache_search"):
+        # a ready-made cache attached as a (read-only) dataset, wherever it is mounted
+        found = _find_complete_cache(data_cfg["cache_search"], complete)
+        if found:
+            cache = found
     paths = {n: os.path.join(cache, n + ".npy") for n in names}
     stats_path = os.path.join(cache, "stats.json")
-    ready = lambda: all(os.path.exists(p) for p in list(paths.values()) + [stats_path])
+    ready = lambda: complete(cache)
     if not ready():
+        # a complete cache (possibly a read-only Kaggle dataset of these 5 files) needs no image folder
+        folder = _find_dir_with(data_cfg["root"], "wnids.txt")
+        os.makedirs(cache, exist_ok=True)
         # one process decodes (lock file), the others wait for the finished cache
         lock = os.path.join(cache, ".building")
         try:
@@ -187,6 +206,7 @@ def tinyimagenet(data_cfg: dict):
     augment = data_cfg.get("augment", True)
     train = ArrayImages(to_chw(arr["train_x"]), torch.from_numpy(arr["train_y"]), stats["mean"], stats["std"], augment)
     test = ArrayImages(to_chw(arr["val_x"]), torch.from_numpy(arr["val_y"]), stats["mean"], stats["std"], False)
+    train.cache_dir = test.cache_dir = cache         # where the arrays came from (logged by the notebook)
     return train, test
 
 

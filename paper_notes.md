@@ -1205,3 +1205,18 @@ Mục tiêu: lặp lại workload paper dùng nhiều nhất (Fig.S4 Cluster A, 
 | Check | — | `configs/tin_quick.yaml`: D1–D4 cho 5 hệ trên 10k ảnh; D4 yêu cầu top-1 > 1.5 % (3 × ngẫu nhiên) |
 
 Số liệu paper để so (§11.1, `[F≈]`): Fig.8b (Cluster B, W=3, ~140 epoch) TiMePReSt ~68–72 %, PipeDream ~73–77 %; Fig.13a (Cluster C) TiMePReSt ~63–67 %, Variant 1 ~78–82 %, Variant 2 ~33–37 % (cùng số time point). Các mức này cao so với VGG-16 train từ đầu trên Tiny-ImageNet 64×64 (thường ~55–60 %), nên paper có thể đã resize ảnh hoặc dùng pretrained (không nêu, §8.3). Chỉ so **xu hướng** giữa các hệ, không so số tuyệt đối.
+
+### 24.1. Check và sweep lr trên Tiny-ImageNet (Kaggle, code `3250cf46326a`, 2026-09-25)
+
+- Dữ liệu: 100 000 ảnh train, 10 000 ảnh val (dùng làm tập đánh giá), 64×64. Mean (0.480, 0.448, 0.398), std (0.276, 0.269, 0.282), khớp thống kê thường gặp của Tiny-ImageNet.
+- D1–D4 PASS cho cả 5 hệ (`tin_quick.yaml`).
+- Sweep (20k ảnh, 6 epoch, warmup 2, engine 1 GPU), top-1 / top-5 (%):
+
+| lr | TiMePReSt | PipeDream |
+|---|---|---|
+| 0.02 | **17.2** / 40.4 | **18.45** / 41.9 |
+| 0.01 | 13.85 / 35.0 | 14.4 / 36.2 |
+
+- lr tốt nhất của cả hai hệ là **0.02**, giữ nguyên trong `tin_base.yaml` (`pipedream_vsync` và các variant dùng cùng giá trị, §24). 0.02 là cận trên của sweep rút gọn. Không thử 0.05 vì trên CIFAR `graph` ở 0.05 kém hơn 0.02 (§22.8) và phân kỳ khi warmup ngắn (§22.7).
+
+- Hạ tầng (2026-09-26): dataset gốc (~120k file JPEG) làm bước "Adding data sources" của Kaggle mất > 10 phút. Cache `.npy` (5 file, 1.3 GB, tạo trên máy local, mean/std trùng từng chữ số với bản tạo trên Kaggle) được upload thành dataset `tin-cache` trên mỗi tài khoản. `data.cache_search: /kaggle/input` tự tìm cache đó (đường dẫn khác nhau giữa 2 tài khoản), không cần ảnh gốc và bỏ qua bước giải mã.

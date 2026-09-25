@@ -39,11 +39,11 @@ def test_tinyimagenet_layout_labels_and_cache(tmp_path):
     xt, _ = test[0]                                   # grayscale val image converted to RGB
     assert xt.shape == (3, 64, 64)
     assert torch.equal(test[1][0], test[1][0])        # no augmentation on the evaluation split
-    # second call reads the .npy cache (the image folder may disappear)
+    # a complete cache is enough on its own (e.g. a Kaggle dataset of the 5 cache files): no image folder
     import shutil
-    shutil.rmtree(root / "some-dataset" / "tiny-imagenet-200" / "train")
-    train2, _ = build_datasets(cfg, 2, seed=0)
-    assert torch.equal(train2.x, train.x)
+    shutil.rmtree(root)
+    train2, test2 = build_datasets(dict(cfg, root=str(tmp_path / "missing")), 2, seed=0)
+    assert torch.equal(train2.x, train.x) and torch.equal(test2.targets, test.targets)
 
 
 def test_vgg_global_pool_head_on_64px():
@@ -65,3 +65,20 @@ def test_channel_stats_match_full_computation():
     f = x.reshape(-1, 3).astype(np.float64) / 255.0
     np.testing.assert_allclose(mean, f.mean(0), rtol=1e-12)
     np.testing.assert_allclose(std, f.std(0), rtol=1e-9)
+
+
+def test_ready_cache_attached_as_dataset_is_found(tmp_path):
+    """The 5 cache files uploaded as a Kaggle dataset (read-only, account-specific path) are found
+    under data.cache_search and used without any image folder or decoding."""
+    import shutil
+    root = make_tree(tmp_path)
+    build_datasets({"dataset": "tinyimagenet", "root": str(root), "cache_dir": str(tmp_path / "made")}, 2, seed=0)
+    attached = tmp_path / "input" / "datasets" / "someone" / "tin-cache"
+    shutil.copytree(tmp_path / "made", attached)
+    (attached / ".building").unlink(missing_ok=True)
+    shutil.rmtree(root)
+    cfg = {"dataset": "tinyimagenet", "root": str(tmp_path / "input"), "cache_dir": str(tmp_path / "working" / "tin_cache"),
+           "cache_search": str(tmp_path / "input")}
+    train, test = build_datasets(cfg, 2, seed=0)
+    assert len(train) == 6 and dataset_targets(test).tolist() == [0, 1]
+    assert not (tmp_path / "working").exists()        # nothing decoded or written
