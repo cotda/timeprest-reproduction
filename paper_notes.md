@@ -1080,3 +1080,10 @@ Quyết định (2026-09-25, người dùng xác nhận): chuyển TiMePReSt san
 - Kiểm chứng (CPU, float64): ví dụ scalar §14.4 khớp công thức giải tích; Linear/Conv+BN khớp cách chép tại chỗ; engine khớp reference độc lập `reference.pipedream_swap_grads` (module thường + `p.data.copy_` + `backward`) cho TiMePReSt (MLP, VGG-BN, W=2/3); PipeDream `graph` = `recompute`; runtime 2 tiến trình static trùng engine, dynamic đúng quy tắc. Check 4 của GĐ1 trên VGG thật: sai lệch 0.0.
 - Run cũ: TiMePReSt ở §20 (GĐ1) và §22 (GĐ2) dùng quy tắc `recompute`, nay là dữ liệu cho ablation `timeprest_recompute`. Run PipeDream vẫn hợp lệ.
 
+
+### 22.7. Quy tắc `graph` phân kỳ ở lr 0.05 (Kaggle D4, 2026-09-25)
+
+- D1–D3 PASS với `graph` (runtime trùng engine; D2 `no_recompute: True`). **D4 FAIL**: TiMePReSt train loss 5.09 → 5.20 → 4.68 (> ln 100), top-1 1–2 %. PipeDream bình thường (4.56 → 3.80, 11.6 %). Peak GPU0 của TiMePReSt tăng từ 551 lên **917 MB** (PipeDream 971 MB), vì phải giữ graph của N micro-batch.
+- Tái hiện trên CPU bằng engine GĐ1 (VGG-BN width 1/8, 20 lớp tổng hợp, M=96, N=3, SGD momentum 0.9, lr hằng): `graph` học chậm hơn ở lr 0.05, và **sụp về ln(20)** (dự đoán đều) ở lr 0.1 và 0.2. `recompute` và PipeDream đều học được. Engine khớp reference độc lập (module thường + chép weight tại chỗ), nên đây là tính chất của quy tắc, không phải bug cài đặt.
+- Diễn giải: `graph` là PipeDream **bỏ weight stashing**. Gradient của weight dùng activation, mask ReLU và thống kê BN của forward cũ, nhân với tín hiệu lan truyền qua weight mới; các thành phần này không còn thuộc cùng một hàm. `recompute` thì tính gradient chính xác của stage tại weight mới trên input cũ.
+- Bước tiếp theo: sweep lr cho `graph` (`configs/kaggle_sweep_graph.yaml`, lr 0.05/0.02/0.01/0.005, kèm `timeprest_recompute` và PipeDream) trước khi chọn quy tắc/lr cho chạy dài.
