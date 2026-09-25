@@ -1144,3 +1144,47 @@ Chung: VGG-16-BN / CIFAR-100, W=2, 160 epoch, lr 0.02, warmup 5, cosine, `backwa
 | E4 lr 0.05 | (để sau) | `graph` và PipeDream ở lr 0.05 | — | Kiểm tra độ nhạy theo lr (§22.10) |
 
 Lượng dữ liệu truyền mỗi epoch và mỗi chiều ≈ 3120 MB ở cả hai hệ (§22.2), nên ở 1 Gbit/s riêng việc truyền đã mất ~26 s/epoch, lớn hơn thời gian tính (~15 s). Câu hỏi của E3 là: ở mức băng thông trung gian, việc chia micro-batch của TiMePReSt (Fig.3) có che thời gian truyền tốt hơn 1F1B không.
+
+### 23.1. Kết quả GĐ3 (Kaggle 2×T4, code `ae7d8321017d`, D1–D4 PASS cho cả 4 hệ, 2026-09-25)
+
+Nguồn: `results/phase3/run1_gd3/` (runs/ + bench_comm/), bảng đầy đủ `results/phase3/report.md`. Mọi run: 160 epoch, lr 0.02, `graph`, seed 0, 1 seed/cấu hình. Chênh lệch dưới ~0.5–1 điểm top-1 coi là nhiễu (chưa đo phương sai giữa các seed).
+
+**E1 + E2 (so với baseline TiMePReSt N=3 và PipeDream của run2):**
+
+| Cấu hình | Top-1 cuối | Epoch tới 65 / 70 % | Thời gian/epoch | Peak GPU0 / GPU1 | Paper nói | Khớp? |
+|---|---|---|---|---|---|---|
+| TiMePReSt N=3 (baseline) | 72.44 | 46 / 90 | 16.35 s | 853 / 441 MB | — | — |
+| PipeDream (baseline) | 72.25 | 61 / 86 | 15.08 s | 905 / 353 MB | — | — |
+| Variant 1 (nF1B + stashing) | 72.10 | 58 / 90 | 17.72 s | 864 / 441 MB | Chất lượng tốt hơn, tốn bộ nhớ hơn | Không về chất lượng (ngang); bộ nhớ chỉ +11 MB; chậm hơn 8 % |
+| Variant 2 (1F1B, bỏ stashing) | 72.46 | 59 / 84 | 15.67 s | 895 / 420 MB | Chậm hơn main theo thời gian, ngang theo epoch | Ngang theo epoch: có. Thời gian: **ngược** (nhanh hơn 4 %, cùng máy) |
+| N=2, M=192 | 71.78 | 57 / 92 | 17.03 s | 863 / 402 MB | N=3 tốt hơn N=2 | Cùng chiều, nhưng −0.66 điểm nằm trong nhiễu |
+| N=2, M=384 | 69.67 | 50 / — | 16.37 s | 1704 / 525 MB | Kém nhất | **Có** (−2.8 điểm), nhưng bị nhiễu bởi số update/epoch giảm một nửa ở cùng lr |
+
+**E3 (thời gian/epoch theo băng thông giả lập mỗi chiều, latency 0.1 ms/message, 2 epoch, đo epoch 2):**
+
+| Băng thông | TiMePReSt | PipeDream | TiMePReSt / PipeDream | Tối thiểu chỉ để truyền (3120 MB/chiều) |
+|---|---|---|---|---|
+| cùng máy | 17.64 s | 16.56 s | 1.065 | ~0 |
+| 10 Gbit/s | 18.06 s | 16.98 s | 1.064 | 2.6 s |
+| 5 Gbit/s | 18.26 s | 17.92 s | 1.019 | 5.2 s |
+| **2 Gbit/s** | **23.85 s** | 27.51 s | **0.867** | 13.1 s |
+| **1 Gbit/s** | **37.75 s** | 41.55 s | **0.909** | 26.2 s |
+| 0.5 Gbit/s | 67.49 s | 69.29 s | 0.974 | 52.3 s |
+
+- Khi truyền rẻ (cùng máy, ≥ 5 Gbit/s), TiMePReSt chậm hơn 2–7 % vì micro-batch nhỏ tốn tính toán hơn ở stage 2 (§22.10).
+- Khi truyền đắt ngang tính toán (1–2 Gbit/s), **TiMePReSt nhanh hơn 9–13 %**. Phần vượt giới hạn truyền: PipeDream 27.5 − 13.1 ≈ 14.4 s (gần như không che được tính toán), TiMePReSt 23.9 − 13.1 ≈ 10.8 s. Lý do: với micro-batch, stage 2 bắt đầu forward micro-batch A trong khi B, C vẫn đang truyền. Đây đúng là cơ chế chồng lấp truyền/tính của Fig.3 và §3.8. PipeDream phải chờ nhận xong cả mini-batch 192.
+- Khi truyền áp đảo (0.5 Gbit/s), cả hai hệ bị giới hạn bởi đường truyền và khoảng cách thu hẹp còn 2.6 %.
+- Kết luận: ưu thế thời gian của paper **tái hiện được có điều kiện**. Nó xuất hiện khi thời gian truyền giữa stage cùng cỡ với thời gian tính (mạng ~1–2 Gbit/s với mô hình này), đúng kiểu cụm nhiều máy mỗi máy 1 GPU mà paper dùng (§4.1). Nó không xuất hiện khi 2 GPU chung một máy. Mức hơn (9–13 %) nhỏ hơn nhiều so với Fig.4a/Fig.16 của paper. Mạng thật của paper không rõ (§13), và đây là mạng giả lập (không có TCP, không có tranh chấp).
+
+**Tóm tắt các claim của paper sau GĐ1–GĐ3 (VGG-16-BN / CIFAR-100, W=2, 1 seed):**
+
+| Claim | Kết quả |
+|---|---|
+| Chất lượng ngang PipeDream (theo epoch) | Tái hiện được (72.44 so với 72.25) |
+| Cần nhiều epoch hơn | Không rõ: số epoch tới 70 % gần như bằng nhau (90 so với 86) |
+| Nhanh hơn PipeDream | Có điều kiện: chỉ khi truyền đắt (E3, 1–2 Gbit/s: 9–13 %); cùng máy thì chậm hơn 6–8 % |
+| Tiết kiệm bộ nhớ | Yếu: GPU0 −6 %, GPU1 +25 % (vertical sync) với `graph`. Mức −41 % chỉ có ở bản `recompute` |
+| Variant 1 tốt hơn về chất lượng | Không tái hiện được (ngang) |
+| Variant 2 chậm hơn theo thời gian | Ngược ở cùng máy (nhanh hơn 4 %). Chưa đo với mạng giả lập |
+| N=3 tốt hơn N=2; N=2 + batch lớn kém nhất | Cùng chiều; chỉ trường hợp batch lớn vượt mức nhiễu |
+| v = 1 khi W ≤ N+1 | Đúng với lịch lý tưởng (GĐ1); trên phần cứng thật B(i) và B(i−1) chồng nhau ở 81/260 (TiMePReSt) mini-batch |

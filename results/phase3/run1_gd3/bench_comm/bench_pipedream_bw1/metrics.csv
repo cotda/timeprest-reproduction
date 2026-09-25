@@ -1,0 +1,3 @@
+epoch,train_loss,train_acc1,test_loss,test_acc1,test_acc5,gap_loss,lr,epoch_time_s,busy_frac,wait_time_s,peak_mem_mb,mb_sent,msgs_sent,recompute_micro,max_snapshots,bwd_overlap_minibatches,samples,cum_time_s
+1,4.33639,4.98,3.84553,10.0,31.4,-0.49086,1.5384615384615384e-05,41.091,0.327|0.327,27.43|27.21,905.8|367.8,3120.0|3120.0,260|260,0|0,2|0,191,49920,41.09
+2,3.60229,14.034,3.60478,14.4,43.0,0.00249,0.004015384615384615,41.547,0.340|0.330,27.19|27.40,905.8|367.8,3120.0|3120.0,260|260,0|0,2|0,211,49920,82.64

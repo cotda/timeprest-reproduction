@@ -30,6 +30,14 @@ def _split(v: str) -> list[float]:
     return [float(x) for x in str(v).split("|")]
 
 
+def _group(path: str) -> str:
+    """runN_... directory a run belongs to (skipping a plain `runs/` level)."""
+    parent = os.path.dirname(os.path.normpath(path))
+    if os.path.basename(parent) == "runs":
+        parent = os.path.dirname(parent)
+    return os.path.basename(parent)
+
+
 def summarize_run(path: str) -> dict:
     rows = read_csv(os.path.join(path, "metrics.csv"))
     cfg = json.load(open(os.path.join(path, "config.json"), encoding="utf-8"))
@@ -41,7 +49,7 @@ def summarize_run(path: str) -> dict:
         reach[th] = (i + 1, cum[i] / 3600) if i is not None else (None, None)
     last = rows[-1]
     return {
-        "group": os.path.basename(os.path.dirname(path.rstrip("/\\"))), "run": os.path.basename(path.rstrip("/\\")),
+        "group": _group(path), "run": os.path.basename(path.rstrip("/\\")),
         "system": cfg["system"], "schedule": pc["schedule"],
         # stashed: forward and backward versions coincide, both rules give the same gradients;
         # runs before §22.6 have no backward_rule key and used recompute

@@ -1,0 +1,355 @@
+{
+  "code_hash": "ae7d8321017d",
+  "config": "configs/kaggle_bench_comm.yaml",
+  "overrides": [],
+  "bench": {
+    "systems": [
+      "timeprest",
+      "pipedream"
+    ],
+    "bandwidths_gbps": [
+      null,
+      10,
+      5,
+      2,
+      1,
+      0.5
+    ],
+    "latency_ms": 0.1,
+    "epochs": 2
+  },
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "rows": [
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 17.635,
+      "busy_frac": [
+        0.913,
+        0.886
+      ],
+      "wait_time_s": [
+        1.16,
+        0.68
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        780.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        852.6,
+        442.1
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 16.564,
+      "busy_frac": [
+        0.937,
+        0.635
+      ],
+      "wait_time_s": [
+        0.76,
+        5.41
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        260.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        905.8,
+        366.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 10,
+      "latency_ms": 0.1,
+      "epoch_time_s": 18.063,
+      "busy_frac": [
+        0.87,
+        0.866
+      ],
+      "wait_time_s": [
+        2.01,
+        0.91
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        780.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        852.1,
+        452.0
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 10,
+      "latency_ms": 0.1,
+      "epoch_time_s": 16.977,
+      "busy_frac": [
+        0.838,
+        0.59
+      ],
+      "wait_time_s": [
+        2.44,
+        6.51
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        260.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        905.8,
+        367.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 5,
+      "latency_ms": 0.1,
+      "epoch_time_s": 18.262,
+      "busy_frac": [
+        0.808,
+        0.858
+      ],
+      "wait_time_s": [
+        3.15,
+        1.1
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        780.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        852.4,
+        453.7
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 5,
+      "latency_ms": 0.1,
+      "epoch_time_s": 17.921,
+      "busy_frac": [
+        0.656,
+        0.558
+      ],
+      "wait_time_s": [
+        5.87,
+        7.45
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        260.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        905.8,
+        367.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 23.853,
+      "busy_frac": [
+        0.545,
+        0.6
+      ],
+      "wait_time_s": [
+        10.56,
+        8.6
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        780.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        852.4,
+        454.9
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 27.509,
+      "busy_frac": [
+        0.465,
+        0.468
+      ],
+      "wait_time_s": [
+        14.46,
+        14.24
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        260.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        905.8,
+        367.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 37.748,
+      "busy_frac": [
+        0.37,
+        0.391
+      ],
+      "wait_time_s": [
+        23.47,
+        22.04
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        780.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        852.1,
+        456.7
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 41.547,
+      "busy_frac": [
+        0.34,
+        0.33
+      ],
+      "wait_time_s": [
+        27.19,
+        27.4
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        260.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        905.8,
+        367.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 0.5,
+      "latency_ms": 0.1,
+      "epoch_time_s": 67.491,
+      "busy_frac": [
+        0.246,
+        0.308
+      ],
+      "wait_time_s": [
+        50.64,
+        45.64
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        780.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        852.1,
+        454.7
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 0.5,
+      "latency_ms": 0.1,
+      "epoch_time_s": 69.288,
+      "busy_frac": [
+        0.219,
+        0.229
+      ],
+      "wait_time_s": [
+        53.87,
+        52.88
+      ],
+      "mb_sent": [
+        3120.0,
+        3120.0
+      ],
+      "msgs_sent": [
+        260.0,
+        260.0
+      ],
+      "peak_mem_mb": [
+        905.8,
+        367.8
+      ],
+      "epochs_timed": 2
+    }
+  ]
+}

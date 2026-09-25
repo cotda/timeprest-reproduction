@@ -1,0 +1,38 @@
+{
+  "name": "kaggle_cifar100_vgg16_timeprest_n2",
+  "system": "timeprest",
+  "epochs_done": 160,
+  "best_test_acc1": 72.07,
+  "best_epoch": 159,
+  "mean_epoch_time_s": 16.984044025157235,
+  "final": {
+    "epoch": "160",
+    "train_loss": "0.00458",
+    "train_acc1": "99.98",
+    "test_loss": "1.16237",
+    "test_acc1": "71.78",
+    "test_acc5": "91.34",
+    "gap_loss": "1.15779",
+    "lr": "2.0539576548717075e-06",
+    "epoch_time_s": "16.916",
+    "busy_frac": "0.931|0.793",
+    "wait_time_s": "0.87|2.56",
+    "peak_mem_mb": "862.7|402.3",
+    "mb_sent": "3120.0|3120.0",
+    "msgs_sent": "520|260",
+    "recompute_micro": "0|0",
+    "max_snapshots": "0|2",
+    "bwd_overlap_minibatches": "158",
+    "samples": "49920",
+    "cum_time_s": "2716.39"
+  },
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "code_hash": "ae7d8321017d"
+}
