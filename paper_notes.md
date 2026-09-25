@@ -1013,7 +1013,7 @@ Kiểm chứng local (CPU, gloo, 2 tiến trình): static trùng bit-exact với
 
 ## 22. Kết quả GĐ2 — VGG-16-BN / CIFAR-100, W=2, pipeline thật 2×T4 (Kaggle, 2026-09-25)
 
-Nguồn: `results/results/results_phase2/` (code `573f49af60d8`, seed 0, 1 seed/hệ, cấu hình như §19–§21, truyền giữa stage bằng gloo). Check D1–D4 đều PASS trước khi chạy dài. Cả hai hệ chạy hết 160 epoch, không treo, không NaN.
+Nguồn: `results/phase2/run1_lr0.05_timeprest-recompute/` (code `573f49af60d8`, seed 0, 1 seed/hệ, cấu hình như §19–§21, truyền giữa stage bằng gloo). Check D1–D4 đều PASS trước khi chạy dài. Cả hai hệ chạy hết 160 epoch, không treo, không NaN.
 
 ### 22.1. Chất lượng
 
@@ -1109,3 +1109,23 @@ Quyết định (2026-09-25, người dùng xác nhận): chuyển TiMePReSt san
 - Paper không cho giá trị lr (Eq.1 chỉ có ký hiệu η) và không nói hai hệ dùng chung lr. Paper chỉ cố định **mini-batch size chung** "for fair comparison" (§4.5, p.8).
 - Quy tắc: paper nói gì thì theo paper; không nói thì mỗi hệ dùng lr tốt nhất của nó theo sweep. Theo §22.8, lr tốt nhất là **0.02 cho cả hai** (TiMePReSt `graph` 34.7 %, PipeDream 35.95 %). Sweep §19.4 cũng cho PipeDream tốt nhất ở 0.02 (35.8 %). Chênh lệch với 0.05 của PipeDream nằm trong nhiễu 1 seed.
 - `configs/kaggle_base.yaml`: `training.lr: 0.02`, warmup 5 epoch như cũ. Run mới: `kaggle_cifar100_vgg16_timeprest_graph`, `kaggle_cifar100_vgg16_pipedream_lr002`. Các run lr 0.05 ở §22 (PipeDream, TiMePReSt `recompute`) giữ làm tham khảo/ablation.
+
+### 22.10. Kết quả chạy dài GĐ2 với `graph`, lr 0.02 (Kaggle 2×T4, 2026-09-25)
+
+Nguồn: `results/phase2/run2_lr0.02_timeprest-graph/` (code `bdf5b8b3ebbc`, D1–D4 PASS, seed 0, 1 seed/hệ). Tham khảo: các run lr 0.05 ở §22 (`results/phase2/run1_lr0.05_timeprest-recompute/`).
+
+| | TiMePReSt `graph` lr 0.02 | PipeDream lr 0.02 | TiMePReSt `recompute` lr 0.05 | PipeDream lr 0.05 |
+|---|---|---|---|---|
+| Top-1 cuối / TB 10 epoch cuối | 72.44 / 72.41 | 72.25 / 72.23 | 73.99 / 73.96 | 73.46 / 73.44 |
+| Epoch tới 60 / 65 / 70 / 72 % | 22 / 46 / 90 / 115 | 22 / 61 / 86 / 118 | 28 / 72 / 105 / 116 | 38 / 87 / 105 / 113 |
+| Thời gian tới 70 / 72 % | 0.41 / 0.52 h | 0.36 / 0.50 h | 0.56 / 0.62 h | 0.44 / 0.47 h |
+| Thời gian/epoch (trung vị) | 16.35 s | 15.08 s | 19.13 s | 15.05 s |
+| Peak GPU0 / GPU1 | 853 / 441 MB | 905 / 353 MB | 537 / 441 MB | 905 / 353 MB |
+| Tỉ lệ bận GPU0 / GPU1 | 0.93 / 0.92 | 0.98 / 0.73 | 0.91 / 0.94 | 0.98 / 0.73 |
+| `bwd_overlap_minibatches` / 260 | 81 | 258 | 259 | 259 |
+
+- **Chất lượng**: ở cùng lr, hai hệ ngang nhau (72.44 so với 72.25) và số epoch tới từng mốc gần nhau. Không thấy rõ "cần nhiều epoch hơn".
+- **Thời gian**: TiMePReSt `graph` vẫn chậm hơn **~8 %**/epoch (trước là 27 % với `recompute`). Thời gian op trung vị (epoch 1): stage 1 mỗi mini-batch 3×9.8 + 25.4 = 54.8 ms (PipeDream 28.0 + 24.8 = 52.8 ms); **stage 2** 3×6.5 + 42.8 = **62.2 ms** (PipeDream 12.6 + 39.2 = 51.8 ms). Stage 2 là nút thắt của TiMePReSt: 62.2 ms × 260 ≈ 16.2 s ≈ thời gian epoch. Stage 2 (conv cuối + FC, không gian 4×4→1×1) có ít tính toán trên mỗi kernel, nên chạy 3 micro-batch 64 tốn hơn 1 batch 192 (chi phí cố định mỗi kernel, và 3 lượt backward riêng theo micro-batch). Lịch của TiMePReSt cân bằng hơn (bận 0.93/0.92 so với 0.98/0.73), nhưng tổng công việc GPU nhiều hơn ~18 %. Truyền dữ liệu không phải nguyên nhân (cùng một máy, GPU1 của PipeDream chờ 3.8 s/epoch).
+- **Bộ nhớ**: với `graph`, GPU0 chỉ giảm 6 % (853 so với 905 MB), GPU1 tăng 25 % (vertical sync giữ 2 version). Mức giảm 41 % trước đây đến từ `recompute` (chỉ giữ input của stage).
+- **lr**: sweep 8 epoch chọn 0.02, nhưng với 160 epoch thì lr 0.05 cho PipeDream cao hơn 1.2 điểm (73.46 so với 72.25). Sweep ngắn thiên về lr nhỏ. Chưa biết `graph` ở lr 0.05 với warmup 5 epoch cho kết quả thế nào.
+- **GĐ2 đạt tiêu chí** (ổn định, không deadlock, so sánh được thời gian/epoch và peak memory). Mức tuyên bố: tái hiện được chất lượng ngang nhau; **không tái hiện được** ưu thế thời gian và bộ nhớ trên 2 GPU cùng một máy.
