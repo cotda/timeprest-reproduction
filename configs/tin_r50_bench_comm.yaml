@@ -1,0 +1,15 @@
+# ResNet-50 / Tiny-ImageNet: epoch time vs emulated bandwidth, both systems on the SAME machine (20k images).
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.bench_comm --config configs/tin_r50_bench_comm.yaml
+base: tin_bench_comm.yaml
+name: tin_r50_bench_comm
+model:
+  name: resnet50
+  num_classes: 200
+  stem: conv3_pool
+output:
+  dir: /kaggle/working/tin_r50_bench_comm
+bench:
+  systems: [timeprest, pipedream]
+  bandwidths_gbps: [null, 2, 1]
+  latency_ms: 0.1
+  epochs: 2

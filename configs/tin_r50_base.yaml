@@ -1,0 +1,8 @@
+# ResNet-50 / Tiny-ImageNet-200 on the real 2-GPU pipeline (paper Fig.5, Cluster A = 2 workers), paper_notes §25.
+base: tin_base.yaml
+model:
+  name: resnet50
+  num_classes: 200
+  stem: conv3_pool                 # choice (user, 2026-09-26): 3x3 conv stride 1 + 2x2 max-pool -> 32x32 into layer1
+training:
+  lr: 0.02                         # placeholder until configs/tin_r50_sweep.yaml

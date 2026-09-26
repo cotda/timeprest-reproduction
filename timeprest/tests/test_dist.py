@@ -36,6 +36,7 @@ def engine_reference(system, model, K, N, epochs=1, rule="graph"):
 
 @pytest.mark.parametrize("system,model,rule,mode", [
     ("timeprest", "mlp", "graph", "auto"), ("timeprest", "vgg", "graph", "auto"), ("pipedream", "vgg", "graph", "auto"),
+    ("timeprest", "resnet", "graph", "auto"), ("pipedream", "resnet", "graph", "auto"),
     ("timeprest", "mlp", "recompute", "recompute"), ("timeprest", "mlp", "recompute", "auto"),
     ("pipedream", "mlp", "recompute", "auto"), ("timeprest", "vgg", "recompute", "auto")])
 def test_static_order_matches_single_process_engine(tmp_path, system, model, rule, mode):

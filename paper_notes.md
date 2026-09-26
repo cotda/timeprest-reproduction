@@ -1291,3 +1291,19 @@ Cách tính: accuracy sau epoch cuối cùng đã xong trước thời điểm T
 **(c) Đợt chạy thêm seed** (seed 1, 2; `configs/tin_{timeprest,pipedream}_s{1,2}.yaml`). Mỗi seed chạy TiMePReSt và PipeDream trên cùng tài khoản, để so được cả thời gian. Mục đích: đo nhiễu giữa các seed, xác nhận hay bác bỏ (1) chất lượng cuối ngang nhau, (2) nF1B nhanh hơn ở giữa quá trình, (3) hai chế độ thời gian của lịch dynamic.
 
 **(d) Một cách hiểu khác về baseline 1F1B trong paper** (chưa kiểm tra). "Reducing the number of backward passes from N to 1" và Eq.17 (2(W−1)·N·D) chỉ đúng nếu 1F1B dùng để so chạy **trên từng micro-batch** (N lượt backward mỗi mini-batch). Mâu thuẫn với "same mini-batch size" (§4.5). Nếu PipeDream của paper chạy 1F1B với batch = micro-batch, mỗi epoch sẽ có gấp N lần số lượt backward, message và bước cập nhật. Đây có thể là một phần lý do nó chậm hơn 5–6 lần trong Fig.16 (mình đo được tối đa ~1.2 lần). Có thể kiểm tra bằng `bench_comm` với PipeDream M=64.
+
+## 25. ResNet-50 / Tiny-ImageNet-200 — thiết kế (2026-09-26)
+
+Workload khớp điều kiện W=2 nhất của paper: **Fig.5 (Cluster A, 2 máy)**, trong phần chính. Hệ: TiMePReSt, PipeDream (code, không vsync; trên Tiny-ImageNet vsync không đổi kết quả, §24.2). Không chạy ablation. Config `configs/tin_r50_*.yaml`, notebook `tinyimagenet_kaggle.ipynb` mục 9.
+
+| Hạng mục | Paper | Lựa chọn `[I]` |
+|---|---|---|
+| Kiến trúc | Chỉ ghi "ResNet-50" (§8.3) | Bottleneck [3, 4, 6, 3], BN, layout torchvision v1.5 (stride ở conv 3×3), train từ đầu, 23.9M tham số |
+| Stem cho 64×64 | Không nêu | **Conv 3×3 stride 1 + max-pool 2×2** (người dùng chọn): 32×32 vào layer1, 4×4 vào head. ResNet-50 trong repo PipeDream (`models/resnet50`) là bản ImageNet (7×7 stride 2 + max-pool, `AvgPool2d(7)`, 224×224). Không theo nó vì paper không nói model lấy từ repo đó; quy tắc "theo PipeDream" chỉ áp cho cơ chế TiMePReSt kế thừa. Bản ImageNet ở 64×64 chỉ còn 2×2 ở cuối |
+| Head | — | Global average pooling (= `AdaptiveAvgPool2d(1)` của torchvision) + Linear(2048, 200) |
+| Chi phí | Fig.16: phút/epoch ResNet-50 ≈ VGG-16 trên Tiny-ImageNet | 1.30 GMAC/ảnh (VGG-16 ở 64×64: 1.25). Partition `auto` `[0, 9, 18]` (stage 1: stem + layer1 + layer2 + khối đầu của layer3), activation ở biên 1024×8×8 = 256 KB/ảnh (bằng VGG) |
+| Còn lại | — | Như §24: 80 epoch, M=192, N=3, warmup 5, cosine; lr từ sweep `tin_r50_sweep.yaml` (0.05/0.02); bench cùng máy (∞/2/1 Gbit/s) |
+
+Kiểm chứng local: quy tắc `graph` với khối residual khớp reference độc lập (engine, float64); PipeDream stash khớp gradient toàn model; runtime 2 tiến trình static trùng engine; check D1–D2 (CPU) PASS.
+
+**Sai khác đã phát hiện ở VGG (ghi bổ sung cho §19):** VGG-16 trong repo PipeDream là bản ImageNet **không BatchNorm** (classifier FC). Mình dùng VGG-16-**BN** với head 1 lớp Linear (lựa chọn từ GĐ1; paper không nêu biến thể). Kết quả so sánh giữa các hệ vẫn hợp lệ (mọi hệ cùng model), nhưng BN có thể là một phần lý do nF1B học nhanh hơn (§24.4b). Chạy thêm VGG không BN sẽ kiểm tra trực tiếp điều này (chưa làm).

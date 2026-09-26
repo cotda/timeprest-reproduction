@@ -1,0 +1,15 @@
+# Short LR sweep for ResNet-50 / Tiny-ImageNet (single GPU, phase-1 engine; best lr per system, §22.9).
+#     python -m timeprest.sweep --config configs/tin_r50_sweep.yaml
+base: tin_sweep.yaml
+name: tin_r50_sweep
+model:
+  name: resnet50
+  num_classes: 200
+  stem: conv3_pool
+output:
+  dir: /kaggle/working/tin_r50_sweep
+sweep:
+  lrs: [0.05, 0.02]                # ResNets usually take a larger lr than VGG; 0.01 was the worst for VGG (§24.1)
+  variants:
+    timeprest: {system: timeprest}
+    pipedream: {system: pipedream}

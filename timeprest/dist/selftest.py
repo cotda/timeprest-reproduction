@@ -13,7 +13,7 @@ import torch.distributed as dist
 import torch.nn as nn
 
 from ..config import SYSTEM_PRESETS
-from ..models import mlp_blocks, vgg16_bn_blocks
+from ..models import mlp_blocks, resnet50_blocks, vgg16_bn_blocks
 from .runtime import Channels, StageRuntime
 
 TRAIN = {"epochs": 1, "batch_size": 12, "optimizer": "sgd", "lr": 0.05, "momentum": 0.9,
@@ -22,7 +22,8 @@ TRAIN = {"epochs": 1, "batch_size": 12, "optimizer": "sgd", "lr": 0.05, "momentu
 
 def make_model(kind: str, W: int):
     torch.manual_seed(0)
-    blocks = mlp_blocks(12, 16, 5, 4) if kind == "mlp" else vgg16_bn_blocks(5, width=1 / 16)
+    blocks = (mlp_blocks(12, 16, 5, 4) if kind == "mlp" else
+              resnet50_blocks(5, width=1 / 16) if kind == "resnet" else vgg16_bn_blocks(5, width=1 / 16))
     cut = [round(len(blocks) * s / W) for s in range(W + 1)]
     return [nn.Sequential(*blocks[a:b]).double() for a, b in zip(cut[:-1], cut[1:])]
 

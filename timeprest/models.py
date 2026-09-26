@@ -45,6 +45,66 @@ def vgg16_bn_blocks(num_classes: int = 100, width: float = 1.0, global_pool: boo
     return blocks
 
 
+class Bottleneck(nn.Module):
+    """ResNet-50 bottleneck (torchvision v1.5 layout: stride on the 3x3 conv, projection shortcut
+    when the shape changes)."""
+    expansion = 4
+
+    def __init__(self, cin: int, planes: int, stride: int = 1):
+        super().__init__()
+        cout = planes * self.expansion
+        self.conv1 = nn.Conv2d(cin, planes, 1, bias=False)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.conv2 = nn.Conv2d(planes, planes, 3, stride=stride, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.conv3 = nn.Conv2d(planes, cout, 1, bias=False)
+        self.bn3 = nn.BatchNorm2d(cout)
+        self.relu = nn.ReLU(inplace=True)
+        self.shortcut = None
+        if stride != 1 or cin != cout:
+            self.shortcut = nn.Sequential(nn.Conv2d(cin, cout, 1, stride=stride, bias=False), nn.BatchNorm2d(cout))
+
+    def forward(self, x):
+        out = self.relu(self.bn1(self.conv1(x)))
+        out = self.relu(self.bn2(self.conv2(out)))
+        out = self.bn3(self.conv3(out))
+        identity = x if self.shortcut is None else self.shortcut(x)
+        return self.relu(out + identity)       # out-of-place add: x may be saved by the kept graph
+
+
+class ResNetHead(nn.Module):
+    def __init__(self, cin: int, num_classes: int):
+        super().__init__()
+        self.fc = nn.Linear(cin, num_classes)
+
+    def forward(self, x):
+        return self.fc(x.mean((2, 3)))          # global average pooling (= AdaptiveAvgPool2d(1))
+
+
+def resnet50_blocks(num_classes: int = 200, width: float = 1.0, stem: str = "conv3_pool") -> list[nn.Module]:
+    """ResNet-50 [3, 4, 6, 3] as a flat list: stem, 16 bottlenecks, head (paper does not give the
+    variant, paper_notes §25). stem "conv3_pool": 3x3 conv stride 1 + 2x2 max-pool (64x64 input ->
+    32x32 into layer1, 4x4 into the head); "imagenet": 7x7 stride-2 conv + 3x3 stride-2 max-pool."""
+    c = lambda v: max(4, int(round(v * width)))
+    w0 = c(64)
+    if stem == "conv3_pool":
+        blocks: list[nn.Module] = [nn.Sequential(nn.Conv2d(3, w0, 3, padding=1, bias=False), nn.BatchNorm2d(w0),
+                                                 nn.ReLU(inplace=True), nn.MaxPool2d(2, 2))]
+    elif stem == "imagenet":
+        blocks = [nn.Sequential(nn.Conv2d(3, w0, 7, stride=2, padding=3, bias=False), nn.BatchNorm2d(w0),
+                                nn.ReLU(inplace=True), nn.MaxPool2d(3, stride=2, padding=1))]
+    else:
+        raise ValueError(f"unknown ResNet stem {stem!r}")
+    cin = w0
+    for planes, n, stride in ((64, 3, 1), (128, 4, 2), (256, 6, 2), (512, 3, 2)):
+        for k in range(n):
+            blocks.append(Bottleneck(cin, c(planes), stride if k == 0 else 1))
+            cin = c(planes) * Bottleneck.expansion
+    blocks.append(ResNetHead(cin, num_classes))
+    _init(blocks)
+    return blocks
+
+
 def mlp_blocks(in_dim: int = 12, hidden: int = 16, num_classes: int = 5, depth: int = 4) -> list[nn.Module]:
     """Tiny model without BN/dropout used by CPU unit tests."""
     blocks: list[nn.Module] = [nn.Flatten()]
@@ -74,6 +134,8 @@ def build_blocks(model_cfg: dict) -> list[nn.Module]:
     if name in ("vgg16_bn_cifar", "vgg16_bn"):
         return vgg16_bn_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0),
                                model_cfg.get("global_pool", False))
+    if name == "resnet50":
+        return resnet50_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0), model_cfg.get("stem", "conv3_pool"))
     if name == "mlp":
         return mlp_blocks(model_cfg.get("in_dim", 12), model_cfg.get("hidden", 16),
                           model_cfg["num_classes"], model_cfg.get("depth", 4))

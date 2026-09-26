@@ -1,0 +1,12 @@
+# D1-D4 for ResNet-50 / Tiny-ImageNet (TiMePReSt and PipeDream).
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.checks --config configs/tin_r50_quick.yaml
+base: tin_quick.yaml
+name: tin_r50_quick
+model:
+  name: resnet50
+  num_classes: 200
+  stem: conv3_pool
+output:
+  dir: /kaggle/working/runs/tin_r50_quick
+checks:
+  systems: [pipedream, timeprest]

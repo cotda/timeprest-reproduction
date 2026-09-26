@@ -7,7 +7,7 @@ import torch.nn as nn
 
 from timeprest.config import load_config
 from timeprest.engine import PipelineEngine
-from timeprest.models import mlp_blocks, vgg16_bn_blocks
+from timeprest.models import mlp_blocks, resnet50_blocks, vgg16_bn_blocks
 from timeprest.reference import full_grad_at, mixed_rule_grads, pipedream_swap_grads, plain_training
 from timeprest.runner import Trainer
 
@@ -25,7 +25,8 @@ def pipe_cfg(schedule, N, backward_version, vertical_sync=True, max_inflight="pi
 
 def make_model(kind, W=2):
     torch.manual_seed(0)
-    blocks = mlp_blocks(12, 16, 5, 4) if kind == "mlp" else vgg16_bn_blocks(5, width=1 / 16)
+    blocks = (mlp_blocks(12, 16, 5, 4) if kind == "mlp" else
+              resnet50_blocks(5, width=1 / 16) if kind == "resnet" else vgg16_bn_blocks(5, width=1 / 16))
     cut = [round(len(blocks) * s / W) for s in range(W + 1)]
     return [nn.Sequential(*blocks[a:b]).double() for a, b in zip(cut[:-1], cut[1:])]
 
@@ -79,7 +80,7 @@ def test_sequential_equals_plain_training_with_warmup():
 
 
 @pytest.mark.parametrize("rule", ["graph", "recompute"])
-@pytest.mark.parametrize("kind,vsync", [("mlp", True), ("vgg", True), ("mlp", False), ("vgg", False)])
+@pytest.mark.parametrize("kind,vsync", [("mlp", True), ("vgg", True), ("mlp", False), ("vgg", False), ("resnet", False)])
 def test_pipedream_stashed_gradients_are_consistent(kind, vsync, rule):
     """1F1B + stashing: each stage's gradient equals the full-model gradient at the versions the
     forward used (one version for all stages with vertical sync, per-stage versions without)."""
@@ -100,7 +101,7 @@ def test_pipedream_stashed_gradients_are_consistent(kind, vsync, rule):
 
 
 @pytest.mark.parametrize("rule", ["graph", "recompute"])
-@pytest.mark.parametrize("kind,W,N", [("mlp", 2, 3), ("vgg", 2, 3), ("mlp", 3, 2)])
+@pytest.mark.parametrize("kind,W,N", [("mlp", 2, 3), ("vgg", 2, 3), ("resnet", 2, 3), ("mlp", 3, 2)])
 def test_timeprest_mixed_version_rule(kind, W, N, rule):
     """TiMePReSt: gradients follow the declared rule for the committed backward version:
     graph = PipeDream's stored graph with the new weights copied in (reference: in-place copy on
@@ -123,7 +124,7 @@ def test_timeprest_mixed_version_rule(kind, W, N, rule):
     assert mixed > 0  # some micro-batches really were forwarded with an older version
 
 
-@pytest.mark.parametrize("kind", ["mlp", "vgg"])
+@pytest.mark.parametrize("kind", ["mlp", "vgg", "resnet"])
 def test_rules_differ_only_when_versions_differ(kind):
     """PipeDream (forward = backward version): graph and recompute train identically.
     TiMePReSt (newer backward version): they really are different rules."""

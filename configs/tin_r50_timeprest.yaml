@@ -1,0 +1,8 @@
+# ResNet-50 / Tiny-ImageNet-200, 80 epochs, paper_notes §25.
+base: tin_r50_base.yaml
+name: tin_r50_timeprest
+system: timeprest
+runtime:
+  op_trace_every: 10
+output:
+  require_checks: true
