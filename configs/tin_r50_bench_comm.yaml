@@ -7,6 +7,8 @@ model:
   num_classes: 200
   stem: conv3_pool
   zero_init_residual: true         # without it ResNet-50 diverged early (Kaggle D4/sweep, paper_notes §25.1)
+training:
+  lr: 0.1                          # same as the ResNet runs (timing does not depend on it)
 output:
   dir: /kaggle/working/tin_r50_bench_comm
 bench:

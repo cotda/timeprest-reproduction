@@ -6,4 +6,4 @@ model:
   stem: conv3_pool
   zero_init_residual: true         # without it ResNet-50 diverged early (Kaggle D4/sweep, paper_notes §25.1)                 # choice (user, 2026-09-26): 3x3 conv stride 1 + 2x2 max-pool -> 32x32 into layer1
 training:
-  lr: 0.02                         # placeholder until configs/tin_r50_sweep.yaml
+  lr: 0.1                          # best of the ResNet sweep for both systems (0.1 > 0.05 > 0.02), paper_notes §25.1
