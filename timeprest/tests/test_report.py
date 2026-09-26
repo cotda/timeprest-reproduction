@@ -24,3 +24,21 @@ def test_summarize_and_render(tmp_path):
                       {"system": "pipedream", "bandwidth_gbps": 1, "epoch_time_s": 25.0}]}
     text = render([r], [("b", bench)])
     assert "| run1_x | kaggle_a |" in text and "| 2 / 2 / 3 / - |" in text and "| 1 | 20.00 | 25.00 | 0.800 |" in text and "1.250" in text
+
+
+def test_long_run_refuses_checks_of_another_workload(tmp_path):
+    from timeprest import utils
+    from timeprest.config import load_config
+    from timeprest.dist.train import checks_ok
+    cfg = load_config("configs/tin_r50_timeprest.yaml", [f"output.checks_file={tmp_path / 'c.json'}",
+                                                         f"output.dir={tmp_path / 'run'}"])
+    vgg = load_config("configs/tin_quick.yaml")
+    base = {"code_hash": utils.code_hash(), "all_pass": True, "systems": ["pipedream", "timeprest"]}
+    json.dump(dict(base, model=vgg["model"], dataset="tinyimagenet"), open(tmp_path / "c.json", "w"))
+    ok, msg = checks_ok(cfg)
+    assert not ok and "vgg16_bn" in msg                # VGG checks do not unlock a ResNet run
+    r50 = load_config("configs/tin_r50_quick.yaml")
+    json.dump(dict(base, model=r50["model"], dataset="tinyimagenet"), open(tmp_path / "c.json", "w"))
+    assert checks_ok(cfg) == (True, "ok")
+    json.dump(dict(base, model=r50["model"], dataset="tinyimagenet", systems=["pipedream"]), open(tmp_path / "c.json", "w"))
+    assert not checks_ok(cfg)[0]                       # system not covered by the checks

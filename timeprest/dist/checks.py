@@ -258,7 +258,8 @@ def main(argv=None):
             print(f"D{r['id']} {r['name']:<24}{r['status']:<6}{r['seconds']:>7.1f}s")
         print(f"ALL PHASE-2 CHECKS PASS: {all_pass}")
         utils.save_json({"code_hash": utils.code_hash(), "config": args.config, "overrides": args.set,
-                         "systems": ctx["systems"], "env": utils.env_info(), "all_pass": all_pass,
+                         "systems": ctx["systems"], "model": cfg["model"], "dataset": cfg["data"]["dataset"],
+                         "env": utils.env_info(), "all_pass": all_pass,
                          "results": results}, cfg["output"]["checks_file"])
         print("saved", cfg["output"]["checks_file"])
     dist.barrier()

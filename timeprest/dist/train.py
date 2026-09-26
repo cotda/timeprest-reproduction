@@ -274,6 +274,11 @@ def checks_ok(cfg: dict) -> tuple[bool, str]:
         return False, "phase-2 checks did not all PASS"
     if res.get("code_hash") != utils.code_hash():
         return False, "checks were run on a different code version"
+    if res.get("model", cfg["model"]) != cfg["model"] or res.get("dataset", cfg["data"]["dataset"]) != cfg["data"]["dataset"]:
+        return False, (f"checks were run for model {res.get('model', {}).get('name')} / {res.get('dataset')}, "
+                       f"not {cfg['model']['name']} / {cfg['data']['dataset']}: run the checks config of this workload")
+    if cfg["system"] not in res.get("systems", [cfg["system"]]):
+        return False, f"checks did not cover system {cfg['system']!r} (covered: {res.get('systems')})"
     return True, "ok"
 
 
