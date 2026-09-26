@@ -84,6 +84,7 @@ DEFAULTS: dict[str, Any] = {
         "device": "cuda",
         "deterministic": False,
         "profile_ops": True,        # per-op timing for the 2-GPU time estimate
+        "op_trace_every": None,     # phase 2: save op_trace_epoch<k>.json every k epochs (epoch 1 always)
         "eval_batch_size": 500,
         "comm_bandwidth_gbps": 10.0,  # GB/s used by the communication model (estimate only)
         "comm_latency_ms": 0.05,

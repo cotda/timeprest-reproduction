@@ -1,0 +1,7 @@
+# Seed repeat (paper_notes §24.4): same as tin_timeprest.yaml with seed 2. TiMePReSt and PipeDream of one
+# seed run on the same Kaggle account, so their epoch times are comparable too.
+base: tin_timeprest.yaml
+name: tin_vgg16_timeprest_s2
+seed: 2
+runtime:
+  op_trace_every: 10               # also record the op order in later epochs (scheduling regimes, §24.4)

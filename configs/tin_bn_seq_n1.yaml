@@ -1,0 +1,15 @@
+# BatchNorm check (paper_notes §24.4): ONE mini-batch in flight (max_inflight 1), so no weight version is ever
+# stale; N=3 vs N=1 then differ only in BatchNorm statistics over micro-batches of 64 vs the whole 192.
+# Single GPU, phase-1 engine:  python -m timeprest.train --config configs/tin_bn_seq_n1.yaml
+base: tin_base.yaml
+name: tin_bn_seq_n1
+system: pipedream                     # 1F1B, N=1; stashing is irrelevant with one mini-batch in flight
+data:
+  train_subset: 30000
+training:
+  epochs: 20
+  warmup_epochs: 2
+pipeline:
+  max_inflight: 1
+output:
+  require_checks: false

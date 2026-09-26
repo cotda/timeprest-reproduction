@@ -1265,3 +1265,29 @@ Cách tính: accuracy sau epoch cuối cùng đã xong trước thời điểm T
 - **Tái hiện được về chiều, có điều kiện.** Khi truyền đắt (1–2 Gbit/s), TiMePReSt cao hơn ở **mọi mốc trước khi hội tụ**: +1 đến +4 điểm (CIFAR), +3 đến +8 điểm (Tiny-ImageNet). Cùng máy: chỉ cao hơn ở giai đoạn đầu và giữa (CIFAR 30 %: +2.1; Tiny-ImageNet 25 %: +3.7), ở giữa CIFAR có lúc thấp hơn (50 %: −1.5). Cuối cùng mọi trường hợp ngang nhau.
 - **Độ lớn không tái hiện được.** Paper: Fig.4a ở ~27 time point TiMePReSt ~72–75 % so với PipeDream ~44–48 %; Fig.8a ~69–73 % so với ~31–35 %. Chênh lệch đó đến từ thời gian/epoch của PipeDream chậm hơn 5–6 lần trong paper (Fig.16: CIFAR 60–65 so với 10–12 phút/epoch). Mình đo được chênh lệch tốc độ tối đa ~1.2 lần (bench 2 Gbit/s). Chưa biết vì sao PipeDream của paper chậm như vậy (môi trường và code baseline không được nêu, §13).
 - Phần hơn ở giữa quá trình có hai nguồn: epoch nhanh hơn khi truyền đắt, và đường accuracy theo epoch của nF1B tăng nhanh hơn ở giữa (§24.2), điều mà mình chưa tách được nguyên nhân.
+
+### 24.4. Hai điểm bỏ ngỏ ở §24.2, và đợt chạy thêm seed (2026-09-26)
+
+**(a) Variant 1 nhanh hơn TiMePReSt ~9 %/epoch: hiện tượng của lịch dynamic, không phải chi phí thuật toán.**
+- Trace epoch 1 (cùng tài khoản A): thời gian mỗi mini-batch gần như bằng nhau (214.6 so với 216.0 ms); F, B và thời gian chờ từng stage trùng nhau.
+- Thời gian các epoch có **hai chế độ ổn định**: "nhanh" ~101 s (GPU0 bận 0.96, chờ ~3 s/epoch) và "chậm" ~112 s (GPU0 bận 0.88, chờ ~10 s/epoch). Variant 1 vào chế độ nhanh từ epoch ~8–14 (65/80 epoch nhanh). TiMePReSt ở chế độ chậm trừ **epoch 71** (101.7 s, bận 0.96/0.60, chờ 3.2 s), trùng số liệu của Variant 1. Ba hệ 1F1B ổn định ở ~117 s.
+- Tức là lịch dynamic (§3.2) có thể khóa vào một trong hai cách xen kẽ op. Chênh lệch thời gian giữa TiMePReSt và Variant 1 **không phải** do thuật toán. Hệ quả: thời gian/epoch của TiMePReSt có biến động ±10 % tùy chế độ. Ở chế độ nhanh, TiMePReSt nhanh hơn PipeDream cùng máy ~13 %. Chỉ có trace epoch 1 nên chưa thấy cách xen kẽ của chế độ nhanh. Đã thêm `runtime.op_trace_every` (lưu trace mỗi k epoch) cho đợt chạy mới.
+
+**(b) Vì sao lịch nF1B học nhanh hơn ở giữa quá trình.** Top-1 trung bình ở giữa quá trình:
+
+| | Tiny-ImageNet ep 5–20 / 21–40 | CIFAR-100 ep 10–40 / 41–80 |
+|---|---|---|
+| TiMePReSt (micro 64, nF1B) | **43.80 / 51.48** | 59.08 / 65.56 |
+| Variant 1 (micro 64, nF1B, stashing) | **43.82 / 51.02** | 59.38 / 65.36 |
+| TiMePReSt N=2 (micro 96) | — | 58.74 / 65.24 |
+| PipeDream, không vsync (192, 1F1B) | 41.49 / 49.07 | 58.82 / 64.85 |
+| PipeDream-vsync (192, 1F1B) | 39.78 / 48.13 | — |
+| Variant 2 (192, 1F1B, bỏ stashing) | 39.65 / 48.28 | 57.56 / 64.83 |
+
+- Tiny-ImageNet: nF1B cao hơn 1F1B +2.3 đến +4 điểm; CIFAR: chênh nhỏ (0.3–1.5 điểm), thứ tự gần đúng 64 ≥ 96 ≥ 192.
+- Staleness có ảnh hưởng: PipeDream không vsync (ít trễ nhất) hơn PipeDream-vsync và Variant 2 ~1.7 điểm trên Tiny-ImageNet. Nhưng hai hệ nF1B, vốn cũng có vertical sync, còn cao hơn nữa.
+- Chưa tách được: (i) BN theo micro-batch 64 so với 192, (ii) kiểu trễ riêng của nF1B (chỉ micro-batch A, B của mini-batch sau bị trễ, C thì không). Thí nghiệm tách (`configs/tin_bn_seq_n3.yaml` so với `tin_bn_seq_n1.yaml`): **1 mini-batch trong pipeline** (`max_inflight: 1`, không version nào bị trễ), N=3 so với N=1. Khác biệt còn lại duy nhất là thống kê BN (64 so với 192). Chạy trên 30k ảnh, 20 epoch, 1 GPU.
+
+**(c) Đợt chạy thêm seed** (seed 1, 2; `configs/tin_{timeprest,pipedream}_s{1,2}.yaml`). Mỗi seed chạy TiMePReSt và PipeDream trên cùng tài khoản, để so được cả thời gian. Mục đích: đo nhiễu giữa các seed, xác nhận hay bác bỏ (1) chất lượng cuối ngang nhau, (2) nF1B nhanh hơn ở giữa quá trình, (3) hai chế độ thời gian của lịch dynamic.
+
+**(d) Một cách hiểu khác về baseline 1F1B trong paper** (chưa kiểm tra). "Reducing the number of backward passes from N to 1" và Eq.17 (2(W−1)·N·D) chỉ đúng nếu 1F1B dùng để so chạy **trên từng micro-batch** (N lượt backward mỗi mini-batch). Mâu thuẫn với "same mini-batch size" (§4.5). Nếu PipeDream của paper chạy 1F1B với batch = micro-batch, mỗi epoch sẽ có gấp N lần số lượt backward, message và bước cập nhật. Đây có thể là một phần lý do nó chậm hơn 5–6 lần trong Fig.16 (mình đo được tối đa ~1.2 lần). Có thể kiểm tra bằng `bench_comm` với PipeDream M=64.

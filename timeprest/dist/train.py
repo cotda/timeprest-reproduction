@@ -242,7 +242,8 @@ class DistTrainer:
             row["cum_time_s"] = round(cum, 2)
             if self.rank == 0:
                 utils.append_csv(row, self.csv_path)
-                if epoch == self.start_epoch:
+                every = self.cfg["runtime"].get("op_trace_every")   # also every k-th epoch (scheduling regimes)
+                if epoch == self.start_epoch or (every and (epoch + 1) % every == 0):
                     utils.save_json({"ops_per_stage": self._last_ops},
                                     os.path.join(self.out_dir, f"op_trace_epoch{epoch + 1}.json"))
                 eta = (epochs - epoch - 1) * row["epoch_time_s"] / 3600
