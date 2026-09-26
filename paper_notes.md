@@ -1220,3 +1220,48 @@ Số liệu paper để so (§11.1, `[F≈]`): Fig.8b (Cluster B, W=3, ~140 epoc
 - lr tốt nhất của cả hai hệ là **0.02**, giữ nguyên trong `tin_base.yaml` (`pipedream_vsync` và các variant dùng cùng giá trị, §24). 0.02 là cận trên của sweep rút gọn. Không thử 0.05 vì trên CIFAR `graph` ở 0.05 kém hơn 0.02 (§22.8) và phân kỳ khi warmup ngắn (§22.7).
 
 - Hạ tầng (2026-09-26): dataset gốc (~120k file JPEG) làm bước "Adding data sources" của Kaggle mất > 10 phút. Cache `.npy` (5 file, 1.3 GB, tạo trên máy local, mean/std trùng từng chữ số với bản tạo trên Kaggle) được upload thành dataset `tin-cache` trên mỗi tài khoản. `data.cache_search: /kaggle/input` tự tìm cache đó (đường dẫn khác nhau giữa 2 tài khoản), không cần ảnh gốc và bỏ qua bước giải mã.
+
+### 24.2. Kết quả VGG-16 / Tiny-ImageNet-200 (80 epoch, lr 0.02, code `e9ffd9ef30f7`, 2026-09-26)
+
+Nguồn: `results/tinyimagenet/run1_80ep_lr0.02/` (runs/ + bench_comm/ + `compare_tin.png`). D1–D4 PASS trên cả hai tài khoản. Tài khoản A: `timeprest`, `variant1`, `bench_comm`. Tài khoản B: `pipedream`, `pipedream_vsync`, `variant2`. Thời gian từ run dài chỉ so trong cùng tài khoản; so giữa các hệ dùng bench (cùng máy).
+
+| Hệ | Top-1 cuối / TB 10 epoch cuối | Top-5 | Epoch tới 40 / 45 / 50 / 55 % | Top-1 ở epoch 10 / 20 / 30 | Thời gian/epoch (tài khoản) | Peak GPU0 / GPU1 |
+|---|---|---|---|---|---|---|
+| TiMePReSt | 59.07 / 59.13 | 80.09 | 9 / 11 / **21** / 42 | 43.1 / 48.5 / 50.9 | 112.0 s (A) | 3344 / 833 MB |
+| Variant 1 (nF1B + stashing) | 59.05 / 59.09 | 79.93 | 9 / 12 / **18** / 43 | 44.6 / 49.3 / 50.4 | **101.6 s** (A) | 3354 / 830 MB |
+| PipeDream (code, không vsync) | 58.94 / 58.83 | 79.63 | 10 / 15 / 32 / 42 | 40.5 / 44.6 / 48.1 | 117.3 s (B) | 3528 / 867 MB |
+| PipeDream-vsync (paper) | 59.14 / 59.07 | 80.02 | 11 / 15 / 36 / 43 | 38.3 / 45.1 / 47.1 | 117.4 s (B) | 3528 / 873 MB |
+| Variant 2 (1F1B, bỏ stashing) | 58.84 / 58.77 | 80.05 | 12 / 16 / 32 / 42 | 39.1 / 46.0 / 47.6 | 117.7 s (B) | 3519 / 921 MB |
+
+Bench (cùng máy, tập con 20k ảnh, 2 epoch, đo epoch 2):
+
+| Băng thông | TiMePReSt | PipeDream | PipeDream-vsync | TiMePReSt / PipeDream |
+|---|---|---|---|---|
+| cùng máy | 23.14 s | 22.67 s | 22.91 s | 1.021 |
+| 2 Gbit/s | **36.03 s** | 43.13 s | 43.10 s | **0.836** |
+| 1 Gbit/s | **57.69 s** | 63.97 s | 63.92 s | **0.902** |
+
+- **Chất lượng cuối như nhau** ở cả 5 hệ (58.8–59.1 %, chênh < 0.4 điểm, trong nhiễu 1 seed). Train acc ~99.97 %; test loss thấp nhất ở epoch 75–78, không tăng lại (không cảnh báo overfit).
+- **Hai hệ nF1B (TiMePReSt, Variant 1) tăng nhanh hơn ở giữa quá trình**: tới 50 % sau 18–21 epoch, so với 32–36 epoch ở ba hệ 1F1B; ở epoch 10–30 cao hơn ~2–5 điểm. Sau epoch ~45 (lr đã giảm theo cosine) mọi hệ hội tụ về cùng mức. CIFAR cũng cho thấy hiện tượng này (§20.1, §22.10). Có thể liên quan tới BN theo micro-batch 64 so với 192, chưa tách được.
+- **Vertical sync không làm PipeDream kém đi** ở đây (59.14 so với 58.94), khác với sweep 8 epoch trên CIFAR (§19.4, lr 0.02: −4.6 điểm). Với 80 epoch, warmup 5, lr 0.02, hai cách hiểu PipeDream cho cùng kết quả, nên kết luận của bài tái hiện không phụ thuộc lựa chọn này trên Tiny-ImageNet.
+- **Thời gian**: cùng máy, TiMePReSt ngang PipeDream (+2 %). Khi truyền đắt, TiMePReSt nhanh hơn **16 % ở 2 Gbit/s** và 10 % ở 1 Gbit/s, cùng xu hướng CIFAR (13 % / 9 %, §23.1). Activation lớn gấp 4 lần CIFAR nhưng điểm cân bằng vẫn ở khoảng 1–2 Gbit/s, vì thời gian tính cũng tăng theo.
+- **Variant 1 nhanh hơn TiMePReSt ~9 %/epoch** (cùng tài khoản A, 101.6 so với 112.0 s; D4 cùng máy cũng thấy 10.98 so với 11.21 s). Tỉ lệ bận GPU của Variant 1 cao hơn (0.96/0.61 so với 0.88/0.51), tức TiMePReSt chờ nhiều hơn trong lịch dynamic. Chưa giải thích được; cần phân tích `op_trace_epoch1.json`.
+- **Bộ nhớ**: TiMePReSt thấp hơn PipeDream 5 % ở GPU0 (3344 so với 3528 MB) và 4 % ở GPU1. Variant 1 gần bằng TiMePReSt, Variant 2 cao nhất ở GPU1.
+- **So với paper** (§11.1, `[F≈]`): Fig.8b (W=3, ~140 epoch) PipeDream ~73–77 % > TiMePReSt ~68–72 % theo epoch. Mình: ngang nhau ở ~59 % (80 epoch, W=2, train từ đầu ảnh 64×64; paper nhiều khả năng dùng ảnh lớn hơn hoặc pretrained). Fig.13a (cùng thời gian): Variant 1 ≫ TiMePReSt ≫ Variant 2. Mình: Variant 1 và TiMePReSt tới 50 % sớm nhất (0.54 / 0.66 h), Variant 2 chậm nhất (1.05 h; khác máy nhưng chủ yếu do cần nhiều epoch hơn). **Cùng thứ tự với paper**, nhưng chênh lệch cuối cùng không còn: mọi hệ đều đạt 59 %.
+
+### 24.3. Accuracy tại cùng một mốc thời gian (claim Fig.4a / Fig.8a)
+
+Cách tính: accuracy sau epoch cuối cùng đã xong trước thời điểm T. (1) CIFAR run2: thời gian đo thật, hai run chạy cùng một session. (2) Ước lượng: đường accuracy theo epoch × thời gian/epoch đo trên cùng máy trong bench. Giả lập mạng không đổi phép tính (có test), nên accuracy theo epoch giữ nguyên ở mọi băng thông; chỉ thời gian/epoch thay đổi. T tính theo tỉ lệ thời gian chạy đủ của PipeDream. Top-1 (%), TiMePReSt so với PipeDream:
+
+| Workload, điều kiện | 12 % | 25 % | 50 % | 75 % | 100 % |
+|---|---|---|---|---|---|
+| CIFAR-100, cùng máy (đo thật; mốc 10/20/30/50/75/100 %) | 53.7 / 53.1 (10 %), 61.9 / 61.2 (20 %), **64.1 / 61.9** (30 %) | — | 67.3 / **68.8** | 71.9 / 72.1 | 72.4 / 72.3 |
+| CIFAR-100, 2 Gbit/s (ước lượng) | **60.6** / 59.4 | **65.2** / 61.1 | **69.5** / 68.5 | 72.3 / 72.1 | 72.4 / 72.2 |
+| CIFAR-100, 1 Gbit/s (ước lượng) | **60.9** / 59.4 | **64.0** / 61.1 | **69.5** / 68.5 | 72.3 / 72.1 | 72.4 / 72.2 |
+| Tiny-ImageNet, cùng máy (ước lượng) | 41.8 / 40.5 | **48.3** / 44.6 | 52.5 / 52.3 | 58.7 / 58.4 | 59.1 / 58.9 |
+| Tiny-ImageNet, 2 Gbit/s (ước lượng) | **45.3** / 37.3 | **50.6** / 46.9 | **56.7** / 52.3 | 59.1 / 58.6 | 59.1 / 58.8 |
+| Tiny-ImageNet, 1 Gbit/s (ước lượng) | **45.3** / 40.5 | **50.5** / 44.6 | **55.0** / 52.3 | 59.0 / 58.4 | 59.1 / 58.9 |
+
+- **Tái hiện được về chiều, có điều kiện.** Khi truyền đắt (1–2 Gbit/s), TiMePReSt cao hơn ở **mọi mốc trước khi hội tụ**: +1 đến +4 điểm (CIFAR), +3 đến +8 điểm (Tiny-ImageNet). Cùng máy: chỉ cao hơn ở giai đoạn đầu và giữa (CIFAR 30 %: +2.1; Tiny-ImageNet 25 %: +3.7), ở giữa CIFAR có lúc thấp hơn (50 %: −1.5). Cuối cùng mọi trường hợp ngang nhau.
+- **Độ lớn không tái hiện được.** Paper: Fig.4a ở ~27 time point TiMePReSt ~72–75 % so với PipeDream ~44–48 %; Fig.8a ~69–73 % so với ~31–35 %. Chênh lệch đó đến từ thời gian/epoch của PipeDream chậm hơn 5–6 lần trong paper (Fig.16: CIFAR 60–65 so với 10–12 phút/epoch). Mình đo được chênh lệch tốc độ tối đa ~1.2 lần (bench 2 Gbit/s). Chưa biết vì sao PipeDream của paper chậm như vậy (môi trường và code baseline không được nêu, §13).
+- Phần hơn ở giữa quá trình có hai nguồn: epoch nhanh hơn khi truyền đắt, và đường accuracy theo epoch của nF1B tăng nhanh hơn ở giữa (§24.2), điều mà mình chưa tách được nguyên nhân.

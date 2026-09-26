@@ -1,0 +1,75 @@
+{
+  "name": "bench_timeprest_bw2",
+  "seed": 0,
+  "system": "timeprest",
+  "data": {
+    "dataset": "tinyimagenet",
+    "root": "/kaggle/input",
+    "train_subset": 20000,
+    "test_subset": 500,
+    "augment": true,
+    "num_workers": 2,
+    "download": false,
+    "cache_dir": "/kaggle/working/tin_cache",
+    "cache_search": "/kaggle/input"
+  },
+  "model": {
+    "name": "vgg16_bn",
+    "num_classes": 200,
+    "width": 1.0,
+    "global_pool": true
+  },
+  "pipeline": {
+    "num_stages": 2,
+    "num_microbatches": 3,
+    "partition": "auto",
+    "max_inflight": "pipedream",
+    "schedule": "nF1B",
+    "vertical_sync": true,
+    "backward_version": "committed",
+    "backward_rule": "graph",
+    "order": "dynamic",
+    "backward_mode": "auto",
+    "sync_each_op": true,
+    "recv_prefetch": null,
+    "timeout_s": 600
+  },
+  "dist": {
+    "backend": null,
+    "p2p_backend": "gloo",
+    "emulate_bandwidth_gbps": 2,
+    "emulate_latency_ms": 0.1,
+    "timeout_s": 300,
+    "env": {
+      "GLOO_SOCKET_IFNAME": "lo",
+      "NCCL_P2P_DISABLE": "1",
+      "TORCH_NCCL_SHOW_EAGER_INIT_P2P_SERIALIZATION_WARNING": "false"
+    }
+  },
+  "training": {
+    "epochs": 2,
+    "batch_size": 192,
+    "optimizer": "sgd",
+    "lr": 0.02,
+    "momentum": 0.9,
+    "nesterov": false,
+    "weight_decay": 0.0005,
+    "lr_schedule": "cosine",
+    "warmup_epochs": 5,
+    "drop_last": true
+  },
+  "runtime": {
+    "device": "cuda",
+    "deterministic": false,
+    "profile_ops": true,
+    "eval_batch_size": 500,
+    "comm_bandwidth_gbps": 10.0,
+    "comm_latency_ms": 0.05
+  },
+  "output": {
+    "dir": "/kaggle/working/tin_bench_comm",
+    "require_checks": false,
+    "checks_file": "results/checks/dist_latest.json"
+  },
+  "checks": {}
+}

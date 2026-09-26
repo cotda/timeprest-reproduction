@@ -13,6 +13,16 @@
 | run1_gd3 | kaggle_cifar100_vgg16_variant1 | variant1 | F=B version | nF1B | 3 | 192 | 0.02 | 160 | 72.10 | 72.09 | 72.19 | 22 / 58 / 90 / 135 | 0.11 / 0.29 / 0.45 / 0.67 | 17.72 | 0.79 | 864 / 441 | 0.93 / 0.88 |
 | run1_gd3 | kaggle_cifar100_vgg16_variant2 | variant2 | graph | 1F1B | 1 | 192 | 0.02 | 160 | 72.46 | 72.42 | 72.58 | 26 / 59 / 84 / 110 | 0.12 / 0.26 / 0.37 / 0.48 | 15.67 | 0.70 | 895 / 420 | 0.97 / 0.75 |
 
+## Runs: tinyimagenet (real 2-GPU pipeline, VGG-16-BN)
+
+| group | run | system | backward | sched | N | M | lr | epochs | top-1 final | last-10 mean | best | epochs to 40/45/50/55 % | hours to 40/45/50/55 % | epoch (s, median) | total (h) | peak MB per GPU | busy per GPU |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| run1_80ep_lr0.02 | tin_vgg16_pipedream | pipedream | F=B version | 1F1B | 1 | 192 | 0.02 | 80 | 58.94 | 58.83 | 58.94 | 10 / 15 / 32 / 42 | 0.33 / 0.49 / 1.05 / 1.37 | 117.25 | 2.61 | 3528 / 867 | 0.96 / 0.63 |
+| run1_80ep_lr0.02 | tin_vgg16_pipedream_vsync | pipedream_vsync | F=B version | 1F1B | 1 | 192 | 0.02 | 80 | 59.14 | 59.07 | 59.24 | 11 / 15 / 36 / 43 | 0.36 / 0.49 / 1.18 / 1.40 | 117.38 | 2.62 | 3528 / 873 | 0.97 / 0.63 |
+| run1_80ep_lr0.02 | tin_vgg16_timeprest | timeprest | graph | nF1B | 3 | 192 | 0.02 | 80 | 59.07 | 59.13 | 59.33 | 9 / 11 / 21 / 42 | 0.29 / 0.35 / 0.66 / 1.32 | 111.96 | 2.49 | 3344 / 833 | 0.88 / 0.51 |
+| run1_80ep_lr0.02 | tin_vgg16_variant1 | variant1 | F=B version | nF1B | 3 | 192 | 0.02 | 80 | 59.05 | 59.09 | 59.18 | 9 / 12 / 18 / 43 | 0.27 / 0.36 / 0.54 / 1.25 | 101.57 | 2.29 | 3354 / 830 | 0.96 / 0.61 |
+| run1_80ep_lr0.02 | tin_vgg16_variant2 | variant2 | graph | 1F1B | 1 | 192 | 0.02 | 80 | 58.84 | 58.77 | 58.93 | 12 / 16 / 32 / 42 | 0.39 / 0.52 / 1.05 / 1.38 | 117.70 | 2.62 | 3519 / 921 | 0.96 / 0.63 |
+
 ## Paper reference
 
 - CIFAR-100, Fig.4b top-1 at ~160 epochs (Cluster A, W=2): TiMePReSt ~72-75 %, PipeDream ~73-77 %
@@ -28,3 +38,11 @@
 | 2 | 23.85 | 27.51 | 0.867 |
 | 1 | 37.75 | 41.55 | 0.909 |
 | 0.5 | 67.49 | 69.29 | 0.974 |
+
+## Epoch time vs emulated bandwidth (`results/tinyimagenet\run1_80ep_lr0.02\bench_comm`, latency 0.1 ms/message)
+
+| bandwidth (Gbit/s) | timeprest epoch (s) | pipedream epoch (s) | pipedream_vsync epoch (s) | timeprest / pipedream |
+|---|---|---|---|---|
+| none (same host) | 23.14 | 22.67 | 22.91 | 1.021 |
+| 2 | 36.03 | 43.13 | 43.10 | 0.836 |
+| 1 | 57.69 | 63.97 | 63.92 | 0.902 |

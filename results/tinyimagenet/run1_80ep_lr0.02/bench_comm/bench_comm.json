@@ -1,0 +1,272 @@
+{
+  "code_hash": "e9ffd9ef30f7",
+  "config": "configs/tin_bench_comm.yaml",
+  "overrides": [],
+  "bench": {
+    "systems": [
+      "timeprest",
+      "pipedream",
+      "pipedream_vsync"
+    ],
+    "bandwidths_gbps": [
+      null,
+      2,
+      1
+    ],
+    "latency_ms": 0.1,
+    "epochs": 2
+  },
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "rows": [
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 23.14,
+      "busy_frac": [
+        0.829,
+        0.627
+      ],
+      "wait_time_s": [
+        3.28,
+        7.62
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        312.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3347.6,
+        826.1
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 22.671,
+      "busy_frac": [
+        0.975,
+        0.605
+      ],
+      "wait_time_s": [
+        0.45,
+        8.67
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        104.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3529.7,
+        866.9
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream_vsync",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 22.905,
+      "busy_frac": [
+        0.968,
+        0.6
+      ],
+      "wait_time_s": [
+        0.61,
+        8.89
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        104.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3529.7,
+        921.6
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 36.032,
+      "busy_frac": [
+        0.515,
+        0.398
+      ],
+      "wait_time_s": [
+        17.31,
+        20.86
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        312.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3344.6,
+        835.3
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 43.126,
+      "busy_frac": [
+        0.497,
+        0.313
+      ],
+      "wait_time_s": [
+        21.38,
+        28.95
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        104.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3529.7,
+        867.9
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream_vsync",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 43.101,
+      "busy_frac": [
+        0.498,
+        0.314
+      ],
+      "wait_time_s": [
+        21.35,
+        28.88
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        104.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3529.7,
+        922.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 57.69,
+      "busy_frac": [
+        0.327,
+        0.268
+      ],
+      "wait_time_s": [
+        38.69,
+        41.28
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        312.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3344.6,
+        834.8
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 63.969,
+      "busy_frac": [
+        0.334,
+        0.214
+      ],
+      "wait_time_s": [
+        42.33,
+        49.48
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        104.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3529.7,
+        867.9
+      ],
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream_vsync",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 63.923,
+      "busy_frac": [
+        0.335,
+        0.213
+      ],
+      "wait_time_s": [
+        42.23,
+        49.54
+      ],
+      "mb_sent": [
+        4992.0,
+        4992.0
+      ],
+      "msgs_sent": [
+        104.0,
+        104.0
+      ],
+      "peak_mem_mb": [
+        3529.7,
+        922.6
+      ],
+      "epochs_timed": 2
+    }
+  ]
+}
