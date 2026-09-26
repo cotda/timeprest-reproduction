@@ -1307,3 +1307,10 @@ Workload khớp điều kiện W=2 nhất của paper: **Fig.5 (Cluster A, 2 má
 Kiểm chứng local: quy tắc `graph` với khối residual khớp reference độc lập (engine, float64); PipeDream stash khớp gradient toàn model; runtime 2 tiến trình static trùng engine; check D1–D2 (CPU) PASS.
 
 **Sai khác đã phát hiện ở VGG (ghi bổ sung cho §19):** VGG-16 trong repo PipeDream là bản ImageNet **không BatchNorm** (classifier FC). Mình dùng VGG-16-**BN** với head 1 lớp Linear (lựa chọn từ GĐ1; paper không nêu biến thể). Kết quả so sánh giữa các hệ vẫn hợp lệ (mọi hệ cùng model), nhưng BN có thể là một phần lý do nF1B học nhanh hơn (§24.4b). Chạy thêm VGG không BN sẽ kiểm tra trực tiếp điều này (chưa làm).
+
+### 25.1. Check đầu tiên của ResNet-50: mất ổn định lúc đầu, sửa bằng zero-init residual (2026-09-26)
+
+- Kaggle, code `19a917158b65`: D1–D3 PASS (runtime khớp engine). **D4 FAIL**: loss 5.60 → 5.62 → 5.28 (PipeDream) và 5.95 → **6.89** → 5.77 (TiMePReSt), cao hơn ln 200 = 5.30; top-1 ≈ ngẫu nhiên. Sweep (20k ảnh, 6 epoch): top-1 chỉ 5–9 % (VGG cùng điều kiện 17–18 %); loss epoch 1 (5.4–6.0) đã cao hơn ln 200. Bộ nhớ ổn: peak GPU0 ~8.5–8.7 GB, GPU1 ~1.7 GB. Thời gian ~24–26 s/epoch trên 10k ảnh, ước tính **5.3–5.8 h/run** 80 epoch (gần gấp đôi VGG).
+- Không phải bug pipeline: engine tuần tự trùng khớp train thường với ResNet (test mới, N=3 và N=1); sweep chạy bằng engine 1 GPU cũng kém như vậy.
+- Tái hiện trên CPU (train thường, bài toán 20 lớp tổng hợp, ResNet-50 width 1/4, loss trung bình 10 bước): khởi tạo hiện tại ở lr 0.05: 3.24 → **5.59 → 5.75** → 3.24 (bùng nổ); ở lr 0.02: không giảm (3.10 → 3.20). **Zero-init residual** (gamma của BN cuối mỗi bottleneck = 0; Goyal et al. 2017, torchvision `zero_init_residual`): 3.00 → 1.83 (lr 0.05), 3.00 → 2.30 (lr 0.02). VGG-16-BN: 3.04 → 1.55 / 3.01 → 2.51.
+- Quyết định `[I]`: `model.zero_init_residual: true` cho mọi config ResNet (paper không nêu cách khởi tạo). Cần chạy lại check và sweep.

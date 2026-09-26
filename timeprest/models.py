@@ -81,10 +81,14 @@ class ResNetHead(nn.Module):
         return self.fc(x.mean((2, 3)))          # global average pooling (= AdaptiveAvgPool2d(1))
 
 
-def resnet50_blocks(num_classes: int = 200, width: float = 1.0, stem: str = "conv3_pool") -> list[nn.Module]:
+def resnet50_blocks(num_classes: int = 200, width: float = 1.0, stem: str = "conv3_pool",
+                    zero_init_residual: bool = False) -> list[nn.Module]:
     """ResNet-50 [3, 4, 6, 3] as a flat list: stem, 16 bottlenecks, head (paper does not give the
     variant, paper_notes §25). stem "conv3_pool": 3x3 conv stride 1 + 2x2 max-pool (64x64 input ->
-    32x32 into layer1, 4x4 into the head); "imagenet": 7x7 stride-2 conv + 3x3 stride-2 max-pool."""
+    32x32 into layer1, 4x4 into the head); "imagenet": 7x7 stride-2 conv + 3x3 stride-2 max-pool.
+    zero_init_residual: last BN scale of every bottleneck starts at 0, so each block starts as the
+    identity (Goyal et al. 2017; torchvision `zero_init_residual`). Without it this model diverged
+    early on Tiny-ImageNet (paper_notes §25.1)."""
     c = lambda v: max(4, int(round(v * width)))
     w0 = c(64)
     if stem == "conv3_pool":
@@ -102,6 +106,10 @@ def resnet50_blocks(num_classes: int = 200, width: float = 1.0, stem: str = "con
             cin = c(planes) * Bottleneck.expansion
     blocks.append(ResNetHead(cin, num_classes))
     _init(blocks)
+    if zero_init_residual:
+        for b in blocks:
+            if isinstance(b, Bottleneck):
+                nn.init.zeros_(b.bn3.weight)
     return blocks
 
 
@@ -135,7 +143,8 @@ def build_blocks(model_cfg: dict) -> list[nn.Module]:
         return vgg16_bn_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0),
                                model_cfg.get("global_pool", False))
     if name == "resnet50":
-        return resnet50_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0), model_cfg.get("stem", "conv3_pool"))
+        return resnet50_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0), model_cfg.get("stem", "conv3_pool"),
+                               model_cfg.get("zero_init_residual", False))
     if name == "mlp":
         return mlp_blocks(model_cfg.get("in_dim", 12), model_cfg.get("hidden", 16),
                           model_cfg["num_classes"], model_cfg.get("depth", 4))

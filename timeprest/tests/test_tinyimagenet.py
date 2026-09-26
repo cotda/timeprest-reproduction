@@ -82,3 +82,12 @@ def test_ready_cache_attached_as_dataset_is_found(tmp_path):
     train, test = build_datasets(cfg, 2, seed=0)
     assert len(train) == 6 and dataset_targets(test).tolist() == [0, 1]
     assert not (tmp_path / "working").exists()        # nothing decoded or written
+
+
+def test_resnet_zero_init_residual_starts_blocks_as_identity():
+    from timeprest.models import Bottleneck, resnet50_blocks
+    blocks = resnet50_blocks(10, width=1 / 16, zero_init_residual=True)
+    b = next(m for m in blocks if isinstance(m, Bottleneck) and m.shortcut is None)
+    x = torch.randn(2, b.conv1.in_channels, 8, 8).relu()      # block inputs are post-ReLU (>= 0)
+    b.train()
+    torch.testing.assert_close(b(x), x)

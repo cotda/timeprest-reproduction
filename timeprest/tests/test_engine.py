@@ -52,7 +52,7 @@ def run_recorded(stages, batches, pc):
 
 
 @pytest.mark.parametrize("rule", ["graph", "recompute"])
-@pytest.mark.parametrize("kind,N", [("mlp", 1), ("mlp", 3), ("vgg", 3), ("vgg", 1)])
+@pytest.mark.parametrize("kind,N", [("mlp", 1), ("mlp", 3), ("vgg", 3), ("vgg", 1), ("resnet", 3), ("resnet", 1)])
 def test_sequential_pipeline_equals_plain_training(kind, N, rule):
     """No staleness (one mini-batch in flight) -> identical to ordinary training (check 3)."""
     stages = make_model(kind)

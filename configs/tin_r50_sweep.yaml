@@ -6,6 +6,7 @@ model:
   name: resnet50
   num_classes: 200
   stem: conv3_pool
+  zero_init_residual: true         # without it ResNet-50 diverged early (Kaggle D4/sweep, paper_notes §25.1)
 output:
   dir: /kaggle/working/tin_r50_sweep
 sweep:
