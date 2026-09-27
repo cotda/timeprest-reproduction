@@ -7,4 +7,7 @@ Thiết kế: paper_notes §24. Kết quả và đánh giá: §24.1–24.2. Bả
 | `run1_80ep_lr0.02/runs/` | 2026-09-26 | `e9ffd9ef30f7` | 80 epoch, lr 0.02, `graph`: `timeprest`, `variant1` (tài khoản A); `pipedream`, `pipedream_vsync`, `variant2` (tài khoản B). Biểu đồ: `compare_tin.png` (trục thời gian không so được giữa 2 tài khoản) |
 | `run1_80ep_lr0.02/bench_comm/` | 2026-09-26 | `e9ffd9ef30f7` | Thời gian/epoch trên cùng máy (tài khoản A): TiMePReSt, PipeDream, PipeDream-vsync × {cùng máy, 2, 1 Gbit/s}, tập con 20k ảnh |
 
+| `run2_seeds_bn/runs/` | 2026-09-26 | `406efe51593a` | Seed 1 (tài khoản A) và seed 2 (tài khoản B): `timeprest`, `pipedream`, 80 epoch, trace mỗi 10 epoch. Kiểm tra BatchNorm `tin_bn_seq_n3` / `tin_bn_seq_n1` (1 GPU, 1 mini-batch trong pipeline, 30k ảnh, 20 epoch). paper_notes §24.5 |
+| `run3_resnet50/` | 2026-09-27 | `ac27eff678b1` | ResNet-50 (stem 3×3 stride 1 + max-pool, zero-init residual), 80 epoch, lr 0.1: `timeprest`, `pipedream`; bench cùng máy (∞/2/1 Gbit/s); `compare_r50.png`. paper_notes §25 |
+
 Run mới: tạo `runN_<điểm khác biệt>/` và thêm một dòng vào bảng trên.

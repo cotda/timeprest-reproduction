@@ -22,6 +22,12 @@
 | run1_80ep_lr0.02 | tin_vgg16_timeprest | timeprest | graph | nF1B | 3 | 192 | 0.02 | 80 | 59.07 | 59.13 | 59.33 | 9 / 11 / 21 / 42 | 0.29 / 0.35 / 0.66 / 1.32 | 111.96 | 2.49 | 3344 / 833 | 0.88 / 0.51 |
 | run1_80ep_lr0.02 | tin_vgg16_variant1 | variant1 | F=B version | nF1B | 3 | 192 | 0.02 | 80 | 59.05 | 59.09 | 59.18 | 9 / 12 / 18 / 43 | 0.27 / 0.36 / 0.54 / 1.25 | 101.57 | 2.29 | 3354 / 830 | 0.96 / 0.61 |
 | run1_80ep_lr0.02 | tin_vgg16_variant2 | variant2 | graph | 1F1B | 1 | 192 | 0.02 | 80 | 58.84 | 58.77 | 58.93 | 12 / 16 / 32 / 42 | 0.39 / 0.52 / 1.05 / 1.38 | 117.70 | 2.62 | 3519 / 921 | 0.96 / 0.63 |
+| run2_seeds_bn | tin_vgg16_pipedream_s1 | pipedream | F=B version | 1F1B | 1 | 192 | 0.02 | 80 | 58.50 | 58.48 | 58.58 | 9 / 14 / 30 / 43 | 0.29 / 0.44 / 0.96 / 1.37 | 113.98 | 2.55 | 3528 / 819 | 0.97 / 0.62 |
+| run2_seeds_bn | tin_vgg16_pipedream_s2 | pipedream | F=B version | 1F1B | 1 | 192 | 0.02 | 80 | 59.21 | 59.11 | 59.30 | 10 / 14 / 32 / 42 | 0.33 / 0.46 / 1.06 / 1.39 | 118.59 | 2.64 | 3528 / 819 | 0.96 / 0.62 |
+| run2_seeds_bn | tin_vgg16_timeprest_s1 | timeprest | graph | nF1B | 3 | 192 | 0.02 | 80 | 58.82 | 58.82 | 58.98 | 9 / 11 / 21 / 44 | 0.27 / 0.32 / 0.62 / 1.28 | 105.06 | 2.34 | 3344 / 825 | 0.93 / 0.57 |
+| run2_seeds_bn | tin_vgg16_timeprest_s2 | timeprest | graph | nF1B | 3 | 192 | 0.02 | 80 | 58.67 | 58.67 | 58.78 | 10 / 11 / 19 / 43 | 0.30 / 0.33 / 0.57 / 1.29 | 108.40 | 2.41 | 3344 / 833 | 0.93 / 0.56 |
+| run3_resnet50 | tin_r50_pipedream | pipedream | F=B version | 1F1B | 1 | 192 | 0.1 | 80 | 65.44 | 65.39 | 65.64 | 22 / 33 / 39 / 52 | 1.38 / 2.06 / 2.44 / 3.25 | 225.10 | 5.00 | 8515 / 1470 | 0.98 / 0.66 |
+| run3_resnet50 | tin_r50_timeprest | timeprest | graph | nF1B | 3 | 192 | 0.1 | 80 | 66.49 | 66.12 | 66.49 | 18 / 23 / 37 / 45 | 1.21 / 1.54 / 2.46 / 2.98 | 236.70 | 5.28 | 8433 / 1580 | 0.91 / 0.59 |
 
 ## Paper reference
 
@@ -46,3 +52,11 @@
 | none (same host) | 23.14 | 22.67 | 22.91 | 1.021 |
 | 2 | 36.03 | 43.13 | 43.10 | 0.836 |
 | 1 | 57.69 | 63.97 | 63.92 | 0.902 |
+
+## Epoch time vs emulated bandwidth (`results/tinyimagenet\run3_resnet50\bench_comm`, latency 0.1 ms/message)
+
+| bandwidth (Gbit/s) | timeprest epoch (s) | pipedream epoch (s) | timeprest / pipedream |
+|---|---|---|---|
+| none (same host) | 49.04 | 45.21 | 1.085 |
+| 2 | 63.48 | 62.72 | 1.012 |
+| 1 | 72.62 | 83.79 | 0.867 |

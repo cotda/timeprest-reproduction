@@ -1317,3 +1317,60 @@ Kiểm chứng local: quy tắc `graph` với khối residual khớp reference �
 - Sau khi sửa (code `ac27eff678b1`): **D1–D4 PASS**. D4 (10k ảnh, 3 epoch): loss 5.27 → 5.02 → 4.81 (PipeDream), 5.28 → 5.04 → 4.83 (TiMePReSt), dưới ln 200 ngay từ epoch 1. Cùng máy: TiMePReSt 24.2 s so với PipeDream 26.7 s/epoch (−9 %), peak GPU0 8.50 so với 8.57 GB, GPU1 1.63 so với 1.52 GB. Ước tính 5.4 / 6.0 h cho 80 epoch.
 - Sweep (20k ảnh, 6 epoch), top-1: lr 0.05: TiMePReSt 9.65 %, PipeDream 10.05 %; lr 0.02: 7.60 / 7.65 %. Tốt nhất là 0.05, **cận trên của sweep** (ResNet thường dùng lr ~0.1). Sau 6 epoch vẫn thấp hơn VGG (17–18 %), vì zero-init residual khởi đầu chậm hơn và ResNet-50 sâu hơn nhiều.
 - Sweep thêm lr 0.1: TiMePReSt **11.70 %**, PipeDream **12.90 %** (so với 9.65 / 10.05 % ở 0.05). Chọn **lr 0.1** cho cả hai hệ. Không thử cao hơn: 0.1 đã là mức chuẩn cho ResNet (Goyal et al.: 0.1 cho batch 256; với M=192 quy tắc tuyến tính cho ~0.075). Trên CIFAR, `graph` sụp đổ ở lr 0.1 khi warmup ngắn (§22.7). Ở đây warmup 5 epoch, và sweep (warmup 2) ở lr 0.1 vẫn ổn định; cần theo dõi loss những epoch đầu của run dài.
+
+### 24.5. Kết quả đợt 2: 3 seed + kiểm tra BatchNorm (code `406efe51593a`, 2026-09-26)
+
+Nguồn: `results/tinyimagenet/run2_seeds_bn/` (seed 1 trên tài khoản A, seed 2 trên tài khoản B; mỗi seed chạy TiMePReSt và PipeDream trên cùng tài khoản) cùng seed 0 ở `run1_80ep_lr0.02/`. D1–D4 PASS.
+
+**Chất lượng qua 3 seed** (TB ± độ lệch chuẩn; hiệu theo cặp cùng seed, TiMePReSt − PipeDream):
+
+| Chỉ số | TiMePReSt | PipeDream | Hiệu từng seed (0, 1, 2) | Hiệu TB |
+|---|---|---|---|---|
+| Top-1 cuối | 58.85 ± 0.20 | 58.88 ± 0.36 | +0.13, +0.32, −0.54 | −0.03 |
+| TB 10 epoch cuối | 58.87 ± 0.23 | 58.80 ± 0.32 | +0.30, +0.35, −0.44 | +0.07 |
+| TB epoch 5–20 | 43.77 ± 0.25 | 41.84 ± 0.56 | +2.30, +1.52, +1.98 | **+1.93** |
+| TB epoch 21–40 | 51.30 ± 0.16 | 49.43 ± 0.39 | +2.41, +1.79, +1.38 | **+1.86** |
+| Epoch tới 45 % | 11.0 ± 0.0 | 14.3 ± 0.6 | −4, −3, −3 | −3.3 |
+| Epoch tới 50 % | 20.3 ± 1.2 | 31.3 ± 1.2 | −11, −9, −13 | **−11.0** |
+
+- **Chất lượng cuối như nhau**: hiệu TB −0.03 điểm, đổi dấu giữa các seed, nhỏ hơn độ lệch chuẩn.
+- **Lợi thế ở giữa quá trình là thật**: cả 3 seed đều +1.4 đến +2.4 điểm, và tới 50 % sớm hơn 9–13 epoch. Độ lệch chuẩn giữa các seed chỉ 0.2–0.6 điểm.
+
+**Thời gian cùng máy (run dài):** seed 1 (A): TiMePReSt 105.1 s so với PipeDream 114.0 s/epoch (tỉ lệ 0.922); seed 2 (B): 108.4 so với 118.6 s (0.914). Seed 0 khác tài khoản: 112.0 so với 117.3 s. Vậy trên Tiny-ImageNet, TiMePReSt **nhanh hơn ~8 % ngay cả khi cùng máy**. Bench §24.2 (tập con 20k ảnh, 2 epoch) cho 1.02 lần; nhiều khả năng do bench đo quá sớm: epoch đầu của TiMePReSt luôn chậm hơn (trace epoch 1: ~215–224 ms/mini-batch, từ epoch 10 trở đi: ~200–208 ms). Số liệu run dài đáng tin hơn.
+
+**Chế độ của lịch dynamic (trace mỗi 10 epoch):** sau epoch 1, thứ tự op ở stage 0 chuyển từ `FFFFBFFFBFBF` sang các mẫu kiểu `BBFFFFFFBBFF` / `BFBFFFFFBBFF` (backward được làm sớm hơn), và thời gian mỗi mini-batch giảm từ ~215 xuống ~200–208 ms. Seed 1 ở chế độ nhanh 77/80 epoch; seed 2 ở mức trung gian (~108 s). Run seed 0 (§24.4a) ở ~112 s hầu như cả run. Mức "nhanh" phụ thuộc cả máy lẫn mẫu xen kẽ op.
+
+**Kiểm tra BatchNorm** (1 mini-batch trong pipeline, không có trễ; 30k ảnh, 20 epoch, 1 seed): N=3 (BN trên 64) có top-1 TB epoch 5–15 là 29.83 %, cuối 38.90 %; N=1 (BN trên 192): 29.00 %, cuối 39.14 %. **Tác động của BN nhỏ** (+0.8 điểm ở giữa, ngang ở cuối; 1 seed nên có thể là nhiễu), nhỏ hơn nhiều so với lợi thế +1.9 điểm (và 11 epoch) trong pipeline thật.
+
+**Diễn giải khả dĩ nhất (chưa chứng minh):** lợi thế ở giữa quá trình đến chủ yếu từ **lịch nF1B làm giảm độ trễ trung bình mỗi mẫu**, còn BN chỉ góp phần nhỏ. Trong 1F1B (W=2), cả mini-batch được forward bằng weight trễ 1 bước. Trong nF1B, micro-batch cuối (C) thường được forward sau khi mini-batch trước đã cập nhật, chỉ A, B bị trễ (D2: 41–44/60 micro-batch forward bằng version cũ). Bằng chứng: Variant 1 (nF1B, vẫn stash) nhanh ngang TiMePReSt; PipeDream không vsync (ít trễ hơn) hơn PipeDream-vsync ~1.7 điểm (§24.4b); BN chỉ giải thích được ~0.8 điểm. Tức là lợi thế này đến từ **lịch nF1B**, không phải từ việc bỏ horizontal stashing ("removed staleness" theo paper).
+
+### 25.2. Kết quả ResNet-50 / Tiny-ImageNet (80 epoch, lr 0.1, zero-init residual, code `ac27eff678b1`, 1 seed, 2026-09-27)
+
+Nguồn: `results/tinyimagenet/run3_resnet50/` (runs/, bench_comm/, `compare_r50.png`). D1–D4 PASS cho resnet50.
+
+| | TiMePReSt | PipeDream |
+|---|---|---|
+| Top-1 cuối / TB 10 epoch cuối / best | **66.49** / 66.12 / 66.49 | 65.44 / 65.39 / 65.64 |
+| Top-5 cuối | 85.64 | 85.26 |
+| TB top-1 epoch 5–20 / 21–40 | **34.88 / 47.86** | 31.82 / 44.15 |
+| Epoch tới 40 / 50 / 55 / 60 % | 18 / 37 / 45 / 59 | 22 / 39 / 52 / 62 |
+| Thời gian/epoch run dài (trung vị) | 236.7 s | 225.1 s |
+| Peak GPU0 / GPU1 | 8433 / 1580 MB | 8515 / 1470 MB |
+| Bận GPU0 / GPU1; chờ GPU0 (s/epoch) | 0.91 / 0.59; 19.8 | 0.98 / 0.66; 1.6 |
+
+Bench (cùng máy, 20k ảnh, 2 epoch): cùng máy 49.0 so với 45.2 s (TiMePReSt **chậm hơn 8 %**); 2 Gbit/s 63.5 so với 62.7 s (ngang); 1 Gbit/s **72.6 so với 83.8 s (nhanh hơn 13 %)**.
+
+Top-1 tại cùng mốc thời gian (tỉ lệ thời gian chạy đủ của PipeDream; TiMePReSt / PipeDream):
+
+| Điều kiện | 12 % | 25 % | 50 % | 75 % | 100 % |
+|---|---|---|---|---|---|
+| Thời gian đo từ run dài | 32.9 / 28.9 | 41.3 / 37.3 | 51.2 / 50.3 | 58.4 / 57.8 | 66.1 / 65.4 |
+| Bench cùng máy | 32.9 / 29.8 | 41.3 / 37.3 | 49.5 / 48.5 | 57.9 / 57.1 | 65.9 / 65.4 |
+| Bench 2 Gbit/s | 32.9 / 29.8 | 42.0 / 37.3 | 52.5 / 48.5 | 60.0 / 57.1 | 66.5 / 65.4 |
+| Bench 1 Gbit/s | 34.0 / 29.8 | 45.0 / 37.3 | 53.3 / 48.5 | **65.2 / 57.1** | 66.5 / 65.4 |
+
+- **Chất lượng**: TiMePReSt hơn ~1 điểm ở cuối (66.49 so với 65.44; TB 10 epoch cuối +0.73). Đây là 1 seed; với VGG, độ lệch chuẩn giữa các seed là 0.2–0.4, nên đây là dấu hiệu nhưng chưa chắc chắn. Accuracy tuyệt đối (66.5 %) gần mức paper cho VGG trên Tiny-ImageNet (68–72 %) hơn là VGG của mình (59 %).
+- **Lợi thế ở giữa quá trình lặp lại** với kiến trúc khác: +3.1 / +3.7 điểm ở epoch 5–20 / 21–40, tới 55 % sớm hơn 7 epoch. Cùng hiện tượng với VGG (§24.5), tức là hiệu ứng của lịch nF1B không riêng với VGG.
+- **Thời gian cùng máy: TiMePReSt chậm hơn 5–8 %** (ngược với VGG trên Tiny-ImageNet, nơi nhanh hơn ~8 %). ResNet-50 có ~53 lớp conv+BN, nên micro-batch 64 tốn nhiều chi phí cố định cho mỗi kernel hơn batch 192; GPU0 của TiMePReSt bận 0.91 so với 0.98. Khi truyền đắt (1 Gbit/s), TiMePReSt nhanh hơn 13 %. Cùng kết luận với CIFAR: ưu thế thời gian có điều kiện.
+- **Accuracy tại cùng mốc thời gian**: nhờ học nhanh hơn theo epoch, TiMePReSt vẫn **cao hơn ở mọi mốc trước khi hội tụ, kể cả khi cùng máy** (+3 đến +4 điểm ở 12–25 % thời gian). Ở 1 Gbit/s chênh lệch lớn hơn (75 %: +8.1 điểm). Đây là claim Fig.5a/5c của paper, **tái hiện được về chiều**; độ lớn nhỏ hơn paper nhiều.
+- **Bộ nhớ**: gần như bằng nhau (GPU0 −1 %, GPU1 +7 %).

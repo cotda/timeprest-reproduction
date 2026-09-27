@@ -1,0 +1,38 @@
+{
+  "name": "tin_r50_pipedream",
+  "system": "pipedream",
+  "epochs_done": 80,
+  "best_test_acc1": 65.64,
+  "best_epoch": 75,
+  "mean_epoch_time_s": 225.1593924050633,
+  "final": {
+    "epoch": "80",
+    "train_loss": "0.01325",
+    "train_acc1": "99.951",
+    "test_loss": "1.61968",
+    "test_acc1": "65.44",
+    "test_acc5": "85.26",
+    "gap_loss": "1.60643",
+    "lr": "4.385849505708084e-05",
+    "epoch_time_s": "226.616",
+    "busy_frac": "0.980|0.661",
+    "wait_time_s": "1.60|73.51",
+    "peak_mem_mb": "8514.6|1470.4",
+    "mb_sent": "24960.0|24960.0",
+    "msgs_sent": "520|520",
+    "recompute_micro": "0|0",
+    "max_snapshots": "2|0",
+    "bwd_overlap_minibatches": "512",
+    "samples": "99840",
+    "cum_time_s": "18013.29"
+  },
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "code_hash": "ac27eff678b1"
+}

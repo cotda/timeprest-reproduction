@@ -121,6 +121,9 @@ def main(argv=None):
         for d in sorted(glob.glob(os.path.join(root, "**", "metrics.csv"), recursive=True)):
             d = os.path.dirname(d)
             if os.path.exists(os.path.join(d, "config.json")) and "bench_" not in os.path.basename(d):
+                with open(os.path.join(d, "metrics.csv"), encoding="utf-8") as fh:
+                    if "epoch_time_s" not in fh.readline():   # single-GPU (phase-1 engine) runs: not in this table
+                        continue
                 runs.append(summarize_run(d))
         for f in sorted(glob.glob(os.path.join(root, "**", "bench_comm.json"), recursive=True)):
             benches.append((os.path.dirname(f), json.load(open(f, encoding="utf-8"))))

@@ -1,0 +1,42 @@
+[
+  {
+    "system": "timeprest",
+    "epochs": 80,
+    "final_test_acc1": 66.49,
+    "final_test_acc5": 85.64,
+    "best_test_acc1": 66.49,
+    "best_epoch": 80,
+    "final_test_loss": 1.61868,
+    "final_train_loss": 0.02026,
+    "mean_epoch_s": 237.78001249999997,
+    "peak_mem_mb_max_gpu": 8434.3,
+    "stage_mem_mb_last": "8433.3|1580.2",
+    "max_weight_versions": "0|2",
+    "epochs_to_50": 37.0,
+    "hours_to_50": 2.458,
+    "epochs_to_60": 59.0,
+    "hours_to_60": 3.902,
+    "epochs_to_70": null,
+    "hours_to_70": null
+  },
+  {
+    "system": "pipedream",
+    "epochs": 80,
+    "final_test_acc1": 65.44,
+    "final_test_acc5": 85.26,
+    "best_test_acc1": 65.64,
+    "best_epoch": 75,
+    "final_test_loss": 1.61968,
+    "final_train_loss": 0.01325,
+    "mean_epoch_s": 225.166175,
+    "peak_mem_mb_max_gpu": 8514.6,
+    "stage_mem_mb_last": "8514.6|1470.4",
+    "max_weight_versions": "2|0",
+    "epochs_to_50": 39.0,
+    "hours_to_50": 2.439,
+    "epochs_to_60": 62.0,
+    "hours_to_60": 3.879,
+    "epochs_to_70": null,
+    "hours_to_70": null
+  }
+]

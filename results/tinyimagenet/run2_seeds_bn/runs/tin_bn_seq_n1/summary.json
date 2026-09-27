@@ -1,0 +1,39 @@
+{
+  "name": "tin_bn_seq_n1",
+  "system": "pipedream",
+  "epochs_done": 20,
+  "final": {
+    "epoch": "20",
+    "train_loss": "0.91603",
+    "train_acc1": "79.574",
+    "test_loss": "2.66148",
+    "test_acc1": "39.14",
+    "test_acc5": "65.89",
+    "gap_loss": "1.74545",
+    "lr": "0.0001519224698779198",
+    "wall_time_s": "38.27",
+    "data_time_s": "0.12",
+    "est_pipe_time_s": "38.076",
+    "est_pipe_time_comm_s": "39.662",
+    "peak_mem_mb": "3460.6",
+    "stage_mem_mb": "13.4|100.2",
+    "max_weight_versions": "1|1",
+    "v_max": "1",
+    "samples": "29952",
+    "cum_wall_s": "783.89",
+    "cum_est_pipe_s": "780.0",
+    "overfit_warn": "0"
+  },
+  "best_test_acc1": 39.37,
+  "best_epoch": 19,
+  "mean_epoch_wall_s": 39.19435,
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "code_hash": "406efe51593a"
+}

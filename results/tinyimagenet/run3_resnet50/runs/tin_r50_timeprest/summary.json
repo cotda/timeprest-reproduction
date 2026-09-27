@@ -1,0 +1,38 @@
+{
+  "name": "tin_r50_timeprest",
+  "system": "timeprest",
+  "epochs_done": 80,
+  "best_test_acc1": 66.49,
+  "best_epoch": 80,
+  "mean_epoch_time_s": 237.68491139240507,
+  "final": {
+    "epoch": "80",
+    "train_loss": "0.02026",
+    "train_acc1": "99.859",
+    "test_loss": "1.61868",
+    "test_acc1": "66.49",
+    "test_acc5": "85.64",
+    "gap_loss": "1.59842",
+    "lr": "4.385849505708084e-05",
+    "epoch_time_s": "236.346",
+    "busy_frac": "0.911|0.588",
+    "wait_time_s": "19.78|95.75",
+    "peak_mem_mb": "8433.3|1580.2",
+    "mb_sent": "24960.0|24960.0",
+    "msgs_sent": "1560|520",
+    "recompute_micro": "0|0",
+    "max_snapshots": "0|2",
+    "bwd_overlap_minibatches": "260",
+    "samples": "99840",
+    "cum_time_s": "19022.4"
+  },
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "code_hash": "ac27eff678b1"
+}
