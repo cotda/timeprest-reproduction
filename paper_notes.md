@@ -1381,3 +1381,22 @@ Top-1 tại cùng mốc thời gian (tỉ lệ thời gian chạy đủ của Pi
 - **Giữ giống các run TiMePReSt/PipeDream:** model (VGG-16-BN, global pool), partition `[0, 8, 19]` (hai stage đưa vào `PipelineModule` với `partition_method="uniform"`), khởi tạo (cùng seed trước `build_stages`), thứ tự dữ liệu (`epoch_order`, cắt mini-batch rồi `tensor_split` như runtime của mình), SGD momentum 0.9, wd 5e-4, lr 0.02, warmup 5, cosine theo step (LambdaLR truyền vào `deepspeed.initialize`), 80 epoch, fp32. Loss: DeepSpeed lấy trung bình loss của N micro-batch, bằng tổng CE / M như các run khác (có test).
 - **Khác biệt không tránh được:** DeepSpeed truyền activation bằng NCCL (runtime của mình dùng gloo qua CPU), kernel và overhead khác, nên thời gian lẫn cả khác biệt hiện thực. Đánh giá trên 9 984/10 000 ảnh val (một batch pipeline luôn là N micro-batch đủ). Resume không khôi phục RNG của augmentation. Không có giả lập mạng chậm.
 - Code `timeprest/dist/deepspeed_train.py` (ghi `metrics.csv`/`summary.json` cùng định dạng GĐ2), config `configs/tin_deepspeed{,_quick}.yaml`, preset `system: deepspeed` (nF1B với 1 mini-batch trong pipeline, cùng phép tính trong engine GĐ1), notebook riêng `notebooks/deepspeed_kaggle.ipynb`. Phần không cần DeepSpeed có test local; phần gọi DeepSpeed chỉ kiểm tra được trên Kaggle (DeepSpeed không cài được trên máy Windows dùng để phát triển).
+
+### 26.1. Kết quả DeepSpeed pipeline (80 epoch, seed 0, DeepSpeed 0.19.7, 2026-09-27)
+
+Nguồn: `results/tinyimagenet/run4_deepspeed/` (`compare_deepspeed.png`). Bản quick (10k ảnh, 3 epoch): loss 5.31 → 4.88, top-1 4.17 %, cùng mức D4 của runtime mình. Cùng khởi tạo, cùng thứ tự dữ liệu với TiMePReSt/PipeDream seed 0.
+
+| | DeepSpeed (1 seed) | TiMePReSt (3 seed) | PipeDream (3 seed) |
+|---|---|---|---|
+| Top-1 cuối / TB 10 epoch cuối | 58.33 / 58.30 | 58.85 ± 0.20 / 58.87 | 58.88 ± 0.36 / 58.80 |
+| Test loss cuối | 1.996 | 1.91–1.93 | 1.87–1.90 |
+| TB top-1 epoch 5–20 | 41.85 | **43.77** ± 0.25 | 41.84 ± 0.56 |
+| TB top-1 epoch 21–40 | **52.58** | 51.30 ± 0.16 | 49.43 ± 0.39 |
+| Epoch tới 45 / 50 / 55 % | 14 / **20** / 48 | 11 / 20.3 / 43 | 14.3 / 31.3 / 42.3 |
+| Peak GPU0 / GPU1 | **1182 / 446 MB** | 3344 / 830 MB | 3528 / 820–867 MB |
+| Thời gian/epoch | 87.2 s | 105–112 s | 114–119 s |
+
+- **Chất lượng cuối**: thấp hơn ~0.5 điểm (58.33, dưới khoảng 58.5–59.2 của 6 run kia; test loss cao hơn). 1 seed, và đánh giá trên 9 984/10 000 ảnh, nên chỉ coi là "gần như ngang, có thể hơi thấp".
+- **Bộ nhớ thấp hơn ~3 lần**: pipeline đồng bộ chỉ giữ 1 mini-batch, còn runtime bất đồng bộ giữ tới W−s = 2 mini-batch ở stage 0. Cùng chiều với paper (§4.7: DeepSpeed "slightly better than TiMePReSt in terms of memory"), nhưng ở đây chênh lệch lớn hơn "slightly".
+- **Thời gian**: nhanh hơn ~20 % mỗi epoch, nhưng lẫn khác biệt hiện thực: NCCL GPU↔GPU so với gloo qua CPU, và runtime của mình đồng bộ GPU sau mỗi op cho lịch dynamic. Máy chạy cũng khác các run kia. **Không so thời gian với paper** (Fig.17: TiMePReSt nhanh hơn DeepSpeed; Fig.9: tại cùng mốc thời gian TiMePReSt 69–73 % so với các baseline 24–35 %).
+- **Xét lại diễn giải §24.5.** DeepSpeed **không có trễ nào** và dùng cùng micro-batch 64 (cùng thống kê BN) như TiMePReSt. Nếu lợi thế sớm của nF1B đến từ "ít trễ hơn" hoặc "BN theo micro-batch", DeepSpeed phải bằng hoặc hơn TiMePReSt ở epoch 5–20. Thực tế nó **ngang PipeDream** ở giai đoạn đó (41.85 so với 43.77), rồi **cao nhất** ở epoch 21–40 (52.58), và tới 50 % sau 20 epoch như TiMePReSt. Vậy: (i) BN theo micro-batch và việc chia micro-batch **không** giải thích được lợi thế ở epoch 5–20 của TiMePReSt/Variant 1; (ii) "ít trễ hơn" cũng không giải thích được, vì hệ không trễ lại chậm hơn ở giai đoạn đó. Lợi thế sớm gắn với **nF1B bất đồng bộ** (TiMePReSt, Variant 1). Một giả thuyết (chưa kiểm chứng): gradient trễ trong pipeline bất đồng bộ tạo ra "momentum ngầm" (Mitliagkas et al. 2016, "Asynchrony begets momentum"), tăng bước đi hiệu dụng khi lr còn cao. Cần thận trọng: PipeDream-vsync (trễ nhiều nhất) lại chậm nhất, nên kiểu trễ quan trọng hơn lượng trễ. Cơ chế chưa được giải thích; ghi là câu hỏi mở.
