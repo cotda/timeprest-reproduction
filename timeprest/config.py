@@ -26,6 +26,10 @@ SYSTEM_PRESETS = {
     # (paper_notes §22.5); every other system uses backward_rule "graph" (PipeDream's mechanism).
     "timeprest_recompute": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "committed",
                             "backward_rule": "recompute"},
+    # DeepSpeed pipeline baseline (timeprest.dist.deepspeed_train, paper_notes §26): synchronous 1F1B with
+    # a flush per mini-batch, N micro-batches all at the same weights (= nF1B with one mini-batch in
+    # flight in the phase-1 engine; configs set max_inflight: 1).
+    "deepspeed": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "stashed"},
     # Ablation Variant 1 (§4.10): nF1B but keep weight stashing.
     "variant1": {"schedule": "nF1B", "vertical_sync": True, "backward_version": "stashed"},
     # Ablation Variant 2 (§4.10): 1F1B without weight stashing.

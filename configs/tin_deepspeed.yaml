@@ -1,0 +1,12 @@
+# DeepSpeed pipeline baseline on VGG-16 / Tiny-ImageNet, 80 epochs (paper_notes §26). Same model,
+# partition, initial weights, data order and LR recipe as tin_timeprest / tin_pipedream (seed 0).
+#     pip install deepspeed
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.deepspeed_train --config configs/tin_deepspeed.yaml --resume
+base: tin_base.yaml
+name: tin_vgg16_deepspeed
+system: deepspeed
+pipeline:
+  num_microbatches: 3              # 3 micro-batches of 64 per mini-batch of 192, as TiMePReSt
+  max_inflight: 1                  # synchronous: one mini-batch in the pipeline (flush before the update)
+output:
+  require_checks: false            # the phase-2 checks test our runtime, not DeepSpeed's

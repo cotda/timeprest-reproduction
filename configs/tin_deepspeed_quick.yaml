@@ -1,0 +1,11 @@
+# Smoke test of the DeepSpeed baseline (10k images, 3 epochs): loss must go down, prints epoch time.
+base: tin_deepspeed.yaml
+name: tin_deepspeed_quick
+data:
+  train_subset: 10000
+  test_subset: 1000
+training:
+  epochs: 3
+  warmup_epochs: 1
+output:
+  dir: /kaggle/working/runs/tin_deepspeed_quick
