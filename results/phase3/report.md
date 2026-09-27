@@ -29,6 +29,7 @@
 | run3_resnet50 | tin_r50_pipedream | pipedream | F=B version | 1F1B | 1 | 192 | 0.1 | 80 | 65.44 | 65.39 | 65.64 | 22 / 33 / 39 / 52 | 1.38 / 2.06 / 2.44 / 3.25 | 225.10 | 5.00 | 8515 / 1470 | 0.98 / 0.66 |
 | run3_resnet50 | tin_r50_timeprest | timeprest | graph | nF1B | 3 | 192 | 0.1 | 80 | 66.49 | 66.12 | 66.49 | 18 / 23 / 37 / 45 | 1.21 / 1.54 / 2.46 / 2.98 | 236.70 | 5.28 | 8433 / 1580 | 0.91 / 0.59 |
 | run4_deepspeed | tin_vgg16_deepspeed | deepspeed | F=B version | nF1B | 3 | 192 | 0.02 | 80 | 58.33 | 58.30 | 58.42 | 10 / 14 / 20 / 48 | 0.24 / 0.34 / 0.48 / 1.16 | 87.25 | 1.94 | 1182 / 446 | nan / nan |
+| run5_pipedream_m64 | tin_vgg16_pipedream_m64 | pipedream | F=B version | 1F1B | 1 | 64 | 0.02 | 80 | 60.94 | 60.84 | 60.99 | 10 / 15 / 33 / 54 | 0.28 / 0.42 / 0.93 / 1.52 | 101.42 | 2.26 | 1198 / 420 | 0.94 / 0.63 |
 
 ## Paper reference
 
@@ -61,3 +62,11 @@
 | none (same host) | 49.04 | 45.21 | 1.085 |
 | 2 | 63.48 | 62.72 | 1.012 |
 | 1 | 72.62 | 83.79 | 0.867 |
+
+## Epoch time vs emulated bandwidth (`results/tinyimagenet\run5_pipedream_m64\bench_comm`, latency 0.1 ms/message)
+
+| bandwidth (Gbit/s) | timeprest epoch (s) | pipedream epoch (s) | pipedream_m64 epoch (s) | timeprest / pipedream |
+|---|---|---|---|---|
+| none (same host) | 21.61 | 23.64 | 19.86 | 0.914 |
+| 2 | 35.72 | 42.91 | 39.00 | 0.833 |
+| 1 | 57.91 | 64.76 | 63.51 | 0.894 |

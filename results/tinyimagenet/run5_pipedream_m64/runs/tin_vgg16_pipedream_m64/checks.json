@@ -1,0 +1,110 @@
+{
+  "code_hash": "303cae94d915",
+  "config": "configs/tin_quick_pd.yaml",
+  "overrides": [],
+  "systems": [
+    "pipedream"
+  ],
+  "model": {
+    "name": "vgg16_bn",
+    "num_classes": 200,
+    "width": 1.0,
+    "global_pool": true
+  },
+  "dataset": "tinyimagenet",
+  "env": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "all_pass": true,
+  "results": [
+    {
+      "id": 1,
+      "name": "static_equals_engine",
+      "status": "PASS",
+      "seconds": 8.2,
+      "message": "static (Fig.2) order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4",
+      "metrics": {
+        "pipedream": {
+          "max_rel_param_diff_vs_engine": 0.0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "dynamic_versions",
+      "status": "PASS",
+      "seconds": 6.5,
+      "message": "dynamic order, 20 mini-batches, version invariants",
+      "metrics": {
+        "pipedream": {
+          "wall_s": 5.5,
+          "drained": true,
+          "recompute_micro": [
+            0,
+            0
+          ],
+          "graph_micro": [
+            20,
+            20
+          ],
+          "wait_time_s": [
+            0.173,
+            0.942
+          ],
+          "backward_rule": "graph",
+          "no_recompute": true,
+          "backward_uses_forward_version": true
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "checkpoint_resume",
+      "status": "PASS",
+      "seconds": 8.6,
+      "message": "2 epochs vs 1 + resume (static order, deterministic), tol 1e-5",
+      "metrics": {
+        "pipedream": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "short_run",
+      "status": "PASS",
+      "seconds": 51.1,
+      "message": "short run per system on the real pipeline",
+      "metrics": {
+        "pipedream": {
+          "train_loss_by_epoch": [
+            5.31134,
+            5.03021,
+            4.69246
+          ],
+          "test_acc1_by_epoch": [
+            1.0,
+            3.0,
+            4.4
+          ],
+          "epoch_time_s": 12.308,
+          "busy_frac_per_gpu": "0.900|0.413",
+          "peak_mem_mb_per_gpu": "3594.3|866.6",
+          "mb_sent_per_gpu": "2496.0|2496.0",
+          "msgs_sent_per_gpu": "52|52",
+          "recompute_micro": "0|0",
+          "bwd_overlap_minibatches": 27,
+          "est_full_epoch_s": 123.3,
+          "est_full_run_h": 2.74
+        }
+      }
+    }
+  ]
+}

@@ -1417,3 +1417,22 @@ Nguồn: `results/tinyimagenet/run4_deepspeed/` (`compare_deepspeed.png`). Bản
 - Sweep (20k ảnh, 6 epoch, warmup 2, 1 GPU), top-1: lr 0.02 **21.75 %** (test loss 3.444), 0.01 21.75 % (3.493), 0.005 18.25 %. Chọn **0.02**. Tham chiếu cùng điều kiện (§24.1, lr 0.02): PipeDream M=192 18.45 %, TiMePReSt 17.2 %. Sau 6 epoch, M=64 **cao hơn** cả hai (+3.3 và +4.6 điểm): gấp 3 lần số lần cập nhật giúp tiến nhanh hơn theo epoch, khớp dự đoán ("PipeDream học nhanh hơn theo epoch", Fig.8b). Cần run 80 epoch để xác nhận.
 - Bench cùng máy (20k ảnh, epoch 2), s/epoch — TiMePReSt / PipeDream M=192 / PipeDream M=64: cùng máy 21.94 / 23.11 / **19.49**; 2 Gbit/s **36.14** / 43.57 / 39.62; 1 Gbit/s **56.30** / 62.71 / 63.26. Tỉ lệ bận GPU cùng máy của M=64 là 0.96 / 0.67, cao nhất trong ba hệ.
 - **Dự đoán thứ hai sai:** PipeDream M=64 **không** chậm hơn mỗi epoch; cùng máy nó còn nhanh nhất. Mini-batch nhỏ chia pipeline mịn hơn nên ít chờ hơn; số message gấp 3 lần nhưng mỗi message nhỏ bằng 1/3; một lần cập nhật 15M tham số rất rẻ. Vậy cách hiểu này **không giải thích được** việc PipeDream trong paper chậm hơn 5–6 lần mỗi epoch (với hiện thực của mình). Khi mạng chậm, TiMePReSt vẫn nhanh nhất (hơn M=64 9 % ở 2 Gbit/s, 11 % ở 1 Gbit/s).
+
+### 27.2. Kết quả PipeDream M = 64, 80 epoch (seed 0, code `303cae94d915`)
+
+Nguồn: `results/tinyimagenet/run5_pipedream_m64/` (runs/, bench_comm/, `compare_m64.png`). D1–D4 PASS (`tin_quick_pd`).
+
+| | PipeDream M=64 (1 seed) | TiMePReSt M=192, N=3 (3 seed) | PipeDream M=192 (3 seed) |
+|---|---|---|---|
+| Top-1 cuối / TB 10 epoch cuối | **60.94 / 60.84** | 58.85 ± 0.20 / 58.87 | 58.88 ± 0.36 / 58.80 |
+| Test loss cuối | **1.812** | 1.91–1.93 | 1.87–1.90 |
+| TB top-1 epoch 5–20 / 21–40 | 41.93 / 48.81 | **43.77 / 51.30** | 41.84 / 49.43 |
+| Epoch tới 50 / 55 / 58 / 60 % | 33 / 54 / 58 / **64** | 20 / 43 / 53 / không đạt | 31 / 42 / 50 / không đạt |
+| Peak GPU0 / GPU1 | **1198 / 420 MB** | 3344 / 830 MB | 3528 / ~840 MB |
+| Thời gian/epoch: run dài / bench cùng máy | 101.4 s / **19.49 s** | 105–112 s / 21.94 s | 114–119 s / 23.11 s |
+
+- **Chất lượng cuối cao nhất:** +2.1 điểm so với cả TiMePReSt và PipeDream M=192. Mức này lớn gấp ~5–10 lần độ lệch chuẩn giữa các seed (0.2–0.4), nên nhiều khả năng là thật dù chỉ 1 seed. Nhiều khả năng do batch nhỏ (64) cùng gấp 3 lần số lần cập nhật cho khả năng tổng quát tốt hơn với cùng lr 0.02.
+- **Ở giữa quá trình không nhanh hơn TiMePReSt:** ngang PipeDream M=192 (tới 50 % sau 33 epoch). Dấu hiệu từ sweep 6 epoch (§27.1) không lặp lại trên toàn bộ dữ liệu ở giai đoạn giữa; lợi thế chỉ xuất hiện sau khi lr giảm (epoch > 55).
+- **So với paper, cách hiểu thứ hai tái hiện được thứ tự cuối cùng theo epoch** ở Fig.8b: PipeDream cao hơn TiMePReSt ở cuối (paper: ~73–77 % so với ~68–72 %; mình: 60.9 so với 58.9 %). Tức là claim "TiMePReSt cần nhiều epoch hơn / kém hơn theo epoch" **khớp** nếu PipeDream của paper cập nhật theo micro-batch.
+- Nhưng nó **không** tái hiện hai claim còn lại: (i) **thời gian**: PipeDream M=64 **không** chậm hơn mỗi epoch (cùng máy còn nhanh nhất; §27.1), nên khoảng cách 5–6 lần của Fig.16–17 vẫn chưa giải thích được; (ii) **bộ nhớ**: PipeDream M=64 dùng **ít hơn TiMePReSt ~2.8 lần** (activation của batch 64), trái với Fig.15.
+- **Kết luận cho §27:** không cách hiểu nào về baseline tái hiện được đồng thời mọi claim của paper. Cùng mini-batch (M=192, §4.5): chất lượng ngang, TiMePReSt học nhanh hơn ở giữa quá trình, thời gian/bộ nhớ chênh ít. Theo micro-batch (M=64, §3.8/Eq.17): PipeDream tốt hơn ở cuối (khớp Fig.8b), nhưng nhanh bằng và tốn ít bộ nhớ hơn TiMePReSt (trái Fig.15–17).

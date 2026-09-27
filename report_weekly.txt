@@ -1,0 +1,7 @@
+Dạ a  em xin báo cáo tiến độ  tuần này ạ:
+
+1. Thực nghiệm TiMePReSt (phương pháp của paper) và PipeDream: đã chạy VGG16 trên CIFAR-100 với cấu hình T4×2 GPU trong 125 epoch. TiMePReSt hoàn thành trong khoảng 134,25 phút, so với 194,92 phút của PipeDream, giảm khoảng 31,1% thời gian và tăng khoảng 45,2% throughput. Tại epoch 125, TiMePReSt đạt 58,87% Top-1, 82,02% Top-5; PipeDream đạt khoảng 62% Top-1, 84% Top-5, đọc từ biểu đồ. Accuracy của cả hai vẫn thấp hơn paper (~71% Top-1, ~89 Top-5). Thực nghiệm hiện tại chưa cho thấy lợi thế thời gian đạt accuracy mục tiêu của TiMePReSt trong paper.
+
+2. Để xác định xem có thể đạt tới acc của paper: em đã chạy TiMePReSt 1GPU. Tại epoch 125, mô hình đạt 64,31% Top-1, 85,21% Top-5. Kết quả cao hơn hai bản pipeline nhưng vẫn thấp hơn paper (~71% Top-1, ~89 Top-5). Hiện xác định nguyên nhân do pipeline và cấu hình VGG16/training hiện tại. 
+
+3. Hướng điều chỉnh tiếp theo: thấy classifier của VGG16 (vốn thiết kế cho ImageNet) hiện tại quá lớn và hai stage bị chia mất cân bằng. Hiện tại em đang chạy VGG16 điều chỉnh cho CIFAR-100, giảm số tham số từ 134.7 triệu xuống khoảng 15 triệu và cân bằng lại stage; sau đó chạy lại single-GPU TiMePReSt và PipeDream với kỳ vọng cho acc đạt gần với paper sau đó mới xây dựng lại pipeline song song để đánh giá.
