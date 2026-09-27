@@ -24,6 +24,18 @@ from ..data import build_datasets
 from .train import DistTrainer, init_dist
 
 
+def bench_variants(systems: list) -> list[tuple[str, str, list[str]]]:
+    """bench.systems entries: a system name, or {name, system, set: {dotted.key: value}} for a variant
+    with its own settings (e.g. PipeDream with another mini-batch size). -> (name, system, overrides)."""
+    out = []
+    for s in systems:
+        if isinstance(s, str):
+            out.append((s, s, []))
+        else:
+            out.append((s["name"], s["system"], [f"{k}={v}" for k, v in (s.get("set") or {}).items()]))
+    return out
+
+
 def _stat(row: dict, key: str) -> list[float]:
     return [float(x) for x in str(row[key]).split("|")]
 
@@ -67,13 +79,13 @@ def main(argv=None):
     datasets = build_datasets(base_cfg["data"], base_cfg["model"]["num_classes"], base_cfg["seed"])
     rows = []
     for bw in bench["bandwidths_gbps"]:
-        for system in bench["systems"]:
-            r = copy.deepcopy(raw)
+        for name, system, over in bench_variants(bench["systems"]):
+            r = apply_overrides(copy.deepcopy(raw), over)
             r["system"] = system
             r.setdefault("dist", {})["emulate_bandwidth_gbps"] = bw
             r["dist"]["emulate_latency_ms"] = bench.get("latency_ms", 0.0)
             r.setdefault("training", {})["epochs"] = bench["epochs"]
-            r["name"] = f"bench_{system}_bw{bw if bw else 'inf'}"
+            r["name"] = f"bench_{name}_bw{bw if bw else 'inf'}"
             cfg = resolve(r)
             out = os.path.join(base_dir, cfg["name"])
             if rank == 0:
@@ -83,13 +95,13 @@ def main(argv=None):
             hist = DistTrainer(cfg, out, datasets, verbose=False).fit()
             last = hist[-1]                      # later epochs: no first-epoch warm-up effects
             if rank == 0:
-                row = {"system": system, "bandwidth_gbps": bw, "latency_ms": bench.get("latency_ms", 0.0),
+                row = {"system": name, "bandwidth_gbps": bw, "latency_ms": bench.get("latency_ms", 0.0),
                        "epoch_time_s": last["epoch_time_s"], "busy_frac": _stat(last, "busy_frac"),
                        "wait_time_s": _stat(last, "wait_time_s"), "mb_sent": _stat(last, "mb_sent"),
                        "msgs_sent": _stat(last, "msgs_sent"), "peak_mem_mb": _stat(last, "peak_mem_mb"),
                        "epochs_timed": len(hist)}
                 rows.append(row)
-                print(f"[bw {str(bw or 'inf'):>5} Gbit/s] {system:10s} epoch {row['epoch_time_s']:7.2f}s "
+                print(f"[bw {str(bw or 'inf'):>5} Gbit/s] {name:14s} epoch {row['epoch_time_s']:7.2f}s "
                       f"busy {row['busy_frac']} wait {row['wait_time_s']}", flush=True)
                 utils.append_csv({k: ("|".join(map(str, v)) if isinstance(v, list) else v) for k, v in row.items()},
                                  os.path.join(base_dir, "bench_comm.csv"))

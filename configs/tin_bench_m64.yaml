@@ -1,0 +1,15 @@
+# Epoch time vs emulated bandwidth, all on the SAME machine: TiMePReSt (M=192, N=3), PipeDream M=192 and
+# PipeDream M=64 (paper_notes §27). 20k-image subset, 2 epochs, last one timed. ~25 min:
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.dist.bench_comm --config configs/tin_bench_m64.yaml
+base: tin_bench_comm.yaml
+name: tin_bench_m64
+output:
+  dir: /kaggle/working/tin_bench_m64
+bench:
+  systems:
+    - timeprest
+    - pipedream
+    - {name: pipedream_m64, system: pipedream, set: {training.batch_size: 64}}
+  bandwidths_gbps: [null, 2, 1]
+  latency_ms: 0.1
+  epochs: 2

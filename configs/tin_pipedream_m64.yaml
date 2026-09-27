@@ -1,0 +1,11 @@
+# PipeDream as the paper's own comparison may have run it (paper_notes §27): 1F1B per micro-batch, i.e.
+# mini-batch = TiMePReSt's micro-batch (64), one backward and one weight update per 64 samples
+# (3x the updates per epoch of the M=192 runs). §3.8/Eq.17 ("backward passes from N to 1") fit this
+# reading; §4.5 ("same mini-batch size") fits the M=192 baseline. VGG-16 / Tiny-ImageNet, 80 epochs.
+base: tin_pipedream.yaml
+name: tin_vgg16_pipedream_m64
+training:
+  batch_size: 64
+  lr: 0.02                         # placeholder until configs/tin_pipedream_m64_sweep.yaml
+runtime:
+  op_trace_every: 10

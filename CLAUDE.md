@@ -21,6 +21,7 @@ GĐ2 dùng `notebooks/phase2_kaggle.ipynb` (torchrun 2 GPU, check `python -m tim
 GĐ3 dùng `notebooks/phase3_kaggle.ipynb` (ablation, thay N, mạng chậm giả lập; tổng hợp `python -m timeprest.report`; paper_notes.md §23).
 Tiny-ImageNet dùng `notebooks/tinyimagenet_kaggle.ipynb` (chia 2 tài khoản Kaggle; config `configs/tin_*.yaml`; paper_notes.md §24).
 Baseline DeepSpeed pipeline dùng `notebooks/deepspeed_kaggle.ipynb` (`timeprest.dist.deepspeed_train`, config `configs/tin_deepspeed*.yaml`; paper_notes.md §26).
+Baseline PipeDream M=64 (1F1B theo micro-batch, cách hiểu thứ hai của paper) dùng `notebooks/pipedream_m64_kaggle.ipynb` (config `configs/tin_pipedream_m64*.yaml`, `tin_bench_m64.yaml`; paper_notes.md §27).
 Notebook `notebooks/phase1_colab.ipynb` gồm các cell theo thứ tự:
 1. Mount Google Drive, clone/pull repo, `pip install -e .`
 2. In môi trường: GPU, VRAM, phiên bản torch/CUDA.

@@ -1,0 +1,4 @@
+# D1-D4 for PipeDream only (enough to unlock tin_pipedream_m64; ~3 min).
+base: tin_quick.yaml
+checks:
+  systems: [pipedream]

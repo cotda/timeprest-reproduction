@@ -42,3 +42,9 @@ def test_long_run_refuses_checks_of_another_workload(tmp_path):
     assert checks_ok(cfg) == (True, "ok")
     json.dump(dict(base, model=r50["model"], dataset="tinyimagenet", systems=["pipedream"]), open(tmp_path / "c.json", "w"))
     assert not checks_ok(cfg)[0]                       # system not covered by the checks
+
+
+def test_bench_variants_with_own_settings():
+    from timeprest.dist.bench_comm import bench_variants
+    v = bench_variants(["timeprest", {"name": "pipedream_m64", "system": "pipedream", "set": {"training.batch_size": 64}}])
+    assert v == [("timeprest", "timeprest", []), ("pipedream_m64", "pipedream", ["training.batch_size=64"])]

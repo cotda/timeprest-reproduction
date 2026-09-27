@@ -1,0 +1,18 @@
+# LR sweep for PipeDream with M=64 (single GPU, phase-1 engine; same 20k images / 6 epochs / warmup 2 as
+# tin_sweep.yaml), best lr per system (§22.9). ~20-30 min:
+#     python -m timeprest.sweep --config configs/tin_pipedream_m64_sweep.yaml
+base: tin_base.yaml
+name: tin_pipedream_m64_sweep
+data:
+  train_subset: 20000
+  test_subset: 2000
+training:
+  epochs: 6
+  warmup_epochs: 2
+output:
+  dir: /kaggle/working/tin_pipedream_m64_sweep
+  require_checks: false
+sweep:
+  lrs: [0.02, 0.01, 0.005]         # 0.0067 would be the linear-scaling value of 0.02 at M=192
+  variants:
+    pipedream_m64: {system: pipedream, training.batch_size: 64}
