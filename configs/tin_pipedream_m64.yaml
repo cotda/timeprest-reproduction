@@ -6,6 +6,6 @@ base: tin_pipedream.yaml
 name: tin_vgg16_pipedream_m64
 training:
   batch_size: 64
-  lr: 0.02                         # placeholder until configs/tin_pipedream_m64_sweep.yaml
+  lr: 0.02                         # best of tin_pipedream_m64_sweep (0.02 = 0.01 on top-1, lower loss; > 0.005), §27.1
 runtime:
   op_trace_every: 10
