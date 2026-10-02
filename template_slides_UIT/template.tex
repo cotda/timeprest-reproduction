@@ -1,0 +1,346 @@
+%=============================================================
+%  TEMPLATE PRESENTATION BEAMER - KHOA HTTT - UIT
+%  Dành cho sinh viên báo cáo môn học & khóa luận
+%=============================================================
+\documentclass[10pt,aspectratio=169]{beamer}
+\usepackage[utf8]{vietnam}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs,array,longtable}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,calc,
+                shapes.geometric,fit,decorations.pathreplacing,
+                decorations.markings,backgrounds,shadows}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[many]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{listings}
+
+%=============================================================
+%  1. TEMPLATE CUSTOMIZATION (Màu sắc, Logo và Thông tin)
+%  Sinh viên thay đổi các thông số dưới đây để tùy biến slide
+%=============================================================
+\definecolor{uitblue}{RGB}{108,79,59}       % Màu chủ đạo (Nâu đậm của header/bìa)
+\definecolor{uitdark}{RGB}{74,53,37}        % Màu phụ (Nâu tối ở dải bìa/footer)
+\definecolor{accent}{RGB}{197,140,50}       % Màu nhấn mạnh (Vàng Gold)
+\definecolor{accentlt}{RGB}{222,178,110}    % Màu nhấn phụ (Vàng cát)
+\definecolor{greenteal}{RGB}{100,120,80}    % Màu ví dụ/thực hành (Sage Green)
+\definecolor{lightgray}{RGB}{248,245,240}   % Màu nền ấm của slide (Cream/Ivory)
+\definecolor{textgray}{RGB}{60,55,50}       % Màu chữ thân (Charcoal)
+
+\newcommand{\titlebgimage}{title_bg.png}
+\newcommand{\sectionbgimage}{section_bg.png} % Tên tệp ảnh nền trang ngăn cách section (nếu có)     % Tên tệp ảnh nền mờ trang bìa (nếu có)
+\newcommand{\logonhomNC}{logo_nhom_nc.png}   % Logo nhóm nghiên cứu/Lab (nếu có)
+\newcommand{\logonhomthuchien}{logo_nhom_thuchien.png} % Logo nhóm thực hiện/CLB (nếu có)
+\newcommand{\gvhd}{TS. Nguyễn Văn B}         % Giáo viên hướng dẫn (nếu có)
+\newcommand{\slidewatermark}{logo_nhom_nc.png} % Tệp ảnh mờ làm hình nền từng slide (để trống nếu không dùng)
+\newcommand{\contactemail}{ftisu@uit.edu.vn} % Email liên hệ hiển thị ở trang bìa
+
+%=============================================================
+%  2. THÔNG TIN BÁO CÁO (Metadata)
+%=============================================================
+\title[Tiêu đề rút gọn]{Tiêu đề đầy đủ của bài báo cáo hoặc đề tài nghiên cứu}
+\subtitle{Tên môn học hoặc Tên đề tài báo cáo khoa học}
+\author{Nhóm thực hiện: Nguyễn Văn A - Lớp HTTT202X}
+\date{Ngày báo cáo: \today}
+
+%=============================================================
+%  3. BEAMER THEME OVERRIDE (Cấu hình hiển thị - KHÔNG NÊN SỬA)
+%=============================================================
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% Thiết lập màu sắc các thành phần Beamer
+\setbeamercolor{palette primary}{bg=uitblue,fg=white}
+\setbeamercolor{frametitle}{bg=uitblue,fg=white}
+\setbeamercolor{title}{bg=uitblue,fg=white}
+\setbeamercolor{author in head/foot}{bg=uitdark,fg=white}
+\setbeamercolor{title in head/foot}{bg=uitblue,fg=white}
+\setbeamercolor{date in head/foot}{bg=uitdark!80,fg=white}
+\setbeamercolor{section in head/foot}{bg=uitblue!70,fg=white}
+
+\setbeamercolor{block title}{bg=uitblue!18,fg=uitdark}
+\setbeamercolor{block body}{bg=uitblue!5,fg=textgray}
+\setbeamercolor{alertblock title}{bg=accent!20,fg=accent!80!black}
+\setbeamercolor{alertblock body}{bg=accent!5,fg=textgray}
+\setbeamercolor{exampleblock title}{bg=greenteal!20,fg=greenteal!70!black}
+\setbeamercolor{exampleblock body}{bg=greenteal!5,fg=textgray}
+\setbeamercolor{item}{fg=uitblue}
+\setbeamercolor{subitem}{fg=accent}
+\setbeamercolor{enumerate item}{fg=uitblue}
+\setbeamercolor{normal text}{fg=textgray}
+\setbeamercolor{structure}{fg=uitblue}
+
+% Định dạng tiêu đề slide (Frametitle)
+% Thiết lập hình nền mờ dưới từng slide (Watermark)
+\usebackgroundtemplate{
+  \ifx\slidewatermark\empty\else
+    \expandafter\IfFileExists\expandafter{\slidewatermark}{
+      \begin{tikzpicture}[remember picture, overlay]
+        \node[opacity=0.03, anchor=center] at (current page.center) {
+          \includegraphics[width=0.3\paperwidth]{\slidewatermark}
+        };
+      \end{tikzpicture}
+    }{}
+  \fi
+}
+
+\setbeamertemplate{frametitle}{
+  \vskip2pt
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.56cm,dp=0.2cm,leftskip=0.4cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+    \ifx\insertframesubtitle\empty\else
+      \;{\small\textcolor{accentlt}{$\triangleright$}}\;\usebeamerfont{framesubtitle}\textcolor{accentlt}{\insertframesubtitle}
+    \fi
+  \end{beamercolorbox}
+  \vskip-2pt
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.2pt,dp=0pt]{palette primary}
+    \color{accent}\rule{\paperwidth}{1.2pt}
+  \end{beamercolorbox}
+}
+
+% Định dạng chân trang (Footline)
+\setbeamertemplate{footline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.4cm,dp=0.12cm]{author in head/foot}
+    \hspace{0.3cm}{\scriptsize\faUniversity\; UIT -- Khoa Hệ thống Thông tin}
+    \hfill
+    {\scriptsize Báo cáo khoa học}
+    \hfill
+    {\scriptsize\insertframenumber/\inserttotalframenumber\hspace{0.3cm}}
+  \end{beamercolorbox}
+}
+
+% Định dạng đầu trang (Headline)
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.06cm]{section in head/foot}
+    \color{accent}\rule{\paperwidth}{0.06cm}
+  \end{beamercolorbox}
+}
+
+% Định dạng ký hiệu danh sách (Itemize bullets)
+\setbeamertemplate{itemize item}{\color{uitblue}\faCircle[regular]}
+\setbeamertemplate{itemize subitem}{\color{accent}$\triangleright$}
+\setbeamertemplate{enumerate item}{\color{uitblue}\insertenumlabel.}
+
+% Định dạng trang bìa (Title Page)
+\setbeamertemplate{title page}{
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[uitblue] (current page.north west) rectangle ([yshift=-0.58\paperheight]current page.north east);
+    \fill[uitdark] ([yshift=-0.58\paperheight]current page.north west)
+         rectangle ([yshift=-0.62\paperheight]current page.north east);
+    \fill[lightgray] ([yshift=-0.62\paperheight]current page.north west)
+         rectangle (current page.south east);
+         
+    \expandafter\IfFileExists\expandafter{\titlebgimage}{
+      \node[opacity=0.10, anchor=center] at (current page.center) {\includegraphics[width=\paperwidth,height=\paperheight]{\titlebgimage}};
+    }{}
+         
+    \node[white, anchor=north west, font=\large\bfseries, align=left, text width=0.9\paperwidth] (univ) at
+         ([xshift=0.5cm, yshift=-0.4cm]current page.north west)
+         {\faUniversity\quad TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN -- UIT \\
+          \small\normalfont Khoa Hệ thống Thông tin $|$ Nhóm nghiên cứu FTISU};
+          
+    \node[white, anchor=north west, font=\LARGE\bfseries, text width=0.88\paperwidth, align=left] (title) at
+         ([yshift=-0.25cm]univ.south west)
+         {\inserttitle};
+         
+    \node[accentlt, anchor=north west, font=\normalsize\itshape, text width=0.88\paperwidth, align=left] (subtitle) at
+         ([yshift=-0.15cm]title.south west)
+         {\insertsubtitle};
+         
+    \node[uitdark, anchor=north west, font=\small, align=left] at
+         ([xshift=0.8cm, yshift=-0.66\paperheight]current page.north west)
+         {\faUser\quad \insertauthor \\
+          \ifx\gvhd\empty\else
+            \faGraduationCap\quad GVHD: \gvhd \\
+          \fi
+          \faEnvelope\quad \contactemail \\
+          \faCalendar\quad \insertdate};
+         
+    % Trang trí dòng kẻ đứng
+    \draw[accent,line width=4pt]
+         ([xshift=0.5cm,yshift=-0.65\paperheight]current page.north west)
+      -- ([xshift=0.5cm,yshift=-0.85\paperheight]current page.north west);
+
+    % Hiển thị Logo nhóm nghiên cứu / câu lạc bộ / khoa ở góc dưới bên phải
+        % Hiển thị Logo: Nhóm NC nằm bên TRÁI nhóm thực hiện (Góc dưới bên phải)
+    \expandafter\IfFileExists\expandafter{\logonhomthuchien}{
+        % Vẽ Logo nhóm thực hiện trước, neo vào góc và đặt tên node là 'logo2'
+        \node[anchor=south east, inner sep=0pt] (logo2) at ([xshift=-0.5cm, yshift=0.4cm]current page.south east) {
+            \includegraphics[height=0.7cm]{\logonhomthuchien}
+        };
+        
+        \expandafter\IfFileExists\expandafter{\logonhomNC}{
+            % Logo nhóm NC sẽ bám vào phía bên TRÁI (west) của logo2
+            \node[anchor=east, inner sep=0pt] at ([xshift=-0.2cm]logo2.west) {
+                \includegraphics[height=0.7cm]{\logonhomNC}
+            };
+        }{}
+    }{
+        % Trường hợp KHÔNG có logo nhóm thực hiện, chỉ có logo nhóm NC
+        \expandafter\IfFileExists\expandafter{\logonhomNC}{
+            \node[anchor=south east, inner sep=0pt] at ([xshift=-0.5cm, yshift=0.4cm]current page.south east) {
+                \includegraphics[height=0.7cm]{\logonhomNC}
+            };
+        }{}
+    }
+    \end{tikzpicture}
+}
+
+\AtBeginSection[]{
+  {
+    \usebackgroundtemplate{
+      \begin{tikzpicture}[remember picture, overlay]
+        \expandafter\IfFileExists\expandafter{\sectionbgimage}{
+          \node[anchor=center, inner sep=0pt] at (current page.center) {
+            \includegraphics[width=\paperwidth,height=\paperheight]{\sectionbgimage}
+          };
+        }{}
+        \fill[uitblue, opacity=0.92] (current page.north west) rectangle (current page.south east);
+      \end{tikzpicture}
+    }
+    \begin{frame}[plain]
+      \centering
+      \vspace{1.8cm}
+      {\color{white}\Huge\bfseries\thesection}
+      \par\vskip 0.3cm
+      {\color{accent}\rule{0.5\paperwidth}{2pt}}
+      \par\vskip 0.4cm
+      {\color{accentlt}\Large\bfseries\insertsectionhead}
+    \end{frame}
+  }
+}
+
+%=============================================================
+%  4. CÁC HỘP THÔNG TIN TCOLORBOX
+%=============================================================
+\tcbuselibrary{skins,breakable}
+
+% Hộp UIT mặc định (Màu xanh chủ đạo/nâu đất)
+\newtcolorbox{uitbox}[2][]{
+  enhanced,
+  colback=uitblue!6, colframe=uitblue, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=uitblue, arc=3pt, boxrule=0pt},
+  #1
+}
+
+% Hộp Accent nhấn mạnh (Màu vàng nhấn)
+\newtcolorbox{accentbox}[2][]{
+  enhanced,
+  colback=accent!6, colframe=accent, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=accent, arc=3pt, boxrule=0pt},
+  #1
+}
+
+% Hộp ví dụ (Màu xanh lá)
+\newtcolorbox{greenbox}[2][]{
+  enhanced,
+  colback=greenteal!6, colframe=greenteal, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=greenteal, arc=3pt, boxrule=0pt},
+  #1
+}
+
+%=============================================================
+%  5. CÁC MACRO RÚT GỌN (Tô màu từ khóa)
+%=============================================================
+\newcommand{\highlight}[1]{\textcolor{accent}{\bfseries #1}}
+\newcommand{\kw}[1]{\textcolor{uitblue}{\bfseries #1}}
+
+%=============================================================
+%  PHẦN THÂN TÀI LIỆU
+%=============================================================
+\begin{document}
+
+%--- Slide 1: Trang bìa ---
+{
+  \usebackgroundtemplate{}
+  \begin{frame}[plain]
+    \titlepage
+  \end{frame}
+}
+
+%--- Slide 2: Mục lục ---
+\begin{frame}{Nội dung báo cáo}
+\tableofcontents
+\end{frame}
+
+%=============================================================
+\section{1. Giới thiệu Đề tài}
+%=============================================================
+
+%--- Slide 3: Layout 2 cột (Chữ + Ảnh/TikZ) ---
+\begin{frame}{Ví dụ Layout 2 Cột (Chữ \& Sơ đồ)}
+\begin{columns}[T]
+\column{0.50\textwidth}
+\begin{uitbox}{\faLightbulb\; Đặt vấn đề}
+Nội dung khái quát về bài toán hoặc đề tài nghiên cứu \cite{goodfellow2014generative}. Bạn có thể sử dụng các từ khóa \highlight{nổi bật} hoặc \kw{thuật ngữ cốt lõi} để người xem chú ý.
+\end{uitbox}
+\vspace{0.2cm}
+\textbf{Các mục tiêu nghiên cứu chính:}
+\begin{itemize}
+  \item Mục tiêu 1: Xây dựng mô hình tạo sinh chất lượng.
+  \item Mục tiêu 2: Phát hiện hiệu quả các sản phẩm giả mạo.
+\end{itemize}
+
+\column{0.45\textwidth}
+\centering
+\begin{greenbox}{\faPlayCircle\; Sơ đồ minh họa}
+\centering
+% Đặt lệnh \includegraphics hoặc sơ đồ TikZ ở đây
+\begin{tikzpicture}[scale=0.9, >=stealth]
+  \node[draw, uitblue, fill=uitblue!10, rounded corners=3pt, minimum width=2.5cm] (A) at (0,1.2) {Đầu vào $x$};
+  \node[draw, accent, fill=accent!10, rounded corners=3pt, minimum width=2.5cm] (B) at (0,0) {Mô hình $f(x)$};
+  \draw[->, thick, uitblue] (A) -- (B);
+\end{tikzpicture}
+\end{greenbox}
+\end{columns}
+\end{frame}
+
+%=============================================================
+\section{2. Phương pháp Đề xuất}
+%=============================================================
+
+%--- Slide 4: Layout Full Width (Công thức Toán học rộng) ---
+\begin{frame}{Ví dụ Layout Toàn màn hình (Công thức Toán)}
+\begin{uitbox}{\faSearchPlus\; Định nghĩa phương pháp}
+Sử dụng phân phối xác suất xấp xỉ để tối ưu hóa giới hạn dưới của dữ liệu \cite{kingma2013auto}:
+\end{uitbox}
+\vspace{0.2cm}
+\begin{accentbox}{\faBalanceScale\; Hàm mục tiêu tối ưu}
+Công thức phân kỳ toán học có độ rộng lớn nên được đặt toàn màn hình để tránh tràn viền:
+$$D_{KL}(q_\theta(z|x) \,\|\, p(z|x)) = \int q_\theta(z|x) \log \frac{q_\theta(z|x)}{p(z|x)} dz \ge 0$$
+\end{accentbox}
+\end{frame}
+
+%=============================================================
+\section{3. Kết luận}
+%=============================================================
+
+%--- Slide 5: Tổng kết ---
+\begin{frame}{Tổng kết \& Hướng phát triển}
+\begin{itemize}
+  \item \highlight{Kết quả đạt được}: Đề tài đã giải quyết được các yêu cầu đặt ra.
+  \item \kw{Hạn chế}: Cần tối ưu thời gian huấn luyện trên tập dữ liệu lớn.
+  \item \highlight{Hướng phát triển}: Tích hợp mô hình vào ứng dụng web thực tế.
+\end{itemize}
+\end{frame}
+
+%--- Slide 6: Tài liệu tham khảo ---
+\begin{frame}[allowframebreaks]{Tài liệu tham khảo}
+  \bibliographystyle{apalike}
+  \bibliography{references}
+\end{frame}
+
+\end{document}

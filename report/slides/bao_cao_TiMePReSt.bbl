@@ -1,0 +1,16 @@
+\begin{thebibliography}{}
+
+\bibitem[Dutta et~al., 2026]{dutta2026timeprest}
+Dutta, A., Chaki, N., and De, R.~K. (2026).
+\newblock {TiMePReSt}: Time and memory efficient pipeline parallel {DNN}
+  training with removed staleness.
+\newblock {\em Future Generation Computer Systems}, 178:108260.
+
+\bibitem[Narayanan et~al., 2019]{narayanan2019pipedream}
+Narayanan, D., Harlap, A., Phanishayee, A., Seshadri, V., Devanur, N.~R.,
+  Ganger, G.~R., Gibbons, P.~B., and Zaharia, M. (2019).
+\newblock {PipeDream}: Generalized pipeline parallelism for {DNN} training.
+\newblock In {\em Proceedings of the 27th ACM Symposium on Operating Systems
+  Principles}, pages 1--15.
+
+\end{thebibliography}

@@ -1,0 +1,15 @@
+\begin{thebibliography}{}
+
+\bibitem[Goodfellow et~al., 2014]{goodfellow2014generative}
+Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair,
+  S., Courville, A., and Bengio, Y. (2014).
+\newblock Generative adversarial nets.
+\newblock In {\em Advances in neural information processing systems}, pages
+  2672--2680.
+
+\bibitem[Kingma and Welling, 2013]{kingma2013auto}
+Kingma, D.~P. and Welling, M. (2013).
+\newblock Auto-encoding variational bayes.
+\newblock {\em arXiv preprint arXiv:1312.6114}.
+
+\end{thebibliography}
