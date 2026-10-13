@@ -1,0 +1,3 @@
+experiment,model,gpu_count,epochs,global_batch_size,training_time_sec,throughput_img_sec,best_mae_kcal,final_mae_kcal,final_rmse_kcal,speedup,parallel_efficiency_percent
+ResNet18_20epoch_1GPU,ResNet18,1,20,64,443.32,102.41,209.96,213.06,292.45,1.0,100.0
+ResNet18_20epoch_2GPU_DDP,ResNet18,2,20,64,317.75,142.88,204.45,204.45,285.61,1.3951848937844218,69.75924468922109

@@ -34,7 +34,7 @@
 \newcommand{\sectionbgimage}{section_bg.png} % Tên tệp ảnh nền trang ngăn cách section (nếu có)     % Tên tệp ảnh nền mờ trang bìa (nếu có)
 \newcommand{\logonhomNC}{logo_nhom_nc.png}   % Logo nhóm nghiên cứu/Lab (nếu có)
 \newcommand{\logonhomthuchien}{logo_nhom_thuchien.png} % Logo nhóm thực hiện/CLB (nếu có)
-\newcommand{\gvhd}{[Tên giảng viên hướng dẫn]}         % Giáo viên hướng dẫn (nếu có)
+\newcommand{\gvhd}{[]}         % Giáo viên hướng dẫn (nếu có)
 \newcommand{\slidewatermark}{logo_nhom_nc.png} % Tệp ảnh mờ làm hình nền từng slide (để trống nếu không dùng)
 \newcommand{\contactemail}{ftisu@uit.edu.vn} % Email liên hệ hiển thị ở trang bìa
 
@@ -370,19 +370,58 @@ Top-1 TiMePReSt / PipeDream: CIFAR-100 \textbf{72,4 / 72,2\%}; Tiny-ImageNet \te
 \column{0.48\textwidth}
 \begin{accentbox}{\faExclamationTriangle\; 2 GPU cùng máy: chưa có lợi thế}
 \scriptsize
-Hai GPU trên cùng một máy Kaggle: thời gian/epoch của PipeDream bằng \textbf{0,92--1,09 lần} TiMePReSt; bài báo: PipeDream chậm hơn \textbf{1,7--5,7 lần}.
+Hai GPU trên cùng một máy Kaggle: thời gian/epoch của PipeDream bằng \textbf{0,92--1,09 lần} TiMePReSt; bài báo: \textbf{1,7--5,7 lần}.
 \end{accentbox}
 \column{0.48\textwidth}
 \begin{greenbox}{\faCheckCircle\; 2 GPU khác máy (giả lập): có lợi thế}
 \scriptsize
-Giả lập hai GPU ở hai máy nối mạng 1--2 Gbit/s như bài báo: TiMePReSt nhanh hơn \textbf{9--16\%}/epoch nhờ vừa truyền vừa tính theo micro-batch.
+Giả lập hai máy nối mạng 1--2 Gbit/s như bài báo: thời gian/epoch của PipeDream bằng \textbf{1,10--1,20 lần} TiMePReSt, nhờ TiMePReSt vừa truyền vừa tính theo micro-batch.
 \end{greenbox}
 \end{columns}
 \vspace{0.05cm}
 {\tiny\textit{Mức nhanh hơn 31\% báo cáo tuần trước do baseline cũ chưa đúng PipeDream; đã cài đặt lại theo mã nguồn gốc.}}
 \end{frame}
 
-%--- Slide 6: Bộ nhớ ---
+%--- Slide 6: Dự đoán vì sao thời gian của bài báo lớn hơn nhiều ---
+\begin{frame}{Vì sao thời gian/epoch của bài báo lớn gấp $\sim$40 lần? (dự đoán)}
+\begin{uitbox}{\faBalanceScale\; Quy mô: bài báo và thí nghiệm này (TiMePReSt, VGG-16)}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}L{4.8cm}L{3.3cm}L{3.0cm}L{1.4cm}@{}}
+\toprule
+ & \textbf{Bài báo} (Fig.~16a) & \textbf{Thí nghiệm này} & \textbf{Chênh} \\
+\midrule
+Thời gian/epoch, CIFAR-100 & $\sim$11 phút & $\sim$16 giây & \highlight{$\sim$40 lần} \\
+Thời gian/epoch, Tiny-ImageNet & $\sim$75 phút & $\sim$110 giây & \highlight{$\sim$40 lần} \\
+\bottomrule
+\end{tabular}
+\end{uitbox}
+\vspace{-0.3cm}
+\begin{columns}[T]
+\column{0.52\textwidth}
+\begin{accentbox}{\faSearch\; Ảnh 224$\times$224 $\Rightarrow$ giải thích thời gian}
+\scriptsize
+Repo PipeDream dùng VGG-16 bản ImageNet (224$\times$224). Phóng ảnh 32$\times$32 lên 224$\times$224: \textbf{tính toán và dữ liệu truyền tăng 49 lần}.
+\begin{itemize}
+  \item Tính: 16 giây $\times$ 49 $\approx$ \textbf{13 phút}/epoch (bài báo: $\sim$11 phút).
+  \item Truyền: 3,1 GB (đo) $\times$ 49 $\approx$ 150 GB, qua 1 Gbit/s $\approx$ \textbf{20 phút}/epoch.
+  \item Cùng chiều: accuracy, bộ nhớ (Fig.~15) của bài báo cao hơn nhiều.
+\end{itemize}
+\end{accentbox}
+\column{0.44\textwidth}
+\begin{uitbox}{\faExclamationTriangle\; Không giải thích tỉ số 1,7--5,7 lần}
+\scriptsize
+\begin{itemize}
+  \item Tính và truyền \textbf{cùng} tăng 49 lần $\Rightarrow$ tỉ lệ truyền/tính không đổi, lợi thế vừa truyền vừa tính không lớn thêm.
+  \item Ước tính với ảnh 224$\times$224: PipeDream / TiMePReSt chỉ $\sim$\textbf{1,2--1,3 lần}; trần lý thuyết $\sim$2 lần.
+  \item Kiểm chứng: hỏi tác giả; đo thử ảnh 224$\times$224.
+\end{itemize}
+\end{uitbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 7: Bộ nhớ ---
 \begin{frame}{Kết quả: bộ nhớ GPU}
 \centering
 \includegraphics[width=0.76\textwidth]{images/fig15_memory.png}\\[-0.1cm]
@@ -397,12 +436,12 @@ Tổng bộ nhớ hai hệ gần bằng nhau; GPU0 chỉ giảm \textbf{1--6\%},
 \column{0.48\textwidth}
 \begin{uitbox}{\faSearch\; Lý do dự đoán}
 \scriptsize
-Có thể do chỉ có 2 stage: bỏ stashing chỉ bớt một phiên bản trọng số ở stage 1 ($\sim$5 MB), nhỏ so với activation; bài báo đo ở 4 stage.
+Bỏ stashing chỉ bớt \emph{bản sao trọng số}, không bớt activation (chiếm phần lớn bộ nhớ). Với 2 GPU, GPU0 chỉ bớt \textbf{1 bản sao} ($\sim$5 MB). Bài báo dùng 4 GPU: bớt tới 3 bản sao.
 \end{uitbox}
 \end{columns}
 \end{frame}
 
-%--- Slide 7: Tổng hợp và nguyên nhân ---
+%--- Slide 8: Tổng hợp và nguyên nhân ---
 \begin{frame}{Tổng hợp so với bài báo và nguyên nhân}
 \begin{columns}[T]
 \column{0.50\textwidth}
@@ -415,7 +454,7 @@ Có thể do chỉ có 2 stage: bỏ stashing chỉ bớt một phiên bản tr�
 \textbf{Bài báo} & \textbf{Thí nghiệm này} \\
 \midrule
 Chất lượng ngang PipeDream & \textcolor{greenteal}{\textbf{Tái hiện được}} \\
-Nhanh hơn 1,7--5,7 lần/epoch & \textcolor{accent}{\textbf{Có điều kiện:}} 9--16\% khi mạng chậm \\
+Nhanh hơn 1,7--5,7 lần/epoch & \textcolor{accent}{\textbf{Có điều kiện:}} nhanh hơn 1,10--1,20 lần/epoch khi mạng chậm \\
 Tiết kiệm bộ nhớ $\sim$30\% & \textcolor{red!60!black}{\textbf{Chưa:}} 0--6\% \\
 Cần nhiều epoch hơn & \textcolor{red!60!black}{\textbf{Ngược lại}} \\
 Variant 1 (nF1B, giữ stashing) tốt hơn TiMePReSt & \textcolor{red!60!black}{\textbf{Chưa:}} ngang nhau \\
@@ -428,15 +467,15 @@ DeepSpeed ít bộ nhớ hơn & \textcolor{greenteal}{\textbf{Tái hiện đư�
 \begin{accentbox}{\faSearch\; Nguyên nhân dự đoán}
 \scriptsize
 \begin{itemize}
-  \item \kw{Hạ tầng:} truyền dữ liệu trong cùng máy rất rẻ nên lợi thế vừa truyền vừa tính không phát huy; 2 stage nên stashing tiết kiệm ít. Chưa giải thích được mức chênh 5--6 lần.
-  \item \kw{Bài báo thiếu chi tiết:} không mô tả cách tính backward khi forward/backward dùng hai phiên bản trọng số; mô tả baseline PipeDream không nhất quán (\S4.5 và Eq.~17).
-  \item \kw{Ablation:} Variant 1 (lịch nF1B nhưng vẫn giữ weight stashing) học nhanh như TiMePReSt $\Rightarrow$ lợi thế đến từ lịch nF1B, không phải từ việc bỏ stashing.
+  \item \kw{Hạ tầng:} 2 GPU chung một máy nên truyền dữ liệu gần như không tốn thời gian, vừa truyền vừa tính không còn lợi; chỉ 2 stage nên bỏ stashing bớt rất ít bộ nhớ. Chưa rõ vì sao PipeDream của bài báo chậm tới 5,7 lần.
+  \item \kw{Bài báo thiếu chi tiết:} không nói backward tính thế nào khi forward và backward dùng hai phiên bản trọng số; baseline PipeDream được mô tả theo hai cách trái nhau: theo mini-batch (\S4.5) hay theo micro-batch (Eq.~17).
+  \item \kw{Ablation:} giữ lịch nF1B nhưng vẫn stashing (Variant 1) cũng học nhanh như TiMePReSt $\Rightarrow$ học nhanh là nhờ lịch nF1B, không phải nhờ bỏ stashing.
 \end{itemize}
 \end{accentbox}
 \end{columns}
 \end{frame}
 
-%--- Slide 8: Kết luận ---
+%--- Slide 9: Kết luận ---
 \begin{frame}{Kết luận}
 \begin{uitbox}{\faFlag\; Kết luận}
 \footnotesize

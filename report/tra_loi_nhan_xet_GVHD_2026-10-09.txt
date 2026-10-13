@@ -1,0 +1,789 @@
+=====================================================================
+  GIẢI THÍCH VÀ TRẢ LỜI NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN
+  Đề tài: Tái hiện TiMePReSt (FGCS vol.178, 2026)
+  Ngày: 09/10/2026
+=====================================================================
+
+Nhận xét của giảng viên gồm 4 câu:
+  1/ Tìm hiểu kĩ tại sao dùng bài toán phân tích song song, có nguyên
+     nhân gì mà không giải thích?
+  2/ Giải thích tại sao kết hợp như vậy có tác dụng gì? Lợi ích,...
+  3/ So sánh với 1F1B không stashing hiện đại (Megatron-LM 1F1B): quản
+     lý bộ nhớ bằng cách giới hạn số micro-batch in-flight thay vì
+     stashing cồng kềnh như PipeDream gốc.
+  4/ Xung đột phiên bản trọng số: bỏ horizontal stashing làm forward
+     tính với W_t nhưng backward dùng W_{t+k}. Cần phân tích rõ ảnh
+     hưởng lý thuyết.
+
+Mỗi câu dưới đây gồm: (a) giảng viên muốn gì, (b) giải thích dễ hiểu,
+(c) dự án đã có bằng chứng gì, (d) cần thêm gì vào báo cáo.
+Các số "§..." là mục trong file paper_notes.md.
+
+
+=====================================================================
+PHẦN 0. CÁC KHÁI NIỆM CẦN NẮM TRƯỚC
+=====================================================================
+
+- Stage / worker (W): một GPU giữ một đoạn layer liên tiếp của model.
+  Dự án dùng W = 2 (GPU0 giữ nửa đầu VGG-16, GPU1 giữ nửa sau).
+
+- Mini-batch (M) và micro-batch: mini-batch là nhóm ảnh dùng cho một
+  lần cập nhật trọng số (dự án: M = 192). Micro-batch là phần nhỏ
+  của mini-batch (dự án: chia N = 3 phần, mỗi phần 64 ảnh).
+
+- Forward: đưa dữ liệu qua model để dự đoán, tính loss.
+  Backward: tính gradient (nên sửa trọng số theo hướng nào).
+  Update: sửa trọng số theo gradient.
+
+- Phiên bản trọng số (version): mỗi lần update tạo ra một version mới.
+  W_t là version thứ t, W_{t+1} là version ngay sau đó.
+
+- Staleness (trọng số cũ): một phép tính dùng version cũ trong khi đã
+  có version mới hơn.
+
+- In-flight: batch đã forward nhưng chưa backward xong. GPU phải giữ
+  activation (kết quả trung gian) của batch đó trong bộ nhớ để làm
+  backward về sau.
+
+- Bubble: khoảng thời gian GPU ngồi chờ, không làm gì.
+
+- 1F1B: mỗi GPU xen kẽ 1 forward rồi 1 backward.
+  nF1B (TiMePReSt): forward N micro-batch rồi 1 backward chung.
+
+- Horizontal weight stashing ("cất trọng số theo chiều ngang"):
+  trên MỘT stage, giữ lại bản sao version mà forward của một batch đã
+  dùng, để backward của batch đó dùng lại đúng version ấy.
+  "Ngang" = theo trục thời gian của cùng một batch.
+
+- Vertical synchronization ("đồng bộ theo chiều dọc"): trong MỘT lượt
+  của một batch, MỌI stage dùng version có cùng chỉ số. "Dọc" = xuyên
+  qua các stage.
+
+- PipeDream: 1F1B bất đồng bộ + horizontal stashing.
+  TiMePReSt: nF1B + BỎ horizontal stashing + GIỮ vertical sync.
+
+
+=====================================================================
+PHẦN 1. CÂU 1 — VÌ SAO PHẢI HUẤN LUYỆN SONG SONG?
+=====================================================================
+
+1.1. Giảng viên muốn gì?
+---------------------------------------------------------------------
+Báo cáo đi thẳng vào cơ chế (1F1B, stashing, nF1B) mà chưa nói
+TẠI SAO lại có bài toán này. Người đọc không biết vấn đề gốc là gì,
+nên không thấy được giá trị của TiMePReSt.
+
+Câu này có thể hiểu theo 2 cách. Báo cáo nên trả lời cả hai (hoặc
+hỏi lại giảng viên):
+  Cách A: Vì sao phải song song hóa việc huấn luyện, và vì sao chọn
+          pipeline? (khả năng cao nhất)
+  Cách B: Vì sao paper phải làm "phân tích chuỗi song song" (multiple
+          sequence analysis, §3.4–3.6 của paper)?
+
+
+1.2. Cách A — Vì sao cần huấn luyện song song
+---------------------------------------------------------------------
+(a) Một GPU không đủ.
+
+  Khi train, GPU phải chứa: trọng số + gradient + trạng thái optimizer
+  + activation. Ví dụ TinyLlama (1.1 tỷ tham số, một model paper có
+  thử):
+    trọng số fp32        1.1 tỷ x 4 byte  = 4.4 GB
+    gradient                               = 4.4 GB
+    Adam (2 trạng thái)                    = 8.8 GB
+    -------------------------------------------------
+    cộng                                   ≈ 17.6 GB  (chưa tính activation)
+  Một GPU T4 chỉ có ~15 GB, nên không chứa nổi. Kể cả khi chứa được,
+  train trên một GPU cũng rất lâu.
+  => Phải chia việc cho nhiều GPU.
+
+(b) Có 3 cách chia việc cho nhiều GPU.
+
+  +-----------------+----------------------+---------------------+----------------------+
+  | Cách            | Chia cái gì          | Phải truyền gì      | Nhược điểm           |
+  +-----------------+----------------------+---------------------+----------------------+
+  | Data parallel   | Chia DỮ LIỆU; mỗi    | Toàn bộ gradient    | Model phải vừa 1 GPU;|
+  |                 | GPU giữ NGUYÊN model | của model, mỗi bước | truyền rất nhiều khi |
+  |                 |                      | (all-reduce)        | model lớn            |
+  +-----------------+----------------------+---------------------+----------------------+
+  | Tensor parallel | Chia TỪNG LAYER (ma  | Kết quả trung gian  | Cần mạng cực nhanh   |
+  |                 | trận) cho nhiều GPU  | ở MỌI layer         | (NVLink trong 1 máy) |
+  +-----------------+----------------------+---------------------+----------------------+
+  | Pipeline        | Chia model THEO NHÓM | Chỉ activation tại  | GPU phải chờ nhau    |
+  | parallel        | LAYER (stage)        | ranh giới stage     | (bubble)             |
+  +-----------------+----------------------+---------------------+----------------------+
+
+(c) Vì sao paper chọn pipeline.
+  Paper chạy trên cụm nhiều máy, mỗi máy 1 GPU, nối qua mạng (§4.1
+  của paper). Mạng giữa các máy chậm hơn nhiều so với trong một máy.
+  Pipeline truyền ít nhất (chỉ activation ở chỗ nối giữa các stage,
+  gửi thẳng từ GPU này sang GPU kế), nên hợp với kiểu cụm này nhất.
+
+(d) Nhưng pipeline đơn giản thì lãng phí.
+  Nếu chạy từng batch một, mỗi lúc chỉ có 1 GPU làm việc:
+
+     Thời gian -->
+     GPU0:  F  .  .  B  |  F  .  .  B
+     GPU1:  .  F  B  .  |  .  F  B  .
+                (F = forward, B = backward, . = ngồi chờ)
+
+  Mỗi GPU rảnh một nửa thời gian. Có hai hướng sửa:
+   - GPipe / Megatron (ĐỒNG BỘ): chia nhỏ batch thành micro-batch cho
+     các GPU cùng bận, nhưng cuối mỗi bước phải chờ hết (flush) rồi
+     mới cập nhật. Vẫn còn bubble, không có staleness.
+   - PipeDream (BẤT ĐỒNG BỘ): cho batch sau vào ngay khi batch trước
+     chưa xong, không bao giờ flush. Hết bubble, nhưng sinh ra 2 vấn
+     đề mới:
+       * Staleness: batch sau dùng trọng số chưa kịp cập nhật.
+       * Tốn bộ nhớ: phải giữ nhiều version trọng số (stashing) và
+         activation của nhiều batch in-flight.
+
+(e) Chuỗi lập luận một câu (nên đưa vào mở đầu báo cáo):
+  Model lớn -> một GPU không đủ -> pipeline hợp với cụm mạng chậm
+  -> pipeline đơn giản lãng phí GPU -> chạy nhiều batch cùng lúc
+  -> sinh ra staleness, tốn bộ nhớ, tốn thời gian
+  -> TiMePReSt muốn giảm cả ba.
+
+
+1.3. Cách B — Vì sao paper làm "phân tích chuỗi song song"
+---------------------------------------------------------------------
+Trong pipeline bất đồng bộ, lần cập nhật của mini-batch này có thể
+không "nhìn thấy" lần cập nhật của mini-batch ngay trước nó.
+
+Ví dụ của paper (Fig.2a, W = 4 GPU, N = 2 micro-batch):
+  - Mini-batch 3 dùng trọng số đã được mini-batch 1 cập nhật, nhưng
+    CHƯA có cập nhật của mini-batch 2.
+  - Mini-batch 4 dùng cập nhật của 2, chưa có của 3.
+  => Các cập nhật tách thành 2 chuỗi chạy song song:
+       Chuỗi lẻ:  1 -> 3 -> 5 -> 7 -> ...
+       Chuỗi chẵn: 2 -> 4 -> 6 -> ...
+  Hai chuỗi giống hai nhóm cùng sửa một tài liệu nhưng mỗi nhóm chỉ
+  sửa trên bản của mình. Kết quả cuối chỉ phản ánh một phần công sức.
+
+Paper chứng minh (trên lịch lý tưởng): nếu W <= N + 1 thì chỉ có MỘT
+chuỗi, tức mỗi mini-batch luôn dùng kết quả của mini-batch ngay trước
+(độ lệch version v = 1). Công thức tổng quát: v = floor((W+N-2)/N).
+
+  W=4, N=2 -> v=2 (hai chuỗi)     W=4, N=4 -> v=1 (một chuỗi)
+  Dự án: W=2, N=3 -> v=1 (thỏa điều kiện)
+
+Đây là lý do paper chọn N theo số GPU: N >= W - 1.
+Lưu ý (§6.3): đây là lập luận trên lịch lý tưởng, không phải định lý
+cho mọi runtime. Trên phần cứng thật, dự án đo được backward của hai
+mini-batch liền nhau vẫn chồng lên nhau ở 81/260 mini-batch (§23.1).
+
+
+1.4. Cần thêm vào báo cáo
+---------------------------------------------------------------------
+- Một mục "Động cơ" ở đầu: các ý (a)–(e) của 1.2, kèm bảng so sánh 3
+  cách song song.
+- Một đoạn giải thích multiple sequence (1.3), vì đó là lý do của
+  điều kiện W <= N+1.
+- Không cần chạy thí nghiệm.
+
+
+=====================================================================
+PHẦN 2. CÂU 2 — KẾT HỢP NHƯ VẬY CÓ TÁC DỤNG GÌ?
+=====================================================================
+
+2.1. Giảng viên muốn gì?
+---------------------------------------------------------------------
+TiMePReSt ghép 3 thành phần. Báo cáo mới LIỆT KÊ chúng, chưa giải
+thích: mỗi thành phần giải quyết vấn đề nào, phải trả giá gì, và tại
+sao phải ghép đúng 3 thành phần này với nhau.
+
+
+2.2. Từng thành phần
+---------------------------------------------------------------------
+(1) Bỏ horizontal stashing
+    - Làm gì: không giữ bản sao trọng số cũ cho backward. Backward
+      dùng luôn trọng số mới nhất.
+    - Lợi ích: không phải giữ nhiều version trọng số -> tiết kiệm bộ
+      nhớ. Với PipeDream, stage đầu phải giữ tới W version.
+    - Cái giá: forward và backward của cùng một batch dùng hai version
+      khác nhau (lệch phiên bản, xem Câu 4).
+
+(2) Giữ vertical synchronization
+    - Làm gì: trong một lượt forward, mọi stage dùng cùng một version.
+    - Lợi ích: dự đoán của mỗi batch là dự đoán của một model "thật"
+      (không phải nửa đầu version cũ, nửa sau version mới).
+    - Cái giá: version cũ vẫn phải giữ cho tới khi forward dùng nó
+      xong (nhưng KHÔNG phải giữ tới hết backward như PipeDream).
+
+(3) Lịch nF1B (N forward rồi 1 backward)
+    - Làm gì: chia mini-batch thành N micro-batch, forward lần lượt,
+      lấy loss trung bình, rồi backward một lần.
+    - Lợi ích:
+        a. Ít lượt backward và ít message điều khiển hơn.
+        b. Vừa truyền vừa tính: stage sau bắt đầu xử lý micro-batch
+           đầu tiên trong lúc các micro-batch sau còn đang truyền.
+        c. Chọn N >= W - 1 thì v = 1: chỉ một chuỗi cập nhật, và độ
+           lệch version nhỏ nhất.
+    - Cái giá: micro-batch nhỏ thì GPU chạy kém hiệu quả hơn ở một số
+      layer.
+
+
+2.3. Vì sao phải ghép 3 cái lại với nhau
+---------------------------------------------------------------------
+Có thể hình dung như sau:
+  - (1) là thứ đem lại lợi ích bộ nhớ, nhưng gây ra lệch version.
+  - (2) và (3) là "lưới an toàn" giữ cho độ lệch đó nhỏ:
+      (2) bảo đảm lệch chỉ xảy ra giữa forward và backward, không lệch
+          giữa các stage trong cùng một lượt forward;
+      (3) bảo đảm chỉ lệch 1 version (v = 1) và chỉ có một chuỗi cập
+          nhật.
+  - (3) còn đem lợi ích thời gian riêng (truyền chồng lên tính).
+
+Nếu chỉ bỏ stashing mà không có nF1B (Variant 2 trong ablation), độ
+lệch không được khống chế và mất lợi ích chồng lấp truyền/tính.
+Nếu giữ stashing mà dùng nF1B (Variant 1), không lệch version nhưng
+mất lợi ích bộ nhớ.
+
+
+2.4. Dự án đã kiểm chứng được gì (ablation, VGG-16 / Tiny-ImageNet)
+---------------------------------------------------------------------
+Nguồn: §24.2, §24.5 (seed 0; TiMePReSt và PipeDream có 3 seed).
+
+  +-------------------------------+------------+----------------+------------+
+  | Hệ                            | Top-1 cuối | Epoch tới 50%  | Peak GPU0  |
+  +-------------------------------+------------+----------------+------------+
+  | TiMePReSt (nF1B, bỏ stash)    | 58.9 %     | 20 (3 seed TB) | 3344 MB    |
+  | Variant 1 (nF1B, GIỮ stash)   | 59.1 %     | 18             | 3354 MB    |
+  | Variant 2 (1F1B, bỏ stash)    | 58.8 %     | 32             | 3519 MB    |
+  | PipeDream (1F1B, giữ stash)   | 58.9 %     | 31 (3 seed TB) | 3528 MB    |
+  +-------------------------------+------------+----------------+------------+
+
+  Thời gian/epoch khi mạng chậm 2 Gbit/s (giả lập): TiMePReSt 36.0 s,
+  PipeDream 43.1 s -> TiMePReSt nhanh hơn 16%. Ở 1 Gbit/s: 10%.
+  Cùng một máy (truyền rất rẻ): chênh lệch nhỏ.
+
+Đọc bảng:
+  - Chất lượng cuối: cả 4 hệ như nhau (~59%).
+  - Học nhanh ở giữa quá trình (tới 50% sớm hơn ~11 epoch): CẢ HAI hệ
+    có nF1B đều có, hai hệ 1F1B đều không.
+    => Lợi ích này đến từ nF1B, KHÔNG phải từ việc bỏ stashing.
+  - Nhanh hơn khi mạng chậm: đến từ cơ chế truyền chồng lên tính của
+    nF1B.
+  - Bộ nhớ: bỏ stashing gần như không tiết kiệm (Variant 1 giữ stash
+    mà chỉ hơn TiMePReSt 10 MB). Lý do: VGG-16 của dự án có khoảng
+    15 triệu tham số, tức một version ~60 MB, quá nhỏ so với activation
+    (hàng GB). Ở W = 2, PipeDream cũng chỉ phải giữ thêm rất ít version.
+
+Kết luận trung thực:
+  - Trong điều kiện của dự án (W = 2, model ~15 triệu tham số), lợi
+    ích của TiMePReSt đến chủ yếu từ nF1B.
+  - Việc bỏ stashing chỉ đáng kể khi model rất lớn và có nhiều stage
+    (vd. TinyLlama 1.1 tỷ tham số = 4.4 GB/version, W = 4 thì
+    PipeDream phải giữ tới 4 version ở stage đầu). Đây là trường hợp
+    paper nhắm tới nhưng dự án chưa kiểm chứng được.
+
+
+2.5. Cần thêm vào báo cáo
+---------------------------------------------------------------------
+- Bảng "thành phần -> vấn đề giải quyết -> cái giá" (mục 2.2).
+- Đoạn "vì sao ghép" (mục 2.3).
+- Bảng ablation và kết luận (mục 2.4). Dữ liệu đã có, không cần chạy
+  thêm.
+
+
+=====================================================================
+PHẦN 3. CÂU 3 — SO SÁNH VỚI 1F1B HIỆN ĐẠI (MEGATRON-LM)
+=====================================================================
+
+Phần này chia làm hai bước:
+  Bước 1 (3.4–3.6): PAPER nói gì và còn thiếu gì.
+  Bước 2 (3.7–3.9): DỰ ÁN bổ sung được gì để trả lời câu hỏi.
+Trước đó, 3.1–3.3 giải thích Megatron 1F1B là gì.
+
+
+3.1. Giảng viên muốn gì?
+---------------------------------------------------------------------
+Các framework hiện đại (Megatron-LM, DeepSpeed) KHÔNG dùng stashing.
+Chúng tiết kiệm bộ nhớ theo cách khác: giới hạn số micro-batch
+in-flight. Giảng viên hỏi: so với cách làm hiện đại này thì TiMePReSt
+còn có giá trị thực tế không? Paper chủ yếu so với PipeDream gốc
+(2019), một đối thủ đã cũ.
+
+
+3.2. Megatron-LM 1F1B hoạt động thế nào?
+---------------------------------------------------------------------
+Còn gọi là PipeDream-Flush (Narayanan et al., ICML 2021; nguồn này
+không phải paper TiMePReSt). Ba ý chính:
+  1. Mỗi bước: chia mini-batch thành m micro-batch, chạy theo kiểu 1F1B.
+  2. Mỗi stage chỉ cho tối đa p micro-batch in-flight cùng lúc
+     (p = số stage). Stage i làm trước (p - i - 1) forward, sau đó cứ
+     1 forward lại 1 backward.
+  3. Hết m micro-batch thì CHỜ XONG HẾT (flush), cộng dồn gradient,
+     cập nhật MỘT LẦN. Mọi micro-batch dùng cùng một version.
+
+Ví dụ p = 2 GPU, m = 3 micro-batch (giả sử F và B dài bằng nhau):
+
+     Thời gian:  1    2    3    4    5    6    7    8
+     GPU0:       F1   F2   .    B1   F3   B2   .    B3   | update
+     GPU1:       .    F1   B1   F2   B2   F3   B3   .    | update
+
+  - GPU0 không bao giờ giữ quá 2 micro-batch chưa backward.
+  - Có 2/8 ô trống mỗi GPU = bubble 25%. Công thức lý thuyết:
+    bubble = (p - 1) / (m + p - 1) = 1/4.
+  - Không có staleness, không cần stashing (chỉ có 1 version).
+
+
+3.3. So sánh 3 cách (lý thuyết)
+---------------------------------------------------------------------
+  +-------------------+-------------------+-------------------+-------------------+
+  |                   | PipeDream gốc     | TiMePReSt         | Megatron 1F1B     |
+  |                   | (1F1B bất đồng bộ)| (nF1B bất đồng bộ)| (1F1B đồng bộ)    |
+  +-------------------+-------------------+-------------------+-------------------+
+  | Version trọng số  | Nhiều (tới W)     | Ít (chỉ tới khi   | 1                 |
+  | phải giữ          |                   | forward xong)     |                   |
+  | Staleness         | Có (gradient trễ) | Có (lệch F/B)     | Không             |
+  | Flush / bubble    | Không flush,      | Không flush,      | Flush mỗi bước,   |
+  |                   | gần như không     | gần như không     | bubble (p-1)/     |
+  |                   | bubble            | bubble            | (m+p-1)           |
+  | Activation in-    | Nhiều MINI-batch  | Nhiều MINI-batch  | Tối đa p MICRO-   |
+  | flight            |                   | (mỗi cái N micro) | batch             |
+  | Gradient          | Đúng nhưng trễ    | "Lai" (Câu 4)     | Đúng, không trễ   |
+  +-------------------+-------------------+-------------------+-------------------+
+
+
+---------------------------------------------------------------------
+BƯỚC 1: PAPER NÓI GÌ
+---------------------------------------------------------------------
+
+3.4. Paper có so với Megatron 1F1B không?
+---------------------------------------------------------------------
+KHÔNG trực tiếp. Những gì paper viết về chủ đề này:
+
+  +-------------------------+----------------------------------+-------------------------+
+  | Nội dung                | Paper viết                       | Vấn đề                  |
+  +-------------------------+----------------------------------+-------------------------+
+  | Megatron-LM             | Chỉ nhắc ở §1, như VÍ DỤ của     | Không nhắc lịch 1F1B    |
+  |                         | tensor parallelism               | của Megatron, không so  |
+  +-------------------------+----------------------------------+-------------------------+
+  | PipeDream-Flush (chính  | §1 xếp vào nhóm "asynchronous    | XẾP SAI: Flush là ĐỒNG  |
+  | là lịch của Megatron)   | pipeline parallelism"            | BỘ (flush mỗi bước, một |
+  |                         |                                  | version)                |
+  +-------------------------+----------------------------------+-------------------------+
+  | PipeDream-2BW / Flush,  | §4.8 (tr.11): TiMePReSt          | TỰ MÂU THUẪN. Không có  |
+  | bộ nhớ                  | "theoretically less memory-      | thí nghiệm nào cho hai  |
+  |                         | efficient than both PipeDream-   | hệ này                  |
+  |                         | 2BW and PipeDream-Flush", nhưng  |                         |
+  |                         | vài câu sau lại kết luận         |                         |
+  |                         | TiMePReSt "more memory-efficient"|                         |
+  +-------------------------+----------------------------------+-------------------------+
+  | Lợi thế so với Flush    | "complete utilization of the     | Chỉ là lập luận, không  |
+  |                         | benefits of pipeline             | có số đo                |
+  |                         | parallelism" (không flush, không |                         |
+  |                         | bubble)                          |                         |
+  +-------------------------+----------------------------------+-------------------------+
+  | Zero Bubble             | §1: "synchronous ... scheduling  | Là hệ GẦN Megatron 1F1B |
+  |                         | algorithm similar to 1F1B". Có   | NHẤT trong paper. Không |
+  |                         | chạy thực nghiệm                 | nói biến thể nào        |
+  +-------------------------+----------------------------------+-------------------------+
+  | DeepSpeed               | Có chạy thực nghiệm. Giải thích  | Không cho cấu hình      |
+  |                         | ít bộ nhớ là nhờ ZeRO-Offload,   | DeepSpeed, không biết   |
+  |                         | chậm là do 3D parallelism +      | có bật offload thật hay |
+  |                         | offload (§4.8, tr.11)            | không                   |
+  +-------------------------+----------------------------------+-------------------------+
+
+Hai baseline ĐỒNG BỘ có chạy thực nghiệm, gần với Megatron 1F1B nhất:
+Zero Bubble và DeepSpeed.
+
+
+3.5. Kết quả paper báo cáo (Cluster C, 4 GPU; số đọc từ hình, xấp xỉ)
+---------------------------------------------------------------------
+  - Bộ nhớ (Fig.15, §4.7): TiMePReSt ít hơn PipeDream, DualPipe,
+    Zero Bubble. DeepSpeed "slightly better" TiMePReSt.
+    Ví dụ VGG-16 / Tiny-ImageNet, tổng 4 stage:
+        PipeDream ~15 GB, TiMePReSt ~10 GB, DeepSpeed ~8 GB.
+  - Thời gian/epoch (Fig.17): TiMePReSt thấp nhất trong 5 hệ.
+  - Accuracy tại cùng mốc thời gian (Fig.9a): TiMePReSt ~69–73%,
+    các baseline ~24–35%.
+
+Cách paper giải thích:
+  - TiMePReSt tiết kiệm bộ nhớ vì bỏ horizontal stashing.
+  - DeepSpeed ít bộ nhớ hơn vì đẩy optimizer state và gradient sang
+    CPU (offload).
+  - TiMePReSt nhanh hơn vì ít lượt backward (nF1B) và không flush.
+
+Kết luận NẾU CHỈ THEO PAPER: TiMePReSt thắng hệ đồng bộ (Zero Bubble)
+cả thời gian lẫn bộ nhớ; thắng DeepSpeed về thời gian, chỉ kém
+DeepSpeed một chút về bộ nhớ.
+
+
+3.6. Paper còn thiếu gì?
+---------------------------------------------------------------------
+  - Không chạy Megatron 1F1B hay PipeDream-Flush / 2BW.
+  - Không cho cấu hình baseline: biến thể Zero Bubble, DeepSpeed có
+    bật offload không, số micro-batch.
+  - Không tách bộ nhớ thành phần trọng số và phần activation, nên không
+    biết tiết kiệm đến từ đâu.
+  - Giải thích bộ nhớ của DeepSpeed bằng offload, không xét đến việc
+    giới hạn số micro-batch in-flight.
+=> Câu hỏi của giảng viên chỉ đúng vào chỗ paper còn thiếu. Chỉ dựa
+   vào paper thì KHÔNG trả lời được câu 3.
+
+
+---------------------------------------------------------------------
+BƯỚC 2: DỰ ÁN BỔ SUNG ĐƯỢC GÌ
+---------------------------------------------------------------------
+
+3.7. Thí nghiệm DeepSpeed pipeline của dự án
+---------------------------------------------------------------------
+Baseline DeepSpeed (§26) chỉ dùng pipeline engine: 1F1B đồng bộ, flush
+trước mỗi lần cập nhật, cùng loại lịch với Megatron. KHÔNG dùng ZeRO,
+KHÔNG offload. VGG-16 / Tiny-ImageNet, 80 epoch, W = 2:
+
+  +---------------------+--------------+-------------+-------------+
+  |                     | DeepSpeed    | TiMePReSt   | PipeDream   |
+  |                     | (đồng bộ)    | (3 seed)    | (3 seed)    |
+  +---------------------+--------------+-------------+-------------+
+  | Top-1 cuối          | 58.3 %       | 58.9 %      | 58.9 %      |
+  | Epoch tới 50%       | 20           | 20          | 31          |
+  | Peak GPU0 / GPU1    | 1182/446 MB  | 3344/830 MB | 3528/~840MB |
+  | Thời gian/epoch     | 87 s (*)     | 105–112 s   | 114–119 s   |
+  +---------------------+--------------+-------------+-------------+
+  (*) Không so trực tiếp được: DeepSpeed truyền bằng NCCL (GPU-GPU),
+      runtime của dự án truyền bằng gloo qua CPU; chạy trên máy khác;
+      DeepSpeed chỉ 1 seed.
+
+Đọc bảng:
+  - Chất lượng: gần như ngang (DeepSpeed có thể thấp hơn ~0.5 điểm,
+    nhưng chỉ 1 seed).
+  - Bộ nhớ: DeepSpeed thắng rõ (~3 lần), dù KHÔNG offload.
+  - Thời gian: CHƯA kết luận được vì khác cách hiện thực.
+
+
+3.8. Bộ nhớ chủ yếu nằm ở activation, không ở trọng số
+---------------------------------------------------------------------
+Đây chính là ý của giảng viên, và là điểm dự án bổ sung cho paper.
+
+  - Một version trọng số VGG-16 của dự án ~ 60 MB (~15 triệu tham số).
+  - Peak bộ nhớ GPU0 ~ 3300–3500 MB -> phần lớn là activation.
+  - TiMePReSt (bỏ stash) chỉ ít hơn PipeDream ~180 MB (5%).
+  - DeepSpeed (giới hạn in-flight, không offload) ít hơn ~3 lần.
+
+Vì sao đúng 3 lần? Đếm số ảnh có activation phải giữ ở GPU0:
+  - Hệ bất đồng bộ (PipeDream, TiMePReSt): giữ tới 2 mini-batch
+    = 2 x 192 = 384 ảnh.
+  - DeepSpeed / Megatron: giữ tới 2 micro-batch = 2 x 64 = 128 ảnh.
+  - 384 / 128 = 3. Số đo: 3344 / 1182 = 2.8 lần. Khớp.
+
+=> Giới hạn in-flight tiết kiệm bộ nhớ hiệu quả hơn nhiều so với bỏ
+   stashing, ít nhất với model cỡ vừa và ít stage.
+=> Cách giải thích "DeepSpeed ít bộ nhớ nhờ offload" của paper không
+   cần thiết để giải thích kết quả này.
+
+
+3.9. Paper và dự án khác nhau ở đâu
+---------------------------------------------------------------------
+  +---------------------+------------------------------+------------------------------+
+  | Điểm                | Paper                        | Dự án                        |
+  +---------------------+------------------------------+------------------------------+
+  | DeepSpeed so với    | Ít hơn MỘT CHÚT (~20%)       | Ít hơn ~3 LẦN                |
+  | TiMePReSt, bộ nhớ   |                              |                              |
+  | Lý do DeepSpeed ít  | ZeRO-Offload                 | Giới hạn in-flight (không    |
+  | bộ nhớ              |                              | dùng offload)                |
+  | Thời gian           | TiMePReSt nhanh hơn rõ       | Chưa kết luận được           |
+  | Chất lượng cuối     | TiMePReSt hơn tại cùng mốc   | Gần như ngang                |
+  |                     | thời gian                    |                              |
+  +---------------------+------------------------------+------------------------------+
+
+Lưu ý khi so: paper dùng 4 GPU, dự án dùng 2 GPU; paper không cho
+cấu hình DeepSpeed. Hai bên có thể khác nhau ở cấu hình chứ không hẳn
+mâu thuẫn.
+
+
+3.10. Vậy TiMePReSt còn hơn ở đâu?
+---------------------------------------------------------------------
+Về lý thuyết, hệ bất đồng bộ (TiMePReSt) có hai lợi thế:
+  1. Không flush -> không có bubble. Với p = 2, m = 3 thì bubble của
+     Megatron là 25% theo lý thuyết; p càng lớn bubble càng lớn (trừ
+     khi tăng m, mà tăng m thì micro-batch nhỏ lại).
+  2. Khi mạng chậm, truyền chồng lên tính tốt hơn.
+
+Đổi lại, Megatron có gradient đúng (không staleness) và tốn ít bộ nhớ
+hơn nhiều. Tóm lại:
+  - Bất đồng bộ có lợi khi: nhiều stage, mạng chậm, bộ nhớ dư.
+  - Đồng bộ (Megatron) có lợi khi: bộ nhớ hạn chế, cần gradient đúng,
+    mạng nhanh.
+
+Cần nói rõ: dự án chưa đo được thời gian của hai hướng trong cùng
+điều kiện, nên hiện chưa biết ở W = 2 bubble của Megatron có làm nó
+chậm hơn TiMePReSt hay không.
+
+
+3.11. Cần thêm vào báo cáo
+---------------------------------------------------------------------
+- Bước 1: mục 3.4–3.6 (paper nói gì, còn thiếu gì).
+- Bước 2: mục 3.7–3.9 (dự án bổ sung gì). Đây là đóng góp riêng của
+  dự án, trả lời đúng câu hỏi của giảng viên.
+- Đổi tên baseline trong báo cáo thành "DeepSpeed pipeline (1F1B đồng
+  bộ, cùng loại lịch với Megatron-LM, không ZeRO/offload)".
+- (Nên làm, cần chạy) Cài lịch flush ngay trong runtime của dự án, chỉ
+  bench thời gian và bộ nhớ vài epoch trên cùng máy, có và không có
+  mạng chậm giả lập. Như vậy so thời gian mới công bằng. Accuracy lấy
+  từ run DeepSpeed đã có, không cần chạy 80 epoch.
+- (Tùy chọn) Nhắc PipeDream-2BW (giữ đúng 2 version, cộng dồn gradient)
+  như một phương án ở giữa.
+
+
+=====================================================================
+PHẦN 4. CÂU 4 — LỆCH PHIÊN BẢN TRỌNG SỐ
+=====================================================================
+
+4.1. Giảng viên muốn gì?
+---------------------------------------------------------------------
+Báo cáo mới nói "backward dùng trọng số mới nhất" mà chưa phân tích:
+gradient tính ra như vậy có còn đúng không, sai bao nhiêu, phụ thuộc
+vào gì, và ảnh hưởng thế nào tới việc hội tụ.
+
+
+4.2. Lệch phiên bản là gì?
+---------------------------------------------------------------------
+Huấn luyện thường (1 GPU): forward và backward của một batch dùng
+cùng trọng số, vì ở giữa không có gì thay đổi.
+
+Trong pipeline, nhiều batch chạy chồng lên nhau:
+
+     Thời gian -->
+     GPU0:  F(A)  F(B)  ...  B(A) -> update W_t thành W_{t+1}  ...  B(B)
+                                                                     ^
+                          batch B forward bằng W_t, nhưng tới lúc
+                          backward thì trọng số đã là W_{t+1}
+
+  - PipeDream: cất sẵn bản W_t cho B (stashing) -> không lệch, tốn
+    bộ nhớ.
+  - TiMePReSt: không cất -> backward của B dùng W_{t+1} -> lệch.
+
+Số version bị lệch (k) phụ thuộc lịch chạy. Nhờ điều kiện W <= N+1,
+TiMePReSt giữ k nhỏ (lệch 1 version). Stage càng ở đầu pipeline thì
+thời gian giữa forward và backward càng dài, nên càng dễ bị lệch.
+
+
+4.3. Gradient bị lệch ở chỗ nào?
+---------------------------------------------------------------------
+Gradient của trọng số layer l được tính bằng:
+
+    gradient(W_l) = (tín hiệu lỗi tại layer l) x (input của layer l)
+
+và tín hiệu lỗi được truyền ngược từ cuối model về:
+
+    tín hiệu lỗi tại l = (W_{l+1} chuyển vị x tín hiệu lỗi tại l+1)
+                         x (đạo hàm hàm kích hoạt tại l)
+
+Trong TiMePReSt, các thành phần lấy từ HAI thời điểm khác nhau:
+
+  +----------------------------------------+------------------------+
+  | Thành phần                             | Lấy từ                 |
+  +----------------------------------------+------------------------+
+  | Input của mỗi layer (activation)       | Forward cũ (W_t)       |
+  | Đạo hàm kích hoạt (mặt nạ ReLU: nơ-ron | Forward cũ (W_t)       |
+  |   nào bật/tắt)                         |                        |
+  | Thống kê BatchNorm (mean, var)         | Forward cũ (W_t)       |
+  | Sai số dự đoán ở cuối (loss)           | Forward cũ (W_t)       |
+  | Trọng số mà tín hiệu lỗi đi ngược qua  | Trọng số MỚI (W_{t+k}) |
+  +----------------------------------------+------------------------+
+
+Nói đơn giản: "ảnh chụp" đường đi của dữ liệu là của model cũ, nhưng
+"đường ống" truyền ngược lỗi lại là của model mới. Ghép hai thứ này
+lại ra một gradient "lai", KHÔNG phải gradient thật của hàm loss nào.
+
+Layer càng ở đầu thì tín hiệu lỗi càng phải đi qua nhiều trọng số mới,
+nên càng bị ảnh hưởng.
+
+
+4.4. Ví dụ bằng số
+---------------------------------------------------------------------
+Model 2 layer: y = w2 * w1 * x. Loss = y^2 / 2 (muốn y = 0). x = 1.
+Gradient của w1 = (sai số y) x w2 x x.
+
+Forward với w1 = 1, w2 = 2: y = 2 -> sai số = 2.
+Giả sử giữa forward và backward, w2 được cập nhật từ 2 xuống 1.5.
+
+  +-------------------------------------+-----------+---------+----------+
+  | Cách tính                           | sai số y  | w2      | grad w1  |
+  +-------------------------------------+-----------+---------+----------+
+  | Đúng tại trọng số cũ (PipeDream)    | 2 (cũ)    | 2 (cũ)  | 4        |
+  | Đúng tại trọng số mới (tính lại F)  | 1.5 (mới) | 1.5     | 2.25     |
+  | TiMePReSt (lai)                     | 2 (cũ)    | 1.5     | 3        |
+  +-------------------------------------+-----------+---------+----------+
+
+Gradient của TiMePReSt (3) không khớp với phiên bản nào. Gradient
+của w2 (= sai số x w1 x x) thì không bị ảnh hưởng, vì không đi qua
+trọng số nào đã đổi. Đúng như nhận xét "layer càng đầu càng bị ảnh
+hưởng".
+
+
+4.5. So sánh các cách xử lý
+---------------------------------------------------------------------
+  +----------------------+----------------------------+---------------------+
+  | Cách                 | Gradient tính ra           | Cái giá             |
+  +----------------------+----------------------------+---------------------+
+  | Huấn luyện thường /  | Đúng, tại trọng số hiện    | Bubble (Megatron)   |
+  | Megatron đồng bộ     | tại                        | hoặc chậm (1 GPU)   |
+  | PipeDream (stash)    | Đúng tại W_t, nhưng áp vào | Bộ nhớ giữ version  |
+  |                      | W_{t+k} -> "gradient trễ"  |                     |
+  | TiMePReSt (graph)    | "Lai": không đúng tại      | Sai lệch gradient   |
+  |                      | version nào                |                     |
+  | Tính lại forward     | Đúng tại W_{t+k} (trên     | Thêm 1 lượt forward |
+  | (recompute, ablation)| input cũ)                  | (~+23% tính toán)   |
+  +----------------------+----------------------------+---------------------+
+
+Khác biệt quan trọng giữa PipeDream và TiMePReSt:
+  - Gradient TRỄ (PipeDream) là gradient thật, chỉ đến muộn. Lý thuyết
+    SGD bất đồng bộ đã có nhiều kết quả: vẫn hội tụ nếu learning rate
+    đủ nhỏ so với độ trễ.
+  - Gradient LAI (TiMePReSt) không phải gradient của hàm nào, nên các
+    kết quả hội tụ quen thuộc không áp dụng trực tiếp. Paper không đưa
+    ra phân tích hội tụ cho trường hợp này.
+
+
+4.6. Sai lệch lớn cỡ nào? (phân tích lý thuyết)
+---------------------------------------------------------------------
+Giả sử hàm loss "trơn" (gradient không đổi quá đột ngột khi trọng số
+đổi một chút; hằng số đo độ trơn gọi là L). Khi đó:
+
+    sai lệch gradient  ≲  L x (trọng số thay đổi bao nhiêu giữa F và B)
+                       ≈  L x (learning rate) x k x (độ lớn gradient)
+
+Nghĩa là sai lệch TĂNG theo:
+  1. Learning rate (η): lr lớn -> mỗi bước trọng số đổi nhiều -> lệch nhiều.
+  2. Số version bị lệch (k): điều kiện W <= N+1 giữ k nhỏ nhất.
+  3. Độ "cong" của hàm loss (L): đầu quá trình train thường cong mạnh.
+  4. Vị trí layer: layer đầu bị ảnh hưởng nhiều hơn (mục 4.3).
+Ngoài ra, mặt nạ ReLU và thống kê BatchNorm của forward cũ có thể
+không còn đúng với trọng số mới, gây thêm sai lệch.
+
+Hệ quả:
+  - lr nhỏ, k = 1: trọng số đổi rất ít -> gradient lai ≈ gradient thật
+    -> học gần như bình thường.
+  - lr lớn: gradient lệch nhiều -> bước cập nhật sai hướng -> trọng số
+    đổi càng nhiều -> lần sau lệch càng nhiều. Vòng lặp này có thể
+    làm mất ổn định hoặc phân kỳ.
+  => TiMePReSt cần lr nhỏ hơn hoặc warmup dài hơn PipeDream.
+
+
+4.7. Dự án đã có bằng chứng thực nghiệm khớp với lý thuyết
+---------------------------------------------------------------------
+(a) Phân kỳ khi lr lớn (§22.7):
+  - CIFAR-100, warmup chỉ 1 epoch (lr lên 0.05 ngay epoch đầu):
+    TiMePReSt loss 5.09 -> 5.20 -> 4.68 (không học được, ln100 = 4.6),
+    PipeDream vẫn học bình thường.
+  - Thử trên CPU (model nhỏ, 20 lớp): TiMePReSt sụp về đoán đều (loss
+    = ln20) ở lr 0.1 và 0.2. PipeDream và bản recompute đều học được.
+  - Đã kiểm tra code khớp với cách tính độc lập, nên đây là tính chất
+    của phương pháp, không phải lỗi code.
+
+(b) Sweep lr (§22.8, CIFAR-100, 8 epoch, warmup 2, 1 seed), top-1 %:
+
+  +-------+-----------------+-----------------+-----------+------------+
+  | lr    | TiMePReSt (lai) | TiMePReSt       | PipeDream | Lai - PD   |
+  |       |                 | (recompute)     |           |            |
+  +-------+-----------------+-----------------+-----------+------------+
+  | 0.05  | 31.9            | 38.3            | 35.05     | -3.2       |
+  | 0.02  | 34.7            | 36.6            | 35.95     | -1.3       |
+  | 0.01  | 31.4            | 32.9            | 31.95     | -0.6       |
+  | 0.005 | 26.6            | 26.75           | 28.05     | -1.5       |
+  +-------+-----------------+-----------------+-----------+------------+
+  - Ở lr cao nhất, bản lai kém PipeDream nhiều nhất (-3.2 điểm). Ở các
+    lr khác chênh -0.6 đến -1.5 điểm (cỡ nhiễu 1 seed).
+  - Bản recompute (gradient đúng tại trọng số mới, không lai) lại tốt
+    nhất ở lr 0.05. Vậy vấn đề là do gradient LAI, không phải do dùng
+    trọng số mới.
+
+(c) Với lr phù hợp (0.02, warmup 5 epoch), chất lượng cuối ngang
+    PipeDream: CIFAR-100 72.44 so với 72.25%; Tiny-ImageNet 58.85 so
+    với 58.88% (3 seed). Nghĩa là ở W = 2, k = 1, sai lệch chấp nhận
+    được nếu chọn lr cẩn thận.
+
+
+4.8. Nhận xét về paper
+---------------------------------------------------------------------
+- Công thức cập nhật Eq.(1) của paper viết như thể gradient được tính
+  đúng tại version t (khi v = 1). Thực ra activation, mặt nạ ReLU và
+  thống kê BN đến từ version cũ, nên đó không phải gradient tại một
+  version nào (§5.5).
+- Paper không mô tả cách tính backward khi F và B khác version. Dự án
+  theo cơ chế của code PipeDream (giữ graph forward, đọc trọng số mới,
+  không tính lại), xem §22.5.
+- Paper không có phân tích hội tụ cho gradient lai.
+
+
+4.9. Tài liệu nên tham khảo (kiểm tra lại trích dẫn trước khi đưa vào
+     báo cáo)
+---------------------------------------------------------------------
+- PipeMare (Yang et al., MLSys 2021): pipeline bất đồng bộ không
+  stashing; phân tích đúng hiện tượng forward và backward dùng trọng
+  số khác nhau ("delay discrepancy"); đề xuất điều chỉnh lr và bù sai
+  lệch.
+- SpecTrain (Chen et al., 2018): dự đoán trọng số tương lai để forward
+  và backward dùng cùng version.
+- PipeDream-2BW (Narayanan et al., ICML 2021): giữ đúng 2 version.
+- Lý thuyết SGD bất đồng bộ / gradient trễ (để đối chiếu với PipeDream).
+
+
+4.10. Cần thêm vào báo cáo
+---------------------------------------------------------------------
+- Mục 4.2–4.6 (giải thích, công thức, ví dụ số, chặn sai lệch).
+- Bằng chứng 4.7 (đã có số liệu).
+- (Nên làm, cần chạy ngắn) Đo trực tiếp sai lệch: trong lúc train,
+  thỉnh thoảng tính cả gradient lai và gradient đúng, ghi lại góc
+  giữa hai vector (cosine similarity) và sai số tương đối. Vẽ theo lr
+  và theo epoch để xem sai lệch có tăng theo lr x k như công thức
+  không. Chỉ cần vài epoch trên engine 1 GPU, không cần chạy 80 epoch.
+
+
+=====================================================================
+PHẦN 5. TRẢ LỜI NGẮN GỌN (có thể dùng khi trao đổi với giảng viên)
+=====================================================================
+
+Câu 1: Model lớn không vừa một GPU và train lâu. Trong 3 cách song
+  song, pipeline truyền ít nhất nên hợp với cụm nhiều máy nối mạng như
+  paper dùng. Nhưng pipeline muốn hết bubble thì phải chạy nhiều batch
+  cùng lúc, dẫn tới staleness và tốn bộ nhớ. TiMePReSt sinh ra để giảm
+  các vấn đề đó. Phân tích chuỗi song song cho điều kiện W <= N+1, để
+  chỉ có một chuỗi cập nhật và độ lệch version nhỏ nhất.
+
+Câu 2: Bỏ stashing để tiết kiệm bộ nhớ trọng số, đổi lại bị lệch
+  version. Vertical sync và nF1B (N >= W-1) giữ độ lệch đó nhỏ nhất,
+  và nF1B còn cho truyền chồng lên tính. Ablation của em cho thấy lợi
+  ích thời gian và học nhanh giữa quá trình đến từ nF1B. Bỏ stashing
+  gần như không giảm bộ nhớ ở W = 2 với VGG-16, vì trọng số nhỏ so với
+  activation.
+
+Câu 3: Megatron 1F1B giới hạn tối đa p micro-batch in-flight và flush
+  mỗi bước: một version, không staleness, đổi lại có bubble. Paper
+  không so với Megatron 1F1B; paper còn xếp PipeDream-Flush (cùng lịch)
+  vào nhóm bất đồng bộ và giải thích bộ nhớ thấp của DeepSpeed bằng
+  offload. Baseline DeepSpeed (cùng loại lịch, không offload) của em
+  tốn ít hơn TiMePReSt ~3 lần bộ nhớ (đúng bằng tỉ lệ 384/128 ảnh
+  in-flight), chất lượng gần như ngang. Thời gian chưa so công bằng
+  được; em sẽ cài lịch flush vào runtime của mình để so.
+
+Câu 4: Gradient của TiMePReSt là gradient lai: activation, mặt nạ ReLU,
+  BN và sai số từ forward cũ, nhưng truyền ngược qua trọng số mới. Sai
+  lệch tăng theo lr x số version lệch. Thực nghiệm khớp: lr lớn thì
+  phân kỳ, bản recompute (không lai) thì không. Với lr phù hợp, chất
+  lượng cuối ngang PipeDream. Em sẽ đo trực tiếp sai lệch gradient.
+
+
+=====================================================================
+PHẦN 6. VIỆC CẦN LÀM TIẾP (theo thứ tự ưu tiên)
+=====================================================================
+
+  +---+------------------------------------------------+-------------+
+  | # | Việc                                           | Cần chạy?   |
+  +---+------------------------------------------------+-------------+
+  | 1 | Viết mục Động cơ (Câu 1) và mục Vì sao kết hợp | Không       |
+  |   | (Câu 2) vào báo cáo                            |             |
+  | 2 | Viết mục phân tích lệch version (Câu 4) với    | Không       |
+  |   | bằng chứng §22.7, §22.8                        |             |
+  | 3 | Viết mục so sánh Megatron/DeepSpeed (Câu 3)    | Không       |
+  | 4 | Đo trực tiếp sai lệch gradient theo lr (Câu 4) | Có, ngắn    |
+  | 5 | Cài lịch flush vào runtime, bench thời gian/   | Có, ngắn    |
+  |   | bộ nhớ cùng máy và mạng giả lập (Câu 3)        |             |
+  +---+------------------------------------------------+-------------+
+
+Nguồn số liệu: paper_notes.md §2, §5.4–5.6, §6, §22.5–22.10, §23.1,
+§24.2–24.5, §26, §27.

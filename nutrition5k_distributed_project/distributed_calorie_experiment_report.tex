@@ -1,0 +1,618 @@
+%=============================================================
+%  TEMPLATE PRESENTATION BEAMER - KHOA HTTT - UIT
+%  Dành cho sinh viên báo cáo môn học & khóa luận
+%=============================================================
+\documentclass[10pt,aspectratio=169]{beamer}
+\usepackage[utf8]{vietnam}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs,array,longtable}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,calc,
+                shapes.geometric,fit,decorations.pathreplacing,
+                decorations.markings,backgrounds,shadows}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[many]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{listings}
+
+%=============================================================
+%  1. TEMPLATE CUSTOMIZATION (Màu sắc, Logo và Thông tin)
+%  Sinh viên thay đổi các thông số dưới đây để tùy biến slide
+%=============================================================
+\definecolor{uitblue}{RGB}{108,79,59}       % Màu chủ đạo (Nâu đậm của header/bìa)
+\definecolor{uitdark}{RGB}{74,53,37}        % Màu phụ (Nâu tối ở dải bìa/footer)
+\definecolor{accent}{RGB}{197,140,50}       % Màu nhấn mạnh (Vàng Gold)
+\definecolor{accentlt}{RGB}{222,178,110}    % Màu nhấn phụ (Vàng cát)
+\definecolor{greenteal}{RGB}{100,120,80}    % Màu ví dụ/thực hành (Sage Green)
+\definecolor{lightgray}{RGB}{248,245,240}   % Màu nền ấm của slide (Cream/Ivory)
+\definecolor{textgray}{RGB}{60,55,50}       % Màu chữ thân (Charcoal)
+
+\newcommand{\titlebgimage}{title_bg.png}
+\newcommand{\sectionbgimage}{section_bg.png} % Tên tệp ảnh nền trang ngăn cách section (nếu có)     % Tên tệp ảnh nền mờ trang bìa (nếu có)
+\newcommand{\logonhomNC}{logo_nhom_nc.png}   % Logo nhóm nghiên cứu/Lab (nếu có)
+\newcommand{\logonhomthuchien}{logo_nhom_thuchien.png} % Logo nhóm thực hiện/CLB (nếu có)
+\newcommand{\gvhd}{}         % Giáo viên hướng dẫn (nếu có)
+\newcommand{\slidewatermark}{logo_nhom_nc.png} % Tệp ảnh mờ làm hình nền từng slide (để trống nếu không dùng)
+\newcommand{\contactemail}{ftisu@uit.edu.vn} % Email liên hệ hiển thị ở trang bìa
+
+%=============================================================
+%  2. THÔNG TIN BÁO CÁO (Metadata)
+%=============================================================
+\title[Distributed DL cho Calories]{Báo Cáo Thực Nghiệm: Distributed Deep Learning Cho Ước Lượng Calories}
+\subtitle{Nutrition5k: RGB, RGB-D và Visual--Ingredient Fusion}
+\author{Sinh viên thực hiện: An Văn Kết}
+\date{Ngày báo cáo: \today}
+
+%=============================================================
+%  3. BEAMER THEME OVERRIDE (Cấu hình hiển thị - KHÔNG NÊN SỬA)
+%=============================================================
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% Thiết lập màu sắc các thành phần Beamer
+\setbeamercolor{palette primary}{bg=uitblue,fg=white}
+\setbeamercolor{frametitle}{bg=uitblue,fg=white}
+\setbeamercolor{title}{bg=uitblue,fg=white}
+\setbeamercolor{author in head/foot}{bg=uitdark,fg=white}
+\setbeamercolor{title in head/foot}{bg=uitblue,fg=white}
+\setbeamercolor{date in head/foot}{bg=uitdark!80,fg=white}
+\setbeamercolor{section in head/foot}{bg=uitblue!70,fg=white}
+
+\setbeamercolor{block title}{bg=uitblue!18,fg=uitdark}
+\setbeamercolor{block body}{bg=uitblue!5,fg=textgray}
+\setbeamercolor{alertblock title}{bg=accent!20,fg=accent!80!black}
+\setbeamercolor{alertblock body}{bg=accent!5,fg=textgray}
+\setbeamercolor{exampleblock title}{bg=greenteal!20,fg=greenteal!70!black}
+\setbeamercolor{exampleblock body}{bg=greenteal!5,fg=textgray}
+\setbeamercolor{item}{fg=uitblue}
+\setbeamercolor{subitem}{fg=accent}
+\setbeamercolor{enumerate item}{fg=uitblue}
+\setbeamercolor{normal text}{fg=textgray}
+\setbeamercolor{structure}{fg=uitblue}
+
+% Định dạng tiêu đề slide (Frametitle)
+% Thiết lập hình nền mờ dưới từng slide (Watermark)
+\usebackgroundtemplate{
+  \ifx\slidewatermark\empty\else
+    \expandafter\IfFileExists\expandafter{\slidewatermark}{
+      \begin{tikzpicture}[remember picture, overlay]
+        \node[opacity=0.03, anchor=center] at (current page.center) {
+          \includegraphics[width=0.3\paperwidth]{\slidewatermark}
+        };
+      \end{tikzpicture}
+    }{}
+  \fi
+}
+
+\setbeamertemplate{frametitle}{
+  \vskip2pt
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.56cm,dp=0.2cm,leftskip=0.4cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+    \ifx\insertframesubtitle\empty\else
+      \;{\small\textcolor{accentlt}{$\triangleright$}}\;\usebeamerfont{framesubtitle}\textcolor{accentlt}{\insertframesubtitle}
+    \fi
+  \end{beamercolorbox}
+  \vskip-2pt
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.2pt,dp=0pt]{palette primary}
+    \color{accent}\rule{\paperwidth}{1.2pt}
+  \end{beamercolorbox}
+}
+
+% Định dạng chân trang (Footline)
+\setbeamertemplate{footline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.4cm,dp=0.12cm]{author in head/foot}
+    \hspace{0.3cm}{\scriptsize\faUniversity\; UIT -- Khoa Hệ thống Thông tin}
+    \hfill
+    {\scriptsize Báo cáo khoa học}
+    \hfill
+    {\scriptsize\insertframenumber/\inserttotalframenumber\hspace{0.3cm}}
+  \end{beamercolorbox}
+}
+
+% Định dạng đầu trang (Headline)
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.06cm]{section in head/foot}
+    \color{accent}\rule{\paperwidth}{0.06cm}
+  \end{beamercolorbox}
+}
+
+% Định dạng ký hiệu danh sách (Itemize bullets)
+\setbeamertemplate{itemize item}{\color{uitblue}\faCircle[regular]}
+\setbeamertemplate{itemize subitem}{\color{accent}$\triangleright$}
+\setbeamertemplate{enumerate item}{\color{uitblue}\insertenumlabel.}
+
+% Định dạng trang bìa (Title Page)
+\setbeamertemplate{title page}{
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[uitblue] (current page.north west) rectangle ([yshift=-0.58\paperheight]current page.north east);
+    \fill[uitdark] ([yshift=-0.58\paperheight]current page.north west)
+         rectangle ([yshift=-0.62\paperheight]current page.north east);
+    \fill[lightgray] ([yshift=-0.62\paperheight]current page.north west)
+         rectangle (current page.south east);
+         
+    \expandafter\IfFileExists\expandafter{\titlebgimage}{
+      \node[opacity=0.10, anchor=center] at (current page.center) {\includegraphics[width=\paperwidth,height=\paperheight]{\titlebgimage}};
+    }{}
+         
+    \node[white, anchor=north west, font=\large\bfseries, align=left, text width=0.9\paperwidth] (univ) at
+         ([xshift=0.5cm, yshift=-0.4cm]current page.north west)
+         {\faUniversity\quad TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN -- UIT \\
+          \small\normalfont Khoa Hệ thống Thông tin $|$ Nhóm nghiên cứu FTISU};
+          
+    \node[white, anchor=north west, font=\LARGE\bfseries, text width=0.88\paperwidth, align=left] (title) at
+         ([yshift=-0.25cm]univ.south west)
+         {\inserttitle};
+         
+    \node[accentlt, anchor=north west, font=\normalsize\itshape, text width=0.88\paperwidth, align=left] (subtitle) at
+         ([yshift=-0.15cm]title.south west)
+         {\insertsubtitle};
+         
+    \node[uitdark, anchor=north west, font=\small, align=left] at
+         ([xshift=0.8cm, yshift=-0.66\paperheight]current page.north west)
+         {\faUser\quad \insertauthor \\
+          \ifx\gvhd\empty\else
+            \faGraduationCap\quad GVHD: \gvhd \\
+          \fi
+          \faEnvelope\quad \contactemail \\
+          \faCalendar\quad \insertdate};
+         
+    % Trang trí dòng kẻ đứng
+    \draw[accent,line width=4pt]
+         ([xshift=0.5cm,yshift=-0.65\paperheight]current page.north west)
+      -- ([xshift=0.5cm,yshift=-0.85\paperheight]current page.north west);
+
+    % Hiển thị Logo nhóm nghiên cứu / câu lạc bộ / khoa ở góc dưới bên phải
+        % Hiển thị Logo: Nhóm NC nằm bên TRÁI nhóm thực hiện (Góc dưới bên phải)
+    \expandafter\IfFileExists\expandafter{\logonhomthuchien}{
+        % Vẽ Logo nhóm thực hiện trước, neo vào góc và đặt tên node là 'logo2'
+        \node[anchor=south east, inner sep=0pt] (logo2) at ([xshift=-0.5cm, yshift=0.4cm]current page.south east) {
+            \includegraphics[height=0.7cm]{\logonhomthuchien}
+        };
+        
+        \expandafter\IfFileExists\expandafter{\logonhomNC}{
+            % Logo nhóm NC sẽ bám vào phía bên TRÁI (west) của logo2
+            \node[anchor=east, inner sep=0pt] at ([xshift=-0.2cm]logo2.west) {
+                \includegraphics[height=0.7cm]{\logonhomNC}
+            };
+        }{}
+    }{
+        % Trường hợp KHÔNG có logo nhóm thực hiện, chỉ có logo nhóm NC
+        \expandafter\IfFileExists\expandafter{\logonhomNC}{
+            \node[anchor=south east, inner sep=0pt] at ([xshift=-0.5cm, yshift=0.4cm]current page.south east) {
+                \includegraphics[height=0.7cm]{\logonhomNC}
+            };
+        }{}
+    }
+    \end{tikzpicture}
+}
+
+\AtBeginSection[]{
+  {
+    \usebackgroundtemplate{
+      \begin{tikzpicture}[remember picture, overlay]
+        \expandafter\IfFileExists\expandafter{\sectionbgimage}{
+          \node[anchor=center, inner sep=0pt] at (current page.center) {
+            \includegraphics[width=\paperwidth,height=\paperheight]{\sectionbgimage}
+          };
+        }{}
+        \fill[uitblue, opacity=0.92] (current page.north west) rectangle (current page.south east);
+      \end{tikzpicture}
+    }
+    \begin{frame}[plain]
+      \centering
+      \vspace{1.8cm}
+      {\color{white}\Huge\bfseries\thesection}
+      \par\vskip 0.3cm
+      {\color{accent}\rule{0.5\paperwidth}{2pt}}
+      \par\vskip 0.4cm
+      {\color{accentlt}\Large\bfseries\insertsectionhead}
+    \end{frame}
+  }
+}
+
+%=============================================================
+%  4. CÁC HỘP THÔNG TIN TCOLORBOX
+%=============================================================
+\tcbuselibrary{skins,breakable}
+
+% Hộp UIT mặc định (Màu xanh chủ đạo/nâu đất)
+\newtcolorbox{uitbox}[2][]{
+  enhanced,
+  colback=uitblue!6, colframe=uitblue, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=uitblue, arc=3pt, boxrule=0pt},
+  #1
+}
+
+% Hộp Accent nhấn mạnh (Màu vàng nhấn)
+\newtcolorbox{accentbox}[2][]{
+  enhanced,
+  colback=accent!6, colframe=accent, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=accent, arc=3pt, boxrule=0pt},
+  #1
+}
+
+% Hộp ví dụ (Màu xanh lá)
+\newtcolorbox{greenbox}[2][]{
+  enhanced,
+  colback=greenteal!6, colframe=greenteal, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=greenteal, arc=3pt, boxrule=0pt},
+  #1
+}
+
+% Hộp cảnh báo / hạn chế
+\newtcolorbox{redbox}[2][]{
+  enhanced,
+  colback=red!4, colframe=red!60!black, coltitle=white,
+  fonttitle=\bfseries\small, title={#2},
+  boxrule=0.5pt, arc=4pt, left=4pt, right=4pt, top=3pt, bottom=3pt,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=red!60!black, arc=3pt, boxrule=0pt},
+  #1
+}
+
+%=============================================================
+%  5. CÁC MACRO RÚT GỌN (Tô màu từ khóa)
+%=============================================================
+\newcommand{\highlight}[1]{\textcolor{accent}{\bfseries #1}}
+\newcommand{\kw}[1]{\textcolor{uitblue}{\bfseries #1}}
+
+%=============================================================
+%  PHẦN THÂN TÀI LIỆU
+%=============================================================
+
+\begin{document}
+
+%--- Slide 1: Trang bìa ---
+{
+\usebackgroundtemplate{}
+\begin{frame}[plain]
+\vspace{0.25cm}
+\begin{center}
+\begin{beamercolorbox}[wd=0.94\paperwidth,ht=1.25cm,dp=0.28cm,center,rounded=true]{frametitle}
+{\Large\bfseries Báo Cáo Thực Nghiệm: Distributed Deep Learning Cho Ước Lượng Calories}
+\end{beamercolorbox}
+
+\vspace{0.25cm}
+{\large\color{accent}\bfseries Nutrition5k: RGB, RGB-D và Visual--Ingredient Fusion}
+
+\vspace{0.55cm}
+\begin{uitbox}[width=0.78\paperwidth]{Thông tin báo cáo}
+\centering
+\faUser\quad Sinh viên thực hiện: \textbf{An Văn Kết}\\[3pt]
+\faUniversity\quad UIT -- Khoa Hệ thống Thông tin\\[3pt]
+\faCalendar\quad Ngày báo cáo: \today
+\end{uitbox}
+
+\vspace{0.35cm}
+\begin{accentbox}[width=0.78\paperwidth]{Mục tiêu chính}
+\centering
+Đánh giá \kw{accuracy--scalability trade-off} của các mô hình dự đoán calories khi huấn luyện 1 GPU và 2 GPU DDP.
+\end{accentbox}
+\end{center}
+\end{frame}
+}
+
+%--- Slide 2 ---
+\begin{frame}{Mục Tiêu Báo Cáo}
+\scriptsize
+\begin{columns}[T]
+\column{0.33\textwidth}
+\begin{uitbox}{Bài toán}
+Dự đoán \kw{calories} của món ăn từ dữ liệu Nutrition5k.
+
+\vspace{0.08cm}
+Đây là bài toán \kw{regression}: đầu ra là một giá trị số kcal.
+\end{uitbox}
+
+\column{0.33\textwidth}
+\begin{accentbox}{Vì sao cần Distributed?}
+Huấn luyện mô hình ảnh và mô hình đa phương thức tốn nhiều thời gian, tính toán và bộ nhớ GPU.
+
+\vspace{0.08cm}
+Vì vậy cần kiểm tra khả năng mở rộng bằng \kw{Distributed Data Parallel}.
+\end{accentbox}
+
+\column{0.33\textwidth}
+\begin{greenbox}{Câu hỏi chính}
+Khi mô hình chuyển từ RGB đơn giản sang RGB-D hoặc Visual--Ingredient Fusion:
+
+\vspace{0.05cm}
+\begin{itemize}
+  \item MAE có giảm không?
+  \item 2 GPU có tăng tốc không?
+  \item mô hình nào cân bằng tốt nhất?
+\end{itemize}
+\end{greenbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 3 ---
+\begin{frame}{Dữ Liệu Và Thiết Lập Thí Nghiệm}
+\scriptsize
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{uitbox}{Dữ liệu sử dụng}
+\begin{itemize}
+  \item Dataset: \kw{Nutrition5k}.
+  \item Số mẫu có ảnh RGB hợp lệ: \highlight{3,244} món.
+  \item Chia dữ liệu cố định: train/validation/test.
+  \item Target: tổng \kw{calories} của mỗi món ăn.
+\end{itemize}
+\end{uitbox}
+
+\vspace{0.12cm}
+\begin{greenbox}{Thống kê calories}
+\centering
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Split} & \textbf{Số mẫu} & \textbf{Mean} & \textbf{Std} \\
+\midrule
+Train & 2270 & 253.31 & 221.40 \\
+Val & 487 & 256.67 & 212.09 \\
+Test & 487 & 266.35 & 218.93 \\
+\bottomrule
+\end{tabular}
+\end{greenbox}
+
+\column{0.48\textwidth}
+\begin{accentbox}{Thiết lập chung}
+\begin{itemize}
+  \item Epoch: \highlight{20}.
+  \item Global batch size: \highlight{64}.
+  \item 1 GPU: batch 64.
+  \item 2 GPU: batch 32/GPU.
+  \item Loss: \kw{SmoothL1Loss}.
+  \item Optimizer: \kw{Adam}, learning rate $10^{-4}$.
+  \item Thời gian đo: chỉ tính \kw{training time}, không tính validation.
+\end{itemize}
+\end{accentbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 4 ---
+\begin{frame}{Vì Sao Bài Toán Phù Hợp Với Distributed Learning?}
+\scriptsize
+\begin{columns}[T]
+\column{0.46\textwidth}
+\begin{uitbox}{Cách phân tán đang dùng}
+Hướng triển khai là \kw{Synchronous Data Parallelism} bằng PyTorch \kw{DistributedDataParallel}.
+
+\vspace{0.08cm}
+Mỗi GPU giữ một bản sao đầy đủ của mô hình, xử lý một phần mini-batch, sau đó đồng bộ gradient trước khi cập nhật tham số.
+\end{uitbox}
+
+\vspace{0.12cm}
+\begin{greenbox}{Vì sao phù hợp?}
+Ảnh món ăn là các sample độc lập, nên có thể chia batch cho nhiều GPU mà không làm thay đổi bản chất bài toán.
+\end{greenbox}
+
+\column{0.50\textwidth}
+\begin{accentbox}{Luồng xử lý 2 GPU}
+\centering
+\begin{tabular}{c}
+Dataset Nutrition5k \\
+$\downarrow$ \\
+\begin{tabular}{cc}
+GPU 0 & GPU 1 \\
+Model copy & Model copy \\
+Batch 32 & Batch 32 \\
+Local gradient & Local gradient \\
+\end{tabular} \\
+$\downarrow$ \\
+Gradient synchronization / AllReduce \\
+$\downarrow$ \\
+Update cùng tham số mô hình
+\end{tabular}
+\end{accentbox}
+\vspace{0.1cm}
+\begin{redbox}{Điểm cần đánh giá}
+Distributed không chỉ cần nhanh hơn, mà còn phải giữ được MAE/RMSE tương đương và sử dụng GPU hiệu quả.
+\end{redbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 5 ---
+\begin{frame}{Exp 1--3: RGB Baseline Và Kiểm Tra DDP}
+\scriptsize
+\begin{columns}[T]
+\column{0.47\textwidth}
+\begin{uitbox}{Ý nghĩa thí nghiệm}
+\begin{itemize}
+  \item \kw{Exp 1}: ResNet18 5 epoch, kiểm tra nhanh DDP có chạy được.
+  \item \kw{Exp 2}: ResNet18 20 epoch, benchmark chính thức đầu tiên.
+  \item \kw{Exp 3}: ResNet50 20 epoch, kiểm tra model RGB mạnh hơn.
+\end{itemize}
+\end{uitbox}
+
+\vspace{0.12cm}
+\begin{greenbox}{Kết luận nhanh}
+ResNet50 cải thiện MAE rất mạnh so với ResNet18, nhưng thời gian huấn luyện cũng tăng.
+\end{greenbox}
+
+\column{0.50\textwidth}
+\begin{accentbox}{Kết quả chính}
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{GPU} & \textbf{Time} & \textbf{Throughput} & \textbf{Best MAE} \\
+\midrule
+ResNet18 & 1 & 443.32s & 102.41 & 209.96 \\
+ResNet18 & 2 & 317.75s & 142.88 & 204.45 \\
+ResNet50 & 1 & 550.37s & 82.49 & 77.41 \\
+ResNet50 & 2 & 390.44s & 116.28 & 84.53 \\
+\bottomrule
+\end{tabular}}
+\end{accentbox}
+\vspace{0.1cm}
+\begin{redbox}{Diễn giải}
+2 GPU giúp speedup khoảng \highlight{1.40--1.41x}. Đây là bằng chứng bài toán có thể huấn luyện theo hướng distributed.
+\end{redbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 6 ---
+\begin{frame}{Exp 4: RGB-D Fusion}
+\scriptsize
+\begin{columns}[T]
+\column{0.47\textwidth}
+\begin{uitbox}{Mục tiêu}
+Thêm thông tin \kw{depth} để mô hình hiểu tốt hơn về hình dạng và độ nổi của món ăn.
+
+\vspace{0.08cm}
+Depth được chuẩn hóa bằng percentile từ train set để giảm ảnh hưởng của outlier.
+\end{uitbox}
+
+\vspace{0.12cm}
+\begin{accentbox}{Kiến trúc}
+\centering
+RGB $\rightarrow$ ResNet50 $\rightarrow$ 2048-d\\
+Depth $\rightarrow$ ResNet18 $\rightarrow$ 512-d\\
+$\downarrow$\\
+Concat $\rightarrow$ Fusion FC $\rightarrow$ Calories
+\end{accentbox}
+
+\column{0.50\textwidth}
+\begin{greenbox}{Kết quả}
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrr}
+\toprule
+\textbf{Metric} & \textbf{1 GPU} & \textbf{2 GPU DDP} \\
+\midrule
+Train time & 800.92s & 632.78s \\
+Throughput & 56.68 & 71.75 \\
+Best Val MAE & 44.76 & \textbf{44.42} \\
+Best Val RMSE & 73.59 & \textbf{69.94} \\
+VRAM/GPU & 7.36GB & 3.86GB \\
+\bottomrule
+\end{tabular}}
+\end{greenbox}
+\vspace{0.1cm}
+\begin{redbox}{Nhận xét}
+Accuracy tốt nhất, nhưng speedup chỉ \highlight{1.27x}. Nguyên nhân có thể do thêm I/O depth, preprocessing và mô hình lớn hơn.
+\end{redbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 7 ---
+\begin{frame}{Exp 5: Visual--Ingredient Fusion}
+\scriptsize
+\begin{columns}[T]
+\column{0.47\textwidth}
+\begin{uitbox}{Mục tiêu}
+Thêm danh sách nguyên liệu dưới dạng \kw{ingredient ID}, kết hợp với ảnh RGB để dự đoán calories.
+
+\vspace{0.08cm}
+Chỉ dùng \kw{ingr\_id}; không dùng grams, calories, fat, carb, protein để tránh data leakage.
+\end{uitbox}
+
+\vspace{0.12cm}
+\begin{accentbox}{Kiến trúc}
+\centering
+RGB $\rightarrow$ ResNet50 $\rightarrow$ Visual feature\\
+Ingredient IDs $\rightarrow$ Embedding $\rightarrow$ Mean pooling\\
+$\downarrow$\\
+Fusion FC $\rightarrow$ Calories
+\end{accentbox}
+
+\column{0.50\textwidth}
+\begin{greenbox}{Kết quả}
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrr}
+\toprule
+\textbf{Metric} & \textbf{1 GPU} & \textbf{2 GPU DDP} \\
+\midrule
+Train time & 545.45s & \textbf{368.11s} \\
+Throughput & 83.23 & \textbf{123.33} \\
+Best Val MAE & \textbf{45.88} & 49.15 \\
+Test MAE & \textbf{49.85} & 52.30 \\
+VRAM/GPU & 5.49GB & \textbf{3.10GB} \\
+\bottomrule
+\end{tabular}}
+\end{greenbox}
+\vspace{0.1cm}
+\begin{redbox}{Nhận xét}
+Accuracy gần RGB-D nhưng train nhanh hơn nhiều. Đây là mô hình cân bằng tốt nhất giữa accuracy và scalability.
+\end{redbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 8 ---
+\begin{frame}{So Sánh Scalability Giữa Các Kiến Trúc}
+\scriptsize
+\begin{accentbox}{Bảng khả năng mở rộng 1 GPU $\rightarrow$ 2 GPU}
+\centering
+\renewcommand{\arraystretch}{1.15}
+\resizebox{0.96\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Architecture} & \textbf{1 GPU} & \textbf{2 GPU} & \textbf{Speedup} & \textbf{Efficiency} & \textbf{Time Reduction} \\
+\midrule
+ResNet18 RGB & 443.32s & 317.75s & 1.40x & 69.8\% & 28.3\% \\
+ResNet50 RGB & 550.37s & 390.44s & 1.41x & 70.5\% & 29.1\% \\
+RGB-D Fusion & 800.92s & 632.78s & 1.27x & 63.3\% & 21.0\% \\
+Visual--Ingredient & 545.45s & 368.11s & \textbf{1.48x} & \textbf{74.1\%} & \textbf{32.5\%} \\
+\bottomrule
+\end{tabular}}
+\end{accentbox}
+
+\vspace{0.12cm}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{uitbox}{Điểm rút ra}
+Mô hình nhiều thông tin hơn không tự động scale tốt hơn. RGB-D chính xác cao nhưng efficiency thấp hơn do chi phí I/O và xử lý depth.
+\end{uitbox}
+\column{0.48\textwidth}
+\begin{greenbox}{Điểm tốt nhất}
+Visual--Ingredient đạt speedup cao nhất và vẫn giữ MAE ở mức thấp trên test set.
+\end{greenbox}
+\end{columns}
+\end{frame}
+
+%--- Slide 9 ---
+\begin{frame}{Kết Luận Và Hướng Đề Tài}
+\scriptsize
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{uitbox}{Kết luận thực nghiệm}
+\begin{itemize}
+  \item Bài toán calories từ ảnh phù hợp để chạy \kw{Distributed Data Parallel}.
+  \item 2 GPU giúp giảm thời gian huấn luyện khoảng \highlight{21--33\%}.
+  \item Multimodal giúp giảm MAE mạnh so với RGB-only.
+  \item RGB-D chính xác nhất trên validation; Visual--Ingredient cân bằng nhất về tốc độ và bộ nhớ.
+\end{itemize}
+\end{uitbox}
+
+\column{0.48\textwidth}
+\begin{accentbox}{Hướng nghiên cứu đề xuất}
+\textbf{Accuracy--Scalability Trade-off} trong Distributed Multimodal Deep Learning cho ước lượng dinh dưỡng.
+
+\vspace{0.10cm}
+Các hướng có thể làm tiếp:
+\begin{itemize}
+  \item đo bottleneck I/O và GPU compute;
+  \item thử gradient compression;
+  \item đánh giá nhiều seed để tăng độ tin cậy;
+  \item mở rộng từ calories sang calories + fat + carb + protein.
+\end{itemize}
+\end{accentbox}
+\end{columns}
+\end{frame}
+
+\end{document}
