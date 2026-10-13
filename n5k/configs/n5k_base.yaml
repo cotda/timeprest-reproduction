@@ -1,0 +1,53 @@
+# Nutrition5k + TiMePReSt (n5k/PLAN.md). Values = mục 4-6 of the plan; change them only with a
+# decision logged in mục 10.
+name: n5k_base
+seed: 0
+system: timeprest
+data:
+  dataset: nutrition5k
+  root: /kaggle/input                    # searched for dish_nutrition_values.csv
+  split_dir: n5k/splits                  # fixed split of Exp 1-3 (dish ids)
+  cache_dir: /kaggle/working/n5k_cache   # decoded uint8 RGB + uint16 depth .npy (built once)
+  cache_search: /kaggle/input            # a ready cache uploaded as a Kaggle dataset is used directly
+  image_size: 224
+  augment: true                          # joint horizontal / vertical flips of RGB and depth
+  num_workers: 2
+model:
+  name: n5k_resnet50
+  in_channels: 4                         # RGB + depth
+  pretrained: IMAGENET1K_V2              # torchvision weights; depth filter = mean of RGB filters
+loss:
+  w_presence: 1.0
+  w_gram: 1.0
+  w_total: 1.0
+pipeline:
+  num_stages: 2                          # W
+  num_microbatches: 2                    # N (user, 2026-10-14)
+  partition: auto                        # balanced MACs -> [0, 9, 18]
+training:
+  epochs: 30
+  batch_size: 64                         # M
+  optimizer: sgd
+  lr: 0.01                               # placeholder until the sweep (mục 6)
+  momentum: 0.9
+  weight_decay: 1.0e-4
+  lr_schedule: cosine
+  warmup_epochs: 2
+runtime:
+  device: cuda
+  eval_batch_size: 64
+  profile_ops: true
+  op_trace_every: 10
+output:
+  dir: n5k/results/runs/{name}
+  require_checks: true
+  checks_file: n5k/results/checks/latest.json
+checks:
+  systems: [pipedream, timeprest]
+  num_microbatches: 2
+  static_batch: 16
+  static_steps: 4
+  dynamic_steps: 10
+  resume_subset: 256
+  short_epochs: 2
+  short_warmup_epochs: 0.5

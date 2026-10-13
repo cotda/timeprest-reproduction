@@ -1,0 +1,9 @@
+# lr sweep on the single-process engine (python -m timeprest.n5k.sweep): every (system, lr) run uses
+# that system's config with these training/output values. Each system then takes its own best lr.
+base: n5k_base.yaml
+name: n5k_sweep
+training:
+  epochs: 8
+  warmup_epochs: 1
+output:
+  dir: n5k/results/sweep/{name}

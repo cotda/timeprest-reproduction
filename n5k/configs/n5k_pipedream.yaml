@@ -1,0 +1,4 @@
+# PipeDream: 1F1B on the whole mini-batch M=64, weight stashing, no vertical sync (preset `pipedream`)
+base: n5k_base.yaml
+name: n5k_pipedream_s0
+system: pipedream

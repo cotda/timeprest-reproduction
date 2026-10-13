@@ -95,7 +95,7 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
 
 - **Không chạy** PipeDream theo micro-batch (M=32, cách hiểu thứ hai PN §27) — người dùng chọn 2026-10-14.
 - Metric: MAE kcal / fat / carb / protein / mass (val mỗi epoch; test ở checkpoint tốt nhất theo val); F1 / mAP nhận diện nguyên liệu; MAE gram và kcal theo từng nguyên liệu; MAE theo epoch và tại cùng mốc thời gian (cách tính PN §24.3); thời gian/epoch; peak memory từng GPU; tỉ lệ bận GPU.
-- Vị trí: mIoU / pointing game trên mask do người dùng tự gán cho 50–100 ảnh test (bước B7). Trước đó chỉ có hình minh họa định tính.
+- Vị trí (không có mask, mục 10): (1) hình minh họa bản đồ calories; (2) **deletion test**: che vùng bản đồ của nguyên liệu k xếp hạng cao nhất (theo tỉ lệ diện tích) và so mức giảm xác suất nhận diện / gram dự đoán của k với che vùng ngẫu nhiên cùng diện tích. Kết luận được phép: bản đồ **trung thực với mô hình** (chỉ đúng vùng mô hình dựa vào); **không** được tuyên bố định vị đúng vị trí thật.
 
 ## 8. Dự đoán ghi trước khi chạy
 
@@ -115,14 +115,16 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
 | B4 | `timeprest/n5k/checks.py` (D1–D4 cho task này), `n5k/configs/n5k_quick.yaml`; sweep lr trên engine 1 GPU | D1–D4 PASS; peak memory M=64 đo thật |
 | B5 | Baseline DDP `timeprest/n5k/ddp_train.py` | Chạy 2 tiến trình CPU/gloo local; cùng định dạng `metrics.csv` / `summary.json` |
 | B6 | Configs `n5k/configs/*.yaml`, notebook `n5k/notebooks/n5k_kaggle.ipynb`; chạy dài 3 seed + `bench_comm` | Kết quả vào `n5k/results/runN_*/` |
-| B7 | Script vẽ: nguyên liệu + bản đồ calories phủ lên ảnh + bảng hàm lượng; script đánh giá vị trí trên mask tự gán | Hình cho báo cáo; mIoU khi có mask |
+| B7 | Script vẽ: nguyên liệu + bản đồ calories phủ lên ảnh + bảng hàm lượng; deletion test (mục 7) | Hình cho báo cáo; bảng deletion (vùng bản đồ so với ngẫu nhiên) |
 | B8 | Ghi kết quả vào mục 11 của file này, cập nhật báo cáo | — |
 
 ## 10. Nhật ký quyết định
 
 - 2026-10-14: phạm vi gồm nhận diện + hàm lượng + vị trí (người dùng). N = 2 (người dùng). Không chạy PipeDream M=32 (người dùng). Các lựa chọn còn lại ở mục 4–7 do agent đề xuất, người dùng chấp nhận cùng lúc.
 - 2026-10-14: task có thư mục riêng `n5k/` và code riêng `timeprest/n5k/`; không ghi vào `paper_notes.md`, code cũ chỉ sửa ở mức móc nối (người dùng).
-- Điểm còn mở: (a) có dùng FoodSeg103 / SAM để cải thiện vị trí không: quyết định sau B7 dựa trên mIoU; (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
+- 2026-10-14: người dùng **không tự gán mask được**. Bỏ mIoU / pointing game trên mask tự gán; thay bằng hình minh họa + deletion test (người dùng đồng ý). FoodSeg103 không dùng (không có depth, phải train thêm bản RGB và ánh xạ nhãn); chỉ xét lại nếu mentor yêu cầu độ chính xác vị trí so với thực tế.
+- 2026-10-14: sweep lr gồm `single` (dùng chung cho DDP: cùng SGD trên M=64), `pipedream`, `timeprest`, 8 epoch, warmup 1 (agent đề xuất theo mục 6; chạy ở lần Kaggle 1).
+- Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
 
@@ -141,3 +143,25 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - check 3: pipeline không trễ (1 mini-batch trong pipeline) = train thường, MLP N=1/2 và ResNet N=2;
   - check 4: TiMePReSt N=2 (`graph`) khớp reference PipeDream-swap, có micro-batch forward bằng version cũ; PipeDream stash khớp gradient toàn model;
   - runtime 2 tiến trình: static trùng engine (tham số và metric eval) cho TiMePReSt MLP/ResNet và PipeDream; dynamic đúng quy tắc với version đã log.
+
+### B2 — dữ liệu (2026-10-14, chưa commit)
+
+- `n5k/splits/{train,val,test}.txt`: dish id lấy từ split Exp 1–3 (2270 / 487 / 487, không trùng nhau).
+- `timeprest/n5k/data.py`: đọc 3 CSV bằng `csv` (không cần pandas); ảnh 224×224 (RGB bilinear, depth nearest để giá trị 0 = không đo không bị trộn); cache `.npy` (uint8 RGB, uint16 depth thô, nhãn float32) + `meta.json` ghi cuối (từ vựng K, per-gram, `gram_scale`, `total_mean/std`, depth P1/P99 trên pixel > 0, món bị loại kèm lý do, báo cáo khớp tổng). Khóa `.building` để chỉ một tiến trình giải mã; build lỗi thì gỡ khóa. Tìm cache có sẵn qua `data.cache_search`.
+- Per-gram lấy từ `ingredients_metadata.csv`; nguyên liệu không có trong metadata thì lấy tỉ lệ từ `dish_ingredients.csv` (ghi trong `per_gram_fallback`).
+- Lệnh: `python -m timeprest.n5k.data --config n5k/configs/n5k_quick.yaml` (in báo cáo + dòng `N5K_DATA_JSON`).
+- Test (thư mục Nutrition5k giả, đúng cấu trúc, có món thiếu depth kiểu `.gstmp` 0 byte và món thiếu dòng dinh dưỡng): 7 test PASS — lý do loại đúng, từ vựng chỉ từ train, nhãn và per-gram đúng, tỉ lệ kcal của nguyên liệu lạ, thống kê chuẩn hóa, lật RGB và depth cùng nhau, dùng lại / tìm thấy cache, gỡ khóa khi lỗi.
+
+### B3 — model (2026-10-14, chưa commit)
+
+- `timeprest/n5k/model.py`: model `n5k_resnet50` đăng ký vào `MODEL_BUILDERS`; nạp trọng số torchvision (`IMAGENET1K_V2`) vào `resnet50_blocks(stem="imagenet")`; conv1 4 kênh (kênh depth = trung bình bộ lọc RGB); head `N5kHead` (2 conv 1×1 → K bản đồ CAM + K bản đồ gram, global average pool). Bias của head khởi tạo theo tần suất xuất hiện và gram trung bình trên train (loss ban đầu hợp lý).
+- Partition `auto` ở 224×224, 4 kênh: `[0, 9, 18]`, 2.23 / 1.94 GMAC mỗi stage, activation ở biên 1024×14×14 = 0.77 MB/ảnh fp32.
+- Test: 5 PASS — feature RGB trùng torchvision (rtol/atol 1e-5, BN có thống kê khác mặc định), depth = 0 cho đúng model 3 kênh, layout head và bias khởi tạo, partition với input 4 kênh.
+
+### B4 — trainer, check, sweep, notebook (2026-10-14, chưa commit; chưa chạy trên Kaggle)
+
+- `timeprest/n5k/train.py` (engine 1 tiến trình: `num_stages: 1` = 1 GPU thường, `2` = pipeline mô phỏng cho sweep), `dist_train.py` (pipeline thật, kế thừa `DistTrainer`), `checks.py` (D0 dữ liệu, D1 static = engine, D2 version động, D3 resume, D4 chạy ngắn: loss giảm và MAE kcal val < dự đoán hằng trung vị train), `sweep.py`. Chọn checkpoint tốt nhất theo val MAE kcal, test chỉ đánh giá checkpoint đó.
+- Configs `n5k/configs/`: `n5k_base` (giá trị mục 4–6), `n5k_quick`, `n5k_timeprest`, `n5k_pipedream`, `n5k_timeprest_n4`, `n5k_single`, `n5k_sweep` (8 epoch, warmup 1). Notebook `n5k/notebooks/n5k_kaggle.ipynb` (lần 1: dữ liệu + check + sweep; lần 2: chạy dài).
+- Test CPU (dữ liệu giả 48/16/16 món, 32 px, ResNet-50 không pretrained): engine trainer resume liền mạch (W=1 và W=2), checks trên 2 tiến trình gloo D0–D3 PASS (D4 chạy được; PASS cần ảnh thật), `dist_train` ghi `summary.json`. Toàn bộ: **142 test PASS** (108 cũ + 34 mới).
+- **Phát hiện (dữ liệu giả, chưa chắc đúng với dữ liệu thật):** ResNet-50 khởi tạo ngẫu nhiên, micro-batch 4, lr 0.01: TiMePReSt (`graph`) **phân kỳ** — gradient stage 0 tăng ~×5 mỗi bước (482 → 1321 → 7129 → 3e10 → NaN), trong khi PipeDream, 1 GPU, `timeprest_recompute`, Variant 1/2 và DeepSpeed đều ổn định cùng điều kiện. Check 4 khớp reference chính xác, nên đây là tính chất của quy tắc `graph` (cùng hướng PN §22.7), không phải lỗi cài đặt. Trên dữ liệu thật (pretrained, micro-batch 32, warmup) có thể không xảy ra; D4 và sweep sẽ cho biết. Nếu xảy ra: chọn lr nhỏ hơn theo sweep (quy tắc PN §22.9), không thêm kỹ thuật ngoài paper (gradient clipping) nếu chưa ghi quyết định ở mục 10.
+- Chưa làm: B5 (DDP), bench mạng giả lập cho task này (B6), B7.

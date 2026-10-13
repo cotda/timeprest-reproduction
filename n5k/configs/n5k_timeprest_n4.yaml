@@ -1,0 +1,6 @@
+# Ablation N (mục 7): N=4, micro-batch 16
+base: n5k_base.yaml
+name: n5k_timeprest_n4_s0
+system: timeprest
+pipeline:
+  num_microbatches: 4

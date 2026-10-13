@@ -1,0 +1,3 @@
+# Checks before the long runs: python -m timeprest.n5k.data / torchrun ... -m timeprest.n5k.checks
+base: n5k_base.yaml
+name: n5k_quick
