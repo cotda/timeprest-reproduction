@@ -21,11 +21,11 @@ from typing import Callable
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.func import functional_call
 
 from .schedule import Op, build_schedule, trace_versions
 from .swap import GraphForward, release_storage
+from .tasks import ClassificationTask, _upcast  # noqa: F401  (_upcast re-exported for old imports)
 
 
 @contextlib.contextmanager
@@ -60,19 +60,15 @@ def lr_lambda_factory(total_steps: int, warmup_steps: int, schedule: str) -> Cal
     return fn
 
 
-def _upcast(t: torch.Tensor) -> torch.Tensor:
-    """Compute losses in at least fp32 (keeps fp64 in the float64 tests)."""
-    return t.float() if t.dtype in (torch.float16, torch.bfloat16) else t
-
-
 def _nbytes(t: torch.Tensor) -> int:
     return t.numel() * t.element_size()
 
 
 class PipelineEngine:
     def __init__(self, stages: list[nn.Module], pipeline_cfg: dict, training_cfg: dict,
-                 device: torch.device | str, steps_per_epoch: int, profile_ops: bool = False):
+                 device: torch.device | str, steps_per_epoch: int, profile_ops: bool = False, task=None):
         self.device = torch.device(device)
+        self.task = task or ClassificationTask()   # loss / metrics of the last stage (timeprest.tasks)
         self.stages = [m.to(self.device) for m in stages]
         self.W = len(stages)
         self.N = int(pipeline_cfg["num_microbatches"])
@@ -174,7 +170,7 @@ class PipelineEngine:
         saved = {}       # (s, i, j) -> stage input (recompute) or forward graph record (graph)
         grads_in = {}    # (s, i, j) -> gradient w.r.t. stage-s output
         loss_sum = torch.zeros((), device=self.device, dtype=torch.float64)
-        correct = torch.zeros((), device=self.device, dtype=torch.long)
+        correct = self.task.train_metric_init(self.device)
         n_seen = 0
         comm_bytes = [0] * len(ops)
         timers = []
@@ -216,7 +212,7 @@ class PipelineEngine:
                         out = gf.run(lambda: self._run_keep_graph(s, params, xin))
                         rec = {"x": xin, "gf": gf, "leaves": [params[n] for n, _ in self.named[s]],
                                "target": out if s < last else
-                               F.cross_entropy(_upcast(out), labels[i][j], reduction="sum") / sizes[i]}
+                               self.task.loss_sum(out, labels[i][j]) / sizes[i]}
                     saved[(s, i, j)] = rec
                     out = out.detach()
                 else:
@@ -228,8 +224,8 @@ class PipelineEngine:
                     comm_bytes[idx] = _nbytes(out)
                 else:
                     y = labels[i][j]
-                    loss_sum += F.cross_entropy(_upcast(out), y, reduction="sum").double()
-                    correct += (out.argmax(1) == y).sum()
+                    loss_sum += self.task.loss_sum(out, y).double()
+                    correct += self.task.train_metric(out, y)
                     n_seen += y.shape[0]
                 if s == 0:
                     pending_x[i][j] = None
@@ -263,7 +259,7 @@ class PipelineEngine:
                     with torch.enable_grad(), frozen_bn_stats(self.stages[s]):
                         out = self._run(s, params, x)
                         if s == last:
-                            target = F.cross_entropy(_upcast(out), labels[i][j], reduction="sum") / M
+                            target = self.task.loss_sum(out, labels[i][j]) / M
                             gout = None
                         else:
                             target, gout = out, grads_in.pop((s, i, j))
@@ -327,7 +323,7 @@ class PipelineEngine:
             "minibatches": K,
             "samples": n_seen,
             "train_loss": (loss_sum / max(1, n_seen)).item(),
-            "train_acc1": correct.item() / max(1, n_seen) * 100.0,
+            **self.task.train_summary(correct, n_seen),
             "wall_time_s": wall,
             "data_time_s": data_time,
             "op_durations_s": durations,
@@ -342,20 +338,15 @@ class PipelineEngine:
     @torch.no_grad()
     def evaluate(self, loader) -> dict:
         self.train(False)
-        loss, c1, c5, n = 0.0, 0, 0, 0
+        st = self.task.eval_start()
         for x, y in loader:
             x, y = x.to(self.device), y.to(self.device)
             out = x
             for m in self.stages:
                 out = m(out)
-            out = _upcast(out)
-            loss += F.cross_entropy(out, y, reduction="sum").item()
-            top = out.topk(min(5, out.shape[1]), 1).indices
-            c1 += (top[:, 0] == y).sum().item()
-            c5 += (top == y[:, None]).any(1).sum().item()
-            n += y.shape[0]
+            self.task.eval_update(st, out, y)
         self.train(True)
-        return {"loss": loss / n, "acc1": c1 / n * 100.0, "acc5": c5 / n * 100.0}
+        return self.task.eval_result(st)
 
     def forward_full(self, x: torch.Tensor) -> torch.Tensor:
         for m in self.stages:

@@ -137,8 +137,15 @@ def _init(blocks):
                 nn.init.zeros_(m.bias)
 
 
+# Models defined outside this file (e.g. timeprest.n5k.model): name -> fn(model_cfg) -> list of blocks.
+# Registered by importing the defining module.
+MODEL_BUILDERS: dict = {}
+
+
 def build_blocks(model_cfg: dict) -> list[nn.Module]:
     name = model_cfg["name"]
+    if name in MODEL_BUILDERS:
+        return MODEL_BUILDERS[name](model_cfg)
     if name in ("vgg16_bn_cifar", "vgg16_bn"):
         return vgg16_bn_blocks(model_cfg["num_classes"], model_cfg.get("width", 1.0),
                                model_cfg.get("global_pool", False))

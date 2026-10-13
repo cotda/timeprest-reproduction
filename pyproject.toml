@@ -22,4 +22,4 @@ test = ["pytest"]
 include = ["timeprest*"]
 
 [tool.pytest.ini_options]
-testpaths = ["timeprest/tests"]
+testpaths = ["timeprest/tests", "timeprest/n5k/tests"]

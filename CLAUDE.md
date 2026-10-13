@@ -80,3 +80,9 @@ Khi không chắc chi tiết nào, trích đúng mục/trang trong paper hoặc 
 - Unit test nhỏ trong `timeprest/tests/`, chạy được trên CPU (`pytest`) trước khi đưa lên Colab.
 - Cố định seed; mọi tham số nằm trong config, không hard-code trong notebook.
 - Khi người dùng dán output từ Colab: phân tích, chỉ ra check nào lỗi và nguyên nhân khả dĩ trước khi sửa code.
+
+## Task Nutrition5k (thư mục riêng, tách khỏi phần tái hiện TiMePReSt)
+- Nhận diện nguyên liệu + hàm lượng dinh dưỡng + vị trí trên ảnh, huấn luyện song song bằng TiMePReSt (mentor xác nhận phạm vi).
+- Làm ĐÚNG theo `n5k/PLAN.md` (TiMePReSt M=64, N=2; các bước B1–B8). Đổi lựa chọn nào thì ghi vào mục 10 của file đó trước khi sửa code.
+- Ghi chép/kết quả của task này vào `n5k/PLAN.md`, KHÔNG ghi vào `paper_notes.md`. Code riêng ở `timeprest/n5k/` (test ở `timeprest/n5k/tests/`);
+  config `n5k/configs/`, notebook `n5k/notebooks/`, kết quả `n5k/results/`. Code cũ chỉ sửa ở mức móc nối, hành vi và test cũ giữ nguyên.

@@ -29,12 +29,12 @@ from collections import deque
 import torch
 import torch.distributed as dist
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.func import functional_call
 
-from ..engine import _upcast, frozen_bn_stats, lr_lambda_factory
+from ..engine import frozen_bn_stats, lr_lambda_factory
 from ..schedule import build_schedule
 from ..swap import GraphForward, release_storage
+from ..tasks import ClassificationTask
 
 
 class Handle:
@@ -208,8 +208,9 @@ def _done(work) -> bool:
 class StageRuntime:
     def __init__(self, rank: int, world: int, module: nn.Module, pipeline_cfg: dict, training_cfg: dict,
                  device, steps_per_epoch: int, in_feat: tuple | None, out_feat: tuple | None,
-                 channels: Channels, batch_size: int, dtype=torch.float32):
+                 channels: Channels, batch_size: int, dtype=torch.float32, task=None):
         self.s, self.W, self.last = rank, world, world - 1
+        self.task = task or ClassificationTask()   # loss / metrics of the last stage (timeprest.tasks)
         self.device = torch.device(device)
         self.module = module.to(self.device)
         self.N = int(pipeline_cfg["num_microbatches"])
@@ -306,12 +307,12 @@ class StageRuntime:
                     if not train:
                         continue
                     if self.s == self.last:   # same bookkeeping ops as do_forward
-                        y = torch.randint(0, out.shape[1], (m,), device=self.device)
-                        l = F.cross_entropy(_upcast(out), y, reduction="sum")
+                        y = self.task.dummy_labels(out)
+                        l = self.task.loss_sum(out, y)
                         acc_l = torch.zeros((), device=self.device, dtype=torch.float64)
-                        acc_c = torch.zeros((), device=self.device, dtype=torch.long)
+                        acc_c = self.task.train_metric_init(self.device)
                         acc_l += l.detach().double()
-                        acc_c += (out.detach().argmax(1) == y).sum()
+                        acc_c += self.task.train_metric(out.detach(), y)
                         (l / self.M).backward()
                         acc_l.item(), acc_c.item()
                     else:
@@ -352,7 +353,7 @@ class StageRuntime:
         inflight: set = set()
         last_pin = base
         loss_sum = torch.zeros((), device=self.device, dtype=torch.float64)
-        correct = torch.zeros((), device=self.device, dtype=torch.long)
+        correct = self.task.train_metric_init(self.device)
         n_seen = 0
         stats = {"recompute_micro": 0, "graph_micro": 0, "max_snaps": 0, "bytes_sent": 0,
                  "msgs_sent": 0, "waits": 0, "wait_time_s": 0.0}
@@ -460,9 +461,9 @@ class StageRuntime:
                     rec["out"] = out
             else:
                 y = lab[i][j]
-                l = F.cross_entropy(_upcast(out), y, reduction="sum")
+                l = self.task.loss_sum(out, y)
                 loss_sum += l.detach().double()
-                correct += (out.detach().argmax(1) == y).sum()
+                correct += self.task.train_metric(out.detach(), y)
                 n_seen += y.shape[0]
                 if rec["mode"] == "graph":
                     rec["loss"] = l / self.M
@@ -500,7 +501,7 @@ class StageRuntime:
                     with torch.enable_grad(), frozen_bn_stats(self.module):
                         out = self._run(params, x)
                         if s == last:
-                            target = F.cross_entropy(_upcast(out), lab[i][j], reduction="sum") / self.M
+                            target = self.task.loss_sum(out, lab[i][j]) / self.M
                         else:
                             target = out
                         wrt = [params[n] for n, _ in self.named] + ([x] if s > 0 else [])
@@ -599,7 +600,7 @@ class StageRuntime:
         busy = sum(b - a for _, _, _, a, b in ops) if ops else None
         return {
             "stage": s, "wall_s": wall, "busy_s": busy, "ops": ops,
-            "loss_sum": loss_sum.item(), "correct": int(correct.item()), "samples": n_seen,
+            "loss_sum": loss_sum.item(), **self.task.runtime_stats(correct), "samples": n_seen,
             "peak_mem_mb": torch.cuda.max_memory_allocated(self.device) / 2**20 if on_cuda else None,
             **stats,
         }
@@ -609,8 +610,7 @@ class StageRuntime:
     def evaluate(self, batches=None, labels=None, n_batches: int = 0) -> dict | None:
         self.module.eval()
         s, last = self.s, self.last
-        loss = 0.0
-        c1 = c5 = n = 0
+        st = self.task.eval_start() if s == last else None
         for b in range(n_batches):
             if s == 0:
                 x = next(batches).to(self.device)
@@ -625,16 +625,10 @@ class StageRuntime:
                 self.ch.send_fwd(torch.tensor(list(o.shape), dtype=torch.int64, device=self.device))
                 self.ch.send_fwd(o)
             else:
-                y = labels[b].to(self.device)
-                o = _upcast(out)
-                loss += F.cross_entropy(o, y, reduction="sum").item()
-                top = o.topk(min(5, o.shape[1]), 1).indices
-                c1 += (top[:, 0] == y).sum().item()
-                c5 += (top == y[:, None]).any(1).sum().item()
-                n += y.shape[0]
+                self.task.eval_update(st, out, labels[b].to(self.device))
         self.module.train()
         if s == last:
-            return {"loss": loss / n, "acc1": c1 / n * 100.0, "acc5": c5 / n * 100.0}
+            return self.task.eval_result(st)
         return None
 
     # ------------------------------------------------------------------ checkpoint

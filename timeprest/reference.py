@@ -10,6 +10,10 @@ import torch.nn.functional as F
 
 from .engine import lr_lambda_factory
 
+
+def _ce_sum(out, y):
+    return F.cross_entropy(out, y, reduction="sum")
+
 # Paper Fig.2a-e (p.4), first 18 slots, transcribed by hand from the figure.
 FIG2 = {
     (4, 2): """1A 1B 2A 2B 3A 3B 4A 4B 1 5A 5B 2 6A 6B 3 7A 7B 4
@@ -41,9 +45,9 @@ def fig2_grid(W: int, N: int) -> list[list[str]]:
 
 
 def plain_training(stages, batches, N: int, training_cfg: dict, total_steps: int,
-                   warmup_steps: int = 0) -> nn.Sequential:
+                   warmup_steps: int = 0, loss_sum=_ce_sum) -> nn.Sequential:
     """Ordinary (non-pipelined) training of the concatenated model with the same optimizer,
-    LR schedule and micro-batch loss weighting (sum over chunks of CE_sum / M)."""
+    LR schedule and micro-batch loss weighting (sum over chunks of loss_sum / M; default CE)."""
     model = nn.Sequential(*[copy.deepcopy(s) for s in stages])
     opt = torch.optim.SGD(model.parameters(), lr=training_cfg["lr"], momentum=training_cfg["momentum"],
                           weight_decay=training_cfg["weight_decay"],
@@ -54,7 +58,7 @@ def plain_training(stages, batches, N: int, training_cfg: dict, total_steps: int
     for x, y in batches:
         opt.zero_grad()
         for xc, yc in zip(torch.tensor_split(x, N), torch.tensor_split(y, N)):
-            (F.cross_entropy(model(xc), yc, reduction="sum") / x.shape[0]).backward()
+            (loss_sum(model(xc), yc) / x.shape[0]).backward()
         opt.step()
         sch.step()
     return model
@@ -68,17 +72,18 @@ def _loaded_copy(module: nn.Module, params: dict) -> nn.Module:
     return m
 
 
-def full_grad_at(stages, version_params: dict, versions: list[int], x, y, N: int) -> list[dict]:
+def full_grad_at(stages, version_params: dict, versions: list[int], x, y, N: int,
+                 loss_sum=_ce_sum) -> list[dict]:
     """Gradient of the mini-batch loss of the whole model with stage s at version versions[s]."""
     mods = [_loaded_copy(m, version_params[(s, versions[s])]) for s, m in enumerate(stages)]
     model = nn.Sequential(*mods).train()
     for xc, yc in zip(torch.tensor_split(x, N), torch.tensor_split(y, N)):
-        (F.cross_entropy(model(xc), yc, reduction="sum") / x.shape[0]).backward()
+        (loss_sum(model(xc), yc) / x.shape[0]).backward()
     return [{n: p.grad.clone() for n, p in m.named_parameters()} for m in mods]
 
 
 def mixed_rule_grads(stages, version_params: dict, fwd_versions: list[int], bwd_version: int,
-                     x, y, N: int) -> list[dict]:
+                     x, y, N: int, loss_sum=_ce_sum) -> list[dict]:
     """Declared TiMePReSt rule for any W: micro-batch j is forwarded with version fwd_versions[j]
     on every stage (vertical sync); each stage then computes its local VJP at bwd_version on the
     stage input it received, using the gradient passed back by the next stage."""
@@ -95,7 +100,7 @@ def mixed_rule_grads(stages, version_params: dict, fwd_versions: list[int], bwd_
             inp = inputs[s].clone().requires_grad_(s > 0)
             out = m(inp)
             if s == W - 1:
-                (F.cross_entropy(out, yc, reduction="sum") / x.shape[0]).backward()
+                (loss_sum(out, yc) / x.shape[0]).backward()
             else:
                 out.backward(upstream)
             for n, p in m.named_parameters():
@@ -105,7 +110,7 @@ def mixed_rule_grads(stages, version_params: dict, fwd_versions: list[int], bwd_
 
 
 def pipedream_swap_grads(stages, version_params: dict, fwd_versions: list, bwd_versions, x, y,
-                         N: int) -> list[dict]:
+                         N: int, loss_sum=_ce_sum) -> list[dict]:
     """Backward rule "graph", computed the way PipeDream's runtime does it: forward micro-batch j
     through plain modules holding version fwd_versions[j] (an int for all stages, or one per stage),
     then copy the backward version into those same modules in place (as `load_old_params` /
@@ -119,7 +124,7 @@ def pipedream_swap_grads(stages, version_params: dict, fwd_versions: list, bwd_v
     for j, (xc, yc) in enumerate(zip(torch.tensor_split(x, N), torch.tensor_split(y, N))):
         kf = per_stage(fwd_versions[j])
         mods = [_loaded_copy(stages[s], version_params[(s, kf[s])]).train() for s in range(W)]
-        loss = F.cross_entropy(nn.Sequential(*mods)(xc), yc, reduction="sum") / x.shape[0]
+        loss = loss_sum(nn.Sequential(*mods)(xc), yc) / x.shape[0]
         for s, m in enumerate(mods):
             for n, p in m.named_parameters():
                 p.data.copy_(version_params[(s, kb[s])][n])   # in place: saved weights see it
