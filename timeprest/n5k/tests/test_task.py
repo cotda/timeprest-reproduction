@@ -70,6 +70,32 @@ def test_sum_reduction_and_loss_terms():
         NutritionTask(mean.per_gram, mean.gram_scale, mean.total_std, ingredient_reduce="max")
 
 
+def test_direct_totals_branch():
+    """With total_scale the last T outputs are the dish totals: the total term and mae_* use them,
+    mae_kcal_ingr keeps the kcal derived from the grams (= mae_kcal of the plain task)."""
+    plain = make_task(w_presence=0.5, w_gram=2.0, w_total=3.0)
+    scale = torch.tensor([400.0, 300.0, 15.0, 45.0, 20.0], dtype=torch.float64)
+    direct = NutritionTask(plain.per_gram, plain.gram_scale, plain.total_std, 0.5, 2.0, 3.0, total_scale=scale)
+    g = torch.Generator().manual_seed(5)
+    out = torch.randn(6, 2 * K + 5, generator=g, dtype=torch.float64)
+    y = make_batches("mlp", plain, 1, 6)[0][1]
+    with pytest.raises(ValueError):
+        direct.predict(out[:, :2 * K])
+    totals = F.softplus(out[:, 2 * K:]) * scale
+    tl = F.smooth_l1_loss((totals - y[:, K:]) / plain.total_std, torch.zeros_like(totals), reduction="none").mean(1)
+    cp, cd = plain.components(out[:, :2 * K], y), direct.components(out, y)
+    torch.testing.assert_close(cd[0], cp[0], **TOL)
+    torch.testing.assert_close(cd[1], cp[1], **TOL)
+    torch.testing.assert_close(cd[2], tl, **TOL)
+    rp, rd = plain.eval_start(), direct.eval_start()
+    plain.eval_update(rp, out[:, :2 * K], y)
+    direct.eval_update(rd, out, y)
+    rp, rd = plain.eval_result(rp), direct.eval_result(rd)
+    assert math.isclose(rd["mae_kcal_ingr"], rp["mae_kcal"], rel_tol=1e-9)
+    assert math.isclose(rp["mae_kcal_ingr"], rp["mae_kcal"], rel_tol=1e-9)
+    assert math.isclose(rd["mae_kcal"], (totals[:, 0] - y[:, K]).abs().mean().item(), rel_tol=1e-9)
+
+
 def test_perfect_prediction_has_zero_regression_error():
     task = make_task()
     y = make_batches("mlp", task, 1, 6)[0][1]

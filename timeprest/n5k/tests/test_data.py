@@ -152,6 +152,18 @@ def test_cache_is_reused_and_found_by_search(built, monkeypatch, tmp_path):
     assert meta["cache_dir"].endswith("n5k-cache")
 
 
+def test_cache_of_another_image_size_is_never_used(built, monkeypatch, tmp_path):
+    cfg, *_ = built
+    monkeypatch.setattr(D, "_build", lambda *a: (_ for _ in ()).throw(AssertionError("rebuilt")))
+    with pytest.raises(RuntimeError, match="px"):                              # same cache_dir, other size
+        D.load_datasets(dict(cfg, image_size=cfg["image_size"] * 2), log=lambda *_: None)
+    import shutil
+    shutil.copytree(cfg["cache_dir"], tmp_path / "kaggle_input" / "n5k-cache")
+    other = dict(cfg, cache_dir=str(tmp_path / "empty"), cache_search=str(tmp_path / "kaggle_input"))
+    assert D._find_cache(other["cache_search"], cfg["image_size"]) is not None
+    assert D._find_cache(other["cache_search"], cfg["image_size"] * 2) is None   # searched cache: skipped
+
+
 def test_failed_build_releases_the_lock(tmp_path):
     cfg = write_fake(tmp_path)
     os.remove(os.path.join(tmp_path, "nutrition5k-dataset", "dish_ingredients.csv"))

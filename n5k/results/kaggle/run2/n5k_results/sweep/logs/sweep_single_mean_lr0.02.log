@@ -1,0 +1,11 @@
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code fd7fd929a117
+[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda
+ep   1/8 | train 0.4800 (MAE kcal 162.1) | val_loss 0.4579 | MAE kcal 150.4 (58.7%) mass 109.0 fat 9.36 carb 11.90 prot 14.01 | ingr F1 0.4 mAP 5.7 | lr 5.71e-04 | 41.2s peak 10360.9MB | ETA 0.09h
+ep   2/8 | train 0.3890 (MAE kcal 123.9) | val_loss 0.3307 | MAE kcal 95.6 (37.3%) mass 67.6 fat 6.90 carb 10.27 prot 9.48 | ingr F1 3.3 mAP 6.5 | lr 2.00e-02 | 23.8s peak 5649.2MB | ETA 0.04h
+ep   3/8 | train 0.3188 (MAE kcal 90.2) | val_loss 0.3090 | MAE kcal 80.7 (31.5%) mass 65.7 fat 6.37 carb 9.80 prot 9.01 | ingr F1 6.3 mAP 7.9 | lr 1.90e-02 | 24.3s peak 5650.8MB | ETA 0.04h
+ep   4/8 | train 0.2948 (MAE kcal 78.4) | val_loss 0.2877 | MAE kcal 72.8 (28.4%) mass 57.8 fat 6.11 carb 9.59 prot 7.91 | ingr F1 7.7 mAP 8.7 | lr 1.62e-02 | 25.1s peak 5650.8MB | ETA 0.03h
+ep   5/8 | train 0.2791 (MAE kcal 70.7) | val_loss 0.2835 | MAE kcal 70.6 (27.6%) mass 55.3 fat 5.92 carb 9.47 prot 7.86 | ingr F1 9.4 mAP 9.4 | lr 1.22e-02 | 24.4s peak 5650.8MB | ETA 0.02h
+ep   6/8 | train 0.2656 (MAE kcal 64.7) | val_loss 0.2748 | MAE kcal 67.6 (26.4%) mass 53.7 fat 5.81 carb 9.33 prot 7.53 | ingr F1 10.7 mAP 9.8 | lr 7.77e-03 | 24.6s peak 5650.8MB | ETA 0.02h
+ep   7/8 | train 0.2632 (MAE kcal 64.7) | val_loss 0.2732 | MAE kcal 68.4 (26.7%) mass 53.4 fat 5.75 carb 9.35 prot 7.66 | ingr F1 11.3 mAP 10.0 | lr 3.77e-03 | 24.7s peak 5650.8MB | ETA 0.01h
+ep   8/8 | train 0.2604 (MAE kcal 63.8) | val_loss 0.2731 | MAE kcal 68.4 (26.7%) mass 53.8 fat 5.76 carb 9.38 prot 7.69 | ingr F1 11.4 mAP 10.0 | lr 9.90e-04 | 24.5s peak 5650.8MB | ETA 0.00h
+SUMMARY {"name": "sweep_single_mean_lr0.02", "system": "pipedream", "epochs_done": 8, "best_epoch": 6, "test_mae_kcal": 77.28936, "test_pmae_kcal": 28.9616, "test_ingr_f1": 11.77366, "mean_epoch_time_s": 24.480142857142855}

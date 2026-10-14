@@ -88,3 +88,18 @@ def test_registered_model_partitions_with_4_channel_sample():
     with torch.no_grad():
         out = stages[1].eval()(stages[0].eval()(x))
     assert out.shape == (2, 8)
+
+
+def test_direct_totals_head_starts_at_train_mean():
+    K, mean = 3, [500.0, 300.0, 20.0, 40.0, 25.0]
+    head = N5kHead(16, K, [0.1, 0.2, 0.3], [0.1, 0.2, 0.3], direct_totals=True, total_mean=mean)
+    out = head(torch.zeros(2, 16, 7, 7))
+    assert out.shape == (2, 2 * K + 5)
+    assert head.total_map(torch.randn(2, 16, 7, 7)).shape == (2, 5, 7, 7)
+    task = NutritionTask(torch.rand(K, 5).tolist(), [10.0] * K, [100, 50, 1, 1, 1], total_scale=mean)
+    torch.testing.assert_close(task.predict(out)["totals"][0], torch.tensor(mean), check_dtype=False)
+    cfg = {"name": "n5k_resnet50", "num_ingredients": 4, "in_channels": 4, "pretrained": None,
+           "direct_totals": True, "total_mean": mean}
+    stages, _ = build_stages(cfg, 2, [0, 8, 18], torch.zeros(1, 4, 64, 64))
+    with torch.no_grad():
+        assert stages[1].eval()(stages[0].eval()(torch.randn(2, 4, 64, 64))).shape == (2, 13)

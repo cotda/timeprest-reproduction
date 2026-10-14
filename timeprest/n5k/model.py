@@ -8,6 +8,8 @@ The presence maps are the class activation maps used for the calorie map (B7).
 """
 from __future__ import annotations
 
+import math
+
 import torch
 import torch.nn as nn
 
@@ -17,14 +19,20 @@ NAME = "n5k_resnet50"
 
 
 class N5kHead(nn.Module):
-    def __init__(self, cin: int, K: int, presence_prior=None, gram_prior=None):
+    """Output [B, 2K] = [presence logits | raw grams]; with direct_totals [B, 2K + T] adds raw dish totals
+    (task: totals = softplus(raw) * train mean). Every output is the spatial mean of a 1x1-conv map (CAM)."""
+
+    def __init__(self, cin: int, K: int, presence_prior=None, gram_prior=None, direct_totals: bool = False,
+                 total_mean=None, T: int = 5):
         super().__init__()
         self.K = K
         self.presence = nn.Conv2d(cin, K, 1)
         self.gram = nn.Conv2d(cin, K, 1)
-        for conv in (self.presence, self.gram):
-            nn.init.normal_(conv.weight, 0, 0.01)
-            nn.init.zeros_(conv.bias)
+        self.total = nn.Conv2d(cin, T, 1) if direct_totals else None
+        for conv in (self.presence, self.gram, self.total):
+            if conv is not None:
+                nn.init.normal_(conv.weight, 0, 0.01)
+                nn.init.zeros_(conv.bias)
         with torch.no_grad():
             # start at the train prevalence p_k (logit) and at E[grams_k / scale_k] = gram_prior_k
             if presence_prior is not None:
@@ -33,14 +41,23 @@ class N5kHead(nn.Module):
             if gram_prior is not None:
                 m = torch.as_tensor(gram_prior, dtype=torch.float32).clamp_min(1e-4)
                 self.gram.bias.copy_(torch.log(torch.expm1(m)))          # softplus^-1
+            if self.total is not None:                                    # start at the train mean
+                self.total.bias.fill_(math.log(math.expm1(1.0)))
 
     def maps(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """Presence (CAM) and gram maps [B, K, h, w]."""
         return self.presence(x), self.gram(x)
 
+    def total_map(self, x: torch.Tensor) -> torch.Tensor:
+        """Raw dish-total maps [B, T, h, w] (direct_totals only)."""
+        return self.total(x)
+
     def forward(self, x):
         p, g = self.maps(x)
-        return torch.cat([p.mean((2, 3)), g.mean((2, 3))], 1)
+        outs = [p.mean((2, 3)), g.mean((2, 3))]
+        if self.total is not None:
+            outs.append(self.total(x).mean((2, 3)))
+        return torch.cat(outs, 1)
 
 
 def torchvision_key_map(blocks: list[nn.Module]) -> dict:
@@ -99,17 +116,20 @@ def build_n5k_resnet50(model_cfg: dict) -> list[nn.Module]:
         import torchvision
         tv = torchvision.models.resnet50(weights=model_cfg["pretrained"])
         load_torchvision_weights(blocks, tv.state_dict(), model_cfg.get("depth_init", "rgb_mean"))
-    blocks[-1] = N5kHead(2048, K, model_cfg.get("presence_prior"), model_cfg.get("gram_prior"))
+    blocks[-1] = N5kHead(2048, K, model_cfg.get("presence_prior"), model_cfg.get("gram_prior"),
+                         bool(model_cfg.get("direct_totals", False)), model_cfg.get("total_mean"))
     return blocks
 
 
 def priors_from_meta(meta: dict, train_targets: torch.Tensor) -> dict:
-    """Head initialisation from the train labels: prevalence p_k and E[grams_k] / scale_k."""
+    """Head initialisation from the train labels: prevalence p_k, E[grams_k] / scale_k and the mean dish
+    totals (decoding scale of the direct-totals branch)."""
     K = len(meta["ingredients"])
     grams = train_targets[:, :K].double()
     scale = torch.as_tensor(meta["gram_scale"], dtype=torch.float64)
     return {"presence_prior": (grams > 0).double().mean(0).tolist(),
-            "gram_prior": (grams / scale).mean(0).tolist()}
+            "gram_prior": (grams / scale).mean(0).tolist(),
+            "total_mean": train_targets[:, K:].double().mean(0).clamp_min(1e-3).tolist()}
 
 
 MODEL_BUILDERS[NAME] = build_n5k_resnet50

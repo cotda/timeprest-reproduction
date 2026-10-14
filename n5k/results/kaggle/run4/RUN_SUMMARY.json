@@ -1,0 +1,242 @@
+{
+ "started": "2026-10-14 02:11:15",
+ "budget_min": 170,
+ "steps": [
+  {
+   "step": "weights",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.3,
+   "json": [],
+   "tail": [
+    "Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth",
+    "",
+    "  0%|          | 0.00/97.8M [00:00<?, ?B/s]",
+    "  8%|\u258a         | 7.62M/97.8M [00:00<00:01, 79.6MB/s]",
+    " 28%|\u2588\u2588\u258a       | 27.8M/97.8M [00:00<00:00, 156MB/s]",
+    " 48%|\u2588\u2588\u2588\u2588\u258a     | 47.4M/97.8M [00:00<00:00, 179MB/s]",
+    " 69%|\u2588\u2588\u2588\u2588\u2588\u2588\u2589   | 67.4M/97.8M [00:00<00:00, 191MB/s]",
+    " 90%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 | 88.1M/97.8M [00:00<00:00, 200MB/s]",
+    "100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 97.8M/97.8M [00:00<00:00, 188MB/s]"
+   ]
+  },
+  {
+   "step": "checks",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.1,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 10.9, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 18.3, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 6.51, \"peak_mem_mb\": [8420.3, 2188.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 6.72, \"peak_mem_mb\": [8420.3, 2188.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 16}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 39.9, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 155.66003, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 156.1461, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 98.0, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [0.4819, 0.45424], \"val_mae_kcal_by_epoch\": [156.02703, 150.24846], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [0.43255, 0.48636], \"epoch_time_s\": 18.104, \"busy_frac_per_gpu\": \"0.949|0.728\", \"peak_mem_mb_per_gpu\": \"8423.3|2197.3\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 18.3, \"est_full_run_h\": 0.15}, \"timeprest\": {\"train_loss_by_epoch\": [0.48272, 0.45572], \"val_mae_kcal_by_epoch\": [155.92827, 150.65858], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [0.48662, 0.48662], \"epoch_time_s\": 18.904, \"busy_frac_per_gpu\": \"0.909|0.645\", \"peak_mem_mb_per_gpu\": \"8334.5|2184.5\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 21, \"est_full_epoch_s\": 19.2, \"est_full_run_h\": 0.16}}}]}"
+   ],
+   "tail": [
+    "ep   1/2 | train 0.4827 (MAE kcal 163.1) | val_loss 0.4708 | MAE kcal 155.9 (60.9%) mass 112.4 fat 9.66 carb 12.05 prot 14.37 | ingr F1 0.5 mAP 5.7 | lr 5.88e-04 | epoch 18.9s busy[0.888|0.638] peak[8334.5|2184.9]MB sent[3430.0|3430.0]MB bwd_overlap=18 | ETA 0.01h",
+    "ep   2/2 | train 0.4557 (MAE kcal 152.2) | val_loss 0.4575 | MAE kcal 150.7 (58.8%) mass 109.3 fat 9.41 carb 11.92 prot 14.02 | ingr F1 0.5 mAP 5.8 | lr 7.41e-03 | epoch 18.9s busy[0.909|0.645] peak[8334.5|2184.5]MB sent[3430.0|3430.0]MB bwd_overlap=21 | ETA 0.00h",
+    "[PASS] short_run (98.0s) - short run per system on the real pipeline",
+    "    pipedream: {'train_loss_by_epoch': [0.4819, 0.45424], 'val_mae_kcal_by_epoch': [156.02703, 150.24846], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [0.43255, 0.48636], 'epoch_time_s': 18.104, 'busy_frac_per_gpu': '0.949|0.728', 'peak_mem_mb_per_gpu': '8423.3|2197.3', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 18.3, 'est_full_run_h': 0.15}",
+    "    timeprest: {'train_loss_by_epoch': [0.48272, 0.45572], 'val_mae_kcal_by_epoch': [155.92827, 150.65858], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [0.48662, 0.48662], 'epoch_time_s': 18.904, 'busy_frac_per_gpu': '0.909|0.645', 'peak_mem_mb_per_gpu': '8334.5|2184.5', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 21, 'est_full_epoch_s': 19.2, 'est_full_run_h': 0.16}",
+    "",
+    "============================================================",
+    "D0 data                    PASS      0.0s",
+    "D1 static_equals_engine    PASS     10.9s",
+    "D2 dynamic_versions        PASS     18.3s",
+    "D3 checkpoint_resume       PASS     39.9s",
+    "D4 short_run               PASS     98.0s",
+    "ALL N5K CHECKS PASS: True",
+    "saved n5k/results/checks/latest.json",
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 10.9, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 18.3, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 6.51, \"peak_mem_mb\": [8420.3, 2188.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 6.72, \"peak_mem_mb\": [8420.3, 2188.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 16}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 39.9, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 155.66003, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 156.1461, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 98.0, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [0.4819, 0.45424], \"val_mae_kcal_by_epoch\": [156.02703, 150.24846], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [0.43255, 0.48636], \"epoch_time_s\": 18.104, \"busy_frac_per_gpu\": \"0.949|0.728\", \"peak_mem_mb_per_gpu\": \"8423.3|2197.3\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 18.3, \"est_full_run_h\": 0.15}, \"timeprest\": {\"train_loss_by_epoch\": [0.48272, 0.45572], \"val_mae_kcal_by_epoch\": [155.92827, 150.65858], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [0.48662, 0.48662], \"epoch_time_s\": 18.904, \"busy_frac_per_gpu\": \"0.909|0.645\", \"peak_mem_mb_per_gpu\": \"8334.5|2184.5\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 21, \"est_full_epoch_s\": 19.2, \"est_full_run_h\": 0.16}}}]}"
+   ]
+  },
+  {
+   "step": "d4_direct_sum",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.2,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": false, \"results\": [{\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 183.1, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.83693, 21.51839, 17.7568, 15.83333], \"val_mae_kcal_by_epoch\": [157.23349, 96.95685, 87.20326, 82.1235], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [0.8651, 36.51956, 55.73004, 56.53008], \"epoch_time_s\": 19.076, \"busy_frac_per_gpu\": \"0.874|0.725\", \"peak_mem_mb_per_gpu\": \"8360.3|2040.6\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 19.3, \"est_full_run_h\": 0.16}, \"timeprest\": {\"train_loss_by_epoch\": [27.2853, 22.86841, 19.29538, 17.27716], \"val_mae_kcal_by_epoch\": [157.41874, 102.27963, 80.84621, 78.84428], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.2328, 37.70459, 48.75357, 54.38965], \"epoch_time_s\": 17.302, \"busy_frac_per_gpu\": \"0.912|0.871\", \"peak_mem_mb_per_gpu\": \"8269.4|2050.7\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 17.5, \"est_full_run_h\": 0.15}}}]}"
+   ],
+   "tail": [
+    "ep   4/4 | train 15.8333 (MAE kcal 82.6) | val_loss 17.7373 | MAE kcal 82.1 (32.1%) mass 51.2 fat 5.79 carb 7.87 prot 7.78 | ingr F1 56.5 mAP 44.6 | lr 1.87e-03 | epoch 19.1s busy[0.874|0.725] peak[8360.3|2040.6]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.00h",
+    "[n5k dist] W=2 system=timeprest N=2 M=64 backward=committed rule=graph partition=[0, 8, 18] K=195 params/stage=1.45M,22.87M device=cuda:0",
+    "ep   1/4 | train 27.2853 (MAE kcal 146.6) | val_loss 32.3681 | MAE kcal 157.4 (61.4%) mass 96.5 fat 9.04 carb 10.89 prot 13.34 | ingr F1 4.2 mAP 17.6 | lr 5.88e-04 | epoch 16.8s busy[0.906|0.885] peak[8269.4|2050.3]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.01h",
+    "ep   2/4 | train 22.8684 (MAE kcal 116.2) | val_loss 23.0644 | MAE kcal 102.3 (39.9%) mass 73.7 fat 7.15 carb 9.08 prot 10.19 | ingr F1 37.7 mAP 29.2 | lr 9.48e-03 | epoch 17.0s busy[0.901|0.875] peak[8269.4|2049.9]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.01h",
+    "ep   3/4 | train 19.2954 (MAE kcal 95.7) | val_loss 19.4210 | MAE kcal 80.8 (31.6%) mass 57.4 fat 6.00 carb 8.33 prot 8.43 | ingr F1 48.8 mAP 40.1 | lr 6.08e-03 | epoch 17.2s busy[0.905|0.864] peak[8269.4|2050.7]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.00h",
+    "ep   4/4 | train 17.2772 (MAE kcal 86.6) | val_loss 18.5815 | MAE kcal 78.8 (30.8%) mass 53.6 fat 5.82 carb 8.30 prot 7.73 | ingr F1 54.4 mAP 42.0 | lr 1.87e-03 | epoch 17.3s busy[0.912|0.871] peak[8269.4|2050.7]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.00h",
+    "[PASS] short_run (183.1s) - short run per system on the real pipeline",
+    "    pipedream: {'train_loss_by_epoch': [26.83693, 21.51839, 17.7568, 15.83333], 'val_mae_kcal_by_epoch': [157.23349, 96.95685, 87.20326, 82.1235], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [0.8651, 36.51956, 55.73004, 56.53008], 'epoch_time_s': 19.076, 'busy_frac_per_gpu': '0.874|0.725', 'peak_mem_mb_per_gpu': '8360.3|2040.6', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 19.3, 'est_full_run_h': 0.16}",
+    "    timeprest: {'train_loss_by_epoch': [27.2853, 22.86841, 19.29538, 17.27716], 'val_mae_kcal_by_epoch': [157.41874, 102.27963, 80.84621, 78.84428], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [4.2328, 37.70459, 48.75357, 54.38965], 'epoch_time_s': 17.302, 'busy_frac_per_gpu': '0.912|0.871', 'peak_mem_mb_per_gpu': '8269.4|2050.7', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 17.5, 'est_full_run_h': 0.15}",
+    "",
+    "============================================================",
+    "D4 short_run               PASS    183.1s",
+    "ALL N5K CHECKS PASS: False",
+    "saved n5k/results/d4_direct_sum.json",
+    "N5K_CHECKS_JSON {\"all_pass\": false, \"results\": [{\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 183.1, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.83693, 21.51839, 17.7568, 15.83333], \"val_mae_kcal_by_epoch\": [157.23349, 96.95685, 87.20326, 82.1235], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [0.8651, 36.51956, 55.73004, 56.53008], \"epoch_time_s\": 19.076, \"busy_frac_per_gpu\": \"0.874|0.725\", \"peak_mem_mb_per_gpu\": \"8360.3|2040.6\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 19.3, \"est_full_run_h\": 0.16}, \"timeprest\": {\"train_loss_by_epoch\": [27.2853, 22.86841, 19.29538, 17.27716], \"val_mae_kcal_by_epoch\": [157.41874, 102.27963, 80.84621, 78.84428], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.2328, 37.70459, 48.75357, 54.38965], \"epoch_time_s\": 17.302, \"busy_frac_per_gpu\": \"0.912|0.871\", \"peak_mem_mb_per_gpu\": \"8269.4|2050.7\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 17.5, \"est_full_run_h\": 0.15}}}]}"
+   ]
+  },
+  {
+   "step": "loss_direct_sum",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.8,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 68.29881, \"best_epoch\": 8, \"last_val_mae_kcal\": 68.29881, \"last_val_pmae_kcal\": 26.6595, \"last_val_ingr_f1\": 72.04576, \"last_train_loss\": 8.05929, \"epoch_s\": 21.839}, {\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 61.13869, \"best_epoch\": 8, \"last_val_mae_kcal\": 61.13869, \"last_val_pmae_kcal\": 23.86465, \"last_val_ingr_f1\": 76.07855, \"last_train_loss\": 6.57287, \"epoch_s\": 21.61}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_direct_sum_lr0.05",
+    "[gpu 1] start sweep_single_direct_sum_lr0.02",
+    "[gpu 1] done sweep_single_direct_sum_lr0.02 exit=0",
+    "[gpu 0] done sweep_single_direct_sum_lr0.05 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         68.30 ( 8)          68.30    26.7     72.0      8.0593     21.8",
+    "single            0.02   8         61.14 ( 8)          61.14    23.9     76.1      6.5729     21.6",
+    "best lr per system: {'single': 0.02}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 68.29881, \"best_epoch\": 8, \"last_val_mae_kcal\": 68.29881, \"last_val_pmae_kcal\": 26.6595, \"last_val_ingr_f1\": 72.04576, \"last_train_loss\": 8.05929, \"epoch_s\": 21.839}, {\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 61.13869, \"best_epoch\": 8, \"last_val_mae_kcal\": 61.13869, \"last_val_pmae_kcal\": 23.86465, \"last_val_ingr_f1\": 76.07855, \"last_train_loss\": 6.57287, \"epoch_s\": 21.61}]"
+   ]
+  },
+  {
+   "step": "loss_direct_w10",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.7,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 52.18683, \"best_epoch\": 7, \"last_val_mae_kcal\": 53.27377, \"last_val_pmae_kcal\": 20.79468, \"last_val_ingr_f1\": 52.27313, \"last_train_loss\": 0.91415, \"epoch_s\": 21.775}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_direct_w10_lr0.05",
+    "[gpu 0] done sweep_single_direct_w10_lr0.05 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         52.19 ( 7)          53.27    20.8     52.3      0.9142     21.8",
+    "best lr per system: {'single': 0.05}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 52.18683, \"best_epoch\": 7, \"last_val_mae_kcal\": 53.27377, \"last_val_pmae_kcal\": 20.79468, \"last_val_ingr_f1\": 52.27313, \"last_train_loss\": 0.91415, \"epoch_s\": 21.775}]"
+   ]
+  },
+  {
+   "step": "loss_w30",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.7,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 67.61329, \"best_epoch\": 7, \"last_val_mae_kcal\": 68.23504, \"last_val_pmae_kcal\": 26.63461, \"last_val_ingr_f1\": 69.92248, \"last_train_loss\": 1.54141, \"epoch_s\": 21.831}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_w30_lr0.05",
+    "[gpu 0] done sweep_single_w30_lr0.05 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         67.61 ( 7)          68.24    26.6     69.9      1.5414     21.8",
+    "best lr per system: {'single': 0.05}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 67.61329, \"best_epoch\": 7, \"last_val_mae_kcal\": 68.23504, \"last_val_pmae_kcal\": 26.63461, \"last_val_ingr_f1\": 69.92248, \"last_train_loss\": 1.54141, \"epoch_s\": 21.831}]"
+   ]
+  },
+  {
+   "step": "loss_w100",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.7,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 78.98878, \"best_epoch\": 8, \"last_val_mae_kcal\": 78.98878, \"last_val_pmae_kcal\": 30.83218, \"last_val_ingr_f1\": 76.2312, \"last_train_loss\": 3.42851, \"epoch_s\": 21.887}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_w100_lr0.05",
+    "[gpu 0] done sweep_single_w100_lr0.05 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         78.99 ( 8)          78.99    30.8     76.2      3.4285     21.9",
+    "best lr per system: {'single': 0.05}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 78.98878, \"best_epoch\": 8, \"last_val_mae_kcal\": 78.98878, \"last_val_pmae_kcal\": 30.83218, \"last_val_ingr_f1\": 76.2312, \"last_train_loss\": 3.42851, \"epoch_s\": 21.887}]"
+   ]
+  },
+  {
+   "step": "loss_mean",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.7,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.1, \"epochs\": 8, \"best_val_mae_kcal\": 53.98604, \"best_epoch\": 8, \"last_val_mae_kcal\": 53.98604, \"last_val_pmae_kcal\": 21.07271, \"last_val_ingr_f1\": 23.4013, \"last_train_loss\": 0.19329, \"epoch_s\": 21.901}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_mean_lr0.1",
+    "[gpu 0] done sweep_single_mean_lr0.1 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single             0.1   8         53.99 ( 8)          53.99    21.1     23.4      0.1933     21.9",
+    "best lr per system: {'single': 0.1}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.1, \"epochs\": 8, \"best_val_mae_kcal\": 53.98604, \"best_epoch\": 8, \"last_val_mae_kcal\": 53.98604, \"last_val_pmae_kcal\": 21.07271, \"last_val_ingr_f1\": 23.4013, \"last_train_loss\": 0.19329, \"epoch_s\": 21.901}]"
+   ]
+  },
+  {
+   "step": "summary_direct_sum",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 68.29881, \"best_epoch\": 8, \"last_val_mae_kcal\": 68.29881, \"last_val_pmae_kcal\": 26.6595, \"last_val_ingr_f1\": 72.04576, \"last_train_loss\": 8.05929, \"epoch_s\": 21.839}, {\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 61.13869, \"best_epoch\": 8, \"last_val_mae_kcal\": 61.13869, \"last_val_pmae_kcal\": 23.86465, \"last_val_ingr_f1\": 76.07855, \"last_train_loss\": 6.57287, \"epoch_s\": 21.61}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         68.30 ( 8)          68.30    26.7     72.0      8.0593     21.8",
+    "single            0.02   8         61.14 ( 8)          61.14    23.9     76.1      6.5729     21.6",
+    "best lr per system: {'single': 0.02}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 68.29881, \"best_epoch\": 8, \"last_val_mae_kcal\": 68.29881, \"last_val_pmae_kcal\": 26.6595, \"last_val_ingr_f1\": 72.04576, \"last_train_loss\": 8.05929, \"epoch_s\": 21.839}, {\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 61.13869, \"best_epoch\": 8, \"last_val_mae_kcal\": 61.13869, \"last_val_pmae_kcal\": 23.86465, \"last_val_ingr_f1\": 76.07855, \"last_train_loss\": 6.57287, \"epoch_s\": 21.61}]"
+   ]
+  },
+  {
+   "step": "summary_direct_w10",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 52.18683, \"best_epoch\": 7, \"last_val_mae_kcal\": 53.27377, \"last_val_pmae_kcal\": 20.79468, \"last_val_ingr_f1\": 52.27313, \"last_train_loss\": 0.91415, \"epoch_s\": 21.775}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         52.19 ( 7)          53.27    20.8     52.3      0.9142     21.8",
+    "best lr per system: {'single': 0.05}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 52.18683, \"best_epoch\": 7, \"last_val_mae_kcal\": 53.27377, \"last_val_pmae_kcal\": 20.79468, \"last_val_ingr_f1\": 52.27313, \"last_train_loss\": 0.91415, \"epoch_s\": 21.775}]"
+   ]
+  },
+  {
+   "step": "summary_w30",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 67.61329, \"best_epoch\": 7, \"last_val_mae_kcal\": 68.23504, \"last_val_pmae_kcal\": 26.63461, \"last_val_ingr_f1\": 69.92248, \"last_train_loss\": 1.54141, \"epoch_s\": 21.831}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         67.61 ( 7)          68.24    26.6     69.9      1.5414     21.8",
+    "best lr per system: {'single': 0.05}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 67.61329, \"best_epoch\": 7, \"last_val_mae_kcal\": 68.23504, \"last_val_pmae_kcal\": 26.63461, \"last_val_ingr_f1\": 69.92248, \"last_train_loss\": 1.54141, \"epoch_s\": 21.831}]"
+   ]
+  },
+  {
+   "step": "summary_w100",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 78.98878, \"best_epoch\": 8, \"last_val_mae_kcal\": 78.98878, \"last_val_pmae_kcal\": 30.83218, \"last_val_ingr_f1\": 76.2312, \"last_train_loss\": 3.42851, \"epoch_s\": 21.887}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.05   8         78.99 ( 8)          78.99    30.8     76.2      3.4285     21.9",
+    "best lr per system: {'single': 0.05}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.05, \"epochs\": 8, \"best_val_mae_kcal\": 78.98878, \"best_epoch\": 8, \"last_val_mae_kcal\": 78.98878, \"last_val_pmae_kcal\": 30.83218, \"last_val_ingr_f1\": 76.2312, \"last_train_loss\": 3.42851, \"epoch_s\": 21.887}]"
+   ]
+  },
+  {
+   "step": "summary_mean",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.1, \"epochs\": 8, \"best_val_mae_kcal\": 53.98604, \"best_epoch\": 8, \"last_val_mae_kcal\": 53.98604, \"last_val_pmae_kcal\": 21.07271, \"last_val_ingr_f1\": 23.4013, \"last_train_loss\": 0.19329, \"epoch_s\": 21.901}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single             0.1   8         53.99 ( 8)          53.99    21.1     23.4      0.1933     21.9",
+    "best lr per system: {'single': 0.1}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.1, \"epochs\": 8, \"best_val_mae_kcal\": 53.98604, \"best_epoch\": 8, \"last_val_mae_kcal\": 53.98604, \"last_val_pmae_kcal\": 21.07271, \"last_val_ingr_f1\": 23.4013, \"last_train_loss\": 0.19329, \"epoch_s\": 21.901}]"
+   ]
+  }
+ ],
+ "commit": "a7aa095-dirty",
+ "finished": "2026-10-14 02:36:49"
+}

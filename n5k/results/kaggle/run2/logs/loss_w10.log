@@ -1,0 +1,12 @@
+[gpu 0] start sweep_single_w10_lr0.05
+[gpu 1] start sweep_single_w10_lr0.02
+[gpu 1] done sweep_single_w10_lr0.02 exit=0
+[gpu 1] start sweep_single_w10_lr0.01
+[gpu 0] done sweep_single_w10_lr0.05 exit=0
+[gpu 1] done sweep_single_w10_lr0.01 exit=0
+system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch
+single            0.05   8         60.36 ( 7)          61.40    24.0     53.0      0.9304     24.7
+single            0.02   8         73.22 ( 7)          74.20    29.0     39.6      1.1885     24.4
+single            0.01   8         88.10 ( 7)          88.16    34.4     30.4      1.4127     24.7
+best lr per system: {'single': 0.05}
+N5K_SWEEP_JSON [{"system": "single", "lr": 0.05, "epochs": 8, "best_val_mae_kcal": 60.3648, "best_epoch": 7, "last_val_mae_kcal": 61.40336, "last_val_pmae_kcal": 23.96796, "last_val_ingr_f1": 53.01119, "last_train_loss": 0.93044, "epoch_s": 24.741}, {"system": "single", "lr": 0.02, "epochs": 8, "best_val_mae_kcal": 73.22054, "best_epoch": 7, "last_val_mae_kcal": 74.20433, "last_val_pmae_kcal": 28.96464, "last_val_ingr_f1": 39.6204, "last_train_loss": 1.18851, "epoch_s": 24.448}, {"system": "single", "lr": 0.01, "epochs": 8, "best_val_mae_kcal": 88.10287, "best_epoch": 7, "last_val_mae_kcal": 88.16017, "last_val_pmae_kcal": 34.41211, "last_val_ingr_f1": 30.3847, "last_train_loss": 1.41271, "epoch_s": 24.655}]

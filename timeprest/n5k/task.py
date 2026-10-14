@@ -2,9 +2,13 @@
 
 Layouts (K = number of ingredients known from the train split, T = len(TOTALS)):
   model output  out [B, 2K] = [presence logits (K) | raw grams (K)]
+                with total_scale (model.direct_totals): out [B, 2K + T] = [... | raw dish totals (T)]
   labels        y   [B, K + T] = [grams per ingredient (K, 0 = absent) | dish totals (T)]
-Predicted grams = softplus(raw) * gram_scale; predicted totals = grams @ per_gram, where per_gram[k]
-holds (kcal, mass, fat, carb, protein) per gram of ingredient k (mass per gram = 1).
+Predicted grams = softplus(raw) * gram_scale; totals from the ingredients = grams @ per_gram, where
+per_gram[k] holds (kcal, mass, fat, carb, protein) per gram of ingredient k (mass per gram = 1).
+Predicted totals = the ingredient totals, or softplus(raw totals) * total_scale with the direct branch
+(the total term of the loss and the mae_* metrics then use the direct branch; mae_kcal_ingr keeps the
+ingredient-derived kcal).
 
 Per-sample loss = w_presence * red_k BCE(logit_k, gram_k > 0)
                 + w_gram     * red_k SmoothL1(pred_gram_k / scale_k, gram_k / scale_k)
@@ -28,7 +32,7 @@ class NutritionTask:
     name = "nutrition"
 
     def __init__(self, per_gram, gram_scale, total_std, w_presence: float = 1.0, w_gram: float = 1.0,
-                 w_total: float = 1.0, ingredient_reduce: str = "mean"):
+                 w_total: float = 1.0, ingredient_reduce: str = "mean", total_scale=None):
         self.per_gram = torch.as_tensor(per_gram, dtype=torch.float64)        # [K, T]
         self.gram_scale = torch.as_tensor(gram_scale, dtype=torch.float64)    # [K]
         self.total_std = torch.as_tensor(total_std, dtype=torch.float64)      # [T]
@@ -42,40 +46,52 @@ class NutritionTask:
         if ingredient_reduce not in ("mean", "sum"):
             raise ValueError(f"loss.ingredient_reduce must be mean or sum, got {ingredient_reduce!r}")
         self.reduce = ingredient_reduce
+        # direct-totals branch: decoding scale of the extra T outputs (None = totals from the grams)
+        self.total_scale = None if total_scale is None else torch.as_tensor(total_scale, dtype=torch.float64)
+        if self.total_scale is not None and (self.total_scale.shape != (T,) or (self.total_scale <= 0).any()):
+            raise ValueError("total_scale must hold T positive values")
+        self.n_out = 2 * K + (T if self.total_scale is not None else 0)
         self._cache: dict = {}
 
     @classmethod
-    def from_meta(cls, meta: dict, loss_cfg: dict | None = None) -> "NutritionTask":
-        """meta: the dataset statistics written by timeprest.n5k.data (per_gram, gram_scale, total_std)."""
+    def from_meta(cls, meta: dict, loss_cfg: dict | None = None, total_scale=None) -> "NutritionTask":
+        """meta: the dataset statistics written by timeprest.n5k.data (per_gram, gram_scale, total_std);
+        total_scale: train mean of the totals when the model has the direct-totals branch."""
         lc = loss_cfg or {}
         return cls(meta["per_gram"], meta["gram_scale"], meta["total_std"], lc.get("w_presence", 1.0),
-                   lc.get("w_gram", 1.0), lc.get("w_total", 1.0), lc.get("ingredient_reduce", "mean"))
+                   lc.get("w_gram", 1.0), lc.get("w_total", 1.0), lc.get("ingredient_reduce", "mean"),
+                   total_scale)
 
     # ------------------------------------------------------------------ helpers
     def _consts(self, ref: torch.Tensor):
         key = (ref.device, ref.dtype)
         if key not in self._cache:
+            ts = self.total_scale if self.total_scale is not None else self.total_std
             self._cache[key] = tuple(t.to(ref.device, ref.dtype) for t in
-                                     (self.per_gram, self.gram_scale, self.total_std))
+                                     (self.per_gram, self.gram_scale, self.total_std, ts))
         return self._cache[key]
 
     def split_labels(self, y: torch.Tensor):
         return y[:, :self.K], y[:, self.K:]
 
     def predict(self, out: torch.Tensor) -> dict:
-        """Decoded predictions: presence logits [B, K], grams [B, K], totals [B, T]."""
+        """Decoded predictions: presence logits [B, K], grams [B, K], totals [B, T] (direct branch if
+        any) and totals_ingr [B, T] (from the grams)."""
         out = _upcast(out)
-        if out.shape[1] != 2 * self.K:
-            raise ValueError(f"model output has {out.shape[1]} columns, expected 2K = {2 * self.K}")
-        per_gram, scale, _ = self._consts(out)
-        logits, raw = out[:, :self.K], out[:, self.K:]
+        if out.shape[1] != self.n_out:
+            raise ValueError(f"model output has {out.shape[1]} columns, expected {self.n_out}")
+        per_gram, scale, _, tscale = self._consts(out)
+        K = self.K
+        logits, raw = out[:, :K], out[:, K:2 * K]
         grams = F.softplus(raw) * scale
-        return {"logits": logits, "grams": grams, "totals": grams @ per_gram}
+        ingr = grams @ per_gram
+        totals = F.softplus(out[:, 2 * K:]) * tscale if self.total_scale is not None else ingr
+        return {"logits": logits, "grams": grams, "totals": totals, "totals_ingr": ingr}
 
     def components(self, out: torch.Tensor, y: torch.Tensor) -> tuple[torch.Tensor, ...]:
         """Unweighted per-sample terms (presence, gram, total), each [B]."""
         p = self.predict(out)
-        _, scale, tstd = self._consts(p["grams"])
+        _, scale, tstd, _ = self._consts(p["grams"])
         y = y.to(p["grams"].dtype)
         grams, totals = self.split_labels(y)
         bce = F.binary_cross_entropy_with_logits(p["logits"], (grams > 0).to(grams.dtype), reduction="none")
@@ -107,7 +123,7 @@ class NutritionTask:
     def eval_start(self) -> dict:
         return {"loss": 0.0, "abs_err": torch.zeros(len(TOTALS), dtype=torch.float64),
                 "sum_true": torch.zeros(len(TOTALS), dtype=torch.float64), "n": 0,
-                "gram_err": 0.0, "gram_n": 0, "scores": [], "present": [],
+                "gram_err": 0.0, "gram_n": 0, "scores": [], "present": [], "abs_err_kcal_ingr": 0.0,
                 "terms": torch.zeros(3, dtype=torch.float64), "gnorm": torch.zeros(3, dtype=torch.float64)}
 
     @torch.no_grad()
@@ -124,6 +140,7 @@ class NutritionTask:
         st["terms"] += torch.tensor([t.sum().item() for t in terms], dtype=torch.float64)
         st["loss"] += sum(w * t.detach() for w, t in zip(self.w, terms)).sum().item()
         st["abs_err"] += (p["totals"] - totals).abs().sum(0).double().cpu()
+        st["abs_err_kcal_ingr"] += (p["totals_ingr"][:, 0] - totals[:, 0]).abs().sum().item()
         st["sum_true"] += totals.sum(0).double().cpu()
         st["n"] += y.shape[0]
         mask = grams > 0
@@ -140,6 +157,7 @@ class NutritionTask:
             res[f"mae_{name}"] = mae[k].item()
         mean_kcal = st["sum_true"][0].item() / n
         res["pmae_kcal"] = mae[0].item() / mean_kcal * 100.0 if mean_kcal > 0 else float("nan")
+        res["mae_kcal_ingr"] = st["abs_err_kcal_ingr"] / n
         res["mae_gram_present"] = st["gram_err"] / max(1, st["gram_n"])
         scores, present = torch.cat(st["scores"]), torch.cat(st["present"])
         res["ingr_f1"] = micro_f1(scores >= 0.5, present)

@@ -109,8 +109,14 @@ def _complete(d: str) -> bool:
     return all(os.path.exists(os.path.join(d, f)) for f in FILES + ["meta.json"])
 
 
-def _find_cache(root: str) -> str | None:
-    """First complete cache (meta.json + arrays) under `root`, e.g. a cache uploaded as a Kaggle dataset."""
+def _cache_size(d: str) -> int | None:
+    with open(os.path.join(d, "meta.json"), encoding="utf-8") as f:
+        return json.load(f).get("image_size")
+
+
+def _find_cache(root: str, size: int | None = None) -> str | None:
+    """First complete cache (meta.json + arrays) under `root`, e.g. a cache uploaded as a Kaggle dataset;
+    with `size`, only a cache of that image size."""
     top = root.split("*")[0].rstrip("/\\") or "/"
     if not os.path.isdir(top):
         return None
@@ -118,7 +124,7 @@ def _find_cache(root: str) -> str | None:
     for d, subdirs, files in os.walk(top, followlinks=True):
         # never descend into image folders (Nutrition5k: thousands of dish folders, minutes to walk)
         subdirs[:] = sorted(s for s in subdirs if s != "imagery") if d.count(os.sep) - base_depth < 6 else []
-        if "meta.json" in files and _complete(d):
+        if "meta.json" in files and _complete(d) and (size is None or _cache_size(d) == size):
             return d
     return None
 
@@ -143,8 +149,12 @@ def build_cache(data_cfg: dict, log=print) -> str:
     """Decode and label every dish of the split once; return the cache directory. A complete cache
     under data.cache_dir or data.cache_search is reused as is."""
     cache = data_cfg.get("cache_dir") or os.path.join(os.environ.get("TMPDIR", "/tmp"), "timeprest_n5k")
+    size = int(data_cfg.get("image_size", 224))
+    if _complete(cache) and _cache_size(cache) != size:
+        raise RuntimeError(f"{cache} holds {_cache_size(cache)}px images, data.image_size is {size}: "
+                           "set another data.cache_dir")
     if not _complete(cache) and data_cfg.get("cache_search"):
-        found = _find_cache(data_cfg["cache_search"])
+        found = _find_cache(data_cfg["cache_search"], size)
         if found:
             return found
     if _complete(cache):
@@ -319,6 +329,8 @@ def load_datasets(data_cfg: dict, log=print):
         meta = json.load(f)
     if meta.get("version") != CACHE_VERSION:
         raise RuntimeError(f"{cache}: cache version {meta.get('version')} != {CACHE_VERSION}; rebuild it")
+    if meta.get("image_size") != int(data_cfg.get("image_size", 224)):
+        raise RuntimeError(f"{cache}: {meta.get('image_size')}px cache, data.image_size is {data_cfg.get('image_size')}")
     out = []
     for s in SPLITS:
         arr = {k: np.load(os.path.join(cache, f"{s}_{k}.npy")) for k in ("rgb", "depth", "y")}

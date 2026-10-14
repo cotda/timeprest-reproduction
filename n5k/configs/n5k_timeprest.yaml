@@ -1,3 +1,5 @@
 base: n5k_base.yaml
 name: n5k_timeprest_s0
 system: timeprest
+training:
+  lr: 0.01                               # best of the final sweep (run3, PLAN mục 11)

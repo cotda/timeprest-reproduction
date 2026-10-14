@@ -18,11 +18,12 @@ model:
   name: n5k_resnet50
   in_channels: 4                         # RGB + depth
   pretrained: IMAGENET1K_V2              # torchvision weights; depth filter = mean of RGB filters
+  direct_totals: true                    # extra 1x1-conv branch predicting the dish totals (run4, PLAN mục 10)
 loss:
   w_presence: 1.0
   w_gram: 1.0
   w_total: 1.0
-  ingredient_reduce: mean                # mean | sum over the K ingredients (presence + gram terms)
+  ingredient_reduce: sum                 # mean | sum over the K ingredients (presence + gram terms); sum: run4 (PLAN mục 10)
 pipeline:
   num_stages: 2                          # W
   num_microbatches: 2                    # N (user, 2026-10-14)
@@ -31,7 +32,7 @@ training:
   epochs: 30
   batch_size: 64                         # M
   optimizer: sgd
-  lr: 0.01                               # placeholder until the sweep (mục 6)
+  lr: 0.02                               # best of the final sweep (run3) for single / DDP / pipedream (PLAN mục 11)
   momentum: 0.9
   weight_decay: 1.0e-4
   lr_schedule: cosine

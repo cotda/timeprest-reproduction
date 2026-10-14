@@ -49,6 +49,9 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
        ├─ nhánh conv 1×1 + global pool + softplus → gram_k             (hàm lượng)
        │     kcal/fat/carb/protein = Σ_k gram_k × hàm lượng trên mỗi gram của k
        └─ ReLU(CAM_k) chuẩn hóa × kcal_k, cộng theo k → bản đồ calories (vị trí; chỉ tính lúc eval)
+  (tùy chọn `model.direct_totals`, 2026-10-14, mục 10)
+  → conv 1×1 → 5 bản đồ tổng → global mean + softplus × trung bình train → kcal/mass/fat/carb/protein trực tiếp
+       (loss tổng tính trên nhánh này; bản đồ kcal 7×7 của nhánh này là một bản đồ calories trực tiếp)
 ```
 
 - K = mọi nguyên liệu xuất hiện trong train (~195; Exp 5 có vocab 197 gồm PAD/UNK). Nguyên liệu chỉ có ở val/test (Exp 5: 6 lần ở val, 3 lần ở test) không dự đoán được; tổng dinh dưỡng vẫn đánh giá với nhãn tổng của món.
@@ -137,6 +140,22 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - (b) Thêm tùy chọn `loss.ingredient_reduce: mean|sum` (mặc định `mean`, giữ như cũ). Chạy ngắn 3 biến thể trên `single`: `mean` (w=1), `w10` (mean, w_presence = w_gram = 10), `sum` (≈ w = 195). Mỗi biến thể × lr {0.05, 0.02, 0.01}, 8 epoch.
   - Quy tắc chọn (đặt trước khi có số liệu): lấy biến thể có **val ingr mAP cao nhất** ở lr tốt nhất của nó (lr tốt nhất theo val MAE kcal như cũ), với điều kiện best val MAE kcal không tệ hơn biến thể `mean` quá 5%. Không biến thể nào đạt thì giữ `mean`.
   - Sau đó sweep pipedream/timeprest bằng biến thể đã chọn và partition đã chọn, lr {0.05, 0.02, 0.01}.
+- 2026-10-14 (người dùng xác nhận "ưu tiên cả 2"; làm run4 trước, ảnh lớn hơn ở run5): **thêm nhánh tổng trực tiếp** (`model.direct_totals: true`). Head có thêm conv 1×1 → 5 bản đồ tổng (kcal, mass, fat, carb, protein), lấy global mean rồi softplus × trung bình train.
+  - Loss tổng tính trên nhánh này. Kcal tính từ gram nguyên liệu vẫn được báo cáo (`mae_kcal_ingr`).
+  - Lý do: một đầu ra (gram) phải phục vụ cả hai mục tiêu gây ra đánh đổi ở `run2`.
+  - Mặc định `false` để giữ hành vi cũ.
+  - Quy tắc chọn mới (đặt trước run4, thay quy tắc 5% ở trên), lấy trên mọi cấu hình đã thử ở `run2` + `run4`: chọn cấu hình nhỏ nhất theo `(MAE kcal / MAE kcal tốt nhất − 1) + (1 − mAP / mAP tốt nhất)`.
+  - run4 (single, 8 epoch): direct + sum × lr {0.05, 0.02}; direct + w10 × lr 0.05; head cũ w30, w100 × lr 0.05; mean × lr 0.1 (lr ở biên).
+  - **Kết quả (`run4`): chọn `direct_totals: true` + `ingredient_reduce: sum`** (điểm 0,17, thấp nhất; cấu hình đứng sau có điểm 0,41). Đã sửa `n5k_base.yaml`.
+  - Ở run4, lr tốt nhất của biến thể này là 0.02, nằm ở biên dưới của lưới {0.05, 0.02}. Sweep cuối (`run3`) dùng lr {0.05, 0.02, 0.01} cho cả 3 hệ.
+  - D4 trên 2 GPU với direct + sum ổn định cho cả PipeDream và TiMePReSt. Phân kỳ chỉ thấy trên dữ liệu giả.
+- 2026-10-14: **chốt lr theo sweep cuối (`run3`)**, theo quy tắc PN §22.9 (mỗi hệ lấy lr có val MAE kcal tốt nhất). Kết quả: single / DDP / PipeDream = 0.02, TiMePReSt (cả N=4) = 0.01. Với TiMePReSt, 0.01 và 0.02 gần như bằng nhau về kcal (68,6 và 68,8); mAP ở 0.01 tốt hơn (63,3 so với 61,9), nên hai tiêu chí cùng chọn 0.01. Đã sửa các config. **B4 hoàn tất.**
+- 2026-10-14 (người dùng đồng ý: "chia đều hơn rồi nâng ảnh", làm sau run4): **thử ảnh 320** (`run0b` CPU tạo cache 320; `run5` GPU).
+  - Ước lượng bộ nhớ (đếm activation, hiệu chỉnh theo số đo ở 224): ở 320, `[0,8,18]` cần khoảng 16,6 GB cho GPU0 nên sẽ thiếu bộ nhớ; `[0,5,18]` khoảng 12,7 / 4,0 GB.
+  - Partition ở 320: chạy D4 4 epoch với `[0,6,18]`, `[0,5,18]`, `[0,4,18]`. Chọn partition có thời gian/epoch của PipeDream nhỏ nhất trong số những partition có peak < 14 GB trên **cả hai** GPU.
+  - Kích thước ảnh: chạy single GPU, lr 0.02, 8 epoch, seed 0 và 1, ở cả 224 và 320 trong cùng kernel. Dùng 320 nếu, tính trên trung bình 2 seed, `(kcal320/kcal224 − 1) + (1 − mAP320/mAP224) < −0,05` (tốt hơn ít nhất 5% tổng hợp). Nếu không thì giữ 224.
+  - Code: cache lưu `image_size` và từ chối cache sai kích thước (trước đây có thể lấy nhầm cache).
+  - Thêm một lần chạy thử DDP trên GPU (NCCL, 1 epoch, ảnh 224).
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
@@ -204,6 +223,82 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
 - Ở lr 0.01 (single), tổng dinh dưỡng học tốt: MAE kcal 158 → 83 (pMAE 32,7%), mass 62 g. Phần **nguyên liệu học rất yếu**: F1 6,2%, mAP 7,8%, MAE gram trên nguyên liệu có mặt 26,6 → 25,8 (gần như không đổi).
   - Giả thuyết (chưa kiểm chứng): loss presence/gram lấy trung bình trên K = 195 nguyên liệu, nên mỗi nguyên liệu chỉ nhận gradient khoảng 1/195, trong khi loss tổng chỉ trung bình trên 5 thành phần. Đây là điểm mở (b) ở mục 10.
 
+### B5 — DDP (2026-10-14, chưa commit; chưa chạy trên GPU)
+- File `timeprest/n5k/ddp_train.py` và config `n5k/configs/n5k_ddp.yaml`.
+- Cách chia batch: mỗi rank giữ cả model. Mỗi mini-batch M=64 **chính là mini-batch của trainer 1 GPU** (thứ tự lấy từ chính `train_loader`), được cắt thành 2 phần 32 mẫu. DDP lấy trung bình gradient, nên tương đương SGD trên trung bình loss của 64 mẫu. Optimizer, lịch lr (bước theo mini-batch) và lr 0.02 giống single.
+- Khác single: BatchNorm tính thống kê trên 32 mẫu mỗi rank, không dùng SyncBN (DDP thông thường).
+- Val trên rank 0 mỗi epoch; checkpoint/resume lưu RNG của từng rank. `metrics.csv` / `summary.json` cùng định dạng các trainer khác, summary có thêm `trainer: ddp`.
+- Test CPU (`timeprest/n5k/tests/test_ddp.py`, 5 test):
+  - shard của các rank ghép lại đúng bằng mini-batch 1 GPU (đã kiểm tra cả khi DataLoader dùng 0 và 2 worker);
+  - 2 tiến trình gloo chạy hết và ghi summary;
+  - 2 epoch liền so với 1 epoch + resume: tham số và metric khớp tuyệt đối.
+- Toàn bộ test: 150 PASS.
+
+### Sweep lr cuối (`run3`, 2026-10-14, cấu hình chốt: partition [0,8,18], direct + sum, 8 epoch, 1 seed; log ở `n5k/results/kaggle/run3/`)
+- Checks: PASS hết. Số liệu ở epoch có val MAE kcal tốt nhất.
+
+| hệ | lr | MAE kcal | mAP | F1 | MAE gram | MAE mass |
+|---|---|---|---|---|---|---|
+| single | 0.05 | 67,1 | 64,9 | 70,5 | 17,6 | 41,7 |
+| single | **0.02** | **64,4** | 74,7 | 77,0 | 16,1 | 39,9 |
+| single | 0.01 | 67,0 | 69,9 | 72,9 | 16,8 | 43,0 |
+| PipeDream | 0.05 | 69,8 | 61,7 | 69,2 | 17,5 | 42,7 |
+| PipeDream | **0.02** | **63,5** | 73,5 | 75,8 | 16,2 | 38,8 |
+| PipeDream | 0.01 | 65,8 | 68,9 | 71,8 | 16,9 | 42,4 |
+| TiMePReSt | 0.05 | 111,4 | 24,6 | 40,0 | 24,8 | 71,4 |
+| TiMePReSt | 0.02 | 68,8 | 61,9 | 69,5 | 18,0 | 45,9 |
+| TiMePReSt | **0.01** | **68,6** | 63,3 | 69,6 | 18,0 | 45,4 |
+
+- Single và PipeDream tốt nhất ở lr 0.02, nằm giữa lưới, và gần như bằng nhau.
+- TiMePReSt **nhạy với lr lớn hơn**: ở lr 0.05 kém hẳn (111 kcal, mAP 25). Ở lr tốt nhất, sau 8 epoch nó vẫn kém PipeDream khoảng 5 kcal và **khoảng 10 điểm mAP**. Đây là dấu hiệu staleness của quy tắc `graph` ảnh hưởng tới việc học nguyên liệu (gradient mạnh với `sum`). Cần kiểm chứng ở chạy dài 30 epoch với 3 seed (B6).
+- TiMePReSt tốt nhất ở 0.01, là biên dưới của lưới; nhưng 0.01 và 0.02 gần bằng nhau, nên khả năng có lr tối ưu nhỏ hơn hẳn là thấp. Có thể thử thêm 0.005 trong một kernel sau (khoảng 4 phút).
+- Biến động giữa các lần chạy: single, lr 0.02, cùng cấu hình cho 61,1 ở run4 và 64,4 ở run3 (khoảng ±3 kcal).
+
+### Nhánh tổng trực tiếp (`run4`, 2026-10-14, single GPU, 8 epoch, 1 seed; log ở `n5k/results/kaggle/run4/`)
+- Checks với partition `[0,8,18]` và code mới: PASS hết.
+- D4 2 GPU với direct + sum, 4 epoch:
+  - PipeDream: MAE kcal 82,1, mAP 44,6, 19,1 s/epoch.
+  - TiMePReSt: MAE kcal 78,8, mAP 42,0, 17,3 s/epoch.
+  - Cả hai ổn định.
+
+Mọi cấu hình của run2 + run4, số liệu ở epoch có val MAE kcal tốt nhất. Mức tốt nhất: MAE kcal 52,2, mAP 73,6. điểm = (kcal/52,2 − 1) + (1 − mAP/73,6).
+
+| cấu hình | lr | MAE kcal | mAP | F1 | MAE gram | MAE mass | kcal từ gram | gshare p/g/t | điểm |
+|---|---|---|---|---|---|---|---|---|---|
+| **direct + sum** | **0.02** | **61,1** | **73,6** | **76,1** | **16,3** | **39,4** | 117,2 | 0,65/0,30/0,05 | **0,17** |
+| direct + sum | 0.05 | 68,3 | 66,4 | 72,0 | 16,6 | 40,7 | 104,8 | 0,67/0,28/0,05 | 0,41 |
+| w30 | 0.05 | 67,6 | 63,4 | 69,7 | 18,2 | 49,2 | 67,6 | 0,55/0,21/0,24 | 0,43 |
+| direct + w10 | 0.05 | 52,2 | 38,3 | 51,7 | 24,2 | 34,7 | 143,0 | 0,43/0,11/0,46 | 0,48 |
+| w100 | 0.05 | 79,0 | 72,5 | 76,2 | 16,5 | 55,3 | 79,0 | 0,61/0,28/0,11 | 0,53 |
+| w10 (run2) | 0.05 | 60,4 | 40,2 | 52,2 | 22,9 | 43,3 | — | 0,47/0,12/0,41 | 0,61 |
+| sum (run2) | 0.05 | 81,7 | 66,5 | 72,1 | 17,1 | 58,3 | — | 0,66/0,28/0,06 | 0,66 |
+| mean | 0.1 | 54,0 | 18,2 | 23,4 | 24,5 | 41,9 | 54,0 | 0,12/0,02/0,86 | 0,79 |
+| mean (run2) | 0.05 | 54,9 | 15,4 | 16,8 | 24,7 | 43,0 | — | 0,11/0,02/0,86 | 0,84 |
+
+- Nhánh trực tiếp gỡ được phần lớn đánh đổi: so với `sum` head cũ, kcal giảm 81,7 → 61,1 trong khi mAP tăng 66,5 → 73,6.
+- Kcal tính từ gram của nhánh nguyên liệu vẫn kém (104–143). Sai số khi nhận diện nguyên liệu và gram vẫn dồn lại vào tổng kcal; nhánh trực tiếp tránh được việc này.
+- MAE kcal của direct + sum vẫn kém mức tốt nhất 17%. Thành phần total chỉ chiếm 5% gradient, nên còn chỗ để tăng `w_total`. Chưa thử, ghi lại để cân nhắc.
+
+### Biến thể loss (`run2`, 2026-10-14, single GPU, 8 epoch, 1 seed; log ở `n5k/results/kaggle/run2/`)
+Checks của code mới: PASS hết. Số liệu lấy ở epoch có val MAE kcal tốt nhất. gshare = tỉ lệ chuẩn gradient của presence / gram / total.
+
+| biến thể | lr | MAE kcal | mAP | F1 | MAE gram (có mặt) | MAE mass | gshare p/g/t |
+|---|---|---|---|---|---|---|---|
+| mean | **0.05** | **54,9** | 15,4 | 16,8 | 24,7 | 43,0 | 0,11 / 0,02 / 0,86 |
+| mean | 0.02 | 67,6 | 9,8 | 10,7 | 25,6 | 53,7 | 0,12 / 0,02 / 0,86 |
+| mean | 0.01 | 83,0 | 7,7 | 6,5 | 25,8 | 62,7 | 0,11 / 0,02 / 0,87 |
+| w10 | **0.05** | 60,4 | 40,2 | 52,2 | 22,9 | 43,3 | 0,47 / 0,12 / 0,41 |
+| w10 | 0.02 | 73,2 | 25,2 | 39,1 | 24,1 | 53,3 | 0,44 / 0,09 / 0,47 |
+| w10 | 0.01 | 88,1 | 18,9 | 30,1 | 25,7 | 64,0 | 0,50 / 0,08 / 0,42 |
+| sum | **0.05** | 81,7 | 66,5 | 72,1 | 17,1 | 58,3 | 0,66 / 0,28 / 0,06 |
+| sum | 0.02 | 83,4 | 67,8 | 72,0 | 17,5 | 56,5 | 0,66 / 0,28 / 0,06 |
+| sum | 0.01 | 84,4 | 67,7 | 71,9 | 17,3 | 64,1 | 0,67 / 0,27 / 0,06 |
+
+- Giả thuyết được xác nhận: với `mean`, thành phần tổng chiếm 86% gradient, phần gram chỉ 2%.
+- Có đánh đổi rõ: phần nguyên liệu càng mạnh thì mAP tăng (15 → 40 → 67) và MAE gram giảm (25 → 17), nhưng MAE kcal tăng (55 → 60 → 82).
+- Theo quy tắc đặt trước (MAE kcal không tệ hơn `mean` quá 5%, tức ≤ 57,7): w10 (+9,9%) và sum (+49%) đều không đạt, nên **quy tắc chọn `mean`**.
+- `mean` và `w10` lại tốt nhất ở lr 0.05, vẫn là biên trên của lưới.
+
 ### Đo partition (`run1c`, 2026-10-14, D4 4 epoch trên 2×T4, cùng máy; log ở `n5k/results/kaggle/run1c/`)
 Thời gian/epoch là trung bình epoch 2–4; GPU bận, peak MB và MB truyền lấy ở epoch cuối.
 
@@ -226,4 +321,4 @@ Thời gian/epoch là trung bình epoch 2–4; GPU bận, peak MB và MB truyề
 - Configs `n5k/configs/`: `n5k_base` (giá trị mục 4–6), `n5k_quick`, `n5k_timeprest`, `n5k_pipedream`, `n5k_timeprest_n4`, `n5k_single`, `n5k_sweep` (8 epoch, warmup 1). Notebook `n5k/notebooks/n5k_kaggle.ipynb` (lần 1: dữ liệu + check + sweep; lần 2: chạy dài).
 - Test CPU (dữ liệu giả 48/16/16 món, 32 px, ResNet-50 không pretrained): engine trainer resume liền mạch (W=1 và W=2), checks trên 2 tiến trình gloo D0–D3 PASS (D4 chạy được; PASS cần ảnh thật), `dist_train` ghi `summary.json`. Toàn bộ: **142 test PASS** (108 cũ + 34 mới).
 - **Phát hiện (dữ liệu giả, chưa chắc đúng với dữ liệu thật):** ResNet-50 khởi tạo ngẫu nhiên, micro-batch 4, lr 0.01: TiMePReSt (`graph`) **phân kỳ** — gradient stage 0 tăng ~×5 mỗi bước (482 → 1321 → 7129 → 3e10 → NaN), trong khi PipeDream, 1 GPU, `timeprest_recompute`, Variant 1/2 và DeepSpeed đều ổn định cùng điều kiện. Check 4 khớp reference chính xác, nên đây là tính chất của quy tắc `graph` (cùng hướng PN §22.7), không phải lỗi cài đặt. Trên dữ liệu thật (pretrained, micro-batch 32, warmup) có thể không xảy ra; D4 và sweep sẽ cho biết. Nếu xảy ra: chọn lr nhỏ hơn theo sweep (quy tắc PN §22.9), không thêm kỹ thuật ngoài paper (gradient clipping) nếu chưa ghi quyết định ở mục 10.
-- Chưa làm: B5 (DDP), bench mạng giả lập cho task này (B6), B7.
+- Chưa làm: bench mạng giả lập cho task này (B6), B7. (B5 xong ngày 2026-10-14, xem mục 11.)

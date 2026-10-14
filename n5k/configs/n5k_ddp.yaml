@@ -1,0 +1,8 @@
+# DDP baseline (n5k/PLAN.md mục 7, B5): 2 ranks x 32 samples = the single-GPU mini-batch M=64, same SGD /
+# lr (0.02, run3 sweep of `single`) / schedule. torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.ddp_train
+base: n5k_base.yaml
+name: n5k_ddp_s0
+system: pipedream                        # unused by DDP except as a valid preset: whole model on every rank
+pipeline:
+  num_stages: 1
+  partition: auto

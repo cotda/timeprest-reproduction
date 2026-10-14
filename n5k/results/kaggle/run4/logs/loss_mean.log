@@ -1,0 +1,6 @@
+[gpu 0] start sweep_single_mean_lr0.1
+[gpu 0] done sweep_single_mean_lr0.1 exit=0
+system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch
+single             0.1   8         53.99 ( 8)          53.99    21.1     23.4      0.1933     21.9
+best lr per system: {'single': 0.1}
+N5K_SWEEP_JSON [{"system": "single", "lr": 0.1, "epochs": 8, "best_val_mae_kcal": 53.98604, "best_epoch": 8, "last_val_mae_kcal": 53.98604, "last_val_pmae_kcal": 21.07271, "last_val_ingr_f1": 23.4013, "last_train_loss": 0.19329, "epoch_s": 21.901}]
