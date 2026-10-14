@@ -1,0 +1,4 @@
+{"id": "kaggleolap/n5k-run0-cache", "title": "n5k-run0-cache", "code_file": "run0.py",
+ "language": "python", "kernel_type": "script", "is_private": true, "enable_gpu": false, "enable_internet": true,
+ "dataset_sources": ["kaggleolap/timeprest-code", "gillesokhin/nutrition5k-dataset"],
+ "competition_sources": [], "kernel_sources": []}

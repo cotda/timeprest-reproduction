@@ -18,6 +18,7 @@ import csv
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import torch
@@ -113,8 +114,10 @@ def _find_cache(root: str) -> str | None:
     top = root.split("*")[0].rstrip("/\\") or "/"
     if not os.path.isdir(top):
         return None
+    base_depth = top.rstrip("/\\").count(os.sep)
     for d, subdirs, files in os.walk(top, followlinks=True):
-        subdirs.sort()
+        # never descend into image folders (Nutrition5k: thousands of dish folders, minutes to walk)
+        subdirs[:] = sorted(s for s in subdirs if s != "imagery") if d.count(os.sep) - base_depth < 6 else []
         if "meta.json" in files and _complete(d):
             return d
     return None
@@ -171,20 +174,36 @@ def _build(cache: str, data_cfg: dict, log):
     split = read_split(data_cfg["split_dir"])
     size = int(data_cfg.get("image_size", 224))
     img_root = os.path.join(base, "imagery", "realsense_overhead")
+    threads = int(data_cfg.get("decode_threads", 16))   # file reads on a lazily mounted dataset are latency bound
+    every = int(data_cfg.get("progress_every", 250))
+
+    def one(d):
+        try:
+            if d not in tables["nutrition"]:
+                raise BadSample("no row in dish_nutrition_values.csv")
+            if not tables["dish_ingr"].get(d):
+                raise BadSample("no row in dish_ingredients.csv")
+            return decode_dish(os.path.join(img_root, d), size), None
+        except BadSample as e:
+            return None, str(e)
+
     kept, imgs, dropped = {}, {}, []
-    for s in SPLITS:
-        kept[s], imgs[s] = [], []
-        for d in split[s]:
-            try:
-                if d not in tables["nutrition"]:
-                    raise BadSample("no row in dish_nutrition_values.csv")
-                if not tables["dish_ingr"].get(d):
-                    raise BadSample("no row in dish_ingredients.csv")
-                imgs[s].append(decode_dish(os.path.join(img_root, d), size))
-                kept[s].append(d)
-            except BadSample as e:
-                dropped.append({"dish_id": d, "split": s, "reason": str(e)})
-        log(f"[n5k data] {s}: kept {len(kept[s])}/{len(split[s])}  ({time.time() - t0:.0f}s)")
+    total, done = sum(len(split[s]) for s in SPLITS), 0
+    log(f"[n5k data] decoding {total} dishes from {img_root} with {threads} threads")
+    with ThreadPoolExecutor(max_workers=max(1, threads)) as pool:
+        for s in SPLITS:
+            kept[s], imgs[s] = [], []
+            for d, (img, reason) in zip(split[s], pool.map(one, split[s])):   # map keeps the split order
+                if reason is None:
+                    imgs[s].append(img)
+                    kept[s].append(d)
+                else:
+                    dropped.append({"dish_id": d, "split": s, "reason": reason})
+                done += 1
+                if every and done % every == 0:
+                    el = time.time() - t0
+                    log(f"[n5k data] {done}/{total} dishes  {el:.0f}s  eta {el / done * (total - done):.0f}s")
+            log(f"[n5k data] {s}: kept {len(kept[s])}/{len(split[s])}  ({time.time() - t0:.0f}s)")
 
     # ingredient vocabulary = ingredients present (grams > 0) in the kept train dishes
     vocab = sorted({i for d in kept["train"] for i, v in tables["dish_ingr"][d].items() if v[0] > 0})

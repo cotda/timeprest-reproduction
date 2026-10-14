@@ -6,10 +6,13 @@ Layouts (K = number of ingredients known from the train split, T = len(TOTALS)):
 Predicted grams = softplus(raw) * gram_scale; predicted totals = grams @ per_gram, where per_gram[k]
 holds (kcal, mass, fat, carb, protein) per gram of ingredient k (mass per gram = 1).
 
-Per-sample loss = w_presence * mean_k BCE(logit_k, gram_k > 0)
-                + w_gram     * mean_k SmoothL1(pred_gram_k / scale_k, gram_k / scale_k)
+Per-sample loss = w_presence * red_k BCE(logit_k, gram_k > 0)
+                + w_gram     * red_k SmoothL1(pred_gram_k / scale_k, gram_k / scale_k)
                 + w_total    * mean_t SmoothL1((pred_total_t - total_t) / total_std_t, 0)
+red_k = mean over the K ingredients (default) or sum (`loss.ingredient_reduce: sum`, n5k/PLAN.md mục 10).
 `loss_sum` returns its sum over the samples (the engine/runtime divide by the mini-batch size M).
+Evaluation also reports each unweighted term (loss_presence / loss_gram / loss_total) and the share of each
+weighted term in the gradient norm w.r.t. the model output (gshare_*): which term drives the network.
 """
 from __future__ import annotations
 
@@ -25,7 +28,7 @@ class NutritionTask:
     name = "nutrition"
 
     def __init__(self, per_gram, gram_scale, total_std, w_presence: float = 1.0, w_gram: float = 1.0,
-                 w_total: float = 1.0):
+                 w_total: float = 1.0, ingredient_reduce: str = "mean"):
         self.per_gram = torch.as_tensor(per_gram, dtype=torch.float64)        # [K, T]
         self.gram_scale = torch.as_tensor(gram_scale, dtype=torch.float64)    # [K]
         self.total_std = torch.as_tensor(total_std, dtype=torch.float64)      # [T]
@@ -36,6 +39,9 @@ class NutritionTask:
             raise ValueError("gram_scale and total_std must be > 0")
         self.K = K
         self.w = (float(w_presence), float(w_gram), float(w_total))
+        if ingredient_reduce not in ("mean", "sum"):
+            raise ValueError(f"loss.ingredient_reduce must be mean or sum, got {ingredient_reduce!r}")
+        self.reduce = ingredient_reduce
         self._cache: dict = {}
 
     @classmethod
@@ -43,7 +49,7 @@ class NutritionTask:
         """meta: the dataset statistics written by timeprest.n5k.data (per_gram, gram_scale, total_std)."""
         lc = loss_cfg or {}
         return cls(meta["per_gram"], meta["gram_scale"], meta["total_std"], lc.get("w_presence", 1.0),
-                   lc.get("w_gram", 1.0), lc.get("w_total", 1.0))
+                   lc.get("w_gram", 1.0), lc.get("w_total", 1.0), lc.get("ingredient_reduce", "mean"))
 
     # ------------------------------------------------------------------ helpers
     def _consts(self, ref: torch.Tensor):
@@ -66,16 +72,20 @@ class NutritionTask:
         grams = F.softplus(raw) * scale
         return {"logits": logits, "grams": grams, "totals": grams @ per_gram}
 
-    def per_sample_loss(self, out: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    def components(self, out: torch.Tensor, y: torch.Tensor) -> tuple[torch.Tensor, ...]:
+        """Unweighted per-sample terms (presence, gram, total), each [B]."""
         p = self.predict(out)
         _, scale, tstd = self._consts(p["grams"])
         y = y.to(p["grams"].dtype)
         grams, totals = self.split_labels(y)
-        bce = F.binary_cross_entropy_with_logits(p["logits"], (grams > 0).to(grams.dtype), reduction="none").mean(1)
-        gram = F.smooth_l1_loss(p["grams"] / scale, grams / scale, reduction="none").mean(1)
+        bce = F.binary_cross_entropy_with_logits(p["logits"], (grams > 0).to(grams.dtype), reduction="none")
+        gram = F.smooth_l1_loss(p["grams"] / scale, grams / scale, reduction="none")
+        red = (lambda t: t.sum(1)) if self.reduce == "sum" else (lambda t: t.mean(1))
         tot = F.smooth_l1_loss((p["totals"] - totals) / tstd, torch.zeros_like(totals), reduction="none").mean(1)
-        wp, wg, wt = self.w
-        return wp * bce + wg * gram + wt * tot
+        return red(bce), red(gram), tot
+
+    def per_sample_loss(self, out: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return sum(w * c for w, c in zip(self.w, self.components(out, y)))
 
     # ------------------------------------------------------------------ task contract (timeprest.tasks)
     def loss_sum(self, out: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
@@ -97,14 +107,22 @@ class NutritionTask:
     def eval_start(self) -> dict:
         return {"loss": 0.0, "abs_err": torch.zeros(len(TOTALS), dtype=torch.float64),
                 "sum_true": torch.zeros(len(TOTALS), dtype=torch.float64), "n": 0,
-                "gram_err": 0.0, "gram_n": 0, "scores": [], "present": []}
+                "gram_err": 0.0, "gram_n": 0, "scores": [], "present": [],
+                "terms": torch.zeros(3, dtype=torch.float64), "gnorm": torch.zeros(3, dtype=torch.float64)}
 
     @torch.no_grad()
     def eval_update(self, st: dict, out: torch.Tensor, y: torch.Tensor):
         p = self.predict(out)
         y = y.to(p["grams"].dtype)
         grams, totals = self.split_labels(y)
-        st["loss"] += self.per_sample_loss(out, y).sum().item()
+        with torch.enable_grad():                       # gradient of each weighted term w.r.t. the output
+            o = _upcast(out).detach().requires_grad_(True)
+            terms = self.components(o, y)
+            for i, (w, t) in enumerate(zip(self.w, terms)):
+                g, = torch.autograd.grad(w * t.mean(), o, retain_graph=i < 2)
+                st["gnorm"][i] += g.norm().item() * y.shape[0]
+        st["terms"] += torch.tensor([t.sum().item() for t in terms], dtype=torch.float64)
+        st["loss"] += sum(w * t.detach() for w, t in zip(self.w, terms)).sum().item()
         st["abs_err"] += (p["totals"] - totals).abs().sum(0).double().cpu()
         st["sum_true"] += totals.sum(0).double().cpu()
         st["n"] += y.shape[0]
@@ -126,6 +144,11 @@ class NutritionTask:
         scores, present = torch.cat(st["scores"]), torch.cat(st["present"])
         res["ingr_f1"] = micro_f1(scores >= 0.5, present)
         res["ingr_map"] = mean_average_precision(scores, present)
+        for i, name in enumerate(("presence", "gram", "total")):
+            res[f"loss_{name}"] = st["terms"][i].item() / n
+        g = st["gnorm"] / n
+        for i, name in enumerate(("presence", "gram", "total")):
+            res[f"gshare_{name}"] = (g[i] / g.sum()).item() if g.sum() > 0 else float("nan")
         return res
 
     def dummy_labels(self, out: torch.Tensor) -> torch.Tensor:

@@ -12,6 +12,8 @@ data:
   image_size: 224
   augment: true                          # joint horizontal / vertical flips of RGB and depth
   num_workers: 2
+  decode_threads: 16                     # parallel PNG reads when building the cache (I/O latency bound)
+  progress_every: 250                    # cache build progress line every N dishes
 model:
   name: n5k_resnet50
   in_channels: 4                         # RGB + depth
@@ -20,10 +22,11 @@ loss:
   w_presence: 1.0
   w_gram: 1.0
   w_total: 1.0
+  ingredient_reduce: mean                # mean | sum over the K ingredients (presence + gram terms)
 pipeline:
   num_stages: 2                          # W
   num_microbatches: 2                    # N (user, 2026-10-14)
-  partition: auto                        # balanced MACs -> [0, 9, 18]
+  partition: [0, 8, 18]                  # measured on 2xT4 (run1c, n5k/PLAN.md mục 10); auto (MACs) gave [0, 9, 18]
 training:
   epochs: 30
   batch_size: 64                         # M

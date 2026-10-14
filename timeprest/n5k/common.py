@@ -11,7 +11,8 @@ from .model import priors_from_meta
 from .task import TOTALS, NutritionTask
 
 # validation metrics logged every epoch, in this order (test set: same names with "test_")
-EVAL_KEYS = ["loss"] + [f"mae_{t}" for t in TOTALS] + ["pmae_kcal", "mae_gram_present", "ingr_f1", "ingr_map"]
+EVAL_KEYS = (["loss"] + [f"mae_{t}" for t in TOTALS] + ["pmae_kcal", "mae_gram_present", "ingr_f1", "ingr_map"]
+             + [f"{k}_{c}" for k in ("loss", "gshare") for c in ("presence", "gram", "total")])
 SELECT_KEY = "mae_kcal"     # model selection on the validation set (lower is better)
 
 

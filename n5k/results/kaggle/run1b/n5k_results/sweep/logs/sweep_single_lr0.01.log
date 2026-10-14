@@ -1,0 +1,13 @@
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 0064711c9199
+Downloading: "https://download.pytorch.org/models/resnet50-11ad3fa6.pth" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth
+  0%|          | 0.00/97.8M [00:00<?, ?B/s]  7%|▋         | 7.00M/97.8M [00:00<00:01, 73.0MB/s] 24%|██▎       | 23.1M/97.8M [00:00<00:00, 129MB/s]  39%|███▉      | 38.6M/97.8M [00:00<00:00, 144MB/s] 55%|█████▍    | 53.8M/97.8M [00:00<00:00, 149MB/s] 76%|███████▌  | 74.5M/97.8M [00:00<00:00, 174MB/s] 96%|█████████▌| 93.6M/97.8M [00:00<00:00, 183MB/s]100%|██████████| 97.8M/97.8M [00:00<00:00, 166MB/s]
+[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda
+ep   1/8 | train 0.4857 (MAE kcal 164.4) | val_loss 0.4762 | MAE kcal 158.3 (61.8%) mass 114.3 fat 9.78 carb 12.19 prot 14.63 | ingr F1 0.2 mAP 5.8 | lr 2.86e-04 | 35.7s peak 10360.9MB | ETA 0.08h
+ep   2/8 | train 0.4470 (MAE kcal 148.3) | val_loss 0.4156 | MAE kcal 133.5 (52.1%) mass 98.2 fat 8.58 carb 11.52 prot 12.91 | ingr F1 0.9 mAP 6.1 | lr 1.00e-02 | 22.6s peak 5649.2MB | ETA 0.04h
+ep   3/8 | train 0.3739 (MAE kcal 118.7) | val_loss 0.3411 | MAE kcal 100.4 (39.2%) mass 74.0 fat 7.14 carb 10.54 prot 10.08 | ingr F1 2.2 mAP 6.6 | lr 9.50e-03 | 24.5s peak 5650.8MB | ETA 0.04h
+ep   4/8 | train 0.3260 (MAE kcal 94.8) | val_loss 0.3164 | MAE kcal 90.1 (35.2%) mass 65.4 fat 6.76 carb 10.33 prot 9.23 | ingr F1 3.8 mAP 7.0 | lr 8.12e-03 | 26.9s peak 5650.8MB | ETA 0.03h
+ep   5/8 | train 0.3107 (MAE kcal 87.3) | val_loss 0.3109 | MAE kcal 86.7 (33.8%) mass 63.6 fat 6.58 carb 10.32 prot 9.05 | ingr F1 5.1 mAP 7.5 | lr 6.11e-03 | 28.4s peak 5650.8MB | ETA 0.03h
+ep   6/8 | train 0.3013 (MAE kcal 82.0) | val_loss 0.3065 | MAE kcal 83.4 (32.6%) mass 62.8 fat 6.49 carb 10.14 prot 8.79 | ingr F1 5.8 mAP 7.8 | lr 3.89e-03 | 26.9s peak 5650.8MB | ETA 0.02h
+ep   7/8 | train 0.3011 (MAE kcal 82.1) | val_loss 0.3053 | MAE kcal 83.6 (32.7%) mass 62.6 fat 6.50 carb 10.16 prot 8.92 | ingr F1 6.3 mAP 7.8 | lr 1.88e-03 | 27.7s peak 5650.8MB | ETA 0.01h
+ep   8/8 | train 0.2978 (MAE kcal 80.6) | val_loss 0.3052 | MAE kcal 83.6 (32.7%) mass 62.3 fat 6.50 carb 10.16 prot 8.92 | ingr F1 6.2 mAP 7.8 | lr 4.95e-04 | 27.4s peak 5650.8MB | ETA 0.00h
+SUMMARY {"name": "sweep_single_lr0.01", "system": "pipedream", "epochs_done": 8, "best_epoch": 6, "test_mae_kcal": 90.97476, "test_pmae_kcal": 34.08974, "test_ingr_f1": 6.5109, "mean_epoch_time_s": 26.360142857142858}

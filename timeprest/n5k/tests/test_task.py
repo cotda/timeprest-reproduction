@@ -46,6 +46,30 @@ def test_loss_matches_manual_formula():
     torch.testing.assert_close(task.loss_sum(out, y), (0.5 * bce + 2.0 * gl + 3.0 * tl).sum(), **TOL)
 
 
+def test_sum_reduction_and_loss_terms():
+    """loss.ingredient_reduce=sum multiplies the presence / gram terms by K; eval reports the unweighted
+    terms (their weighted sum = loss) and gradient shares that sum to 1."""
+    mean = make_task(w_presence=0.5, w_gram=2.0, w_total=3.0)
+    s = NutritionTask(mean.per_gram, mean.gram_scale, mean.total_std, 0.5, 2.0, 3.0, ingredient_reduce="sum")
+    g = torch.Generator().manual_seed(4)
+    out = torch.randn(6, 2 * K, generator=g, dtype=torch.float64)
+    y = make_batches("mlp", mean, 1, 6)[0][1]
+    cm, cs = mean.components(out, y), s.components(out, y)
+    torch.testing.assert_close(cs[0], K * cm[0], **TOL)
+    torch.testing.assert_close(cs[1], K * cm[1], **TOL)
+    torch.testing.assert_close(cs[2], cm[2], **TOL)
+    for task, c in ((mean, cm), (s, cs)):
+        st = task.eval_start()
+        task.eval_update(st, out, y)
+        res = task.eval_result(st)
+        assert math.isclose(res["loss"], 0.5 * res["loss_presence"] + 2.0 * res["loss_gram"] + 3.0 * res["loss_total"],
+                            rel_tol=1e-9)
+        assert math.isclose(res["loss_presence"], c[0].mean().item(), rel_tol=1e-9)
+        assert math.isclose(sum(res[f"gshare_{n}"] for n in ("presence", "gram", "total")), 1.0, rel_tol=1e-9)
+    with pytest.raises(ValueError):
+        NutritionTask(mean.per_gram, mean.gram_scale, mean.total_std, ingredient_reduce="max")
+
+
 def test_perfect_prediction_has_zero_regression_error():
     task = make_task()
     y = make_batches("mlp", task, 1, 6)[0][1]
@@ -143,7 +167,8 @@ def test_engine_evaluate_returns_nutrition_metrics():
     batches = make_batches("mlp", task, 2, 12)
     eng = PipelineEngine(make_model("mlp", 2), pipe_cfg("nF1B", 2, "committed"), TRAIN, "cpu", 2, task=task)
     res = eng.evaluate(batches)
-    for key in ["loss", "pmae_kcal", "mae_gram_present", "ingr_f1", "ingr_map"] + [f"mae_{t}" for t in TOTALS]:
+    for key in (["loss", "pmae_kcal", "mae_gram_present", "ingr_f1", "ingr_map"] + [f"mae_{t}" for t in TOTALS]
+                + [f"{k}_{c}" for k in ("loss", "gshare") for c in ("presence", "gram", "total")]):
         assert key in res and math.isfinite(res[key]), key
 
 

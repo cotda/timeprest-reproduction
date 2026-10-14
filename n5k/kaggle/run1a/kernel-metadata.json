@@ -1,0 +1,17 @@
+{
+ "id": "kaggleolap/n5k-run1a-data-checks",
+ "title": "n5k-run1a-data-checks",
+ "code_file": "run1a.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "kaggleolap/n5k-run0-cache"
+ ]
+}

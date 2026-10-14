@@ -1,0 +1,17 @@
+{
+ "id": "kaggleolap/n5k-run2-loss",
+ "title": "n5k-run2-loss",
+ "code_file": "run2.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "kaggleolap/n5k-run0-cache"
+ ]
+}

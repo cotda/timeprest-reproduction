@@ -22,8 +22,8 @@ SYSTEM_CONFIG = {"single": "n5k_single.yaml", "pipedream": "n5k_pipedream.yaml",
                  "timeprest_n4": "n5k_timeprest_n4.yaml"}
 
 
-def run_name(system: str, lr: float) -> str:
-    return f"sweep_{system}_lr{lr:g}"
+def run_name(system: str, lr: float, tag: str = "") -> str:
+    return f"sweep_{system}{'_' + tag if tag else ''}_lr{lr:g}"
 
 
 def jobs(args) -> list[tuple[str, float, list[str]]]:
@@ -35,7 +35,7 @@ def jobs(args) -> list[tuple[str, float, list[str]]]:
     res = []
     for system in args.systems:
         for lr in args.lrs:
-            name = run_name(system, lr)
+            name = run_name(system, lr, getattr(args, 'tag', ''))
             sets = [f"name={name}", f"training.lr={lr}", f"training.epochs={tc['epochs']}",
                     f"training.warmup_epochs={tc['warmup_epochs']}", f"output.dir={out['dir'].replace(sweep['name'], name)}",
                     *args.set]
@@ -53,15 +53,15 @@ def run_all(args):
         for gpu in args.gpus:
             if gpu not in running and todo:
                 system, lr, cmd = todo.pop(0)
-                log = open(os.path.join(args.log_dir, run_name(system, lr) + ".log"), "w", encoding="utf-8")
+                log = open(os.path.join(args.log_dir, run_name(system, lr, getattr(args, 'tag', '')) + ".log"), "w", encoding="utf-8")
                 env = dict(os.environ, CUDA_VISIBLE_DEVICES=str(gpu))
                 running[gpu] = (subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, env=env), system, lr, log)
-                print(f"[gpu {gpu}] start {run_name(system, lr)}", flush=True)
+                print(f"[gpu {gpu}] start {run_name(system, lr, getattr(args, 'tag', ''))}", flush=True)
         time.sleep(5)
         for gpu, (p, system, lr, log) in list(running.items()):
             if p.poll() is not None:
                 log.close()
-                print(f"[gpu {gpu}] done {run_name(system, lr)} exit={p.returncode}", flush=True)
+                print(f"[gpu {gpu}] done {run_name(system, lr, getattr(args, 'tag', ''))} exit={p.returncode}", flush=True)
                 del running[gpu]
 
 
@@ -70,7 +70,7 @@ def summary(args) -> list[dict]:
     rows = []
     for system in args.systems:
         for lr in args.lrs:
-            d = sweep["output"]["dir"].replace(sweep["name"], run_name(system, lr))
+            d = sweep["output"]["dir"].replace(sweep["name"], run_name(system, lr, getattr(args, 'tag', '')))
             path = os.path.join(d, "metrics.csv")
             if not os.path.exists(path):
                 rows.append({"system": system, "lr": lr, "status": "missing"})
@@ -108,6 +108,7 @@ def main(argv=None):
     ap.add_argument("--lrs", nargs="*", type=float, default=[0.01, 0.005, 0.002])
     ap.add_argument("--gpus", nargs="*", type=int, default=[0])
     ap.add_argument("--set", nargs="*", default=[])
+    ap.add_argument("--tag", default="", help="name suffix of a variant (e.g. a loss setting passed with --set)")
     ap.add_argument("--log-dir", default="n5k/results/sweep/logs")
     ap.add_argument("--summary-only", action="store_true")
     args = ap.parse_args(argv)

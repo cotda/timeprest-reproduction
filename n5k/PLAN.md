@@ -124,6 +124,19 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
 - 2026-10-14: task có thư mục riêng `n5k/` và code riêng `timeprest/n5k/`; không ghi vào `paper_notes.md`, code cũ chỉ sửa ở mức móc nối (người dùng).
 - 2026-10-14: người dùng **không tự gán mask được**. Bỏ mIoU / pointing game trên mask tự gán; thay bằng hình minh họa + deletion test (người dùng đồng ý). FoodSeg103 không dùng (không có depth, phải train thêm bản RGB và ánh xạ nhãn); chỉ xét lại nếu mentor yêu cầu độ chính xác vị trí so với thực tế.
 - 2026-10-14: sweep lr gồm `single` (dùng chung cho DDP: cùng SGD trên M=64), `pipedream`, `timeprest`, 8 epoch, warmup 1 (agent đề xuất theo mục 6; chạy ở lần Kaggle 1).
+- 2026-10-14: agent tự đẩy và theo dõi kernel Kaggle qua API (người dùng cho phép; `n5k/kaggle/README.md`). Lần 1 (`n5k-run1-checks-sweep`, 1 kernel gồm data + checks + sweep) chạy khoảng 6 giờ mà không xem được log (Kaggle không trả log khi kernel commit đang chạy, và cũng không lưu log của phiên bị hủy). Người dùng chọn hủy, không thu được số liệu nào. Thay đổi kỹ thuật, không đổi thiết kế thí nghiệm: (1) tạo cache bằng 16 luồng đọc song song, có in tiến độ (`data.decode_threads`, `data.progress_every`); (2) tách thành các kernel ngắn, mỗi bước có giới hạn thời gian để luôn kết thúc và lưu được log (`n5k/kaggle/kernel_lib.py`). Thứ tự: `run1a` (weights, data, checks), rồi `run1b` (sweep, gắn output của `run1a` để dùng lại cache và file checks).
+- 2026-10-14: người dùng chạy thử bằng notebook tay và thấy phiên đứng ở "Adding data" (đã tải 175.533/175.602 file, 99,9%) của dataset Nutrition5k gốc. Sau đó bản commit của `run0` bắt đầu script ~9 phút sau khi đẩy và tạo cache trong 1 phút, nên nguyên nhân lần 1 chạy 6 giờ **chưa rõ** (có thể ở checks hoặc sweep; `run1a`/`run1b` có giới hạn thời gian từng bước để tìm ra). Thay đổi kỹ thuật: kernel CPU `run0` gắn dataset gốc và tạo cache; các kernel GPU (`run1a`, `run1b`) chỉ gắn output của `run0`. Nội dung cache và code tạo cache không đổi.
+- 2026-10-14: D4 cho thấy pipeline lệch tải với partition `auto` `[0,9,18]` (chia theo MACs). GPU bận 0,92/0,53, peak 8,8/1,6 GB. Lý do: các block đầu có độ phân giải cao nên tốn thời gian hơn so với số MACs.
+  - Paper không báo cáo độ bận GPU, chỉ nói phân hoạch "tương đối để cân bằng sử dụng GPU" (p.3) và không đưa partition cụ thể. Fig.15 cho thấy bộ nhớ các stage cùng cỡ, chênh nhau khoảng 1,5–2 lần. PipeDream gốc chia theo thời gian đo được cộng chi phí truyền (`pipedream/optimizer/`).
+  - Người dùng đồng ý đo bằng kernel `run1c`: chạy D4 (4 epoch, cả hai hệ) với `[0,7,18]`, `[0,8,18]`, `[0,9,18]`.
+  - Quy tắc chọn (đặt trước khi có số liệu): lấy partition có thời gian/epoch của **PipeDream** nhỏ nhất, tính trung bình các epoch từ epoch 2 trở đi; nếu chênh lệch dưới 3% thì giữ `[0,9,18]`. Hai hệ dùng chung partition.
+  - Nếu đổi partition: sửa `pipeline.partition` trong `n5k_base.yaml`, chạy lại checks và chạy lại sweep lr (partition quyết định layer nào bị trễ version).
+  - **Kết quả (`run1c`): chọn `[0,8,18]`** (PipeDream nhanh hơn 9,3%, vượt ngưỡng 3%). Đã sửa `n5k_base.yaml`; `n5k_single.yaml` giữ `auto` (1 stage).
+- 2026-10-14 (người dùng xác nhận): sweep lần 1 cho thấy phần nguyên liệu gần như chưa học được (F1 6%, mAP 8%), trong khi tổng dinh dưỡng học tốt (điểm mở (b)). Kế hoạch:
+  - (a) Log thêm, không đổi hành vi: `val_loss_{presence,gram,total}` (từng thành phần chưa nhân trọng số) và `val_gshare_*` (tỉ lệ của mỗi thành phần đã nhân trọng số trong chuẩn gradient theo output của model).
+  - (b) Thêm tùy chọn `loss.ingredient_reduce: mean|sum` (mặc định `mean`, giữ như cũ). Chạy ngắn 3 biến thể trên `single`: `mean` (w=1), `w10` (mean, w_presence = w_gram = 10), `sum` (≈ w = 195). Mỗi biến thể × lr {0.05, 0.02, 0.01}, 8 epoch.
+  - Quy tắc chọn (đặt trước khi có số liệu): lấy biến thể có **val ingr mAP cao nhất** ở lr tốt nhất của nó (lr tốt nhất theo val MAE kcal như cũ), với điều kiện best val MAE kcal không tệ hơn biến thể `mean` quá 5%. Không biến thể nào đạt thì giữ `mean`.
+  - Sau đó sweep pipedream/timeprest bằng biến thể đã chọn và partition đã chọn, lr {0.05, 0.02, 0.01}.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
@@ -157,6 +170,55 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
 - `timeprest/n5k/model.py`: model `n5k_resnet50` đăng ký vào `MODEL_BUILDERS`; nạp trọng số torchvision (`IMAGENET1K_V2`) vào `resnet50_blocks(stem="imagenet")`; conv1 4 kênh (kênh depth = trung bình bộ lọc RGB); head `N5kHead` (2 conv 1×1 → K bản đồ CAM + K bản đồ gram, global average pool). Bias của head khởi tạo theo tần suất xuất hiện và gram trung bình trên train (loss ban đầu hợp lý).
 - Partition `auto` ở 224×224, 4 kênh: `[0, 9, 18]`, 2.23 / 1.94 GMAC mỗi stage, activation ở biên 1024×14×14 = 0.77 MB/ảnh fp32.
 - Test: 5 PASS — feature RGB trùng torchvision (rtol/atol 1e-5, BN có thống kê khác mặc định), depth = 0 cho đúng model 3 kênh, layout head và bias khởi tạo, partition với input 4 kênh.
+
+### Dữ liệu thật (Kaggle, 2026-10-14, người dùng chạy tay `run0` trong Draft Session)
+- Cache được tạo trong 1 phút (16 luồng), kích thước 778 MB. Số món train/val/test là 2270/486/486; loại 2 món: `dish_1564159636` (val, `depth_raw.png` rỗng, mới phát hiện) và `dish_1558722871` (test, thiếu depth).
+- K = 195 nguyên liệu (có gram > 0 trong train), nhãn có 200 chiều.
+- Tổng dinh dưỡng tính lại từ gram nguyên liệu khớp tổng của món (train: sai số tuyệt đối trung bình ≈ 1e-5 cho mọi thành phần). `per_gram_fallback` rỗng.
+- Món có nguyên liệu ngoài từ vựng: val 6, test 2, chiếm 0,54% / 0,29% kcal; sai số kcal tính từ gram 1,37 / 0,76 kcal.
+- Ảnh mẫu sau chuẩn hóa: trung bình RGB −0,064, depth −0,155. Kết luận: D0 (dữ liệu) đạt.
+
+### Checks D0–D4 trên Kaggle 2×T4 (`run1a` lần 2, 2026-10-14, code hash `0064711c9199`; log ở `n5k/results/kaggle/run1a/`)
+- Tất cả PASS; cả kernel mất khoảng 4 phút (checks 2,9 phút).
+- D1: static order trên 2 GPU khớp engine 1 GPU (chênh lệch 0.0) cho cả pipedream và timeprest.
+- D2: không recompute; TiMePReSt forward theo vertical sync, backward dùng version live; có 11 micro-batch được forward bằng version cũ hơn.
+- D3: resume khớp tuyệt đối (chênh lệch 0.0).
+- D4: 2 epoch trên toàn tập train.
+
+| hệ | val MAE kcal ep1→ep2 (trung vị: 165,8) | epoch (s) | GPU bận | peak MB / GPU | ước tính 30 epoch |
+|---|---|---|---|---|---|
+| PipeDream M=64 | 156,0 → 150,3 | 20,0 | 0,92 / 0,53 | 8853 / 1571 | 0,17 h |
+| TiMePReSt N=2 | 155,9 → 150,8 | 18,5 | 0,90 / 0,53 | 8770 / 1601 | 0,16 h |
+
+- Nhận xét:
+  - Partition [0,9,18] cân bằng theo MACs, nhưng stage 0 giữ phần lớn activation (8,8 GB so với 1,6 GB) và GPU 1 chỉ bận 53% thời gian. Điều này hạn chế lợi ích pipeline; ghi lại để bàn ở B8, chưa đổi partition (mục 6).
+  - Thời gian chạy dài rất ngắn (khoảng 10 phút / 30 epoch), nên 3 seed × mọi hệ ở B6 vừa trong một kernel.
+
+### Sweep lr lần 1 (`run1b`, 2026-10-14, partition `[0,9,18]`, 8 epoch, 1 seed; log ở `n5k/results/kaggle/run1b/`)
+| hệ | lr 0.01 | lr 0.005 | lr 0.002 |
+|---|---|---|---|
+| single (best val MAE kcal) | **83,4** | 106,9 | 151,2 |
+| PipeDream M=64 | **84,3** | 107,1 | 151,1 |
+| TiMePReSt N=2 | **85,5** | 108,6 | 151,6 |
+- Cả 3 hệ tốt nhất ở lr 0.01, **nằm ở biên trên của lưới**, nên lr tối ưu có thể còn lớn hơn. Ba hệ chênh nhau khoảng 2 kcal, dưới mức nhiễu của 1 seed. Không hệ nào phân kỳ.
+- Ở lr 0.01 (single), tổng dinh dưỡng học tốt: MAE kcal 158 → 83 (pMAE 32,7%), mass 62 g. Phần **nguyên liệu học rất yếu**: F1 6,2%, mAP 7,8%, MAE gram trên nguyên liệu có mặt 26,6 → 25,8 (gần như không đổi).
+  - Giả thuyết (chưa kiểm chứng): loss presence/gram lấy trung bình trên K = 195 nguyên liệu, nên mỗi nguyên liệu chỉ nhận gradient khoảng 1/195, trong khi loss tổng chỉ trung bình trên 5 thành phần. Đây là điểm mở (b) ở mục 10.
+
+### Đo partition (`run1c`, 2026-10-14, D4 4 epoch trên 2×T4, cùng máy; log ở `n5k/results/kaggle/run1c/`)
+Thời gian/epoch là trung bình epoch 2–4; GPU bận, peak MB và MB truyền lấy ở epoch cuối.
+
+| hệ | partition | s/epoch | so với [0,9,18] | GPU bận | peak MB | MB truyền/epoch |
+|---|---|---|---|---|---|---|
+| PipeDream | [0,9,18] | 22,09 | — | 0,86 / 0,47 | 9078 / 1520 | 1715 |
+| PipeDream | **[0,8,18]** | **20,04** | **−9,3%** | 0,91 / 0,74 | 8360 / 2051 | 3430 |
+| PipeDream | [0,7,18] | 20,74 | −6,1% | 0,83 / 0,82 | 7768 / 2345 | 3430 |
+| TiMePReSt | [0,9,18] | 19,34 | — | 0,91 / 0,52 | 8708 / 1554 | 1715 |
+| TiMePReSt | **[0,8,18]** | **18,51** | **−4,3%** | 0,93 / 0,88 | 8269 / 2058 | 3430 |
+| TiMePReSt | [0,7,18] | 18,88 | −2,4% | 0,84 / 0,93 | 7675 / 2353 | 3430 |
+
+- `[0,7,18]` cân bằng độ bận nhất nhưng chậm hơn `[0,8,18]`. Cả hai cùng truyền gấp đôi `[0,9,18]` (biên ở 28×28×512).
+- Val MAE ở epoch 4 như nhau giữa các partition (115–118).
+- Lưu ý nhiễu giữa các máy: PipeDream `[0,9,18]` đo 20,0 s ở `run1a` nhưng 22,1 s ở đây. So sánh tốc độ giữa các hệ phải đo trên cùng một máy (bench_comm ở B6).
 
 ### B4 — trainer, check, sweep, notebook (2026-10-14, chưa commit; chưa chạy trên Kaggle)
 
