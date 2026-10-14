@@ -1,0 +1,2 @@
+epoch,train_loss,train_mae_kcal,val_loss,val_mae_kcal,val_mae_mass,val_mae_fat,val_mae_carb,val_mae_protein,val_pmae_kcal,val_mae_kcal_ingr,val_mae_gram_present,val_ingr_f1,val_ingr_map,val_loss_presence,val_loss_gram,val_loss_total,val_gshare_presence,val_gshare_gram,val_gshare_total,lr,epoch_time_s,data_time_s,peak_mem_mb,samples,cum_time_s
+1,27.82523,155.191,31.74055,134.15011,87.75038,9.06282,11.25217,12.76197,52.36365,163.32141,26.76784,1.77563,15.50832,27.34172,4.11222,0.2866,0.88026,0.06969,0.05005,0.00028571428571428574,18.516,0.303,7532.7|7532.7,2240,18.52

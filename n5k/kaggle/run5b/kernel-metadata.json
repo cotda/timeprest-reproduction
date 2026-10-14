@@ -1,0 +1,18 @@
+{
+ "id": "kaggleolap/n5k-run5b-res320",
+ "title": "n5k-run5b-res320",
+ "code_file": "run5b.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "kaggleolap/n5k-run0-cache",
+  "kaggleolap/n5k-run0c-cache320"
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "id": "kaggleolap/n5k-run0c-cache320",
+ "title": "n5k-run0c-cache320",
+ "code_file": "run0c.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": false,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code",
+  "gillesokhin/nutrition5k-dataset"
+ ],
+ "competition_sources": [],
+ "kernel_sources": []
+}

@@ -156,6 +156,7 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - Kích thước ảnh: chạy single GPU, lr 0.02, 8 epoch, seed 0 và 1, ở cả 224 và 320 trong cùng kernel. Dùng 320 nếu, tính trên trung bình 2 seed, `(kcal320/kcal224 − 1) + (1 − mAP320/mAP224) < −0,05` (tốt hơn ít nhất 5% tổng hợp). Nếu không thì giữ 224.
   - Code: cache lưu `image_size` và từ chối cache sai kích thước (trước đây có thể lấy nhầm cache).
   - Thêm một lần chạy thử DDP trên GPU (NCCL, 1 epoch, ảnh 224).
+  - Cập nhật 04:51 UTC: `run0b` (đẩy 03:22) vẫn ở RUNNING sau 87 phút, trong khi `run0` xong trong ~10 phút. Nhiều khả năng bị treo ở bước gắn dataset gốc; không xem log hay hủy được bằng API. Vì vậy **tách `run5`** thành hai kernel, nội dung và quy tắc chọn giữ nguyên: `run5a` (ảnh 224: checks, single seed 0/1, DDP smoke; chỉ gắn `run0`) chạy ngay; `run5b` (ảnh 320: D4 với 3 partition, checks, single seed 0/1) chạy khi có cache 320. Đồng thời đẩy `run0c`, cùng nội dung với `run0b`, để thử lại. Chạy 224 và 320 ở hai kernel khác nhau không ảnh hưởng tới phép so sánh chất lượng: metric không phụ thuộc máy, chỉ thời gian thì có.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
@@ -223,7 +224,14 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
 - Ở lr 0.01 (single), tổng dinh dưỡng học tốt: MAE kcal 158 → 83 (pMAE 32,7%), mass 62 g. Phần **nguyên liệu học rất yếu**: F1 6,2%, mAP 7,8%, MAE gram trên nguyên liệu có mặt 26,6 → 25,8 (gần như không đổi).
   - Giả thuyết (chưa kiểm chứng): loss presence/gram lấy trung bình trên K = 195 nguyên liệu, nên mỗi nguyên liệu chỉ nhận gradient khoảng 1/195, trong khi loss tổng chỉ trung bình trên 5 thành phần. Đây là điểm mở (b) ở mục 10.
 
-### B5 — DDP (2026-10-14, chưa commit; chưa chạy trên GPU)
+### Ảnh 224 hay 320 (`run5a` + `run5b`, 2026-10-14, single GPU, lr 0.02, 8 epoch, seed 0/1; log ở `n5k/results/kaggle/run5a/`, `run5b/`)
+- Cách đọc số (định trước khi có kết quả 320): kcal = val MAE kcal tốt nhất; mAP = val mAP nguyên liệu ở chính epoch đó; lấy trung bình 2 seed.
+- 224 (`run5a`): seed 0: kcal 62,10 / mAP 72,81 (epoch 7); seed 1: 66,34 / 72,75 (epoch 7). **Trung bình: 64,22 / 72,78.** Test mAP 72,4 / 72,0.
+  - Hai seed lệch nhau 4,2 kcal, khớp mức dao động ±3 kcal đã thấy ở run3.
+- 320 (`run5b`): đang chạy.
+- Cache 320 (`run0c`): cùng split, cùng K=195 và cùng 2 món bị loại như cache 224; tạo trong 47 s. `run0b` (cùng nội dung) vẫn RUNNING lúc 14:04 UTC, gần 11 giờ sau khi đẩy, trong khi `run0c` bắt đầu chạy script ngay khi được đẩy. Vậy kernel commit gắn dataset gốc có lúc bị treo, nhiều khả năng cũng là nguyên nhân của lần 1.
+
+### B5 — DDP (2026-10-14, chưa commit; chạy thử trên GPU ở `run5a`)
 - File `timeprest/n5k/ddp_train.py` và config `n5k/configs/n5k_ddp.yaml`.
 - Cách chia batch: mỗi rank giữ cả model. Mỗi mini-batch M=64 **chính là mini-batch của trainer 1 GPU** (thứ tự lấy từ chính `train_loader`), được cắt thành 2 phần 32 mẫu. DDP lấy trung bình gradient, nên tương đương SGD trên trung bình loss của 64 mẫu. Optimizer, lịch lr (bước theo mini-batch) và lr 0.02 giống single.
 - Khác single: BatchNorm tính thống kê trên 32 mẫu mỗi rank, không dùng SyncBN (DDP thông thường).
@@ -233,6 +241,8 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - 2 tiến trình gloo chạy hết và ghi summary;
   - 2 epoch liền so với 1 epoch + resume: tham số và metric khớp tuyệt đối.
 - Toàn bộ test: 150 PASS.
+- Chạy thử trên 2×T4 (`run5a`, NCCL, 1 epoch, ảnh 224): chạy hết, summary có `trainer: ddp`, `ranks: 2`. Thời gian epoch 18,5 s (single cùng máy: 21,5 s), peak 7533 MB mỗi GPU. Val MAE kcal 134 sau 1 epoch là bình thường, vì cả epoch nằm trong warmup (lr cuối epoch 2,9e-4). Thời gian chính thức lấy ở B6.
+- Checks D0–D4 của code hiện tại trên 2×T4 (`run5a`): **tất cả PASS**. D4 với `[0,8,18]`: PipeDream 18,8 s/epoch, TiMePReSt 17,9 s; peak 8391/2166 MB. Tương ứng run1c là 20,0 s, chênh nhau khoảng 6%, nằm trong mức nhiễu giữa các máy.
 
 ### Sweep lr cuối (`run3`, 2026-10-14, cấu hình chốt: partition [0,8,18], direct + sum, 8 epoch, 1 seed; log ở `n5k/results/kaggle/run3/`)
 - Checks: PASS hết. Số liệu ở epoch có val MAE kcal tốt nhất.

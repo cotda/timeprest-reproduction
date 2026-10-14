@@ -20,9 +20,10 @@
 - **Không gắn dataset Nutrition5k gốc vào kernel GPU:** Kaggle tải cả 175.602 file / 12,2 GiB vào phiên
   ("Adding data ...") trước khi chạy script. Trong phiên tương tác đã thấy đứng lâu ở 99,9% (2026-10-14); với kernel commit
   `run0` thì script bắt đầu ~9 phút sau khi đẩy (bước này không phải nguyên nhân chắc chắn của lần 1 chạy 6 giờ, nguyên nhân
-  đó chưa rõ). Gắn cache nhỏ vẫn nhanh và gọn hơn. Tải từng file qua API không được (HTTP 429 sau vài chục file).
+  đó chưa rõ). Kernel commit `run0b` (CPU, cache 320, 2026-10-14) gắn dataset gốc và vẫn RUNNING sau hơn 87 phút, trong khi `run0` chỉ cần ~10 phút. Kernel thử lại `run0c`, cùng nội dung và đẩy lúc 04:51, lại chạy script ngay và xong trong ~1 phút; đến 14:04 `run0b` vẫn RUNNING. Vậy bước gắn dataset gốc có lúc bị treo, và đây là nghi phạm chính của lần 1. Nếu một kernel gắn dataset gốc chạy quá 30 phút, đẩy một kernel mới có slug khác thay vì chờ (kernel cũ phải hủy trên web). Gắn cache nhỏ vẫn nhanh và gọn hơn. Tải từng file qua API không được (HTTP 429 sau vài chục file).
   Cách làm: `run0/` (CPU, không tốn quota GPU) gắn dataset gốc và tạo `n5k_cache/`; kernel GPU chỉ gắn output của run0.
 - Các lần chạy: `run1/` (đã hủy sau ~6 giờ, không có log, chỉ để lưu vết), `run0/` (CPU: tạo cache),
   `run1a/` (weights + báo cáo dữ liệu + checks, gắn run0), `run1b/` (sweep, gắn run0 + run1a để có cache và `n5k_results/checks`).
+  `run0b/`, `run0c/` (CPU: cache 320; run0c là lần thử lại của run0b), `run5a/` (ảnh 224: checks, single, DDP smoke), `run5b/` (ảnh 320: partition, single; gắn run0 + cache 320).
 - `fetch_overhead.py`: tải riêng CSV + ảnh overhead về máy; bị giới hạn tốc độ (429), chỉ dùng khi cần vài file.
 - Sau khi đẩy code, chờ `kaggle datasets list --mine` hiện `lastUpdated` mới (giờ UTC) rồi mới đẩy kernel.
