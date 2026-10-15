@@ -1,0 +1,184 @@
+{
+  "code_hash": "1ffd8b2f03bd",
+  "config": "n5k/configs/n5k_quick.yaml",
+  "overrides": [
+    "model.name=n5k_resnet50_2s",
+    "pipeline.partition=[0,4,18]",
+    "checks.short_epochs=4",
+    "output.checks_file=n5k/results/partition2s/p4.json"
+  ],
+  "systems": [
+    "pipedream",
+    "timeprest"
+  ],
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "all_pass": true,
+  "results": [
+    {
+      "id": 0,
+      "name": "data",
+      "status": "PASS",
+      "seconds": 0.0,
+      "message": "cache, splits, labels",
+      "metrics": {
+        "n_train_val_test": [
+          2270,
+          486,
+          486
+        ],
+        "K": 195,
+        "dropped": [
+          "dish_1564159636 (val: empty depth_raw.png)",
+          "dish_1558722871 (test: missing depth_raw.png)"
+        ],
+        "dropped_frac": 0.0006,
+        "labels_finite": true,
+        "cache_dir": "/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache",
+        "build_time_s": 35.4
+      }
+    },
+    {
+      "id": 1,
+      "name": "static_equals_engine",
+      "status": "PASS",
+      "seconds": 20.6,
+      "message": "static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4",
+      "metrics": {
+        "pipedream": {
+          "max_rel_param_diff_vs_engine": 0.0
+        },
+        "timeprest": {
+          "max_rel_param_diff_vs_engine": 0.0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "dynamic_versions",
+      "status": "PASS",
+      "seconds": 48.2,
+      "message": "dynamic order, 10 mini-batches, version invariants",
+      "metrics": {
+        "pipedream": {
+          "wall_s": 19.72,
+          "peak_mem_mb": [
+            13468.0,
+            9630.6
+          ],
+          "no_recompute": true,
+          "backward_uses_forward_version": true
+        },
+        "timeprest": {
+          "wall_s": 21.71,
+          "peak_mem_mb": [
+            13468.0,
+            9630.6
+          ],
+          "no_recompute": true,
+          "forward_vertical_sync": true,
+          "backward_uses_live_version": true,
+          "micro_forwarded_with_older_version": 18
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "checkpoint_resume",
+      "status": "PASS",
+      "seconds": 99.5,
+      "message": "2 epochs vs 1 + resume (static order, deterministic), tol 1e-5",
+      "metrics": {
+        "pipedream": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0,
+          "best_after_resume": {
+            "score": 153.85561,
+            "epoch": 2
+          }
+        },
+        "timeprest": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0,
+          "best_after_resume": {
+            "score": 149.07219,
+            "epoch": 2
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "short_run",
+      "status": "PASS",
+      "seconds": 567.6,
+      "message": "short run per system on the real pipeline",
+      "metrics": {
+        "pipedream": {
+          "train_loss_by_epoch": [
+            25.97279,
+            21.05677,
+            16.91129,
+            14.17983
+          ],
+          "val_mae_kcal_by_epoch": [
+            611.4359,
+            106.7791,
+            82.78573,
+            75.23753
+          ],
+          "median_predictor_val_mae_kcal": 165.81,
+          "val_ingr_f1_by_epoch": [
+            4.58642,
+            43.41874,
+            57.51835,
+            62.09518
+          ],
+          "epoch_time_s": 58.387,
+          "busy_frac_per_gpu": "0.548|0.944",
+          "peak_mem_mb_per_gpu": "13474.0|9435.0",
+          "mb_sent_per_gpu": "13720.0|13720.0",
+          "bwd_overlap_minibatches": 34,
+          "est_full_epoch_s": 59.2,
+          "est_full_run_h": 0.49
+        },
+        "timeprest": {
+          "train_loss_by_epoch": [
+            27.45816,
+            23.17865,
+            19.41223,
+            17.23493
+          ],
+          "val_mae_kcal_by_epoch": [
+            125.45462,
+            106.32149,
+            89.35937,
+            79.18883
+          ],
+          "median_predictor_val_mae_kcal": 165.81,
+          "val_ingr_f1_by_epoch": [
+            15.24535,
+            34.98578,
+            50.44684,
+            54.46074
+          ],
+          "epoch_time_s": 58.119,
+          "busy_frac_per_gpu": "0.565|0.952",
+          "peak_mem_mb_per_gpu": "13370.7|9328.7",
+          "mb_sent_per_gpu": "13720.0|13720.0",
+          "bwd_overlap_minibatches": 34,
+          "est_full_epoch_s": 58.9,
+          "est_full_run_h": 0.49
+        }
+      }
+    }
+  ]
+}

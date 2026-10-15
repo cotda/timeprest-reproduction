@@ -15,3 +15,5 @@ Mỗi kết luận rút ra từ thí nghiệm có một file riêng trong thư m
 | 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_run7-timing.md](2026-10-15_1205_run7-timing.md) | Vì sao thời gian single dao động |
 | 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_so-sanh-tai-lieu.md](2026-10-15_1205_so-sanh-tai-lieu.md) | So sánh độ chính xác với các nghiên cứu khác trên Nutrition5k |
 | 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_two-stream-quyet-dinh.md](2026-10-15_1205_two-stream-quyet-dinh.md) | Quyết định thử mô hình two-stream R50 + R50, quy tắc chọn |
+| 2026-10-15 17:30 (09:30 UTC) | [2026-10-15_1730_two-stream-ket-qua.md](2026-10-15_1730_two-stream-ket-qua.md) | Kết quả run8_2s: two-stream đạt quy tắc (điểm −0,091), chậm 2,15 lần; pipeline cần chia lại |
+| 2026-10-15 18:04 (10:04 UTC) | [2026-10-15_1804_two-stream-partition.md](2026-10-15_1804_two-stream-partition.md) | run9: chỉ `[0,4,18]` vừa bộ nhớ; pipeline two-stream không nhanh hơn single, lệch tải 0,55 / 0,94 |

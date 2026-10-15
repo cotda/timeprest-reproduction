@@ -163,6 +163,13 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - Chạy thử `run8_2s` (single GPU, chỉ GPU0, lr 0.02, 8 epoch, seed 0 và 1; chạy xen kẽ 1s/2s/1s/2s để máy chậm dần không lệch về một bên). Mô hình một nhánh chạy lại trong cùng kernel làm mốc. lr giữ 0.02 cho cả hai (chưa sweep riêng two-stream).
   - Quy tắc chọn (đặt trước khi có số liệu, giống quy tắc ảnh 224/320): với best val kcal và mAP tại epoch đó, lấy trung bình 2 seed. Dùng two-stream nếu `(kcal2s/kcal1s − 1) + (1 − mAP2s/mAP1s) < −0,05`. Nếu không thì giữ mô hình một nhánh và ghi kết quả âm tính.
   - Nếu đạt: đo lại partition trên 2×T4 (giống `run1c`, PipeDream ở GPU0 có thể thiếu bộ nhớ), chạy lại checks D0–D4 và sweep lr ngắn, rồi chạy lại B6. Các bước này sẽ đề xuất riêng trước khi chạy.
+  - **Kết quả (`run8_2s`, xem mục 11): điểm −0,091 < −0,05, theo quy tắc chọn two-stream.** Chưa đổi `n5k_base.yaml`: two-stream cần partition mới, vì D2 của two-stream với `[0,8,18]` thiếu bộ nhớ trên GPU0. Partition và các bước tiếp theo sẽ đề xuất trước khi chạy.
+- 2026-10-15 (người dùng đồng ý "chạy bước 1 đo partition"): **partition cho two-stream** (`run9_2s_part`).
+  - Ước lượng: activation của two-stream ở 224 gần bằng mô hình một nhánh ở 320 (gấp khoảng 2 lần). Ở 320 chỉ `[0,4,18]` vừa bộ nhớ (`[0,5,18]` cần hơn 14,2 GB). Vì vậy đo cùng 3 partition `[0,5,18]`, `[0,4,18]`, `[0,6,18]`.
+  - Mỗi partition chạy đủ checks D0–D4 của two-stream (D4: 4 epoch, cả PipeDream và TiMePReSt), mỗi partition một file checks riêng.
+  - Quy tắc chọn (đặt trước khi có số liệu, giống quyết định ở 320): trong các partition có D0–D3 PASS và peak < 14 GB trên **cả hai** GPU, lấy partition có thời gian/epoch của PipeDream nhỏ nhất. Nếu không partition nào đạt thì báo lại người dùng, không tự đổi mô hình hay batch.
+  - Sau bước này mới đề xuất bước 2 (sweep lr) và bước 3 (B6 với two-stream).
+  - **Kết quả (`run9_2s_part`, xem mục 11): chọn `[0,4,18]`**, partition duy nhất vừa bộ nhớ (`[0,5,18]` và `[0,6,18]` thiếu bộ nhớ trên GPU0 ở D2). Chưa sửa config: two-stream chưa thành mô hình chính cho đến khi người dùng quyết định bước 2–3.
 - 2026-10-15 (người dùng): mỗi kết luận từ thí nghiệm cũng được ghi thành một file riêng, có ghi thời điểm, trong `n5k/notes/` (mục lục ở `n5k/notes/README.md`), để cuối dự án tổng hợp. PLAN vẫn là nơi ghi đầy đủ.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
@@ -264,6 +271,40 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - (4) "Bộ nhớ TiMePReSt ≈ PipeDream": đúng (−0,9% trên GPU0).
 - N=4 so với N=2: chậm hơn 8,5% và MAE kém hơn 1 kcal; không có lợi ở W=2.
 - (*) Thời gian của single chưa dùng để so sánh được: các lần chạy dài cho 23–27 s, trong khi sweep cùng config cho 21,5 s. Đã đo nguyên nhân ở `run7_timing` (xem mục dưới): **không phải do số GPU nhìn thấy hay do chạy sau checks**, mà do máy chậm dần theo thời gian chạy. Vì vậy chỉ so sánh tỉ lệ giữa các hệ chạy trên cùng máy (các tỉ lệ ở trên); không so sánh giá trị tuyệt đối của s/epoch giữa các kernel.
+
+### Partition của two-stream (`run9_2s_part`, 2026-10-15, chạy 09:34–10:01 UTC; checks D0–D4 với từng partition; log ở `n5k/results/kaggle/run9_2s_part/`)
+- `[0,5,18]` và `[0,6,18]`: D0, D1 PASS; **D2 thiếu bộ nhớ trên GPU0** (14,5 GB), kernel tự dừng bước đó (NCCL timeout rồi SIGABRT, khoảng 6,7 phút mỗi bước).
+- `[0,4,18]`: **D0–D4 PASS hết** (D1: khớp engine, chênh lệch 0,0). D4 4 epoch:
+
+| Hệ | s/epoch | GPU bận | Peak MB | MB truyền/epoch | Val kcal ep1→ep4 |
+|---|---|---|---|---|---|
+| PipeDream | 58,39 | 0,55 / 0,94 | 13474 / 9435 | 13720 | 611 → 75,2 |
+| TiMePReSt | 58,12 | 0,57 / 0,95 | 13371 / 9329 | 13720 | 125 → 79,2 |
+
+- Theo quy tắc: **chọn `[0,4,18]`** (partition duy nhất đạt). GPU0 chỉ dư khoảng 0,5 GB.
+- Nhận xét quan trọng:
+  - Pipeline **không nhanh hơn single GPU**: khoảng 58 s/epoch so với 59 s ở `run8_2s` (khác máy nên chênh lệch khoảng ±15%, nhưng không có dấu hiệu nhanh hơn rõ rệt).
+  - Lệch tải: GPU1 bận 94%, GPU0 chỉ 55%. Không cắt muộn hơn được vì GPU0 phải giữ activation của 2 mini-batch đang chạy (pipeline bất đồng bộ W=2), nên thiếu bộ nhớ.
+  - Peak GPU0 (13,4 GB) gần bằng single GPU (13,8 GB): ở cấu hình này pipeline bất đồng bộ không giảm được bộ nhớ lớn nhất.
+  - Truyền 13,7 GB/epoch mỗi chiều (cắt ở 56×56), gấp 4 lần mô hình một nhánh.
+  - TiMePReSt ≈ PipeDream về thời gian (tỉ lệ 0,995).
+
+### Two-stream R50 + R50 (`run8_2s`, 2026-10-15, đẩy 04:06 UTC, chạy 38 phút; single, chỉ GPU0, lr 0.02, 8 epoch; log ở `n5k/results/kaggle/run8_2s/`)
+- Checks D0–D4 của code mới (mô hình một nhánh): PASS hết.
+- Checks của two-stream trên pipeline 2 GPU (`[0,8,18]`): D0, D1 PASS (static order khớp engine, chênh lệch 0,0 cho cả hai hệ). **D2 thiếu bộ nhớ trên GPU0** (14,5 GB) rồi NCCL timeout. D3 chưa chạy. Two-stream cần partition mới cho pipeline.
+- Val ở epoch có val MAE kcal tốt nhất (cách đọc giống quyết định ảnh 224/320):
+
+| Mô hình | seed | MAE kcal | mAP | epoch | Test kcal | Test mAP | s/epoch | Peak MB |
+|---|---|---|---|---|---|---|---|---|
+| Một nhánh | 0 | 65,53 | 67,81 | 6 | 66,82 | 69,37 | 27,6 | 5642 |
+| Two-stream | 0 | 61,75 | 75,42 | 8 | 59,26 | 74,24 | 59,1 | 13822 |
+| Một nhánh | 1 | 64,21 | 72,66 | 7 | 61,36 | 71,81 | 27,3 | 5643 |
+| Two-stream | 1 | 62,73 | 72,11 | 6 | 58,90 | 73,28 | 59,3 | 13821 |
+
+- Trung bình 2 seed: một nhánh kcal 64,87 / mAP 70,24; two-stream 62,24 / 73,76. **Điểm = (62,24/64,87 − 1) + (1 − 73,76/70,24) = −0,091**, đạt ngưỡng < −0,05.
+- Kiểm tra độ vững (không thuộc quy tắc): ở epoch cuối (8), kcal 65,2 → 62,4 và mAP 72,8 → 75,3, điểm −0,077, cũng đạt. Trên test: kcal 64,1 → 59,1 (−7,8%), mAP 70,6 → 73,8. kcal tốt hơn ở cả 2 seed. mAP tại epoch tốt nhất thì seed 1 hơi kém (72,1 so với 72,7); phần lớn chênh lệch mAP đến từ seed 0, nơi mô hình một nhánh đạt kcal tốt nhất sớm (epoch 6) khi mAP còn đang tăng.
+- Chi phí: 2,15 lần thời gian (59,2 so với 27,5 s/epoch, cùng máy, chạy xen kẽ) và 2,45 lần bộ nhớ (13,8 so với 5,6 GB). Single GPU với M=64 gần chạm trần T4 (14,56 GB).
+- Kcal tính từ gram không cải thiện (114–116 so với 111–115).
 
 ### Thời gian của single (`run7_timing`, 2026-10-14, đẩy 20:14 UTC, xếp hàng đến 22:18, chạy 13 phút; log ở `n5k/results/kaggle/run7_timing/`)
 - Single, 4 epoch, seed 0, lần lượt trên cùng một máy: thấy 2 GPU → chỉ GPU0 (`CUDA_VISIBLE_DEVICES=0`) → checks D0–D4 → thấy 2 GPU → chỉ GPU0. s/epoch ở epoch 2–4:

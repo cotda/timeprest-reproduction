@@ -1,0 +1,674 @@
+[{"stream_name":"stdout","time":0.749877811,"data":"09:34:35 kernel start\n"}
+,{"stream_name":"stdout","time":0.811664857,"data":"09:34:35 [+0.0m] code 180ea68-dirty from /kaggle/input/datasets/kaggleolap/timeprest-code/timeprest_code\n"}
+,{"stream_name":"stdout","time":10.993511384,"data":"09:34:45 [+0.2m] gpus: GPU 0: Tesla T4 (UUID: GPU-3c882980-5c23-9594-0ade-c6aee9917b3d)\n"}
+,{"stream_name":"stdout","time":10.993541277,"data":"GPU 1: Tesla T4 (UUID: GPU-4d5d0b85-31e5-586b-982c-66875a6f427f)\n"}
+,{"stream_name":"stdout","time":10.993825626,"data":"09:34:45 [+0.2m] ===== weights (limit 15 min): /usr/bin/python3 -c import torchvision; torchvision.models.resnet50(weights='IMAGENET1K_V2')\n"}
+,{"stream_name":"stdout","time":26.230538111,"data":"Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth\n"}
+,{"stream_name":"stdout","time":26.331314504,"data":"\n"}
+,{"stream_name":"stdout","time":26.431678669,"data":"  0%|          | 0.00/97.8M [00:00\u003c?, ?B/s]\n"}
+,{"stream_name":"stdout","time":26.532002227,"data":" 14%|█▎        | 13.2M/97.8M [00:00\u003c00:00, 139MB/s]\n"}
+,{"stream_name":"stdout","time":26.637891199,"data":" 32%|███▏      | 31.8M/97.8M [00:00\u003c00:00, 171MB/s]\n"}
+,{"stream_name":"stdout","time":26.738642635,"data":" 49%|████▉     | 48.1M/97.8M [00:00\u003c00:00, 167MB/s]\n"}
+,{"stream_name":"stdout","time":26.839065135,"data":" 66%|██████▌   | 64.2M/97.8M [00:00\u003c00:00, 167MB/s]\n"}
+,{"stream_name":"stdout","time":26.904017093,"data":" 86%|████████▋ | 84.4M/97.8M [00:00\u003c00:00, 183MB/s]\n"}
+,{"stream_name":"stdout","time":26.904041465,"data":"100%|██████████| 97.8M/97.8M [00:00\u003c00:00, 179MB/s]\n"}
+,{"stream_name":"stdout","time":31.032595127,"data":"09:35:06 [+0.5m] ===== weights: ok (exit 0, 0.3 min)\n"}
+,{"stream_name":"stdout","time":31.032621814,"data":"09:35:06 [+0.5m] ===== p5_2s (limit 30 min): torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.checks --config n5k/configs/n5k_quick.yaml --work-dir n5k/results/partition2s/p5 --set model.name=n5k_resnet50_2s pipeline.partition=[0,5,18] checks.short_epochs=4 output.checks_file=n5k/results/partition2s/p5.json\n"}
+,{"stream_name":"stdout","time":33.02878018,"data":"W1015 09:35:08.019000 66 torch/distributed/run.py:851] \n"}
+,{"stream_name":"stdout","time":33.028806081,"data":"W1015 09:35:08.019000 66 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":33.028811658,"data":"W1015 09:35:08.019000 66 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. \n"}
+,{"stream_name":"stdout","time":33.028817594,"data":"W1015 09:35:08.019000 66 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":36.734337166,"data":"env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 1ffd8b2f03bd | gpus 2\n"}
+,{"stream_name":"stdout","time":48.46313468,"data":"\n"}
+,{"stream_name":"stdout","time":48.463169076,"data":"=== D0: data ===\n"}
+,{"stream_name":"stdout","time":48.474954406,"data":"cache: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache  source: /kaggle/input/datasets/gillesokhin/nutrition5k-dataset  image 224px  vocab K=195  build 35.4s\n"}
+,{"stream_name":"stdout","time":48.47498366,"data":"depth clip [3048, 4835]  per-gram fallback for 0 ingredient(s)\n"}
+,{"stream_name":"stdout","time":48.474990676,"data":"dropped 2: dish_1564159636 (val: empty depth_raw.png); dish_1558722871 (test: missing depth_raw.png)\n"}
+,{"stream_name":"stdout","time":48.475015194,"data":"train: n=2270  unknown-ingredient dishes=0 (kcal share 0.00%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.00 (median rel 0.0%)  mass from grams MAE=0.01 (median rel 0.0%)  fat from grams MAE=0.00 (median rel 0.0%)  carb from grams MAE=0.00 (median rel 0.0%)  protein from grams MAE=0.00 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":48.475018847,"data":"  val: n=486  unknown-ingredient dishes=6 (kcal share 0.54%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=1.37 (median rel 0.0%)  mass from grams MAE=0.63 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.25 (median rel 0.0%)  protein from grams MAE=0.04 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":48.4750219,"data":" test: n=486  unknown-ingredient dishes=2 (kcal share 0.29%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.76 (median rel 0.0%)  mass from grams MAE=0.45 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.12 (median rel 0.0%)  protein from grams MAE=0.02 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":48.47502538,"data":"[PASS] data (0.0s) - cache, splits, labels\n"}
+,{"stream_name":"stdout","time":48.475029155,"data":"    n_train_val_test: [2270, 486, 486]\n"}
+,{"stream_name":"stdout","time":48.475033317,"data":"    K: 195\n"}
+,{"stream_name":"stdout","time":48.475035796,"data":"    dropped: ['dish_1564159636 (val: empty depth_raw.png)', 'dish_1558722871 (test: missing depth_raw.png)']\n"}
+,{"stream_name":"stdout","time":48.475038497,"data":"    dropped_frac: 0.0006\n"}
+,{"stream_name":"stdout","time":48.475064714,"data":"    labels_finite: True\n"}
+,{"stream_name":"stdout","time":48.475069742,"data":"    cache_dir: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\n"}
+,{"stream_name":"stdout","time":48.475073667,"data":"    build_time_s: 35.4\n"}
+,{"stream_name":"stdout","time":48.475077652,"data":"\n"}
+,{"stream_name":"stdout","time":48.475081867,"data":"=== D1: static_equals_engine ===\n"}
+,{"stream_name":"stdout","time":68.588780735,"data":"[PASS] static_equals_engine (20.1s) - static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\n"}
+,{"stream_name":"stdout","time":68.588817861,"data":"    pipedream: {'max_rel_param_diff_vs_engine': 0.0}\n"}
+,{"stream_name":"stdout","time":68.588824435,"data":"    timeprest: {'max_rel_param_diff_vs_engine': 0.0}\n"}
+,{"stream_name":"stdout","time":68.588829161,"data":"\n"}
+,{"stream_name":"stdout","time":68.588833313,"data":"=== D2: dynamic_versions ===\n"}
+,{"stream_name":"stdout","time":74.037527227,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":74.040073963,"data":"  File \"/kaggle/working/code/timeprest/n5k/checks.py\", line 237, in main\n"}
+,{"stream_name":"stdout","time":74.040095836,"data":"    status, metrics, msg = fn(ctx)\n"}
+,{"stream_name":"stdout","time":74.040101353,"data":"                           ~~^^^^^\n"}
+,{"stream_name":"stdout","time":74.04010616,"data":"  File \"/kaggle/working/code/timeprest/n5k/checks.py\", line 109, in d2_dynamic\n"}
+,{"stream_name":"stdout","time":74.040111128,"data":"    st = rt.run_epoch(K, (b[0] for b in batches) if rank == 0 else None,\n"}
+,{"stream_name":"stdout","time":74.040115762,"data":"                      [b[1] for b in batches] if rank == W - 1 else None)\n"}
+,{"stream_name":"stdout","time":74.040120386,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 573, in run_epoch\n"}
+,{"stream_name":"stdout","time":74.040125207,"data":"    done = do_backward() if ready_kind == \"B\" else do_forward()\n"}
+,{"stream_name":"stdout","time":74.040143844,"data":"                                                   ~~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":74.040147682,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 434, in do_forward\n"}
+,{"stream_name":"stdout","time":74.040630749,"data":"    out = gf.run(lambda: self._run_keep_graph(fparams, xin))\n"}
+,{"stream_name":"stdout","time":74.040645108,"data":"  File \"/kaggle/working/code/timeprest/swap.py\", line 67, in run\n"}
+,{"stream_name":"stdout","time":74.040650252,"data":"    return fn()\n"}
+,{"stream_name":"stdout","time":74.04065481,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 434, in \u003clambda\u003e\n"}
+,{"stream_name":"stdout","time":74.040660317,"data":"    out = gf.run(lambda: self._run_keep_graph(fparams, xin))\n"}
+,{"stream_name":"stdout","time":74.040802963,"data":"                         ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.040807916,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 280, in _run_keep_graph\n"}
+,{"stream_name":"stdout","time":74.040844092,"data":"    out = functional_call(self.module, {**params, **bufs}, (x,))\n"}
+,{"stream_name":"stdout","time":74.04084894,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/_functorch/functional_call.py\", line 154, in functional_call\n"}
+,{"stream_name":"stdout","time":74.04085412,"data":"    return nn.utils.stateless._functional_call(\n"}
+,{"stream_name":"stdout","time":74.040858761,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":74.040863426,"data":"        module,\n"}
+,{"stream_name":"stdout","time":74.040867839,"data":"        ^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.040872297,"data":"    ...\u003c4 lines\u003e...\n"}
+,{"stream_name":"stdout","time":74.040876974,"data":"        strict=strict,\n"}
+,{"stream_name":"stdout","time":74.040881528,"data":"        ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.040885951,"data":"    )\n"}
+,{"stream_name":"stdout","time":74.040890307,"data":"    ^\n"}
+,{"stream_name":"stdout","time":74.040894785,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/utils/stateless.py\", line 279, in _functional_call\n"}
+,{"stream_name":"stdout","time":74.040899748,"data":"    return module(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.040916109,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":74.040921274,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.040925861,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.040930435,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":74.040935407,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.040939993,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/container.py\", line 253, in forward\n"}
+,{"stream_name":"stdout","time":74.040945001,"data":"    input = module(input)\n"}
+,{"stream_name":"stdout","time":74.040950024,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":74.040955,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.040959631,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.040972041,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":74.040977084,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.040981635,"data":"  File \"/kaggle/working/code/timeprest/n5k/model.py\", line 140, in forward\n"}
+,{"stream_name":"stdout","time":74.040986423,"data":"    return torch.cat([self.rgb(a), self.depth(b)], 1)\n"}
+,{"stream_name":"stdout","time":74.040991174,"data":"                      ~~~~~~~~^^^\n"}
+,{"stream_name":"stdout","time":74.040995901,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":74.041002076,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.041006863,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.041011449,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":74.041016278,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.041020279,"data":"  File \"/kaggle/working/code/timeprest/models.py\", line 68, in forward\n"}
+,{"stream_name":"stdout","time":74.04102409,"data":"    out = self.relu(self.bn1(self.conv1(x)))\n"}
+,{"stream_name":"stdout","time":74.041028251,"data":"                             ~~~~~~~~~~^^^\n"}
+,{"stream_name":"stdout","time":74.041032955,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":74.041037891,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.041042402,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.041047363,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":74.04105238,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":74.04105688,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/conv.py\", line 553, in forward\n"}
+,{"stream_name":"stdout","time":74.041061789,"data":"    return self._conv_forward(input, self.weight, self.bias)\n"}
+,{"stream_name":"stdout","time":74.041066441,"data":"           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.041071225,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/conv.py\", line 548, in _conv_forward\n"}
+,{"stream_name":"stdout","time":74.041076158,"data":"    return F.conv2d(\n"}
+,{"stream_name":"stdout","time":74.04108062,"data":"           ~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":74.041085083,"data":"        input, weight, bias, self.stride, self.padding, self.dilation, self.groups\n"}
+,{"stream_name":"stdout","time":74.041089843,"data":"        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":74.041094583,"data":"    )\n"}
+,{"stream_name":"stdout","time":74.041098989,"data":"    ^\n"}
+,{"stream_name":"stdout","time":74.041106019,"data":"torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 196.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 68.81 MiB is free. Including non-PyTorch memory, this process has 14.49 GiB memory in use. Of the allocated memory 13.82 GiB is allocated by PyTorch, and 435.54 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"}
+,{"stream_name":"stdout","time":74.071260661,"data":"[FAIL] dynamic_versions (5.5s) - OutOfMemoryError: CUDA out of memory. Tried to allocate 196.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 68.81 MiB is free. Including non-PyTorch memory, this process has 14.49 GiB memory in use. Of the allocated memory 13.82 GiB is allocated by PyTorch, and 435.54 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"}
+,{"stream_name":"stdout","time":74.071282996,"data":"\n"}
+,{"stream_name":"stdout","time":74.071287615,"data":"=== D3: checkpoint_resume ===\n"}
+,{"stream_name":"stdout","time":374.225308856,"data":"[rank0]:[E1015 09:40:49.409479722 ProcessGroupNCCL.cpp:689] [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=19, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=300000) ran for 300068 milliseconds before timing out.\n"}
+,{"stream_name":"stdout","time":374.227985977,"data":"[rank0]:[E1015 09:40:49.412305537 ProcessGroupNCCL.cpp:2303] [PG ID 0 PG GUID 0(default_pg) Rank 0]  failure detected by watchdog at work sequence id: 19 PG status: last enqueued work: 19, last completed work: 18\n"}
+,{"stream_name":"stdout","time":374.22829065,"data":"[rank0]:[E1015 09:40:49.412654378 ProcessGroupNCCL.cpp:733] Stack trace of the failed collective: \n"}
+,{"stream_name":"stdout","time":374.228303841,"data":"#0 barrier from /usr/local/lib/python3.13/dist-packages/torch/distributed/distributed_c10d.py:5030\n"}
+,{"stream_name":"stdout","time":374.228309207,"data":"#1 wrapper from /usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83\n"}
+,{"stream_name":"stdout","time":374.22831414,"data":"#2 d3_resume from /kaggle/working/code/timeprest/n5k/checks.py:150\n"}
+,{"stream_name":"stdout","time":374.228341263,"data":"#3 main from /kaggle/working/code/timeprest/n5k/checks.py:237\n"}
+,{"stream_name":"stdout","time":374.228346493,"data":"#4 \u003cmodule\u003e from /kaggle/working/code/timeprest/n5k/checks.py:264\n"}
+,{"stream_name":"stdout","time":374.228351715,"data":"#5 _run_code from \u003cfrozen runpy\u003e:88\n"}
+,{"stream_name":"stdout","time":374.228356537,"data":"#6 _run_module_as_main from \u003cfrozen runpy\u003e:203\n"}
+,{"stream_name":"stdout","time":374.228361472,"data":"\n"}
+,{"stream_name":"stdout","time":374.228368057,"data":"[rank0]:[E1015 09:40:49.412719377 ProcessGroupNCCL.cpp:2636] [PG ID 0 PG GUID 0(default_pg) Rank 0] First PG on this rank to signal dumping.\n"}
+,{"stream_name":"stdout","time":375.043973098,"data":"[rank1]:[E1015 09:40:50.228197536 ProcessGroupNCCL.cpp:1849] [PG ID 0 PG GUID 0(default_pg) Rank 1] Observed flight recorder dump signal from another rank via TCPStore.\n"}
+,{"stream_name":"stdout","time":375.044082565,"data":"[rank1]:[E1015 09:40:50.228418103 ProcessGroupNCCL.cpp:1914] [PG ID 0 PG GUID 0(default_pg) Rank 1] Received a dump signal due to a collective timeout from  rank 0 and we will try our best to dump the debug info. Last enqueued NCCL work: 18, last completed NCCL work: 18.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. \n"}
+,{"stream_name":"stdout","time":375.044178876,"data":"[rank1]:[E1015 09:40:50.228587268 ProcessGroupNCCL.cpp:1628] [PG ID 0 PG GUID 0(default_pg) Rank 1] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0\n"}
+,{"stream_name":"stdout","time":375.176507282,"data":"[rank0]:[E1015 09:40:50.360727857 ProcessGroupNCCL.cpp:1914] [PG ID 0 PG GUID 0(default_pg) Rank 0] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 19, last completed NCCL work: 18.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. \n"}
+,{"stream_name":"stdout","time":375.176613434,"data":"[rank0]:[E1015 09:40:50.360917504 ProcessGroupNCCL.cpp:1628] [PG ID 0 PG GUID 0(default_pg) Rank 0] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0\n"}
+,{"stream_name":"stdout","time":434.741843012,"data":"[rank0]:[E1015 09:41:49.926105492 ProcessGroupNCCL.cpp:750] [Rank 0] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.\n"}
+,{"stream_name":"stdout","time":434.741926801,"data":"[rank0]:[E1015 09:41:49.926145338 ProcessGroupNCCL.cpp:764] [Rank 0] To avoid data inconsistency, we are taking the entire process down.\n"}
+,{"stream_name":"stdout","time":434.744518635,"data":"[rank0]:[E1015 09:41:49.928795493 ProcessGroupNCCL.cpp:2119] [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=19, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=300000) ran for 300068 milliseconds before timing out.\n"}
+,{"stream_name":"stdout","time":434.744537645,"data":"Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:692 (most recent call first):\n"}
+,{"stream_name":"stdout","time":434.744543422,"data":"frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string\u003cchar, std::char_traits\u003cchar\u003e, std::allocator\u003cchar\u003e \u003e) + 0x9d (0x78927bb7205d in /usr/local/lib/python3.13/dist-packages/torch/lib/libc10.so)\n"}
+,{"stream_name":"stdout","time":434.74454971,"data":"frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional\u003cstd::chrono::duration\u003clong, std::ratio\u003c1l, 1000l\u003e \u003e \u003e) + 0x2a7 (0x7891a2d37d87 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.744555254,"data":"frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x17b1 (0x7891a2d3d1a1 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.744560266,"data":"frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x7891a2d3e597 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.744565915,"data":"frame #4: \u003cunknown function\u003e + 0xecdb4 (0x78926e66edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)\n"}
+,{"stream_name":"stdout","time":434.744571808,"data":"frame #5: \u003cunknown function\u003e + 0x9cb84 (0x7892af4beb84 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":434.744577458,"data":"frame #6: __clone + 0x44 (0x7892af54bb64 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":434.744582556,"data":"\n"}
+,{"stream_name":"stdout","time":434.745724752,"data":"terminate called after throwing an instance of 'c10::DistBackendError'\n"}
+,{"stream_name":"stdout","time":434.746410296,"data":"  what():  [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=19, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=300000) ran for 300068 milliseconds before timing out.\n"}
+,{"stream_name":"stdout","time":434.746421042,"data":"Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:692 (most recent call first):\n"}
+,{"stream_name":"stdout","time":434.746426376,"data":"frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string\u003cchar, std::char_traits\u003cchar\u003e, std::allocator\u003cchar\u003e \u003e) + 0x9d (0x78927bb7205d in /usr/local/lib/python3.13/dist-packages/torch/lib/libc10.so)\n"}
+,{"stream_name":"stdout","time":434.746431645,"data":"frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional\u003cstd::chrono::duration\u003clong, std::ratio\u003c1l, 1000l\u003e \u003e \u003e) + 0x2a7 (0x7891a2d37d87 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.746436585,"data":"frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x17b1 (0x7891a2d3d1a1 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.746554052,"data":"frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x7891a2d3e597 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.746574638,"data":"frame #4: \u003cunknown function\u003e + 0xecdb4 (0x78926e66edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)\n"}
+,{"stream_name":"stdout","time":434.746580273,"data":"frame #5: \u003cunknown function\u003e + 0x9cb84 (0x7892af4beb84 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":434.746585074,"data":"frame #6: __clone + 0x44 (0x7892af54bb64 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":434.746589047,"data":"\n"}
+,{"stream_name":"stdout","time":434.74659271,"data":"Exception raised from run at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2125 (most recent call first):\n"}
+,{"stream_name":"stdout","time":434.746600759,"data":"frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string\u003cchar, std::char_traits\u003cchar\u003e, std::allocator\u003cchar\u003e \u003e) + 0x9d (0x78927bb7205d in /usr/local/lib/python3.13/dist-packages/torch/lib/libc10.so)\n"}
+,{"stream_name":"stdout","time":434.746605854,"data":"frame #1: \u003cunknown function\u003e + 0x9b5d75 (0x7891a259ed75 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":434.746610043,"data":"frame #2: \u003cunknown function\u003e + 0xecdb4 (0x78926e66edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)\n"}
+,{"stream_name":"stdout","time":434.746614127,"data":"frame #3: \u003cunknown function\u003e + 0x9cb84 (0x7892af4beb84 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":434.746623245,"data":"frame #4: __clone + 0x44 (0x7892af54bb64 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":434.74662719,"data":"\n"}
+,{"stream_name":"stdout","time":434.781068677,"data":"Exception in thread Exception in thread Thread-38 (_wait):\n"}
+,{"stream_name":"stdout","time":434.781632445,"data":"Exception in thread Exception in thread Thread-42 (_wait):\n"}
+,{"stream_name":"stdout","time":434.781792941,"data":"Exception in thread Thread-36 (_wait):\n"}
+,{"stream_name":"stdout","time":434.7824828,"data":"Exception in thread Thread-35 (_wait)Thread-41 (_wait)Thread-40 (_wait):\n"}
+,{"stream_name":"stdout","time":434.782744446,"data":":\n"}
+,{"stream_name":"stdout","time":434.784486402,"data":"Exception in thread Exception in thread Thread-37 (_wait)Thread-39 (_wait):\n"}
+,{"stream_name":"stdout","time":434.785157521,"data":":\n"}
+,{"stream_name":"stdout","time":434.785365989,"data":":\n"}
+,{"stream_name":"stdout","time":434.786346308,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.787104626,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.787121089,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.787125894,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.787130936,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.78713572,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.78714006,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.787164508,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.787169826,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.787174468,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.787366993,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.787928269,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.788508829,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.78852577,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.788531812,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.788536715,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.788541438,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.788546225,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.788550233,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.788555311,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.788559802,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.788563714,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.78895469,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.789596327,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.789714119,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.790384097,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.790396456,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.790401835,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.790536747,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.790549454,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.790554652,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.791167489,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.79117676,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.791190442,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.791194587,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.791198553,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.791202497,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.791318539,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.791918446,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.791930763,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.79193525,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.791939381,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.791943753,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.791947985,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.791971754,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.791977022,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.791981167,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.791985327,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.792097126,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.792108745,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.792113604,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.792259801,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.792985172,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.79300133,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.793027145,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.793031813,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.793035926,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.793039392,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.793043486,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.79304718,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.79305077,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.793054817,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.793059346,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.793063959,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.793067706,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.7932054,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.79359968,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.794276451,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.794296247,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.79430076,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.794304636,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.794308682,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.794312721,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.794497856,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":434.795083774,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":434.795092583,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":434.795096862,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.795321891,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":434.795329759,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":434.795333761,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":434.795337563,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.795341709,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.79534601,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.795350685,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":434.795355811,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":434.795360976,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":434.795380856,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":434.795384741,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:38026\n"}
+,{"stream_name":"stdout","time":435.030595491,"data":"W1015 09:41:50.021000 66 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 75 closing signal SIGTERM\n"}
+,{"stream_name":"stdout","time":435.446006801,"data":"E1015 09:41:50.437000 66 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: -6) local_rank: 0 (pid: 74) of binary: /usr/bin/python3\n"}
+,{"stream_name":"stdout","time":435.451441999,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":435.452456764,"data":"  File \"/usr/local/bin/torchrun\", line 10, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":435.452493244,"data":"    sys.exit(main())\n"}
+,{"stream_name":"stdout","time":435.452499094,"data":"             ~~~~^^\n"}
+,{"stream_name":"stdout","time":435.452503733,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py\", line 362, in wrapper\n"}
+,{"stream_name":"stdout","time":435.452509545,"data":"    return f(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":435.452513615,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py\", line 990, in main\n"}
+,{"stream_name":"stdout","time":435.452518212,"data":"    run(args)\n"}
+,{"stream_name":"stdout","time":435.452521852,"data":"    ~~~^^^^^^\n"}
+,{"stream_name":"stdout","time":435.452525584,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py\", line 981, in run\n"}
+,{"stream_name":"stdout","time":435.452529721,"data":"    elastic_launch(\n"}
+,{"stream_name":"stdout","time":435.45254587,"data":"    ~~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stdout","time":435.452549758,"data":"        config=config,\n"}
+,{"stream_name":"stdout","time":435.452553906,"data":"        ~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stdout","time":435.452633411,"data":"        entrypoint=cmd,\n"}
+,{"stream_name":"stdout","time":435.452641737,"data":"        ~~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stdout","time":435.452645485,"data":"    )(*cmd_args)\n"}
+,{"stream_name":"stdout","time":435.452659837,"data":"    ~^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":435.452663563,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py\", line 170, in __call__\n"}
+,{"stream_name":"stdout","time":435.452668362,"data":"    return launch_agent(self._config, self._entrypoint, list(args))\n"}
+,{"stream_name":"stdout","time":435.452742025,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py\", line 317, in launch_agent\n"}
+,{"stream_name":"stdout","time":435.452749388,"data":"    raise ChildFailedError(\n"}
+,{"stream_name":"stdout","time":435.452753374,"data":"    ...\u003c2 lines\u003e...\n"}
+,{"stream_name":"stdout","time":435.452757545,"data":"    )\n"}
+,{"stream_name":"stdout","time":435.452787185,"data":"torch.distributed.elastic.multiprocessing.errors.ChildFailedError: \n"}
+,{"stream_name":"stdout","time":435.452791696,"data":"====================================================\n"}
+,{"stream_name":"stdout","time":435.452796115,"data":"timeprest.n5k.checks FAILED\n"}
+,{"stream_name":"stdout","time":435.452799938,"data":"----------------------------------------------------\n"}
+,{"stream_name":"stdout","time":435.452803751,"data":"Failures:\n"}
+,{"stream_name":"stdout","time":435.452808184,"data":"[1]:\n"}
+,{"stream_name":"stdout","time":435.452812558,"data":"  time      : 2026-10-15_09:41:50\n"}
+,{"stream_name":"stdout","time":435.45281691,"data":"  host      : 9ae8c2197d27\n"}
+,{"stream_name":"stdout","time":435.452821335,"data":"  rank      : 1 (local_rank: 1)\n"}
+,{"stream_name":"stdout","time":435.452825186,"data":"  exitcode  : -15 (pid: 75)\n"}
+,{"stream_name":"stdout","time":435.452828917,"data":"  error_file: \u003cN/A\u003e\n"}
+,{"stream_name":"stdout","time":435.452832794,"data":"  traceback : Signal 15 (SIGTERM) received by PID 75\n"}
+,{"stream_name":"stdout","time":435.452848556,"data":"----------------------------------------------------\n"}
+,{"stream_name":"stdout","time":435.452857157,"data":"Root Cause (first observed failure):\n"}
+,{"stream_name":"stdout","time":435.452859826,"data":"[0]:\n"}
+,{"stream_name":"stdout","time":435.452863003,"data":"  time      : 2026-10-15_09:41:50\n"}
+,{"stream_name":"stdout","time":435.452876185,"data":"  host      : 9ae8c2197d27\n"}
+,{"stream_name":"stdout","time":435.452880393,"data":"  rank      : 0 (local_rank: 0)\n"}
+,{"stream_name":"stdout","time":435.452885368,"data":"  exitcode  : -6 (pid: 74)\n"}
+,{"stream_name":"stdout","time":435.452889693,"data":"  error_file: \u003cN/A\u003e\n"}
+,{"stream_name":"stdout","time":435.452893879,"data":"  traceback : Signal 6 (SIGABRT) received by PID 74\n"}
+,{"stream_name":"stdout","time":435.452897482,"data":"====================================================\n"}
+,{"stream_name":"stdout","time":436.104301752,"data":"09:41:51 [+7.3m] ===== p5_2s: failed (exit 1, 6.8 min)\n"}
+,{"stream_name":"stdout","time":436.104328061,"data":"09:41:51 [+7.3m] ===== p4_2s (limit 30 min): torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.checks --config n5k/configs/n5k_quick.yaml --work-dir n5k/results/partition2s/p4 --set model.name=n5k_resnet50_2s pipeline.partition=[0,4,18] checks.short_epochs=4 output.checks_file=n5k/results/partition2s/p4.json\n"}
+,{"stream_name":"stdout","time":437.973796543,"data":"W1015 09:41:52.964000 218 torch/distributed/run.py:851] \n"}
+,{"stream_name":"stdout","time":437.973818889,"data":"W1015 09:41:52.964000 218 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":437.97382228,"data":"W1015 09:41:52.964000 218 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. \n"}
+,{"stream_name":"stdout","time":437.973825399,"data":"W1015 09:41:52.964000 218 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":440.928122162,"data":"env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 1ffd8b2f03bd | gpus 2\n"}
+,{"stream_name":"stdout","time":443.324534349,"data":"\n"}
+,{"stream_name":"stdout","time":443.324572848,"data":"=== D0: data ===\n"}
+,{"stream_name":"stdout","time":443.327453176,"data":"cache: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache  source: /kaggle/input/datasets/gillesokhin/nutrition5k-dataset  image 224px  vocab K=195  build 35.4s\n"}
+,{"stream_name":"stdout","time":443.327504959,"data":"depth clip [3048, 4835]  per-gram fallback for 0 ingredient(s)\n"}
+,{"stream_name":"stdout","time":443.327510219,"data":"dropped 2: dish_1564159636 (val: empty depth_raw.png); dish_1558722871 (test: missing depth_raw.png)\n"}
+,{"stream_name":"stdout","time":443.327514569,"data":"train: n=2270  unknown-ingredient dishes=0 (kcal share 0.00%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.00 (median rel 0.0%)  mass from grams MAE=0.01 (median rel 0.0%)  fat from grams MAE=0.00 (median rel 0.0%)  carb from grams MAE=0.00 (median rel 0.0%)  protein from grams MAE=0.00 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":443.327519862,"data":"  val: n=486  unknown-ingredient dishes=6 (kcal share 0.54%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=1.37 (median rel 0.0%)  mass from grams MAE=0.63 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.25 (median rel 0.0%)  protein from grams MAE=0.04 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":443.327524849,"data":" test: n=486  unknown-ingredient dishes=2 (kcal share 0.29%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.76 (median rel 0.0%)  mass from grams MAE=0.45 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.12 (median rel 0.0%)  protein from grams MAE=0.02 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":443.327529782,"data":"[PASS] data (0.0s) - cache, splits, labels\n"}
+,{"stream_name":"stdout","time":443.327533729,"data":"    n_train_val_test: [2270, 486, 486]\n"}
+,{"stream_name":"stdout","time":443.327538296,"data":"    K: 195\n"}
+,{"stream_name":"stdout","time":443.327542234,"data":"    dropped: ['dish_1564159636 (val: empty depth_raw.png)', 'dish_1558722871 (test: missing depth_raw.png)']\n"}
+,{"stream_name":"stdout","time":443.327554044,"data":"    dropped_frac: 0.0006\n"}
+,{"stream_name":"stdout","time":443.327557966,"data":"    labels_finite: True\n"}
+,{"stream_name":"stdout","time":443.327561612,"data":"    cache_dir: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\n"}
+,{"stream_name":"stdout","time":443.327565733,"data":"    build_time_s: 35.4\n"}
+,{"stream_name":"stdout","time":443.327587299,"data":"\n"}
+,{"stream_name":"stdout","time":443.327605135,"data":"=== D1: static_equals_engine ===\n"}
+,{"stream_name":"stdout","time":463.928037267,"data":"[PASS] static_equals_engine (20.6s) - static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\n"}
+,{"stream_name":"stdout","time":463.928067195,"data":"    pipedream: {'max_rel_param_diff_vs_engine': 0.0}\n"}
+,{"stream_name":"stdout","time":463.928071602,"data":"    timeprest: {'max_rel_param_diff_vs_engine': 0.0}\n"}
+,{"stream_name":"stdout","time":463.928075516,"data":"\n"}
+,{"stream_name":"stdout","time":463.928079122,"data":"=== D2: dynamic_versions ===\n"}
+,{"stream_name":"stdout","time":512.166057093,"data":"[PASS] dynamic_versions (48.2s) - dynamic order, 10 mini-batches, version invariants\n"}
+,{"stream_name":"stdout","time":512.166099673,"data":"    pipedream: {'wall_s': 19.72, 'peak_mem_mb': [13468.0, 9630.6], 'no_recompute': True, 'backward_uses_forward_version': True}\n"}
+,{"stream_name":"stdout","time":512.166106619,"data":"    timeprest: {'wall_s': 21.71, 'peak_mem_mb': [13468.0, 9630.6], 'no_recompute': True, 'forward_vertical_sync': True, 'backward_uses_live_version': True, 'micro_forwarded_with_older_version': 18}\n"}
+,{"stream_name":"stdout","time":512.166113858,"data":"\n"}
+,{"stream_name":"stdout","time":512.166118503,"data":"=== D3: checkpoint_resume ===\n"}
+,{"stream_name":"stdout","time":611.686457807,"data":"[PASS] checkpoint_resume (99.5s) - 2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\n"}
+,{"stream_name":"stdout","time":611.686514474,"data":"    pipedream: {'resumed': True, 'param_max_diff': 0.0, 'last_epoch_loss_diff': 0.0, 'best_after_resume': {'score': 153.85561, 'epoch': 2}}\n"}
+,{"stream_name":"stdout","time":611.686521837,"data":"    timeprest: {'resumed': True, 'param_max_diff': 0.0, 'last_epoch_loss_diff': 0.0, 'best_after_resume': {'score': 149.07219, 'epoch': 2}}\n"}
+,{"stream_name":"stdout","time":611.686526781,"data":"\n"}
+,{"stream_name":"stdout","time":611.686531039,"data":"=== D4: short_run ===\n"}
+,{"stream_name":"stdout","time":613.575338784,"data":"[n5k dist] W=2 system=pipedream N=1 M=64 backward=stashed rule=graph partition=[0, 4, 18] K=195 params/stage=0.44M,48.18M device=cuda:0\n"}
+,{"stream_name":"stdout","time":694.893693113,"data":"ep   1/4 | train 25.9728 (MAE kcal 137.9) | val_loss 392.8220 | MAE kcal 611.4 (238.7%) mass 755.2 fat 15.19 carb 17.36 prot 15.85 | ingr F1 4.6 mAP 6.6 | lr 1.18e-03 | epoch 57.6s busy[0.549|0.950] peak[13470.0|9431.9]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.05h\n"}
+,{"stream_name":"stdout","time":762.396753059,"data":"ep   2/4 | train 21.0568 (MAE kcal 102.6) | val_loss 20.9616 | MAE kcal 106.8 (41.7%) mass 65.6 fat 6.48 carb 8.76 prot 9.37 | ingr F1 43.4 mAP 35.9 | lr 1.90e-02 | epoch 58.1s busy[0.551|0.946] peak[13474.0|9435.0]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.03h\n"}
+,{"stream_name":"stdout","time":829.873994346,"data":"ep   3/4 | train 16.9113 (MAE kcal 85.1) | val_loss 17.5300 | MAE kcal 82.8 (32.3%) mass 49.9 fat 5.61 carb 7.13 prot 7.68 | ingr F1 57.5 mAP 47.0 | lr 1.22e-02 | epoch 57.9s busy[0.547|0.946] peak[13474.0|9435.0]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.02h\n"}
+,{"stream_name":"stdout","time":897.7628989,"data":"ep   4/4 | train 14.1798 (MAE kcal 74.0) | val_loss 16.3994 | MAE kcal 75.2 (29.4%) mass 43.7 fat 5.15 carb 6.99 prot 7.09 | ingr F1 62.1 mAP 50.2 | lr 3.74e-03 | epoch 58.4s busy[0.548|0.944] peak[13474.0|9435.0]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.00h\n"}
+,{"stream_name":"stdout","time":900.514724774,"data":"[n5k dist] W=2 system=timeprest N=2 M=64 backward=committed rule=graph partition=[0, 4, 18] K=195 params/stage=0.44M,48.18M device=cuda:0\n"}
+,{"stream_name":"stdout","time":975.266835815,"data":"ep   1/4 | train 27.4582 (MAE kcal 147.4) | val_loss 28.2067 | MAE kcal 125.5 (49.0%) mass 102.5 fat 8.68 carb 11.08 prot 12.70 | ingr F1 15.2 mAP 13.8 | lr 1.18e-03 | epoch 57.9s busy[0.562|0.958] peak[13370.7|9329.4]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.05h\n"}
+,{"stream_name":"stdout","time":1042.79785885,"data":"ep   2/4 | train 23.1787 (MAE kcal 114.0) | val_loss 23.6433 | MAE kcal 106.3 (41.5%) mass 64.6 fat 7.33 carb 8.30 prot 10.38 | ingr F1 35.0 mAP 27.7 | lr 1.90e-02 | epoch 58.1s busy[0.565|0.952] peak[13370.7|9328.7]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.03h\n"}
+,{"stream_name":"stdout","time":1110.677305888,"data":"ep   3/4 | train 19.4122 (MAE kcal 94.0) | val_loss 19.5926 | MAE kcal 89.4 (34.9%) mass 57.3 fat 6.16 carb 7.47 prot 7.97 | ingr F1 50.4 mAP 37.8 | lr 1.22e-02 | epoch 58.3s busy[0.563|0.951] peak[13370.7|9328.7]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.02h\n"}
+,{"stream_name":"stdout","time":1178.471525797,"data":"ep   4/4 | train 17.2349 (MAE kcal 83.1) | val_loss 18.8196 | MAE kcal 79.2 (30.9%) mass 51.0 fat 5.63 carb 7.32 prot 7.39 | ingr F1 54.5 mAP 39.8 | lr 3.74e-03 | epoch 58.1s busy[0.565|0.952] peak[13370.7|9328.7]MB sent[13720.0|13720.0]MB bwd_overlap=34 | ETA 0.00h\n"}
+,{"stream_name":"stdout","time":1179.240122895,"data":"[PASS] short_run (567.6s) - short run per system on the real pipeline\n"}
+,{"stream_name":"stdout","time":1179.240153275,"data":"    pipedream: {'train_loss_by_epoch': [25.97279, 21.05677, 16.91129, 14.17983], 'val_mae_kcal_by_epoch': [611.4359, 106.7791, 82.78573, 75.23753], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [4.58642, 43.41874, 57.51835, 62.09518], 'epoch_time_s': 58.387, 'busy_frac_per_gpu': '0.548|0.944', 'peak_mem_mb_per_gpu': '13474.0|9435.0', 'mb_sent_per_gpu': '13720.0|13720.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 59.2, 'est_full_run_h': 0.49}\n"}
+,{"stream_name":"stdout","time":1179.240164344,"data":"    timeprest: {'train_loss_by_epoch': [27.45816, 23.17865, 19.41223, 17.23493], 'val_mae_kcal_by_epoch': [125.45462, 106.32149, 89.35937, 79.18883], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [15.24535, 34.98578, 50.44684, 54.46074], 'epoch_time_s': 58.119, 'busy_frac_per_gpu': '0.565|0.952', 'peak_mem_mb_per_gpu': '13370.7|9328.7', 'mb_sent_per_gpu': '13720.0|13720.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 58.9, 'est_full_run_h': 0.49}\n"}
+,{"stream_name":"stdout","time":1179.240171839,"data":"\n"}
+,{"stream_name":"stdout","time":1179.240177082,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":1179.240280282,"data":"D0 data                    PASS      0.0s\n"}
+,{"stream_name":"stdout","time":1179.240299085,"data":"D1 static_equals_engine    PASS     20.6s\n"}
+,{"stream_name":"stdout","time":1179.240304829,"data":"D2 dynamic_versions        PASS     48.2s\n"}
+,{"stream_name":"stdout","time":1179.240309824,"data":"D3 checkpoint_resume       PASS     99.5s\n"}
+,{"stream_name":"stdout","time":1179.240314744,"data":"D4 short_run               PASS    567.6s\n"}
+,{"stream_name":"stdout","time":1179.240319726,"data":"ALL N5K CHECKS PASS: True\n"}
+,{"stream_name":"stdout","time":1179.245335663,"data":"saved n5k/results/partition2s/p4.json\n"}
+,{"stream_name":"stdout","time":1179.245479111,"data":"N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 20.6, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 48.2, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 19.72, \"peak_mem_mb\": [13468.0, 9630.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 21.71, \"peak_mem_mb\": [13468.0, 9630.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 18}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 99.5, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 153.85561, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.07219, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 567.6, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [25.97279, 21.05677, 16.91129, 14.17983], \"val_mae_kcal_by_epoch\": [611.4359, 106.7791, 82.78573, 75.23753], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.58642, 43.41874, 57.51835, 62.09518], \"epoch_time_s\": 58.387, \"busy_frac_per_gpu\": \"0.548|0.944\", \"peak_mem_mb_per_gpu\": \"13474.0|9435.0\", \"mb_sent_per_gpu\": \"13720.0|13720.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 59.2, \"est_full_run_h\": 0.49}, \"timeprest\": {\"train_loss_by_epoch\": [27.45816, 23.17865, 19.41223, 17.23493], \"val_mae_kcal_by_epoch\": [125.45462, 106.32149, 89.35937, 79.18883], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [15.24535, 34.98578, 50.44684, 54.46074], \"epoch_time_s\": 58.119, \"busy_frac_per_gpu\": \"0.565|0.952\", \"peak_mem_mb_per_gpu\": \"13370.7|9328.7\", \"mb_sent_per_gpu\": \"13720.0|13720.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 58.9, \"est_full_run_h\": 0.49}}}]}\n"}
+,{"stream_name":"stdout","time":1186.337138769,"data":"09:54:21 [+19.8m] ===== p4_2s: ok (exit 0, 12.5 min)\n"}
+,{"stream_name":"stdout","time":1186.337169797,"data":"09:54:21 [+19.8m] ===== p6_2s (limit 30 min): torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.checks --config n5k/configs/n5k_quick.yaml --work-dir n5k/results/partition2s/p6 --set model.name=n5k_resnet50_2s pipeline.partition=[0,6,18] checks.short_epochs=4 output.checks_file=n5k/results/partition2s/p6.json\n"}
+,{"stream_name":"stdout","time":1188.209301854,"data":"W1015 09:54:23.200000 3561 torch/distributed/run.py:851] \n"}
+,{"stream_name":"stdout","time":1188.209328986,"data":"W1015 09:54:23.200000 3561 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":1188.209335191,"data":"W1015 09:54:23.200000 3561 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. \n"}
+,{"stream_name":"stdout","time":1188.209341514,"data":"W1015 09:54:23.200000 3561 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":1191.366953751,"data":"env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 1ffd8b2f03bd | gpus 2\n"}
+,{"stream_name":"stdout","time":1193.718306181,"data":"\n"}
+,{"stream_name":"stdout","time":1193.71834386,"data":"=== D0: data ===\n"}
+,{"stream_name":"stdout","time":1193.721083378,"data":"cache: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache  source: /kaggle/input/datasets/gillesokhin/nutrition5k-dataset  image 224px  vocab K=195  build 35.4s\n"}
+,{"stream_name":"stdout","time":1193.721108544,"data":"depth clip [3048, 4835]  per-gram fallback for 0 ingredient(s)\n"}
+,{"stream_name":"stdout","time":1193.721113864,"data":"dropped 2: dish_1564159636 (val: empty depth_raw.png); dish_1558722871 (test: missing depth_raw.png)\n"}
+,{"stream_name":"stdout","time":1193.72111788,"data":"train: n=2270  unknown-ingredient dishes=0 (kcal share 0.00%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.00 (median rel 0.0%)  mass from grams MAE=0.01 (median rel 0.0%)  fat from grams MAE=0.00 (median rel 0.0%)  carb from grams MAE=0.00 (median rel 0.0%)  protein from grams MAE=0.00 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":1193.721122604,"data":"  val: n=486  unknown-ingredient dishes=6 (kcal share 0.54%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=1.37 (median rel 0.0%)  mass from grams MAE=0.63 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.25 (median rel 0.0%)  protein from grams MAE=0.04 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":1193.721127024,"data":" test: n=486  unknown-ingredient dishes=2 (kcal share 0.29%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.76 (median rel 0.0%)  mass from grams MAE=0.45 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.12 (median rel 0.0%)  protein from grams MAE=0.02 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":1193.721131163,"data":"[PASS] data (0.0s) - cache, splits, labels\n"}
+,{"stream_name":"stdout","time":1193.721134763,"data":"    n_train_val_test: [2270, 486, 486]\n"}
+,{"stream_name":"stdout","time":1193.721138441,"data":"    K: 195\n"}
+,{"stream_name":"stdout","time":1193.72114234,"data":"    dropped: ['dish_1564159636 (val: empty depth_raw.png)', 'dish_1558722871 (test: missing depth_raw.png)']\n"}
+,{"stream_name":"stdout","time":1193.721274644,"data":"    dropped_frac: 0.0006\n"}
+,{"stream_name":"stdout","time":1193.721289927,"data":"    labels_finite: True\n"}
+,{"stream_name":"stdout","time":1193.721295252,"data":"    cache_dir: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\n"}
+,{"stream_name":"stdout","time":1193.721309975,"data":"    build_time_s: 35.4\n"}
+,{"stream_name":"stdout","time":1193.721314209,"data":"\n"}
+,{"stream_name":"stdout","time":1193.721320346,"data":"=== D1: static_equals_engine ===\n"}
+,{"stream_name":"stdout","time":1212.640274488,"data":"[PASS] static_equals_engine (18.9s) - static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\n"}
+,{"stream_name":"stdout","time":1212.640314593,"data":"    pipedream: {'max_rel_param_diff_vs_engine': 0.0}\n"}
+,{"stream_name":"stdout","time":1212.640321079,"data":"    timeprest: {'max_rel_param_diff_vs_engine': 0.0}\n"}
+,{"stream_name":"stdout","time":1212.640326111,"data":"\n"}
+,{"stream_name":"stdout","time":1212.64033073,"data":"=== D2: dynamic_versions ===\n"}
+,{"stream_name":"stdout","time":1217.925437686,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1217.928155439,"data":"  File \"/kaggle/working/code/timeprest/n5k/checks.py\", line 237, in main\n"}
+,{"stream_name":"stdout","time":1217.928185234,"data":"    status, metrics, msg = fn(ctx)\n"}
+,{"stream_name":"stdout","time":1217.928190881,"data":"                           ~~^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928195596,"data":"  File \"/kaggle/working/code/timeprest/n5k/checks.py\", line 109, in d2_dynamic\n"}
+,{"stream_name":"stdout","time":1217.928200479,"data":"    st = rt.run_epoch(K, (b[0] for b in batches) if rank == 0 else None,\n"}
+,{"stream_name":"stdout","time":1217.928216994,"data":"                      [b[1] for b in batches] if rank == W - 1 else None)\n"}
+,{"stream_name":"stdout","time":1217.9282207,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 573, in run_epoch\n"}
+,{"stream_name":"stdout","time":1217.928224459,"data":"    done = do_backward() if ready_kind == \"B\" else do_forward()\n"}
+,{"stream_name":"stdout","time":1217.928228093,"data":"                                                   ~~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1217.928232076,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 434, in do_forward\n"}
+,{"stream_name":"stdout","time":1217.928235742,"data":"    out = gf.run(lambda: self._run_keep_graph(fparams, xin))\n"}
+,{"stream_name":"stdout","time":1217.928239192,"data":"  File \"/kaggle/working/code/timeprest/swap.py\", line 67, in run\n"}
+,{"stream_name":"stdout","time":1217.928242772,"data":"    return fn()\n"}
+,{"stream_name":"stdout","time":1217.928265464,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 434, in \u003clambda\u003e\n"}
+,{"stream_name":"stdout","time":1217.92827132,"data":"    out = gf.run(lambda: self._run_keep_graph(fparams, xin))\n"}
+,{"stream_name":"stdout","time":1217.928274811,"data":"                         ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.92827842,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 280, in _run_keep_graph\n"}
+,{"stream_name":"stdout","time":1217.928282297,"data":"    out = functional_call(self.module, {**params, **bufs}, (x,))\n"}
+,{"stream_name":"stdout","time":1217.928285614,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/_functorch/functional_call.py\", line 154, in functional_call\n"}
+,{"stream_name":"stdout","time":1217.928289421,"data":"    return nn.utils.stateless._functional_call(\n"}
+,{"stream_name":"stdout","time":1217.928292986,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":1217.928296358,"data":"        module,\n"}
+,{"stream_name":"stdout","time":1217.928299752,"data":"        ^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928303175,"data":"    ...\u003c4 lines\u003e...\n"}
+,{"stream_name":"stdout","time":1217.928307507,"data":"        strict=strict,\n"}
+,{"stream_name":"stdout","time":1217.928496994,"data":"        ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.92851505,"data":"    )\n"}
+,{"stream_name":"stdout","time":1217.928518962,"data":"    ^\n"}
+,{"stream_name":"stdout","time":1217.928522506,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/utils/stateless.py\", line 279, in _functional_call\n"}
+,{"stream_name":"stdout","time":1217.92852705,"data":"    return module(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928530984,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":1217.928534848,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928538398,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928551491,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":1217.92855542,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928558971,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/container.py\", line 253, in forward\n"}
+,{"stream_name":"stdout","time":1217.928562862,"data":"    input = module(input)\n"}
+,{"stream_name":"stdout","time":1217.928574778,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":1217.928578732,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928582282,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928585934,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":1217.928589772,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928593354,"data":"  File \"/kaggle/working/code/timeprest/n5k/model.py\", line 140, in forward\n"}
+,{"stream_name":"stdout","time":1217.92859706,"data":"    return torch.cat([self.rgb(a), self.depth(b)], 1)\n"}
+,{"stream_name":"stdout","time":1217.928600661,"data":"                                   ~~~~~~~~~~^^^\n"}
+,{"stream_name":"stdout","time":1217.9286042,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":1217.928608069,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928611581,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928615132,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":1217.92861921,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.92862279,"data":"  File \"/kaggle/working/code/timeprest/models.py\", line 70, in forward\n"}
+,{"stream_name":"stdout","time":1217.928626468,"data":"    out = self.bn3(self.conv3(out))\n"}
+,{"stream_name":"stdout","time":1217.928629944,"data":"                   ~~~~~~~~~~^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928633467,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":1217.928637256,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.92864073,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928644272,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":1217.928648009,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1217.928652331,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/conv.py\", line 553, in forward\n"}
+,{"stream_name":"stdout","time":1217.928656174,"data":"    return self._conv_forward(input, self.weight, self.bias)\n"}
+,{"stream_name":"stdout","time":1217.928659783,"data":"           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.928663429,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/conv.py\", line 548, in _conv_forward\n"}
+,{"stream_name":"stdout","time":1217.928667246,"data":"    return F.conv2d(\n"}
+,{"stream_name":"stdout","time":1217.928670693,"data":"           ~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":1217.928674116,"data":"        input, weight, bias, self.stride, self.padding, self.dilation, self.groups\n"}
+,{"stream_name":"stdout","time":1217.9286778,"data":"        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1217.9286815,"data":"    )\n"}
+,{"stream_name":"stdout","time":1217.928684806,"data":"    ^\n"}
+,{"stream_name":"stdout","time":1217.928697742,"data":"torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 196.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 8.81 MiB is free. Including non-PyTorch memory, this process has 14.55 GiB memory in use. Of the allocated memory 13.83 GiB is allocated by PyTorch, and 487.22 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"}
+,{"stream_name":"stdout","time":1217.967076263,"data":"[FAIL] dynamic_versions (5.3s) - OutOfMemoryError: CUDA out of memory. Tried to allocate 196.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 8.81 MiB is free. Including non-PyTorch memory, this process has 14.55 GiB memory in use. Of the allocated memory 13.83 GiB is allocated by PyTorch, and 487.22 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"}
+,{"stream_name":"stdout","time":1217.967100315,"data":"\n"}
+,{"stream_name":"stdout","time":1217.967104548,"data":"=== D3: checkpoint_resume ===\n"}
+,{"stream_name":"stdout","time":1518.110022826,"data":"[rank0]:[E1015 09:59:53.294130108 ProcessGroupNCCL.cpp:689] [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=19, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=300000) ran for 300065 milliseconds before timing out.\n"}
+,{"stream_name":"stdout","time":1518.110077614,"data":"[rank0]:[E1015 09:59:53.294295958 ProcessGroupNCCL.cpp:2303] [PG ID 0 PG GUID 0(default_pg) Rank 0]  failure detected by watchdog at work sequence id: 19 PG status: last enqueued work: 19, last completed work: 18\n"}
+,{"stream_name":"stdout","time":1518.110391048,"data":"[rank0]:[E1015 09:59:53.294699311 ProcessGroupNCCL.cpp:733] Stack trace of the failed collective: \n"}
+,{"stream_name":"stdout","time":1518.110409495,"data":"#0 barrier from /usr/local/lib/python3.13/dist-packages/torch/distributed/distributed_c10d.py:5030\n"}
+,{"stream_name":"stdout","time":1518.110416211,"data":"#1 wrapper from /usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83\n"}
+,{"stream_name":"stdout","time":1518.110421453,"data":"#2 d3_resume from /kaggle/working/code/timeprest/n5k/checks.py:150\n"}
+,{"stream_name":"stdout","time":1518.110426666,"data":"#3 main from /kaggle/working/code/timeprest/n5k/checks.py:237\n"}
+,{"stream_name":"stdout","time":1518.110431857,"data":"#4 \u003cmodule\u003e from /kaggle/working/code/timeprest/n5k/checks.py:264\n"}
+,{"stream_name":"stdout","time":1518.110556287,"data":"#5 _run_code from \u003cfrozen runpy\u003e:88\n"}
+,{"stream_name":"stdout","time":1518.110577225,"data":"#6 _run_module_as_main from \u003cfrozen runpy\u003e:203\n"}
+,{"stream_name":"stdout","time":1518.110583516,"data":"\n"}
+,{"stream_name":"stdout","time":1518.110589497,"data":"[rank0]:[E1015 09:59:53.294772486 ProcessGroupNCCL.cpp:2636] [PG ID 0 PG GUID 0(default_pg) Rank 0] First PG on this rank to signal dumping.\n"}
+,{"stream_name":"stdout","time":1519.065685791,"data":"[rank0]:[E1015 09:59:54.249947301 ProcessGroupNCCL.cpp:1914] [PG ID 0 PG GUID 0(default_pg) Rank 0] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 19, last completed NCCL work: 18.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. \n"}
+,{"stream_name":"stdout","time":1519.066227042,"data":"[rank1]:[E1015 09:59:54.250040201 ProcessGroupNCCL.cpp:1849] [PG ID 0 PG GUID 0(default_pg) Rank 1] Observed flight recorder dump signal from another rank via TCPStore.\n"}
+,{"stream_name":"stdout","time":1519.066238843,"data":"[rank0]:[E1015 09:59:54.250167164 ProcessGroupNCCL.cpp:1628] [PG ID 0 PG GUID 0(default_pg) Rank 0] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0\n"}
+,{"stream_name":"stdout","time":1519.066246946,"data":"[rank1]:[E1015 09:59:54.250242962 ProcessGroupNCCL.cpp:1914] [PG ID 0 PG GUID 0(default_pg) Rank 1] Received a dump signal due to a collective timeout from  rank 0 and we will try our best to dump the debug info. Last enqueued NCCL work: 18, last completed NCCL work: 18.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. \n"}
+,{"stream_name":"stdout","time":1519.066254181,"data":"[rank1]:[E1015 09:59:54.250362367 ProcessGroupNCCL.cpp:1628] [PG ID 0 PG GUID 0(default_pg) Rank 1] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0\n"}
+,{"stream_name":"stdout","time":1578.61599315,"data":"[rank0]:[E1015 10:00:53.800118531 ProcessGroupNCCL.cpp:750] [Rank 0] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.\n"}
+,{"stream_name":"stdout","time":1578.616046246,"data":"[rank0]:[E1015 10:00:53.800168557 ProcessGroupNCCL.cpp:764] [Rank 0] To avoid data inconsistency, we are taking the entire process down.\n"}
+,{"stream_name":"stdout","time":1578.617637255,"data":"[rank0]:[E1015 10:00:53.801840034 ProcessGroupNCCL.cpp:2119] [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=19, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=300000) ran for 300065 milliseconds before timing out.\n"}
+,{"stream_name":"stdout","time":1578.61765825,"data":"Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:692 (most recent call first):\n"}
+,{"stream_name":"stdout","time":1578.617681377,"data":"frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string\u003cchar, std::char_traits\u003cchar\u003e, std::allocator\u003cchar\u003e \u003e) + 0x9d (0x7e6ad6f7205d in /usr/local/lib/python3.13/dist-packages/torch/lib/libc10.so)\n"}
+,{"stream_name":"stdout","time":1578.617688902,"data":"frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional\u003cstd::chrono::duration\u003clong, std::ratio\u003c1l, 1000l\u003e \u003e \u003e) + 0x2a7 (0x7e69fe137d87 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.617695658,"data":"frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x17b1 (0x7e69fe13d1a1 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.617700979,"data":"frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x7e69fe13e597 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.617719226,"data":"frame #4: \u003cunknown function\u003e + 0xecdb4 (0x7e6ac9a6edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)\n"}
+,{"stream_name":"stdout","time":1578.617725552,"data":"frame #5: \u003cunknown function\u003e + 0x9cb84 (0x7e6b0a8d1b84 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":1578.61774252,"data":"frame #6: __clone + 0x44 (0x7e6b0a95eb64 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":1578.61774704,"data":"\n"}
+,{"stream_name":"stdout","time":1578.617751065,"data":"terminate called after throwing an instance of 'c10::DistBackendError'\n"}
+,{"stream_name":"stdout","time":1578.618344156,"data":"  what():  [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=19, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=300000) ran for 300065 milliseconds before timing out.\n"}
+,{"stream_name":"stdout","time":1578.618356752,"data":"Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:692 (most recent call first):\n"}
+,{"stream_name":"stdout","time":1578.61836143,"data":"frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string\u003cchar, std::char_traits\u003cchar\u003e, std::allocator\u003cchar\u003e \u003e) + 0x9d (0x7e6ad6f7205d in /usr/local/lib/python3.13/dist-packages/torch/lib/libc10.so)\n"}
+,{"stream_name":"stdout","time":1578.618366295,"data":"frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional\u003cstd::chrono::duration\u003clong, std::ratio\u003c1l, 1000l\u003e \u003e \u003e) + 0x2a7 (0x7e69fe137d87 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.618373179,"data":"frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x17b1 (0x7e69fe13d1a1 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.618394321,"data":"frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x7e69fe13e597 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.618399591,"data":"frame #4: \u003cunknown function\u003e + 0xecdb4 (0x7e6ac9a6edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)\n"}
+,{"stream_name":"stdout","time":1578.618403842,"data":"frame #5: \u003cunknown function\u003e + 0x9cb84 (0x7e6b0a8d1b84 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":1578.618408798,"data":"frame #6: __clone + 0x44 (0x7e6b0a95eb64 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":1578.61841315,"data":"\n"}
+,{"stream_name":"stdout","time":1578.618417574,"data":"Exception raised from run at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2125 (most recent call first):\n"}
+,{"stream_name":"stdout","time":1578.618421737,"data":"frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string\u003cchar, std::char_traits\u003cchar\u003e, std::allocator\u003cchar\u003e \u003e) + 0x9d (0x7e6ad6f7205d in /usr/local/lib/python3.13/dist-packages/torch/lib/libc10.so)\n"}
+,{"stream_name":"stdout","time":1578.618426564,"data":"frame #1: \u003cunknown function\u003e + 0x9b5d75 (0x7e69fd99ed75 in /usr/local/lib/python3.13/dist-packages/torch/lib/libtorch_cuda.so)\n"}
+,{"stream_name":"stdout","time":1578.618430974,"data":"frame #2: \u003cunknown function\u003e + 0xecdb4 (0x7e6ac9a6edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)\n"}
+,{"stream_name":"stdout","time":1578.618435761,"data":"frame #3: \u003cunknown function\u003e + 0x9cb84 (0x7e6b0a8d1b84 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":1578.61844006,"data":"frame #4: __clone + 0x44 (0x7e6b0a95eb64 in /lib/x86_64-linux-gnu/libc.so.6)\n"}
+,{"stream_name":"stdout","time":1578.618445964,"data":"\n"}
+,{"stream_name":"stdout","time":1578.622133285,"data":"Exception in thread Thread-35 (_wait):\n"}
+,{"stream_name":"stdout","time":1578.622896163,"data":"Exception in thread Thread-41 (_wait)Exception in thread Exception in thread Thread-37 (_wait)Exception in thread Thread-38 (_wait):\n"}
+,{"stream_name":"stdout","time":1578.623069611,"data":":\n"}
+,{"stream_name":"stdout","time":1578.623194271,"data":"Thread-40 (_wait):\n"}
+,{"stream_name":"stdout","time":1578.623775261,"data":"Exception in thread Thread-36 (_wait):\n"}
+,{"stream_name":"stdout","time":1578.625266356,"data":"Exception in thread Thread-42 (_wait):\n"}
+,{"stream_name":"stdout","time":1578.626403284,"data":":\n"}
+,{"stream_name":"stdout","time":1578.6274437,"data":"Exception in thread Thread-39 (_wait):\n"}
+,{"stream_name":"stdout","time":1578.628506431,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.629541196,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.629557144,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.6296367,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.62983762,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.629847581,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.62992154,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.629929392,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.630360528,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.630875794,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.630890304,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.630894868,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.630998766,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.63105779,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.631064465,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.631069031,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.63182379,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.631836342,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.631840272,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.631843862,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.631847628,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.631851168,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.632352863,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.632362295,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.632366977,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.632371201,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.632375455,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.632379521,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.632383699,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.632388351,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.632961822,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.632975711,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.632979889,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.632984135,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.632988942,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.633117156,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.633122233,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.633187709,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.633195849,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.633200461,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.633204176,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.633207729,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.633211423,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.633214819,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.633218219,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.633910992,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.633923809,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.633928257,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.633932416,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.633936438,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.633954813,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.633959073,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.633963269,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.633967178,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.633970757,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.634454303,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.634932425,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.634946667,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.634951152,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.634954477,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.634958403,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.634962238,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.634965751,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.634969444,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.634972949,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.634985332,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.635245986,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.636599048,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.636614172,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.636618908,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.636622895,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.636626943,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.636632,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.636636709,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1578.636736544,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.636744227,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.636748332,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.636760618,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.637048576,"data":"  File \"/usr/lib/python3.13/threading.py\", line 1044, in _bootstrap_inner\n"}
+,{"stream_name":"stdout","time":1578.637057613,"data":"    self.run()\n"}
+,{"stream_name":"stdout","time":1578.637061882,"data":"    ~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.637065778,"data":"  File \"/usr/lib/python3.13/threading.py\", line 995, in run\n"}
+,{"stream_name":"stdout","time":1578.637069818,"data":"    self._target(*self._args, **self._kwargs)\n"}
+,{"stream_name":"stdout","time":1578.637073833,"data":"    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1578.637077832,"data":"  File \"/kaggle/working/code/timeprest/dist/runtime.py\", line 53, in _wait\n"}
+,{"stream_name":"stdout","time":1578.637082085,"data":"    work.wait()\n"}
+,{"stream_name":"stdout","time":1578.637177052,"data":"    ~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":1578.637185239,"data":"RuntimeError: [/pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:547] Connection closed by peer [172.19.2.2]:53987\n"}
+,{"stream_name":"stdout","time":1578.989073341,"data":"W1015 10:00:53.979000 3561 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 3570 closing signal SIGTERM\n"}
+,{"stream_name":"stdout","time":1579.404548647,"data":"E1015 10:00:54.395000 3561 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: -6) local_rank: 0 (pid: 3569) of binary: /usr/bin/python3\n"}
+,{"stream_name":"stdout","time":1579.409633403,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":1579.410584696,"data":"  File \"/usr/local/bin/torchrun\", line 10, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":1579.41060777,"data":"    sys.exit(main())\n"}
+,{"stream_name":"stdout","time":1579.410612852,"data":"             ~~~~^^\n"}
+,{"stream_name":"stdout","time":1579.410616716,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py\", line 362, in wrapper\n"}
+,{"stream_name":"stdout","time":1579.41062144,"data":"    return f(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":1579.410625728,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py\", line 990, in main\n"}
+,{"stream_name":"stdout","time":1579.410643575,"data":"    run(args)\n"}
+,{"stream_name":"stdout","time":1579.410647482,"data":"    ~~~^^^^^^\n"}
+,{"stream_name":"stdout","time":1579.41065112,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py\", line 981, in run\n"}
+,{"stream_name":"stdout","time":1579.410654779,"data":"    elastic_launch(\n"}
+,{"stream_name":"stdout","time":1579.410658428,"data":"    ~~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stdout","time":1579.410662639,"data":"        config=config,\n"}
+,{"stream_name":"stdout","time":1579.41066669,"data":"        ~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stdout","time":1579.410675303,"data":"        entrypoint=cmd,\n"}
+,{"stream_name":"stdout","time":1579.410678903,"data":"        ~~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stdout","time":1579.410682704,"data":"    )(*cmd_args)\n"}
+,{"stream_name":"stdout","time":1579.410686365,"data":"    ~^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":1579.410690212,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py\", line 170, in __call__\n"}
+,{"stream_name":"stdout","time":1579.410727008,"data":"    return launch_agent(self._config, self._entrypoint, list(args))\n"}
+,{"stream_name":"stdout","time":1579.410739109,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py\", line 317, in launch_agent\n"}
+,{"stream_name":"stdout","time":1579.410744793,"data":"    raise ChildFailedError(\n"}
+,{"stream_name":"stdout","time":1579.410855585,"data":"    ...\u003c2 lines\u003e...\n"}
+,{"stream_name":"stdout","time":1579.410860611,"data":"    )\n"}
+,{"stream_name":"stdout","time":1579.410864893,"data":"torch.distributed.elastic.multiprocessing.errors.ChildFailedError: \n"}
+,{"stream_name":"stdout","time":1579.410869285,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":1579.410873277,"data":"timeprest.n5k.checks FAILED\n"}
+,{"stream_name":"stdout","time":1579.41088171,"data":"------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":1579.410887859,"data":"Failures:\n"}
+,{"stream_name":"stdout","time":1579.410896088,"data":"[1]:\n"}
+,{"stream_name":"stdout","time":1579.410898818,"data":"  time      : 2026-10-15_10:00:54\n"}
+,{"stream_name":"stdout","time":1579.410901245,"data":"  host      : 9ae8c2197d27\n"}
+,{"stream_name":"stdout","time":1579.410903685,"data":"  rank      : 1 (local_rank: 1)\n"}
+,{"stream_name":"stdout","time":1579.410906242,"data":"  exitcode  : -15 (pid: 3570)\n"}
+,{"stream_name":"stdout","time":1579.410908664,"data":"  error_file: \u003cN/A\u003e\n"}
+,{"stream_name":"stdout","time":1579.410911263,"data":"  traceback : Signal 15 (SIGTERM) received by PID 3570\n"}
+,{"stream_name":"stdout","time":1579.41091381,"data":"------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":1579.410916364,"data":"Root Cause (first observed failure):\n"}
+,{"stream_name":"stdout","time":1579.410918786,"data":"[0]:\n"}
+,{"stream_name":"stdout","time":1579.410921175,"data":"  time      : 2026-10-15_10:00:53\n"}
+,{"stream_name":"stdout","time":1579.410923623,"data":"  host      : 9ae8c2197d27\n"}
+,{"stream_name":"stdout","time":1579.410926131,"data":"  rank      : 0 (local_rank: 0)\n"}
+,{"stream_name":"stdout","time":1579.410928565,"data":"  exitcode  : -6 (pid: 3569)\n"}
+,{"stream_name":"stdout","time":1579.411008996,"data":"  error_file: \u003cN/A\u003e\n"}
+,{"stream_name":"stdout","time":1579.411019389,"data":"  traceback : Signal 6 (SIGABRT) received by PID 3569\n"}
+,{"stream_name":"stdout","time":1579.411023462,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":1581.414304576,"data":"10:00:56 [+26.3m] ===== p6_2s: failed (exit 1, 6.6 min)\n"}
+,{"stream_name":"stdout","time":1581.600724666,"data":"10:00:56 [+26.3m] KERNEL_DONE [{\"step\": \"weights\", \"status\": \"ok\", \"minutes\": 0.3}, {\"step\": \"p5_2s\", \"status\": \"failed\", \"minutes\": 6.8}, {\"step\": \"p4_2s\", \"status\": \"ok\", \"minutes\": 12.5}, {\"step\": \"p6_2s\", \"status\": \"failed\", \"minutes\": 6.6}]\n"}
+,{"stream_name":"stderr","time":1584.090228732,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1584.09027433,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1584.452230196,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1584.452260135,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1585.311789616,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1586.460762025,"data":"[NbConvertApp] Writing 278079 bytes to __results__.html\n"}
+]

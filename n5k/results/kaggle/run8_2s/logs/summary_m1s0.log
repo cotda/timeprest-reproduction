@@ -1,0 +1,4 @@
+system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch
+single            0.02   8         65.53 ( 6)          66.05    25.8     76.5      6.5269     27.8
+best lr per system: {'single': 0.02}
+N5K_SWEEP_JSON [{"system": "single", "lr": 0.02, "epochs": 8, "best_val_mae_kcal": 65.53315, "best_epoch": 6, "last_val_mae_kcal": 66.05273, "last_val_pmae_kcal": 25.78277, "last_val_ingr_f1": 76.47668, "last_train_loss": 6.52691, "epoch_s": 27.843}]
