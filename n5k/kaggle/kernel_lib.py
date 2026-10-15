@@ -15,6 +15,7 @@ import os
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import zipfile
 
@@ -58,6 +59,68 @@ def restore_results():
     return prev
 
 
+def _descendants(pid: int) -> list:
+    try:
+        import psutil
+        return psutil.Process(pid).children(recursive=True)
+    except Exception:                         # no psutil, or the process is gone
+        return []
+
+
+def _kill(procs):
+    for q in procs:
+        try:
+            q.kill()
+        except Exception:
+            pass
+
+
+def run_step(cmd, limit_s: float, log_path: str, env=None, grace_s: float = 60.0, poll_s: float = 5.0):
+    """Run `cmd` under coreutils `timeout` (TERM at limit_s, KILL grace_s later), teeing its output to
+    log_path and stdout. -> (exit code, output lines).
+
+    torchrun starts each worker in a session of its own, which `timeout` (it signals its own process
+    group) does not reach: a worker that outlives torchrun keeps the output pipe open and reading
+    until EOF would never end. So every descendant seen while the step runs is recorded and, once
+    `timeout` has exited (or at the hard deadline), those still alive are killed."""
+    lines, seen = [], {}
+    p = subprocess.Popen([TIMEOUT, "-k", f"{int(grace_s)}", f"{int(limit_s)}s", *cmd], stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT, text=True, env=env)
+
+    def reader():
+        with open(log_path, "w") as log:
+            for line in p.stdout:
+                log.write(line)
+                log.flush()
+                print(line, end="", flush=True)
+                lines.append(line)
+
+    t = threading.Thread(target=reader, daemon=True)
+    t.start()
+    deadline = time.time() + limit_s + 2 * grace_s
+    while p.poll() is None and time.time() < deadline:
+        for q in _descendants(p.pid):
+            seen[q.pid] = q
+        time.sleep(poll_s)
+    if p.poll() is None:                      # `timeout` itself did not end the step
+        seen.update({q.pid: q for q in _descendants(p.pid)})
+        p.kill()
+    code = p.wait()
+    _kill(seen.values())
+    t.join(grace_s)
+    if t.is_alive():                          # something unseen still holds the pipe: leave the (daemon) reader
+        lines.append("[kernel_lib] output pipe still open after the step ended; stopped reading\n")
+    return code, lines
+
+
+def save_results():
+    """CODE/n5k/results (no checkpoints) -> WORK/n5k_results; after every step, so a kernel stopped by
+    Kaggle still has the results of the steps that finished."""
+    if os.path.isdir(os.path.join(CODE, "n5k", "results")):
+        shutil.copytree(os.path.join(CODE, "n5k", "results"), os.path.join(WORK, "n5k_results"), dirs_exist_ok=True,
+                        ignore=shutil.ignore_patterns("*.pt", "*.pt.tmp", "work"))
+
+
 def run(steps, stop_if_failed=(), budget_min=600.0, restore=False, margin_min=8.0):
     """steps = [(name, cmd, limit_min)]. A step gets min(limit, budget left - margin) minutes; exit
     code 124/137 of `timeout` is recorded as status "timeout"."""
@@ -88,30 +151,20 @@ def run(steps, stop_if_failed=(), budget_min=600.0, restore=False, margin_min=8.
             say(f"skip {name}: no time left")
             continue
         say(f"===== {name} (limit {lim:.0f} min): {' '.join(cmd)}")
-        t0, lines = time.time(), []
-        with open(os.path.join(LOGS, f"{name}.log"), "w") as log:
-            p = subprocess.Popen([TIMEOUT, "-k", "60", f"{int(lim * 60)}s", *cmd], stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT, text=True, env=env)
-            for line in p.stdout:
-                log.write(line)
-                log.flush()
-                print(line, end="", flush=True)
-                lines.append(line)
-            p.wait()
-        status = "ok" if p.returncode == 0 else "timeout" if p.returncode in (124, 137) else "failed"
-        rec = {"step": name, "status": status, "exit": p.returncode, "minutes": round((time.time() - t0) / 60, 1),
+        t0 = time.time()
+        code, lines = run_step(cmd, lim * 60, os.path.join(LOGS, f"{name}.log"), env)
+        status = "ok" if code == 0 else "timeout" if code in (124, 137, -9) else "failed"
+        rec = {"step": name, "status": status, "exit": code, "minutes": round((time.time() - t0) / 60, 1),
                "json": [l.strip() for l in lines if "_JSON " in l][-1:], "tail": [l.rstrip() for l in lines[-15:]]}
         summary["steps"].append(rec)
+        save_results()
         save()
-        say(f"===== {name}: {status} (exit {p.returncode}, {rec['minutes']} min)")
+        say(f"===== {name}: {status} (exit {code}, {rec['minutes']} min)")
         if status != "ok" and name in stop_if_failed:
             say(f"step {name} {status}: stopping")
             break
 
-    dst = os.path.join(WORK, "n5k_results")
-    if os.path.isdir("n5k/results"):
-        shutil.copytree("n5k/results", dst, dirs_exist_ok=True,
-                        ignore=shutil.ignore_patterns("*.pt", "*.pt.tmp", "work"))
+    save_results()
     os.chdir(WORK)
     shutil.rmtree(CODE, ignore_errors=True)        # keep the kernel output small (code = the input dataset)
     summary["finished"] = time.strftime("%Y-%m-%d %H:%M:%S")

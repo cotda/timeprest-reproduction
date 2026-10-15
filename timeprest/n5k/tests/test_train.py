@@ -121,3 +121,13 @@ def test_dist_train_writes_summary(fake):
     assert s["best_epoch"] == 1 and np.isfinite(s["test_mae_kcal"]) and "test_ingr_map" in s
     row = next(csv.DictReader(open(out_dir / "metrics.csv")))
     assert {"val_mae_kcal", "train_mae_kcal", "busy_frac", "peak_mem_mb"} <= set(row)
+
+
+@pytest.mark.parametrize("name", ["single", "timeprest"])
+def test_two_stream_model_trains_and_tests(fake, tmp_path, name):
+    """PLAN mục 10 (2026-10-15): the two-stream model runs through the same trainers unchanged."""
+    cfg = cfg_for(fake, name, ["training.lr=0.001", "training.epochs=1", "model.name=n5k_resnet50_2s"])
+    a = EngineTrainer(cfg, "cpu", str(tmp_path / "a"), verbose=False)
+    rows = a.fit()
+    assert np.isfinite(rows[-1]["train_loss"]) and np.isfinite(a.test_best()["test_mae_kcal"])
+    assert type(a.engine.stages[0][0]).__name__ == "DualBlock"

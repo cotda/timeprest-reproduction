@@ -1,0 +1,193 @@
+{
+ "started": "2026-10-14 14:05:15",
+ "budget_min": 180,
+ "steps": [
+  {
+   "step": "weights",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.3,
+   "json": [],
+   "tail": [
+    "Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth",
+    "",
+    "  0%|          | 0.00/97.8M [00:00<?, ?B/s]",
+    " 18%|\u2588\u258a        | 17.6M/97.8M [00:00<00:00, 184MB/s]",
+    " 43%|\u2588\u2588\u2588\u2588\u258e     | 41.8M/97.8M [00:00<00:00, 224MB/s]",
+    " 68%|\u2588\u2588\u2588\u2588\u2588\u2588\u258a   | 66.1M/97.8M [00:00<00:00, 238MB/s]",
+    " 93%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258e| 90.6M/97.8M [00:00<00:00, 245MB/s]",
+    "100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 97.8M/97.8M [00:00<00:00, 238MB/s]"
+   ]
+  },
+  {
+   "step": "p5_320",
+   "status": "failed",
+   "exit": 1,
+   "minutes": 9.4,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": false, \"results\": [{\"id\": 4, \"name\": \"short_run\", \"status\": \"FAIL\", \"seconds\": 178.2, \"message\": \"OutOfMemoryError: CUDA out of memory. Tried to allocate 400.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 342.81 MiB is free. Including non-PyTorch memory, this process has 14.22 GiB memory in use. Of the allocated memory 12.41 GiB is allocated by PyTorch, and 1.59 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\", \"metrics\": {}}]}"
+   ],
+   "tail": [
+    "  host      : c1e8e9737448",
+    "  rank      : 1 (local_rank: 1)",
+    "  exitcode  : -15 (pid: 74)",
+    "  error_file: <N/A>",
+    "  traceback : Signal 15 (SIGTERM) received by PID 74",
+    "----------------------------------------------------",
+    "Root Cause (first observed failure):",
+    "[0]:",
+    "  time      : 2026-10-14_14:15:04",
+    "  host      : c1e8e9737448",
+    "  rank      : 0 (local_rank: 0)",
+    "  exitcode  : -6 (pid: 73)",
+    "  error_file: <N/A>",
+    "  traceback : Signal 6 (SIGABRT) received by PID 73",
+    "===================================================="
+   ]
+  },
+  {
+   "step": "p4_320",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 10.3,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": false, \"results\": [{\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 606.5, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.2428, 20.82055, 16.90182, 14.50082], \"val_mae_kcal_by_epoch\": [256.00195, 95.12957, 81.25254, 72.75807], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [1.06593, 44.46163, 55.77396, 60.6221], \"epoch_time_s\": 60.947, \"busy_frac_per_gpu\": \"0.569|0.942\", \"peak_mem_mb_per_gpu\": \"12003.6|7997.0\", \"mb_sent_per_gpu\": \"14000.0|14000.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 61.8, \"est_full_run_h\": 0.51}, \"timeprest\": {\"train_loss_by_epoch\": [27.5635, 23.5887, 19.9396, 17.63539], \"val_mae_kcal_by_epoch\": [206.49164, 109.89311, 81.63836, 73.97448], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.57389, 37.43378, 49.4341, 52.48303], \"epoch_time_s\": 58.82, \"busy_frac_per_gpu\": \"0.564|0.950\", \"peak_mem_mb_per_gpu\": \"11601.9|7642.8\", \"mb_sent_per_gpu\": \"14000.0|14000.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 59.6, \"est_full_run_h\": 0.5}}}]}"
+   ],
+   "tail": [
+    "ep   4/4 | train 14.5008 (MAE kcal 77.9) | val_loss 16.4781 | MAE kcal 72.8 (28.4%) mass 47.1 fat 5.00 carb 7.11 prot 7.16 | ingr F1 60.6 mAP 51.0 | lr 3.74e-03 | epoch 60.9s busy[0.569|0.942] peak[12003.6|7997.0]MB sent[14000.0|14000.0]MB bwd_overlap=34 | ETA 0.00h",
+    "[n5k dist] W=2 system=timeprest N=2 M=64 backward=committed rule=graph partition=[0, 4, 18] K=195 params/stage=0.23M,24.09M device=cuda:0",
+    "ep   1/4 | train 27.5635 (MAE kcal 145.9) | val_loss 68.6805 | MAE kcal 206.5 (80.6%) mass 140.9 fat 11.75 carb 12.65 prot 16.57 | ingr F1 4.6 mAP 7.2 | lr 1.18e-03 | epoch 57.4s busy[0.569|0.960] peak[11601.9|7643.7]MB sent[14000.0|14000.0]MB bwd_overlap=34 | ETA 0.05h",
+    "ep   2/4 | train 23.5887 (MAE kcal 116.1) | val_loss 23.4261 | MAE kcal 109.9 (42.9%) mass 78.0 fat 7.24 carb 9.44 prot 10.17 | ingr F1 37.4 mAP 27.2 | lr 1.90e-02 | epoch 58.3s busy[0.572|0.949] peak[11601.9|7642.8]MB sent[14000.0|14000.0]MB bwd_overlap=34 | ETA 0.03h",
+    "ep   3/4 | train 19.9396 (MAE kcal 95.8) | val_loss 19.7186 | MAE kcal 81.6 (31.9%) mass 55.1 fat 5.75 carb 7.55 prot 7.54 | ingr F1 49.4 mAP 36.4 | lr 1.22e-02 | epoch 58.4s busy[0.576|0.951] peak[11601.9|7642.8]MB sent[14000.0|14000.0]MB bwd_overlap=34 | ETA 0.02h",
+    "ep   4/4 | train 17.6354 (MAE kcal 84.3) | val_loss 18.9407 | MAE kcal 74.0 (28.9%) mass 51.1 fat 5.33 carb 7.40 prot 7.18 | ingr F1 52.5 mAP 39.9 | lr 3.74e-03 | epoch 58.8s busy[0.564|0.950] peak[11601.9|7642.8]MB sent[14000.0|14000.0]MB bwd_overlap=34 | ETA 0.00h",
+    "[PASS] short_run (606.5s) - short run per system on the real pipeline",
+    "    pipedream: {'train_loss_by_epoch': [26.2428, 20.82055, 16.90182, 14.50082], 'val_mae_kcal_by_epoch': [256.00195, 95.12957, 81.25254, 72.75807], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [1.06593, 44.46163, 55.77396, 60.6221], 'epoch_time_s': 60.947, 'busy_frac_per_gpu': '0.569|0.942', 'peak_mem_mb_per_gpu': '12003.6|7997.0', 'mb_sent_per_gpu': '14000.0|14000.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 61.8, 'est_full_run_h': 0.51}",
+    "    timeprest: {'train_loss_by_epoch': [27.5635, 23.5887, 19.9396, 17.63539], 'val_mae_kcal_by_epoch': [206.49164, 109.89311, 81.63836, 73.97448], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [4.57389, 37.43378, 49.4341, 52.48303], 'epoch_time_s': 58.82, 'busy_frac_per_gpu': '0.564|0.950', 'peak_mem_mb_per_gpu': '11601.9|7642.8', 'mb_sent_per_gpu': '14000.0|14000.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 59.6, 'est_full_run_h': 0.5}",
+    "",
+    "============================================================",
+    "D4 short_run               PASS    606.5s",
+    "ALL N5K CHECKS PASS: False",
+    "saved n5k/results/partition320/p4.json",
+    "N5K_CHECKS_JSON {\"all_pass\": false, \"results\": [{\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 606.5, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.2428, 20.82055, 16.90182, 14.50082], \"val_mae_kcal_by_epoch\": [256.00195, 95.12957, 81.25254, 72.75807], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [1.06593, 44.46163, 55.77396, 60.6221], \"epoch_time_s\": 60.947, \"busy_frac_per_gpu\": \"0.569|0.942\", \"peak_mem_mb_per_gpu\": \"12003.6|7997.0\", \"mb_sent_per_gpu\": \"14000.0|14000.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 61.8, \"est_full_run_h\": 0.51}, \"timeprest\": {\"train_loss_by_epoch\": [27.5635, 23.5887, 19.9396, 17.63539], \"val_mae_kcal_by_epoch\": [206.49164, 109.89311, 81.63836, 73.97448], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.57389, 37.43378, 49.4341, 52.48303], \"epoch_time_s\": 58.82, \"busy_frac_per_gpu\": \"0.564|0.950\", \"peak_mem_mb_per_gpu\": \"11601.9|7642.8\", \"mb_sent_per_gpu\": \"14000.0|14000.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 59.6, \"est_full_run_h\": 0.5}}}]}"
+   ]
+  },
+  {
+   "step": "p6_320",
+   "status": "failed",
+   "exit": 1,
+   "minutes": 6.6,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": false, \"results\": [{\"id\": 4, \"name\": \"short_run\", \"status\": \"FAIL\", \"seconds\": 27.7, \"message\": \"OutOfMemoryError: CUDA out of memory. Tried to allocate 200.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 112.81 MiB is free. Including non-PyTorch memory, this process has 14.45 GiB memory in use. Of the allocated memory 14.07 GiB is allocated by PyTorch, and 169.06 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\", \"metrics\": {}}]}"
+   ],
+   "tail": [
+    "  host      : c1e8e9737448",
+    "  rank      : 1 (local_rank: 1)",
+    "  exitcode  : -15 (pid: 3671)",
+    "  error_file: <N/A>",
+    "  traceback : Signal 15 (SIGTERM) received by PID 3671",
+    "------------------------------------------------------",
+    "Root Cause (first observed failure):",
+    "[0]:",
+    "  time      : 2026-10-14_14:32:00",
+    "  host      : c1e8e9737448",
+    "  rank      : 0 (local_rank: 0)",
+    "  exitcode  : -6 (pid: 3670)",
+    "  error_file: <N/A>",
+    "  traceback : Signal 6 (SIGABRT) received by PID 3670",
+    "======================================================"
+   ]
+  },
+  {
+   "step": "checks",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.4,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 9.7, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 20.3, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 7.37, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 8.02, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 18}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 41.1, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.72496, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.73297, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 113.3, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.10949, 20.63015], \"val_mae_kcal_by_epoch\": [156.58623, 92.86719], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.66805, 47.40549], \"epoch_time_s\": 21.526, \"busy_frac_per_gpu\": \"0.891|0.794\", \"peak_mem_mb_per_gpu\": \"8391.3|2068.0\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 21.8, \"est_full_run_h\": 0.18}, \"timeprest\": {\"train_loss_by_epoch\": [27.24618, 22.49937], \"val_mae_kcal_by_epoch\": [171.86563, 100.84868], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [2.44156, 40.67398], \"epoch_time_s\": 20.562, \"busy_frac_per_gpu\": \"0.934|0.861\", \"peak_mem_mb_per_gpu\": \"8301.5|2151.2\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 33, \"est_full_epoch_s\": 20.8, \"est_full_run_h\": 0.17}}}]}"
+   ],
+   "tail": [
+    "ep   1/2 | train 27.2462 (MAE kcal 146.4) | val_loss 41.5096 | MAE kcal 171.9 (67.1%) mass 125.0 fat 10.01 carb 11.47 prot 14.87 | ingr F1 2.4 mAP 11.0 | lr 1.18e-03 | epoch 20.1s busy[0.947|0.840] peak[8301.5|2152.1]MB sent[3430.0|3430.0]MB bwd_overlap=33 | ETA 0.01h",
+    "ep   2/2 | train 22.4994 (MAE kcal 111.4) | val_loss 22.1680 | MAE kcal 100.8 (39.4%) mass 66.5 fat 7.18 carb 9.56 prot 9.99 | ingr F1 40.7 mAP 25.8 | lr 1.48e-02 | epoch 20.6s busy[0.934|0.861] peak[8301.5|2151.2]MB sent[3430.0|3430.0]MB bwd_overlap=33 | ETA 0.00h",
+    "[PASS] short_run (113.3s) - short run per system on the real pipeline",
+    "    pipedream: {'train_loss_by_epoch': [26.10949, 20.63015], 'val_mae_kcal_by_epoch': [156.58623, 92.86719], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [4.66805, 47.40549], 'epoch_time_s': 21.526, 'busy_frac_per_gpu': '0.891|0.794', 'peak_mem_mb_per_gpu': '8391.3|2068.0', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 21.8, 'est_full_run_h': 0.18}",
+    "    timeprest: {'train_loss_by_epoch': [27.24618, 22.49937], 'val_mae_kcal_by_epoch': [171.86563, 100.84868], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [2.44156, 40.67398], 'epoch_time_s': 20.562, 'busy_frac_per_gpu': '0.934|0.861', 'peak_mem_mb_per_gpu': '8301.5|2151.2', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 33, 'est_full_epoch_s': 20.8, 'est_full_run_h': 0.17}",
+    "",
+    "============================================================",
+    "D0 data                    PASS      0.0s",
+    "D1 static_equals_engine    PASS      9.7s",
+    "D2 dynamic_versions        PASS     20.3s",
+    "D3 checkpoint_resume       PASS     41.1s",
+    "D4 short_run               PASS    113.3s",
+    "ALL N5K CHECKS PASS: True",
+    "saved n5k/results/checks/latest.json",
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 9.7, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 20.3, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 7.37, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 8.02, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 18}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 41.1, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.72496, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.73297, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 113.3, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.10949, 20.63015], \"val_mae_kcal_by_epoch\": [156.58623, 92.86719], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [4.66805, 47.40549], \"epoch_time_s\": 21.526, \"busy_frac_per_gpu\": \"0.891|0.794\", \"peak_mem_mb_per_gpu\": \"8391.3|2068.0\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 21.8, \"est_full_run_h\": 0.18}, \"timeprest\": {\"train_loss_by_epoch\": [27.24618, 22.49937], \"val_mae_kcal_by_epoch\": [171.86563, 100.84868], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [2.44156, 40.67398], \"epoch_time_s\": 20.562, \"busy_frac_per_gpu\": \"0.934|0.861\", \"peak_mem_mb_per_gpu\": \"8301.5|2151.2\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 33, \"est_full_epoch_s\": 20.8, \"est_full_run_h\": 0.17}}}]}"
+   ]
+  },
+  {
+   "step": "single_r320s0",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 9.2,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 63.32441, \"best_epoch\": 6, \"last_val_mae_kcal\": 64.47736, \"last_val_pmae_kcal\": 25.16785, \"last_val_ingr_f1\": 77.02342, \"last_train_loss\": 6.73171, \"epoch_s\": 56.901}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_r320s0_lr0.02",
+    "[gpu 0] done sweep_single_r320s0_lr0.02 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.02   8         63.32 ( 6)          64.48    25.2     77.0      6.7317     56.9",
+    "best lr per system: {'single': 0.02}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 63.32441, \"best_epoch\": 6, \"last_val_mae_kcal\": 64.47736, \"last_val_pmae_kcal\": 25.16785, \"last_val_ingr_f1\": 77.02342, \"last_train_loss\": 6.73171, \"epoch_s\": 56.901}]"
+   ]
+  },
+  {
+   "step": "single_r320s1",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 9.2,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 66.79104, \"best_epoch\": 6, \"last_val_mae_kcal\": 66.81461, \"last_val_pmae_kcal\": 26.08016, \"last_val_ingr_f1\": 76.49618, \"last_train_loss\": 7.1688, \"epoch_s\": 56.437}]"
+   ],
+   "tail": [
+    "[gpu 0] start sweep_single_r320s1_lr0.02",
+    "[gpu 0] done sweep_single_r320s1_lr0.02 exit=0",
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.02   8         66.79 ( 6)          66.81    26.1     76.5      7.1688     56.4",
+    "best lr per system: {'single': 0.02}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 66.79104, \"best_epoch\": 6, \"last_val_mae_kcal\": 66.81461, \"last_val_pmae_kcal\": 26.08016, \"last_val_ingr_f1\": 76.49618, \"last_train_loss\": 7.1688, \"epoch_s\": 56.437}]"
+   ]
+  },
+  {
+   "step": "summary_r320s0",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 63.32441, \"best_epoch\": 6, \"last_val_mae_kcal\": 64.47736, \"last_val_pmae_kcal\": 25.16785, \"last_val_ingr_f1\": 77.02342, \"last_train_loss\": 6.73171, \"epoch_s\": 56.901}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.02   8         63.32 ( 6)          64.48    25.2     77.0      6.7317     56.9",
+    "best lr per system: {'single': 0.02}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 63.32441, \"best_epoch\": 6, \"last_val_mae_kcal\": 64.47736, \"last_val_pmae_kcal\": 25.16785, \"last_val_ingr_f1\": 77.02342, \"last_train_loss\": 6.73171, \"epoch_s\": 56.901}]"
+   ]
+  },
+  {
+   "step": "summary_r320s1",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.0,
+   "json": [
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 66.79104, \"best_epoch\": 6, \"last_val_mae_kcal\": 66.81461, \"last_val_pmae_kcal\": 26.08016, \"last_val_ingr_f1\": 76.49618, \"last_train_loss\": 7.1688, \"epoch_s\": 56.437}]"
+   ],
+   "tail": [
+    "system              lr  ep  best MAE kcal (ep)  last MAE kcal  last %  ingr F1  train loss  s/epoch",
+    "single            0.02   8         66.79 ( 6)          66.81    26.1     76.5      7.1688     56.4",
+    "best lr per system: {'single': 0.02}",
+    "N5K_SWEEP_JSON [{\"system\": \"single\", \"lr\": 0.02, \"epochs\": 8, \"best_val_mae_kcal\": 66.79104, \"best_epoch\": 6, \"last_val_mae_kcal\": 66.81461, \"last_val_pmae_kcal\": 26.08016, \"last_val_ingr_f1\": 76.49618, \"last_train_loss\": 7.1688, \"epoch_s\": 56.437}]"
+   ]
+  }
+ ],
+ "commit": "a7aa095-dirty",
+ "finished": "2026-10-14 14:53:53"
+}

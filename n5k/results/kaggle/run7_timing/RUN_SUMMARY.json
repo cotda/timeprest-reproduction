@@ -1,0 +1,115 @@
+{
+ "started": "2026-10-14 22:18:03",
+ "budget_min": 75,
+ "steps": [
+  {
+   "step": "weights",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.6,
+   "json": [],
+   "tail": [
+    "Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth",
+    "",
+    "  0%|          | 0.00/97.8M [00:00<?, ?B/s]",
+    "  8%|\u258a         | 8.12M/97.8M [00:00<00:01, 85.0MB/s]",
+    " 33%|\u2588\u2588\u2588\u258e      | 32.8M/97.8M [00:00<00:00, 187MB/s]",
+    " 58%|\u2588\u2588\u2588\u2588\u2588\u258a    | 57.1M/97.8M [00:00<00:00, 218MB/s]",
+    " 84%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d | 82.0M/97.8M [00:00<00:00, 235MB/s]",
+    "100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 97.8M/97.8M [00:00<00:00, 222MB/s]"
+   ]
+  },
+  {
+   "step": "single_both_pre",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 2.3,
+   "json": [],
+   "tail": [
+    "env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 29b736f7026c",
+    "[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda",
+    "ep   1/4 | train 27.6952 (MAE kcal 154.6) | val_loss 35.7116 | MAE kcal 140.5 (54.8%) mass 92.8 fat 9.43 carb 11.41 prot 13.09 | ingr F1 2.0 mAP 14.3 | lr 2.86e-04 | 36.3s peak 10353.4MB | ETA 0.03h",
+    "ep   2/4 | train 22.0762 (MAE kcal 111.1) | val_loss 23.0356 | MAE kcal 104.0 (40.6%) mass 69.3 fat 7.13 carb 9.53 prot 9.72 | ingr F1 40.2 mAP 29.3 | lr 1.03e-02 | 21.3s peak 5643.2MB | ETA 0.01h",
+    "ep   3/4 | train 17.9522 (MAE kcal 90.5) | val_loss 19.4261 | MAE kcal 104.3 (40.7%) mass 81.2 fat 6.53 carb 8.54 prot 9.52 | ingr F1 53.2 mAP 44.5 | lr 2.00e-02 | 21.9s peak 5642.7MB | ETA 0.01h",
+    "ep   4/4 | train 13.9562 (MAE kcal 79.0) | val_loss 15.6100 | MAE kcal 73.1 (28.5%) mass 48.1 fat 5.17 carb 6.79 prot 7.16 | ingr F1 63.8 mAP 54.6 | lr 1.00e-02 | 22.6s peak 5642.7MB | ETA 0.00h",
+    "SUMMARY {\"name\": \"timing_both_pre\", \"system\": \"pipedream\", \"epochs_done\": 4, \"best_epoch\": 4, \"test_mae_kcal\": 76.30971, \"test_pmae_kcal\": 28.59451, \"test_ingr_f1\": 62.8203, \"mean_epoch_time_s\": 21.955333333333332}"
+   ]
+  },
+  {
+   "step": "single_gpu0_pre",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 2.2,
+   "json": [],
+   "tail": [
+    "env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 29b736f7026c",
+    "[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda",
+    "ep   1/4 | train 27.6946 (MAE kcal 154.9) | val_loss 33.3808 | MAE kcal 138.2 (53.9%) mass 90.8 fat 9.27 carb 11.50 prot 12.92 | ingr F1 3.0 mAP 15.1 | lr 2.86e-04 | 36.9s peak 10354.1MB | ETA 0.03h",
+    "ep   2/4 | train 21.9744 (MAE kcal 107.9) | val_loss 23.0821 | MAE kcal 90.7 (35.4%) mass 65.7 fat 6.61 carb 9.65 prot 9.17 | ingr F1 38.1 mAP 29.7 | lr 1.03e-02 | 23.6s peak 5641.2MB | ETA 0.01h",
+    "ep   3/4 | train 18.0915 (MAE kcal 93.1) | val_loss 20.8389 | MAE kcal 114.8 (44.8%) mass 80.6 fat 7.09 carb 8.69 prot 9.95 | ingr F1 41.8 mAP 42.6 | lr 2.00e-02 | 24.0s peak 5642.4MB | ETA 0.01h",
+    "ep   4/4 | train 14.0370 (MAE kcal 78.3) | val_loss 15.7432 | MAE kcal 73.5 (28.7%) mass 46.7 fat 5.22 carb 6.77 prot 7.08 | ingr F1 63.5 mAP 54.3 | lr 1.00e-02 | 24.4s peak 5642.4MB | ETA 0.00h",
+    "SUMMARY {\"name\": \"timing_gpu0_pre\", \"system\": \"pipedream\", \"epochs_done\": 4, \"best_epoch\": 4, \"test_mae_kcal\": 75.19677, \"test_pmae_kcal\": 28.17747, \"test_ingr_f1\": 62.95932, \"mean_epoch_time_s\": 24.003}"
+   ]
+  },
+  {
+   "step": "checks",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.1,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 9.6, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 18.5, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 6.75, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 6.95, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 16}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 38.6, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.72496, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.73297, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 103.9, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.12414, 20.96454], \"val_mae_kcal_by_epoch\": [142.7779, 87.8742], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [9.63614, 45.70669], \"epoch_time_s\": 19.59, \"busy_frac_per_gpu\": \"0.896|0.774\", \"peak_mem_mb_per_gpu\": \"8391.3|2166.0\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 33, \"est_full_epoch_s\": 19.9, \"est_full_run_h\": 0.17}, \"timeprest\": {\"train_loss_by_epoch\": [27.26505, 22.63705], \"val_mae_kcal_by_epoch\": [138.07064, 101.94064], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [2.61917, 41.86764], \"epoch_time_s\": 19.842, \"busy_frac_per_gpu\": \"0.898|0.795\", \"peak_mem_mb_per_gpu\": \"8302.5|2149.2\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 28, \"est_full_epoch_s\": 20.1, \"est_full_run_h\": 0.17}}}]}"
+   ],
+   "tail": [
+    "ep   1/2 | train 27.2650 (MAE kcal 146.0) | val_loss 31.4516 | MAE kcal 138.1 (53.9%) mass 101.2 fat 9.25 carb 11.47 prot 13.62 | ingr F1 2.6 mAP 13.7 | lr 1.18e-03 | epoch 19.3s busy[0.904|0.784] peak[8302.5|2151.4]MB sent[3430.0|3430.0]MB bwd_overlap=27 | ETA 0.01h",
+    "ep   2/2 | train 22.6370 (MAE kcal 113.9) | val_loss 22.3346 | MAE kcal 101.9 (39.8%) mass 63.1 fat 7.40 carb 9.53 prot 10.30 | ingr F1 41.9 mAP 26.8 | lr 1.48e-02 | epoch 19.8s busy[0.898|0.795] peak[8302.5|2149.2]MB sent[3430.0|3430.0]MB bwd_overlap=28 | ETA 0.00h",
+    "[PASS] short_run (103.9s) - short run per system on the real pipeline",
+    "    pipedream: {'train_loss_by_epoch': [26.12414, 20.96454], 'val_mae_kcal_by_epoch': [142.7779, 87.8742], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [9.63614, 45.70669], 'epoch_time_s': 19.59, 'busy_frac_per_gpu': '0.896|0.774', 'peak_mem_mb_per_gpu': '8391.3|2166.0', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 33, 'est_full_epoch_s': 19.9, 'est_full_run_h': 0.17}",
+    "    timeprest: {'train_loss_by_epoch': [27.26505, 22.63705], 'val_mae_kcal_by_epoch': [138.07064, 101.94064], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [2.61917, 41.86764], 'epoch_time_s': 19.842, 'busy_frac_per_gpu': '0.898|0.795', 'peak_mem_mb_per_gpu': '8302.5|2149.2', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 28, 'est_full_epoch_s': 20.1, 'est_full_run_h': 0.17}",
+    "",
+    "============================================================",
+    "D0 data                    PASS      0.0s",
+    "D1 static_equals_engine    PASS      9.6s",
+    "D2 dynamic_versions        PASS     18.5s",
+    "D3 checkpoint_resume       PASS     38.6s",
+    "D4 short_run               PASS    103.9s",
+    "ALL N5K CHECKS PASS: True",
+    "saved n5k/results/checks/latest.json",
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 9.6, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 18.5, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 6.75, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 6.95, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 16}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 38.6, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.72496, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.73297, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 103.9, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.12414, 20.96454], \"val_mae_kcal_by_epoch\": [142.7779, 87.8742], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [9.63614, 45.70669], \"epoch_time_s\": 19.59, \"busy_frac_per_gpu\": \"0.896|0.774\", \"peak_mem_mb_per_gpu\": \"8391.3|2166.0\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 33, \"est_full_epoch_s\": 19.9, \"est_full_run_h\": 0.17}, \"timeprest\": {\"train_loss_by_epoch\": [27.26505, 22.63705], \"val_mae_kcal_by_epoch\": [138.07064, 101.94064], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [2.61917, 41.86764], \"epoch_time_s\": 19.842, \"busy_frac_per_gpu\": \"0.898|0.795\", \"peak_mem_mb_per_gpu\": \"8302.5|2149.2\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 28, \"est_full_epoch_s\": 20.1, \"est_full_run_h\": 0.17}}}]}"
+   ]
+  },
+  {
+   "step": "single_both_post",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 2.3,
+   "json": [],
+   "tail": [
+    "env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 29b736f7026c",
+    "[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda",
+    "ep   1/4 | train 27.6860 (MAE kcal 154.7) | val_loss 31.6842 | MAE kcal 139.0 (54.3%) mass 92.8 fat 9.21 carb 11.45 prot 13.21 | ingr F1 4.6 mAP 15.9 | lr 2.86e-04 | 37.5s peak 10354.1MB | ETA 0.03h",
+    "ep   2/4 | train 21.8912 (MAE kcal 109.0) | val_loss 23.2162 | MAE kcal 97.4 (38.0%) mass 68.8 fat 7.04 carb 9.75 prot 9.83 | ingr F1 39.6 mAP 28.9 | lr 1.03e-02 | 24.1s peak 5641.2MB | ETA 0.01h",
+    "ep   3/4 | train 18.1290 (MAE kcal 92.3) | val_loss 20.6212 | MAE kcal 100.2 (39.1%) mass 80.9 fat 6.90 carb 7.74 prot 9.39 | ingr F1 43.7 mAP 42.0 | lr 2.00e-02 | 24.6s peak 5642.4MB | ETA 0.01h",
+    "ep   4/4 | train 14.1187 (MAE kcal 79.2) | val_loss 15.9466 | MAE kcal 74.5 (29.1%) mass 47.4 fat 5.16 carb 6.66 prot 7.07 | ingr F1 62.1 mAP 54.0 | lr 1.00e-02 | 24.7s peak 5642.4MB | ETA 0.00h",
+    "SUMMARY {\"name\": \"timing_both_post\", \"system\": \"pipedream\", \"epochs_done\": 4, \"best_epoch\": 4, \"test_mae_kcal\": 76.88009, \"test_pmae_kcal\": 28.80824, \"test_ingr_f1\": 61.04485, \"mean_epoch_time_s\": 24.465666666666664}"
+   ]
+  },
+  {
+   "step": "single_gpu0_post",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 2.3,
+   "json": [],
+   "tail": [
+    "env: {\"python\": \"3.13.15\", \"torch\": \"2.11.0+cu128\", \"cuda\": \"12.8\", \"cudnn\": 91900, \"gpu\": \"Tesla T4\", \"gpu_mem_gb\": 14.56} | code 29b736f7026c",
+    "[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda",
+    "ep   1/4 | train 27.6917 (MAE kcal 154.4) | val_loss 32.2447 | MAE kcal 137.5 (53.7%) mass 90.9 fat 9.10 carb 11.34 prot 12.91 | ingr F1 3.6 mAP 15.5 | lr 2.86e-04 | 38.4s peak 10354.1MB | ETA 0.04h",
+    "ep   2/4 | train 22.0429 (MAE kcal 108.4) | val_loss 24.0439 | MAE kcal 105.5 (41.2%) mass 72.3 fat 6.58 carb 9.23 prot 10.97 | ingr F1 39.9 mAP 27.3 | lr 1.03e-02 | 24.4s peak 5641.2MB | ETA 0.01h",
+    "ep   3/4 | train 17.9482 (MAE kcal 91.0) | val_loss 19.2624 | MAE kcal 98.0 (38.3%) mass 82.0 fat 6.34 carb 7.60 prot 9.04 | ingr F1 49.4 mAP 45.1 | lr 2.00e-02 | 24.5s peak 5642.7MB | ETA 0.01h",
+    "ep   4/4 | train 14.1278 (MAE kcal 79.7) | val_loss 15.9400 | MAE kcal 79.0 (30.8%) mass 49.6 fat 5.38 carb 7.16 prot 7.45 | ingr F1 62.6 mAP 54.5 | lr 1.00e-02 | 24.8s peak 5642.7MB | ETA 0.00h",
+    "SUMMARY {\"name\": \"timing_gpu0_post\", \"system\": \"pipedream\", \"epochs_done\": 4, \"best_epoch\": 4, \"test_mae_kcal\": 76.63075, \"test_pmae_kcal\": 28.71481, \"test_ingr_f1\": 63.44805, \"mean_epoch_time_s\": 24.576666666666668}"
+   ]
+  }
+ ],
+ "commit": "180ea68-dirty",
+ "finished": "2026-10-14 22:30:53"
+}

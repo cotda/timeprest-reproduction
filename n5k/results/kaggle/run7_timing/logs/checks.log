@@ -1,0 +1,57 @@
+W1014 22:23:19.624000 268 torch/distributed/run.py:851] 
+W1014 22:23:19.624000 268 torch/distributed/run.py:851] *****************************************
+W1014 22:23:19.624000 268 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1014 22:23:19.624000 268 torch/distributed/run.py:851] *****************************************
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 29b736f7026c | gpus 2
+
+=== D0: data ===
+cache: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache  source: /kaggle/input/datasets/gillesokhin/nutrition5k-dataset  image 224px  vocab K=195  build 35.4s
+depth clip [3048, 4835]  per-gram fallback for 0 ingredient(s)
+dropped 2: dish_1564159636 (val: empty depth_raw.png); dish_1558722871 (test: missing depth_raw.png)
+train: n=2270  unknown-ingredient dishes=0 (kcal share 0.00%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.00 (median rel 0.0%)  mass from grams MAE=0.01 (median rel 0.0%)  fat from grams MAE=0.00 (median rel 0.0%)  carb from grams MAE=0.00 (median rel 0.0%)  protein from grams MAE=0.00 (median rel 0.0%)
+  val: n=486  unknown-ingredient dishes=6 (kcal share 0.54%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=1.37 (median rel 0.0%)  mass from grams MAE=0.63 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.25 (median rel 0.0%)  protein from grams MAE=0.04 (median rel 0.0%)
+ test: n=486  unknown-ingredient dishes=2 (kcal share 0.29%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.76 (median rel 0.0%)  mass from grams MAE=0.45 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.12 (median rel 0.0%)  protein from grams MAE=0.02 (median rel 0.0%)
+[PASS] data (0.0s) - cache, splits, labels
+    n_train_val_test: [2270, 486, 486]
+    K: 195
+    dropped: ['dish_1564159636 (val: empty depth_raw.png)', 'dish_1558722871 (test: missing depth_raw.png)']
+    dropped_frac: 0.0006
+    labels_finite: True
+    cache_dir: /kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache
+    build_time_s: 35.4
+
+=== D1: static_equals_engine ===
+[PASS] static_equals_engine (9.6s) - static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4
+    pipedream: {'max_rel_param_diff_vs_engine': 0.0}
+    timeprest: {'max_rel_param_diff_vs_engine': 0.0}
+
+=== D2: dynamic_versions ===
+[PASS] dynamic_versions (18.5s) - dynamic order, 10 mini-batches, version invariants
+    pipedream: {'wall_s': 6.75, 'peak_mem_mb': [8388.3, 2154.6], 'no_recompute': True, 'backward_uses_forward_version': True}
+    timeprest: {'wall_s': 6.95, 'peak_mem_mb': [8388.3, 2154.6], 'no_recompute': True, 'forward_vertical_sync': True, 'backward_uses_live_version': True, 'micro_forwarded_with_older_version': 16}
+
+=== D3: checkpoint_resume ===
+[PASS] checkpoint_resume (38.6s) - 2 epochs vs 1 + resume (static order, deterministic), tol 1e-5
+    pipedream: {'resumed': True, 'param_max_diff': 0.0, 'last_epoch_loss_diff': 0.0, 'best_after_resume': {'score': 149.72496, 'epoch': 2}}
+    timeprest: {'resumed': True, 'param_max_diff': 0.0, 'last_epoch_loss_diff': 0.0, 'best_after_resume': {'score': 149.73297, 'epoch': 2}}
+
+=== D4: short_run ===
+[n5k dist] W=2 system=pipedream N=1 M=64 backward=stashed rule=graph partition=[0, 8, 18] K=195 params/stage=1.45M,22.87M device=cuda:0
+ep   1/2 | train 26.1241 (MAE kcal 138.0) | val_loss 30.2310 | MAE kcal 142.8 (55.7%) mass 77.6 fat 9.39 carb 11.04 prot 13.23 | ingr F1 9.6 mAP 16.0 | lr 1.18e-03 | epoch 18.9s busy[0.915|0.762] peak[8390.3|2162.8]MB sent[3430.0|3430.0]MB bwd_overlap=33 | ETA 0.01h
+ep   2/2 | train 20.9645 (MAE kcal 99.2) | val_loss 20.8693 | MAE kcal 87.9 (34.3%) mass 61.3 fat 6.30 carb 8.80 prot 8.46 | ingr F1 45.7 mAP 31.8 | lr 1.48e-02 | epoch 19.6s busy[0.896|0.774] peak[8391.3|2166.0]MB sent[3430.0|3430.0]MB bwd_overlap=33 | ETA 0.00h
+[n5k dist] W=2 system=timeprest N=2 M=64 backward=committed rule=graph partition=[0, 8, 18] K=195 params/stage=1.45M,22.87M device=cuda:0
+ep   1/2 | train 27.2650 (MAE kcal 146.0) | val_loss 31.4516 | MAE kcal 138.1 (53.9%) mass 101.2 fat 9.25 carb 11.47 prot 13.62 | ingr F1 2.6 mAP 13.7 | lr 1.18e-03 | epoch 19.3s busy[0.904|0.784] peak[8302.5|2151.4]MB sent[3430.0|3430.0]MB bwd_overlap=27 | ETA 0.01h
+ep   2/2 | train 22.6370 (MAE kcal 113.9) | val_loss 22.3346 | MAE kcal 101.9 (39.8%) mass 63.1 fat 7.40 carb 9.53 prot 10.30 | ingr F1 41.9 mAP 26.8 | lr 1.48e-02 | epoch 19.8s busy[0.898|0.795] peak[8302.5|2149.2]MB sent[3430.0|3430.0]MB bwd_overlap=28 | ETA 0.00h
+[PASS] short_run (103.9s) - short run per system on the real pipeline
+    pipedream: {'train_loss_by_epoch': [26.12414, 20.96454], 'val_mae_kcal_by_epoch': [142.7779, 87.8742], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [9.63614, 45.70669], 'epoch_time_s': 19.59, 'busy_frac_per_gpu': '0.896|0.774', 'peak_mem_mb_per_gpu': '8391.3|2166.0', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 33, 'est_full_epoch_s': 19.9, 'est_full_run_h': 0.17}
+    timeprest: {'train_loss_by_epoch': [27.26505, 22.63705], 'val_mae_kcal_by_epoch': [138.07064, 101.94064], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [2.61917, 41.86764], 'epoch_time_s': 19.842, 'busy_frac_per_gpu': '0.898|0.795', 'peak_mem_mb_per_gpu': '8302.5|2149.2', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 28, 'est_full_epoch_s': 20.1, 'est_full_run_h': 0.17}
+
+============================================================
+D0 data                    PASS      0.0s
+D1 static_equals_engine    PASS      9.6s
+D2 dynamic_versions        PASS     18.5s
+D3 checkpoint_resume       PASS     38.6s
+D4 short_run               PASS    103.9s
+ALL N5K CHECKS PASS: True
+saved n5k/results/checks/latest.json
+N5K_CHECKS_JSON {"all_pass": true, "results": [{"id": 0, "name": "data", "status": "PASS", "seconds": 0.0, "message": "cache, splits, labels", "metrics": {"n_train_val_test": [2270, 486, 486], "K": 195, "dropped": ["dish_1564159636 (val: empty depth_raw.png)", "dish_1558722871 (test: missing depth_raw.png)"], "dropped_frac": 0.0006, "labels_finite": true, "cache_dir": "/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache", "build_time_s": 35.4}}, {"id": 1, "name": "static_equals_engine", "status": "PASS", "seconds": 9.6, "message": "static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4", "metrics": {"pipedream": {"max_rel_param_diff_vs_engine": 0.0}, "timeprest": {"max_rel_param_diff_vs_engine": 0.0}}}, {"id": 2, "name": "dynamic_versions", "status": "PASS", "seconds": 18.5, "message": "dynamic order, 10 mini-batches, version invariants", "metrics": {"pipedream": {"wall_s": 6.75, "peak_mem_mb": [8388.3, 2154.6], "no_recompute": true, "backward_uses_forward_version": true}, "timeprest": {"wall_s": 6.95, "peak_mem_mb": [8388.3, 2154.6], "no_recompute": true, "forward_vertical_sync": true, "backward_uses_live_version": true, "micro_forwarded_with_older_version": 16}}}, {"id": 3, "name": "checkpoint_resume", "status": "PASS", "seconds": 38.6, "message": "2 epochs vs 1 + resume (static order, deterministic), tol 1e-5", "metrics": {"pipedream": {"resumed": true, "param_max_diff": 0.0, "last_epoch_loss_diff": 0.0, "best_after_resume": {"score": 149.72496, "epoch": 2}}, "timeprest": {"resumed": true, "param_max_diff": 0.0, "last_epoch_loss_diff": 0.0, "best_after_resume": {"score": 149.73297, "epoch": 2}}}}, {"id": 4, "name": "short_run", "status": "PASS", "seconds": 103.9, "message": "short run per system on the real pipeline", "metrics": {"pipedream": {"train_loss_by_epoch": [26.12414, 20.96454], "val_mae_kcal_by_epoch": [142.7779, 87.8742], "median_predictor_val_mae_kcal": 165.81, "val_ingr_f1_by_epoch": [9.63614, 45.70669], "epoch_time_s": 19.59, "busy_frac_per_gpu": "0.896|0.774", "peak_mem_mb_per_gpu": "8391.3|2166.0", "mb_sent_per_gpu": "3430.0|3430.0", "bwd_overlap_minibatches": 33, "est_full_epoch_s": 19.9, "est_full_run_h": 0.17}, "timeprest": {"train_loss_by_epoch": [27.26505, 22.63705], "val_mae_kcal_by_epoch": [138.07064, 101.94064], "median_predictor_val_mae_kcal": 165.81, "val_ingr_f1_by_epoch": [2.61917, 41.86764], "epoch_time_s": 19.842, "busy_frac_per_gpu": "0.898|0.795", "peak_mem_mb_per_gpu": "8302.5|2149.2", "mb_sent_per_gpu": "3430.0|3430.0", "bwd_overlap_minibatches": 28, "est_full_epoch_s": 20.1, "est_full_run_h": 0.17}}}]}

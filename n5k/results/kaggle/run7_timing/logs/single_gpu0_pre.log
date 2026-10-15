@@ -1,0 +1,7 @@
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 29b736f7026c
+[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda
+ep   1/4 | train 27.6946 (MAE kcal 154.9) | val_loss 33.3808 | MAE kcal 138.2 (53.9%) mass 90.8 fat 9.27 carb 11.50 prot 12.92 | ingr F1 3.0 mAP 15.1 | lr 2.86e-04 | 36.9s peak 10354.1MB | ETA 0.03h
+ep   2/4 | train 21.9744 (MAE kcal 107.9) | val_loss 23.0821 | MAE kcal 90.7 (35.4%) mass 65.7 fat 6.61 carb 9.65 prot 9.17 | ingr F1 38.1 mAP 29.7 | lr 1.03e-02 | 23.6s peak 5641.2MB | ETA 0.01h
+ep   3/4 | train 18.0915 (MAE kcal 93.1) | val_loss 20.8389 | MAE kcal 114.8 (44.8%) mass 80.6 fat 7.09 carb 8.69 prot 9.95 | ingr F1 41.8 mAP 42.6 | lr 2.00e-02 | 24.0s peak 5642.4MB | ETA 0.01h
+ep   4/4 | train 14.0370 (MAE kcal 78.3) | val_loss 15.7432 | MAE kcal 73.5 (28.7%) mass 46.7 fat 5.22 carb 6.77 prot 7.08 | ingr F1 63.5 mAP 54.3 | lr 1.00e-02 | 24.4s peak 5642.4MB | ETA 0.00h
+SUMMARY {"name": "timing_gpu0_pre", "system": "pipedream", "epochs_done": 4, "best_epoch": 4, "test_mae_kcal": 75.19677, "test_pmae_kcal": 28.17747, "test_ingr_f1": 62.95932, "mean_epoch_time_s": 24.003}

@@ -103,3 +103,43 @@ def test_direct_totals_head_starts_at_train_mean():
     stages, _ = build_stages(cfg, 2, [0, 8, 18], torch.zeros(1, 4, 64, 64))
     with torch.no_grad():
         assert stages[1].eval()(stages[0].eval()(torch.randn(2, 4, 64, 64))).shape == (2, 13)
+
+
+def _streams(blocks):
+    """rgb / depth block lists (without head) of the two-stream model."""
+    return [b.rgb for b in blocks[:-1]], [b.depth for b in blocks[:-1]]
+
+
+def test_two_stream_streams_match_torchvision():
+    from timeprest.n5k.model import build_n5k_resnet50_2s
+    tv = tv_model(2)
+    blocks = build_n5k_resnet50_2s({"num_ingredients": 5, "in_channels": 4, "pretrained": None})
+    assert len(blocks) == 18
+    rgb, depth = _streams(blocks)
+    load_torchvision_weights(rgb + [None], tv.state_dict())
+    load_torchvision_weights(depth + [None], tv.state_dict())
+    torch.testing.assert_close(depth[0][0].weight[:, 0], tv.conv1.weight.mean(1))
+    body = nn.Sequential(*blocks[:-1]).eval().double()   # float64: the mean filter and the sum of 3
+    tv = tv.double()                                      # equal filters round differently in float32
+    x = torch.randn(2, 4, 64, 64, dtype=torch.float64)
+    with torch.no_grad():
+        out = body(x)
+        assert out.shape == (2, 4096, 2, 2)
+        torch.testing.assert_close(out[:, :2048], tv_features(tv, x[:, :3]), **TOL)
+        d = x[:, 3:]   # depth conv1 = mean RGB filter -> same as torchvision on the depth repeated / 3
+        torch.testing.assert_close(out[:, 2048:], tv_features(tv, d.repeat(1, 3, 1, 1) / 3), **TOL)
+
+
+def test_two_stream_partitions_and_trains_both_streams():
+    mean = [500.0, 300.0, 20.0, 40.0, 25.0]
+    cfg = {"name": "n5k_resnet50_2s", "num_ingredients": 4, "in_channels": 4, "pretrained": None,
+           "direct_totals": True, "total_mean": mean}
+    for part in ("auto", [0, 8, 18]):
+        stages, bounds = build_stages(cfg, 2, part, torch.zeros(1, 4, 64, 64))
+        assert bounds[0] == 0 and bounds[-1] == 18 and 0 < bounds[1] < 18
+    x = torch.randn(2, 4, 64, 64)
+    out = stages[1](stages[0](x))
+    assert out.shape == (2, 13)
+    out.pow(2).sum().backward()
+    stem = stages[0][0]
+    assert stem.rgb[0].weight.grad.abs().sum() > 0 and stem.depth[0].weight.grad.abs().sum() > 0

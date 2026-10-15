@@ -1,0 +1,17 @@
+{
+ "id": "kaggleolap/n5k-run6-bench",
+ "title": "n5k-run6-bench",
+ "code_file": "run6_bench.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "kaggleolap/n5k-run0-cache"
+ ]
+}

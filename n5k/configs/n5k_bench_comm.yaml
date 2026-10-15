@@ -1,0 +1,16 @@
+# Epoch time vs emulated stage-to-stage bandwidth (n5k/PLAN.md mục 7, B6), TiMePReSt and PipeDream on the SAME
+# machine (the long runs are spread over kernels/machines, whose times differ ~10 %). Each (bandwidth, system)
+# trains `epochs` epochs from the pretrained weights; the last one is timed. lr per system as the long runs.
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.bench_comm --config n5k/configs/n5k_bench_comm.yaml
+base: n5k_base.yaml
+name: n5k_bench_comm
+output:
+  dir: n5k/results/bench_comm
+  require_checks: false
+bench:
+  systems:
+    - {name: timeprest, system: timeprest, set: {training.lr: 0.01}}
+    - {name: pipedream, system: pipedream, set: {training.lr: 0.02}}
+  bandwidths_gbps: [null, 2, 1]    # null = no emulation (same host)
+  latency_ms: 0.1                  # per message, typical LAN
+  epochs: 2

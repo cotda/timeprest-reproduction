@@ -1,0 +1,33 @@
+{
+  "code_hash": "580a25ef1d7d",
+  "config": "n5k/configs/n5k_quick.yaml",
+  "overrides": [
+    "data.image_size=320",
+    "pipeline.partition=[0,5,18]",
+    "checks.short_epochs=4",
+    "output.checks_file=n5k/results/partition320/p5.json"
+  ],
+  "systems": [
+    "pipedream",
+    "timeprest"
+  ],
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "all_pass": false,
+  "results": [
+    {
+      "id": 4,
+      "name": "short_run",
+      "status": "FAIL",
+      "seconds": 178.2,
+      "message": "OutOfMemoryError: CUDA out of memory. Tried to allocate 400.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 342.81 MiB is free. Including non-PyTorch memory, this process has 14.22 GiB memory in use. Of the allocated memory 12.41 GiB is allocated by PyTorch, and 1.59 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)",
+      "metrics": {}
+    }
+  ]
+}

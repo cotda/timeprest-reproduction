@@ -156,7 +156,14 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - Kích thước ảnh: chạy single GPU, lr 0.02, 8 epoch, seed 0 và 1, ở cả 224 và 320 trong cùng kernel. Dùng 320 nếu, tính trên trung bình 2 seed, `(kcal320/kcal224 − 1) + (1 − mAP320/mAP224) < −0,05` (tốt hơn ít nhất 5% tổng hợp). Nếu không thì giữ 224.
   - Code: cache lưu `image_size` và từ chối cache sai kích thước (trước đây có thể lấy nhầm cache).
   - Thêm một lần chạy thử DDP trên GPU (NCCL, 1 epoch, ảnh 224).
+  - Kết quả (`run5a` + `run5b`, xem mục 11): **giữ ảnh 224 và partition `[0,8,18]`**. Điểm +0,044 > −0,05: ảnh 320 kém hơn trên cả kcal và mAP, đồng thời pipeline chậm hơn khoảng 3 lần.
   - Cập nhật 04:51 UTC: `run0b` (đẩy 03:22) vẫn ở RUNNING sau 87 phút, trong khi `run0` xong trong ~10 phút. Nhiều khả năng bị treo ở bước gắn dataset gốc; không xem log hay hủy được bằng API. Vì vậy **tách `run5`** thành hai kernel, nội dung và quy tắc chọn giữ nguyên: `run5a` (ảnh 224: checks, single seed 0/1, DDP smoke; chỉ gắn `run0`) chạy ngay; `run5b` (ảnh 320: D4 với 3 partition, checks, single seed 0/1) chạy khi có cache 320. Đồng thời đẩy `run0c`, cùng nội dung với `run0b`, để thử lại. Chạy 224 và 320 ở hai kernel khác nhau không ảnh hưởng tới phép so sánh chất lượng: metric không phụ thuộc máy, chỉ thời gian thì có.
+- 2026-10-15 (người dùng chọn "R50 + R50"): **thử mô hình two-stream** (`model.name: n5k_resnet50_2s`). Lý do: B6 cho MAE kcal 19,5%, ngang mức "depth làm kênh thứ 4" của paper Nutrition5k (18,8%) nhưng kém các bài RGB-D gần đây (12–15%), và các bài đó đều tách RGB và depth thành hai nhánh. Mô hình nặng hơn cũng là trường hợp mà pipeline có lý do để dùng.
+  - Kiến trúc: hai ResNet-50 (stem imagenet), nhánh RGB 3 kênh và nhánh depth 1 kênh, đều khởi tạo từ ImageNet; conv1 của nhánh depth là trung bình 3 kênh RGB (giống cách khởi tạo kênh depth hiện tại). Hợp nhất muộn: nối feature 2048 + 2048 kênh rồi đưa vào head CAM như cũ (`N5kHead`, cin 4096). Mỗi khối của chuỗi 18 khối chứa cả hai nhánh song song (input ghép theo kênh, tách ra, tính, ghép lại), nên partition, runtime pipeline và DDP không phải sửa. Dữ liệu không đổi (vẫn tensor 4 kênh). Mô hình cũ `n5k_resnet50` giữ nguyên, các config hiện tại không đổi.
+  - Chạy thử `run8_2s` (single GPU, chỉ GPU0, lr 0.02, 8 epoch, seed 0 và 1; chạy xen kẽ 1s/2s/1s/2s để máy chậm dần không lệch về một bên). Mô hình một nhánh chạy lại trong cùng kernel làm mốc. lr giữ 0.02 cho cả hai (chưa sweep riêng two-stream).
+  - Quy tắc chọn (đặt trước khi có số liệu, giống quy tắc ảnh 224/320): với best val kcal và mAP tại epoch đó, lấy trung bình 2 seed. Dùng two-stream nếu `(kcal2s/kcal1s − 1) + (1 − mAP2s/mAP1s) < −0,05`. Nếu không thì giữ mô hình một nhánh và ghi kết quả âm tính.
+  - Nếu đạt: đo lại partition trên 2×T4 (giống `run1c`, PipeDream ở GPU0 có thể thiếu bộ nhớ), chạy lại checks D0–D4 và sweep lr ngắn, rồi chạy lại B6. Các bước này sẽ đề xuất riêng trước khi chạy.
+- 2026-10-15 (người dùng): mỗi kết luận từ thí nghiệm cũng được ghi thành một file riêng, có ghi thời điểm, trong `n5k/notes/` (mục lục ở `n5k/notes/README.md`), để cuối dự án tổng hợp. PLAN vẫn là nơi ghi đầy đủ.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
@@ -224,11 +231,81 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
 - Ở lr 0.01 (single), tổng dinh dưỡng học tốt: MAE kcal 158 → 83 (pMAE 32,7%), mass 62 g. Phần **nguyên liệu học rất yếu**: F1 6,2%, mAP 7,8%, MAE gram trên nguyên liệu có mặt 26,6 → 25,8 (gần như không đổi).
   - Giả thuyết (chưa kiểm chứng): loss presence/gram lấy trung bình trên K = 195 nguyên liệu, nên mỗi nguyên liệu chỉ nhận gradient khoảng 1/195, trong khi loss tổng chỉ trung bình trên 5 thành phần. Đây là điểm mở (b) ở mục 10.
 
+### B6 — kết quả chạy dài (`run6_s{0,1,2}` + `run6_bench`, 2026-10-14; log ở `n5k/results/kaggle/run6_*`)
+- Cấu hình: ảnh 224, partition `[0,8,18]`, M=64, 30 epoch, lr: single / DDP / PipeDream 0.02, TiMePReSt (N=2, N=4) 0.01. Test lấy ở checkpoint có val MAE kcal tốt nhất. Số liệu dạng trung bình ± độ lệch chuẩn trên 3 seed; mỗi seed là một kernel, các hệ chạy nối tiếp trên cùng máy.
+
+| Hệ | MAE kcal | %kcal | MAE mass | F1 | mAP | MAE gram | s/epoch | Peak MB (GPU lớn nhất) |
+|---|---|---|---|---|---|---|---|---|
+| Single GPU | 51,9 ± 2,8 | 19,5 | 33,8 | 86,6 | 87,2 | 12,0 | 25,2 ± 2,1 (*) | 5642 |
+| DDP 2 GPU | 53,3 ± 1,4 | 20,0 | 34,0 | 86,8 | 87,4 | 12,1 | **13,0 ± 0,9** | 3056 |
+| PipeDream | **51,9 ± 0,9** | 19,5 | **31,9** | 86,0 | 86,2 | 12,0 | 19,9 ± 0,6 | 8360 / 2041 |
+| TiMePReSt N=2 | 56,3 ± 0,4 | 21,1 | 36,3 | 85,3 | 85,3 | 12,8 | 18,9 ± 0,5 | 8285 / 2045 |
+| TiMePReSt N=4 | 57,3 ± 0,6 | 21,5 | 37,1 | 85,0 | 85,2 | 13,5 | 20,5 ± 0,5 | 8298 / 2040 |
+
+- Cùng máy, theo từng seed: TiMePReSt/PipeDream = 0,948 / 0,945 / 0,953, tức **TiMePReSt nhanh hơn khoảng 5%**. N=4/PipeDream = 1,02–1,04. DDP/PipeDream = 0,63–0,68.
+- Theo epoch, val MAE kcal ở epoch 10 / 20: PipeDream 70,1 / 51,1; TiMePReSt 82,4 / 57,4; N=4 76,5 / 58,4; single 84,9 / 50,1; DDP 78,9 / 52,6.
+- Kcal tính từ gram (nhánh nguyên liệu): PipeDream 94,6, single 97,3, DDP 102,1, TiMePReSt 114,3, N=4 129,3.
+- `bench_comm` (`run6_bench`, cùng một máy, 2 epoch, đo epoch cuối; truyền 3430 MB/epoch mỗi chiều):
+
+| Băng thông | TiMePReSt (s) | PipeDream (s) | Tỉ lệ |
+|---|---|---|---|
+| ∞ (cùng máy) | 17,54 | 18,54 | 0,946 |
+| 2 Gbit/s | 29,72 | 32,55 | 0,913 |
+| 1 Gbit/s | 44,61 | 48,11 | 0,927 |
+
+- Đối chiếu dự đoán ở mục 8:
+  - (1) "MAE cuối TiMePReSt ≈ PipeDream": **không đúng**. TiMePReSt kém 4,3 kcal (+8%), ổn định qua 3 seed (độ lệch chuẩn 0,4–0,9); mAP kém 0,9 điểm.
+    - Hai hệ khác lr (0.01 so với 0.02), nhưng ở sweep 8 epoch TiMePReSt với 0.02 cho kcal gần như bằng 0.01 (68,8 so với 68,6). Vì vậy nhiều khả năng khoảng cách đến từ cơ chế: backward dùng trọng số mới hơn forward. Chưa kiểm chứng bằng lần chạy 30 epoch với lr 0.02.
+  - (2) "TiMePReSt giảm MAE nhanh hơn ở giữa quá trình": **không đúng**; ở epoch 10 và 20 TiMePReSt đều kém PipeDream.
+  - (3) Thời gian:
+    - "DDP nhanh nhất": đúng.
+    - "TiMePReSt có thể chậm hơn PipeDream khoảng 5%": ngược lại, TiMePReSt nhanh hơn khoảng 5%.
+    - "Ở 1–2 Gbit/s TiMePReSt nhanh hơn": đúng (7–9%).
+  - (4) "Bộ nhớ TiMePReSt ≈ PipeDream": đúng (−0,9% trên GPU0).
+- N=4 so với N=2: chậm hơn 8,5% và MAE kém hơn 1 kcal; không có lợi ở W=2.
+- (*) Thời gian của single chưa dùng để so sánh được: các lần chạy dài cho 23–27 s, trong khi sweep cùng config cho 21,5 s. Đã đo nguyên nhân ở `run7_timing` (xem mục dưới): **không phải do số GPU nhìn thấy hay do chạy sau checks**, mà do máy chậm dần theo thời gian chạy. Vì vậy chỉ so sánh tỉ lệ giữa các hệ chạy trên cùng máy (các tỉ lệ ở trên); không so sánh giá trị tuyệt đối của s/epoch giữa các kernel.
+
+### Thời gian của single (`run7_timing`, 2026-10-14, đẩy 20:14 UTC, xếp hàng đến 22:18, chạy 13 phút; log ở `n5k/results/kaggle/run7_timing/`)
+- Single, 4 epoch, seed 0, lần lượt trên cùng một máy: thấy 2 GPU → chỉ GPU0 (`CUDA_VISIBLE_DEVICES=0`) → checks D0–D4 → thấy 2 GPU → chỉ GPU0. s/epoch ở epoch 2–4:
+
+| Thứ tự | Trường hợp | s/epoch (ep 2 / 3 / 4) | Peak MB |
+|---|---|---|---|
+| 1 | 2 GPU, trước checks | 21,3 / 21,9 / 22,6 | 5643 |
+| 2 | GPU0, trước checks | 23,6 / 24,0 / 24,4 | 5642 |
+| 3 | 2 GPU, sau checks | 24,1 / 24,6 / 24,7 | 5642 |
+| 4 | GPU0, sau checks | 24,4 / 24,5 / 24,8 | 5643 |
+
+- Thời gian tăng đều theo thứ tự chạy (cả trong từng lần chạy: 21,3 → 22,6 s), không phụ thuộc trường hợp; data_time chỉ khoảng 0,2 s. Nhiều khả năng GPU T4 nóng lên và hạ xung, nên chạy càng lâu càng chậm (khoảng 15%). Chưa đo xung nhịp/nhiệt độ để khẳng định.
+- Hệ quả: sweep (21,5 s) chạy lúc máy còn nguội; các lần chạy dài cho 23–27 s là bình thường. Các tỉ lệ TiMePReSt/PipeDream ở B6 đo trên cùng máy, các hệ chạy liền nhau, nên vẫn dùng được: tỉ lệ khớp nhau qua 3 seed (0,945–0,953) và khớp với `bench_comm` (0,946, chỉ 2 epoch mỗi hệ nên máy ít kịp chậm đi).
+- `run7_timing` ở trạng thái RUNNING hơn 2 giờ là do xếp hàng trên Kaggle, không phải treo.
+- `run6_s0` lần 2 (đẩy 19:12, xong 20:11) và `run6_bench` (8,2 phút) đều chạy hết mọi bước. Vì bench chỉ cần 8 phút, lần treo của `run6_s0` lần 1 không phải do bench chạy lâu. Nguyên nhân vẫn chưa rõ: có thể kẹt lúc khởi động, hoặc treo ở một bước bất kỳ rồi giữ pipe.
+
+### B6 — chuẩn bị (2026-10-14, chưa commit; chưa chạy)
+- `timeprest/n5k/bench_comm.py`: cùng quy trình với `timeprest.dist.bench_comm`, dùng lại `bench_variants` và `plot`; khác ở chỗ dùng trainer pipeline của task dinh dưỡng và chỉ nạp cache một lần. Code cũ không sửa.
+  - Config `n5k/configs/n5k_bench_comm.yaml`: TiMePReSt (lr 0.01) và PipeDream (lr 0.02); ∞ / 2 / 1 Gbit/s; latency 0,1 ms; 2 epoch, đo epoch cuối.
+  - Test CPU `test_bench_comm.py` (2 tiến trình gloo, dữ liệu giả): mỗi cặp (băng thông, hệ) ra một dòng, và link 0,002 Gbit/s làm epoch chậm hơn. Toàn bộ test n5k: 44 PASS.
+- Kernel `n5k/kaggle/run6_s{0,1,2}/`: mỗi seed một kernel 2×T4. Các bước lần lượt: checks → single → DDP → PipeDream → TiMePReSt N=2 → TiMePReSt N=4, đều 30 epoch; riêng seed 0 thêm `bench_comm`. Các hệ chạy nối tiếp trên cùng máy nên thời gian/epoch so được với nhau trong từng kernel. Kích thước ảnh và partition lấy từ `n5k_base.yaml`, sẽ chốt sau `run5b`.
+  - Ước tính ở ảnh 224: khoảng 65 phút/kernel, seed 0 khoảng 80 phút; tổng khoảng 3,5 giờ GPU.
+  - Người dùng giao (2026-10-14, "tự theo dõi kết quả run5b rồi tự làm luôn"): agent tự chọn theo quy tắc rồi đẩy B6. Vì giữ 224, kernel chỉ gắn cache 224 (`run0`).
+  - Đẩy 14:57 UTC: `run6_s0` và `run6_s1` chạy song song. Kaggle giới hạn tối đa 2 phiên GPU batch cùng lúc, nên `run6_s2` được đẩy khi một kernel xong.
+  - `run6_s1` xong lúc 16:00 (63 phút; các bước đều ok: checks 3,1, single 15,3, DDP 8,6, PipeDream 12,0, TiMePReSt 11,5, N=4 12,3 phút). `run6_s2` được đẩy lúc 19:00.
+  - **`run6_s0` (lần 1) treo:** đến 19:05 vẫn RUNNING, trang web báo "Running for 10901 s", log trống, output 0 B. Theo dự kiến nó phải xong trước khoảng 17:10, vì `bench_comm` có giới hạn 50 phút.
+    - Nguyên nhân khả dĩ, chưa chứng minh: `torchrun` chạy mỗi worker trong session riêng (`start_new_session=True`, đã đọc trong mã nguồn torch). `timeout` chỉ gửi tín hiệu tới process group của nó, nên worker còn sống sẽ giữ pipe stdout và `kernel_lib` đọc log mãi không hết.
+    - Khả năng khác: kernel kẹt ngay khi khởi động, như `run0b`. Không có log nên chưa phân biệt được hai khả năng.
+    - Sửa `kernel_lib`: (1) `run_step` ghi lại mọi tiến trình con và cháu trong lúc chạy, và dừng những tiến trình còn sống khi bước kết thúc hoặc tới hạn cứng; thread đọc log không còn chặn kernel; (2) chép `n5k_results` sau mỗi bước. Test `timeprest/n5k/tests/test_kernel_lib.py` (2 PASS). Trên Windows, Git `timeout` dừng luôn tiến trình cháu nên không tái hiện được lỗi treo; test chỉ xác nhận bản sửa chạy đúng.
+    - `bench_comm` được tách khỏi `run6_s0` sang kernel riêng `run6_bench`. `run6_s0` (lần 2) chỉ còn các lần chạy dài, đẩy sau khi lần 1 bị hủy trên web.
+
 ### Ảnh 224 hay 320 (`run5a` + `run5b`, 2026-10-14, single GPU, lr 0.02, 8 epoch, seed 0/1; log ở `n5k/results/kaggle/run5a/`, `run5b/`)
 - Cách đọc số (định trước khi có kết quả 320): kcal = val MAE kcal tốt nhất; mAP = val mAP nguyên liệu ở chính epoch đó; lấy trung bình 2 seed.
 - 224 (`run5a`): seed 0: kcal 62,10 / mAP 72,81 (epoch 7); seed 1: 66,34 / 72,75 (epoch 7). **Trung bình: 64,22 / 72,78.** Test mAP 72,4 / 72,0.
   - Hai seed lệch nhau 4,2 kcal, khớp mức dao động ±3 kcal đã thấy ở run3.
-- 320 (`run5b`): đang chạy.
+- 320 (`run5b`): seed 0: kcal 63,32 / mAP 71,00 (epoch 6); seed 1: 66,79 / 70,02 (epoch 6). **Trung bình: 65,06 / 70,51.**
+- **Điểm = (65,06/64,22 − 1) + (1 − 70,51/72,78) = +0,044**, không đạt ngưỡng < −0,05: ảnh 320 còn kém hơn 224 trên cả hai tiêu chí. **Giữ 224**; config không đổi.
+- Chi phí của 320, đo cùng máy:
+  - Single: 56,9 s/epoch (224: 21,5 s), peak 11,2 GB (224: 5,6 GB).
+  - Partition ở 320 (D4 4 epoch): `[0,5,18]` và `[0,6,18]` thiếu bộ nhớ trên GPU0 (cần hơn 14,2 GB; ước lượng cũ 12,7 GB cho `[0,5,18]` là thấp). Chỉ `[0,4,18]` chạy được: PipeDream 61,0 s/epoch, TiMePReSt 58,8 s; peak 12,0/8,0 GB; bận 0,57/0,94; truyền 14 000 MB/epoch, gấp 4 lần 224 vì cắt sớm hơn ở tầng có bản đồ đặc trưng lớn.
+  - Nghĩa là pipeline ở 320 chậm hơn 224 khoảng 3 lần.
+- Checks D0–D4 lặp lại ở `run5b` (224, máy khác): tất cả PASS. D4: PipeDream 21,5 s, TiMePReSt 20,6 s.
 - Cache 320 (`run0c`): cùng split, cùng K=195 và cùng 2 món bị loại như cache 224; tạo trong 47 s. `run0b` (cùng nội dung) vẫn RUNNING lúc 14:04 UTC, gần 11 giờ sau khi đẩy, trong khi `run0c` bắt đầu chạy script ngay khi được đẩy. Vậy kernel commit gắn dataset gốc có lúc bị treo, nhiều khả năng cũng là nguyên nhân của lần 1.
 
 ### B5 — DDP (2026-10-14, chưa commit; chạy thử trên GPU ở `run5a`)

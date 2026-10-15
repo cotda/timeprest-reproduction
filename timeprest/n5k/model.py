@@ -5,6 +5,9 @@ CAM-style head. Registered as model name "n5k_resnet50" so `build_stages` can pa
 Head on the 2048×h×w feature map: two 1×1 convs give K presence maps and K gram maps; global
 average pooling turns them into presence logits and raw grams -> output [B, 2K] (task layout).
 The presence maps are the class activation maps used for the calorie map (B7).
+
+"n5k_resnet50_2s" (PLAN mục 10, 2026-10-15): two-stream variant, one ResNet-50 for RGB and one for
+depth, late fusion into the same head.
 """
 from __future__ import annotations
 
@@ -83,16 +86,18 @@ def torchvision_key_map(blocks: list[nn.Module]) -> dict:
 
 def load_torchvision_weights(blocks: list[nn.Module], tv_state: dict, depth_init: str = "rgb_mean"):
     """Copy torchvision ResNet-50 weights into the blocks. With a 4-channel first conv the RGB
-    filters are copied and the depth filter is the mean of the three RGB filters (mục 4)."""
+    filters are copied and the depth filter is the mean of the three RGB filters (mục 4); a
+    1-channel first conv (depth stream of the two-stream model) gets that mean filter only."""
     flat = nn.Sequential(*blocks[:-1])
     own = flat.state_dict()
     new = {}
     for ours, tv in torchvision_key_map(blocks).items():
         w = tv_state[tv]
-        if ours == "0.0.weight" and own[ours].shape[1] == 4 and w.shape[1] == 3:
+        if ours == "0.0.weight" and own[ours].shape[1] in (1, 4) and w.shape[1] == 3:
             if depth_init != "rgb_mean":
                 raise ValueError(f"unknown depth_init {depth_init!r}")
-            w = torch.cat([w, w.mean(1, keepdim=True)], 1)
+            mean = w.mean(1, keepdim=True)
+            w = mean if own[ours].shape[1] == 1 else torch.cat([w, mean], 1)
         if own[ours].shape != w.shape:
             raise ValueError(f"{ours} <- {tv}: shape {tuple(w.shape)} != {tuple(own[ours].shape)}")
         new[ours] = w
@@ -121,6 +126,40 @@ def build_n5k_resnet50(model_cfg: dict) -> list[nn.Module]:
     return blocks
 
 
+class DualBlock(nn.Module):
+    """One block of each stream side by side: the input is [rgb features | depth features] along the
+    channels, the output is the same concatenation after each stream's block. Keeps the two-stream
+    model a flat chain, so stage partitioning and the pipeline runtimes need no change."""
+
+    def __init__(self, rgb: nn.Module, depth: nn.Module, rgb_in: int):
+        super().__init__()
+        self.rgb, self.depth, self.rgb_in = rgb, depth, rgb_in
+
+    def forward(self, x):
+        a, b = x[:, :self.rgb_in], x[:, self.rgb_in:]
+        return torch.cat([self.rgb(a), self.depth(b)], 1)
+
+
+def build_n5k_resnet50_2s(model_cfg: dict) -> list[nn.Module]:
+    """Two-stream model (PLAN mục 10, 2026-10-15): an RGB ResNet-50 and a depth ResNet-50, both from
+    ImageNet weights (depth conv1 = mean of the RGB filters), late fusion by concatenating the two
+    2048-channel maps into the CAM head. Input: the same 4-channel RGB-D tensor. 18 blocks as the
+    one-stream model (stem, 16 bottleneck pairs, head)."""
+    if int(model_cfg.get("in_channels", 4)) != 4:
+        raise ValueError("n5k_resnet50_2s takes the 4-channel RGB-D input")
+    rgb = build_n5k_resnet50({**model_cfg, "in_channels": 3})
+    depth = build_n5k_resnet50({**model_cfg, "in_channels": 1})
+    out_ch = lambda b: b.bn3.num_features if isinstance(b, Bottleneck) else b[0].out_channels   # noqa: E731
+    blocks: list[nn.Module] = [DualBlock(rgb[0], depth[0], 3)]
+    for i in range(1, len(rgb) - 1):
+        blocks.append(DualBlock(rgb[i], depth[i], out_ch(rgb[i - 1])))
+    fused = out_ch(rgb[-2]) + out_ch(depth[-2])
+    blocks.append(N5kHead(fused, int(model_cfg["num_ingredients"]), model_cfg.get("presence_prior"),
+                          model_cfg.get("gram_prior"), bool(model_cfg.get("direct_totals", False)),
+                          model_cfg.get("total_mean")))
+    return blocks
+
+
 def priors_from_meta(meta: dict, train_targets: torch.Tensor) -> dict:
     """Head initialisation from the train labels: prevalence p_k, E[grams_k] / scale_k and the mean dish
     totals (decoding scale of the direct-totals branch)."""
@@ -133,3 +172,4 @@ def priors_from_meta(meta: dict, train_targets: torch.Tensor) -> dict:
 
 
 MODEL_BUILDERS[NAME] = build_n5k_resnet50
+MODEL_BUILDERS["n5k_resnet50_2s"] = build_n5k_resnet50_2s

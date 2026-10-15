@@ -1,0 +1,8 @@
+Downloading: "https://download.pytorch.org/models/resnet50-11ad3fa6.pth" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth
+
+  0%|          | 0.00/97.8M [00:00<?, ?B/s]
+  8%|▊         | 8.12M/97.8M [00:00<00:01, 85.0MB/s]
+ 33%|███▎      | 32.8M/97.8M [00:00<00:00, 187MB/s] 
+ 58%|█████▊    | 57.1M/97.8M [00:00<00:00, 218MB/s]
+ 84%|████████▍ | 82.0M/97.8M [00:00<00:00, 235MB/s]
+100%|██████████| 97.8M/97.8M [00:00<00:00, 222MB/s]

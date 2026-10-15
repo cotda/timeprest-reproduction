@@ -1,0 +1,43 @@
+[{"stream_name":"stdout","time":0.999724908,"data":"20:03:32 kernel start\n"}
+,{"stream_name":"stdout","time":1.13058416,"data":"20:03:33 [+0.0m] code 180ea68-dirty from /kaggle/input/datasets/kaggleolap/timeprest-code/timeprest_code\n"}
+,{"stream_name":"stdout","time":11.346844029,"data":"20:03:43 [+0.2m] gpus: GPU 0: Tesla T4 (UUID: GPU-a0a8f559-41fa-ade8-72fb-dadc4dadfe74)\n"}
+,{"stream_name":"stdout","time":11.346872661,"data":"GPU 1: Tesla T4 (UUID: GPU-b3851279-c0fc-ca91-709e-f93e2ea948ff)\n"}
+,{"stream_name":"stdout","time":11.347036854,"data":"20:03:43 [+0.2m] ===== weights (limit 15 min): /usr/bin/python3 -c import torchvision; torchvision.models.resnet50(weights='IMAGENET1K_V2')\n"}
+,{"stream_name":"stdout","time":26.700291162,"data":"Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth\n"}
+,{"stream_name":"stdout","time":26.872920259,"data":"\n"}
+,{"stream_name":"stdout","time":26.97336889,"data":"  0%|          | 0.00/97.8M [00:00\u003c?, ?B/s]\n"}
+,{"stream_name":"stdout","time":27.073643289,"data":" 15%|█▍        | 14.4M/97.8M [00:00\u003c00:00, 150MB/s]\n"}
+,{"stream_name":"stdout","time":27.173861614,"data":" 34%|███▍      | 33.1M/97.8M [00:00\u003c00:00, 177MB/s]\n"}
+,{"stream_name":"stdout","time":27.274289805,"data":" 60%|█████▉    | 58.2M/97.8M [00:00\u003c00:00, 216MB/s]\n"}
+,{"stream_name":"stdout","time":27.331836114,"data":" 85%|████████▌ | 83.2M/97.8M [00:00\u003c00:00, 234MB/s]\n"}
+,{"stream_name":"stdout","time":27.33185818,"data":"100%|██████████| 97.8M/97.8M [00:00\u003c00:00, 224MB/s]\n"}
+,{"stream_name":"stdout","time":31.403531899,"data":"20:04:03 [+0.5m] ===== weights: ok (exit 0, 0.3 min)\n"}
+,{"stream_name":"stdout","time":31.403567841,"data":"20:04:03 [+0.5m] ===== bench_comm (limit 45 min): torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.bench_comm --config n5k/configs/n5k_bench_comm.yaml\n"}
+,{"stream_name":"stdout","time":33.172446361,"data":"W1014 20:04:05.112000 67 torch/distributed/run.py:851] \n"}
+,{"stream_name":"stdout","time":33.172466961,"data":"W1014 20:04:05.112000 67 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":33.172473907,"data":"W1014 20:04:05.112000 67 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. \n"}
+,{"stream_name":"stdout","time":33.172479366,"data":"W1014 20:04:05.112000 67 torch/distributed/run.py:851] *****************************************\n"}
+,{"stream_name":"stdout","time":36.596392044,"data":"env: {'python': '3.13.15', 'torch': '2.11.0+cu128', 'cuda': '12.8', 'cudnn': 91900, 'gpu': 'Tesla T4', 'gpu_mem_gb': 14.56} | code 29b736f7026c\n"}
+,{"stream_name":"stdout","time":100.827595704,"data":"[bw   inf Gbit/s] timeprest      epoch   17.54s busy [0.955, 0.786] wait [0.6, 3.21]\n"}
+,{"stream_name":"stdout","time":144.457771218,"data":"[bw   inf Gbit/s] pipedream      epoch   18.54s busy [0.886, 0.731] wait [2.06, 4.65]\n"}
+,{"stream_name":"stdout","time":215.587376762,"data":"[bw     2 Gbit/s] timeprest      epoch   29.72s busy [0.551, 0.469] wait [13.12, 14.86]\n"}
+,{"stream_name":"stdout","time":292.784850025,"data":"[bw     2 Gbit/s] pipedream      epoch   32.55s busy [0.502, 0.428] wait [16.08, 17.85]\n"}
+,{"stream_name":"stdout","time":401.690086935,"data":"[bw     1 Gbit/s] timeprest      epoch   44.61s busy [0.366, 0.315] wait [28.04, 29.23]\n"}
+,{"stream_name":"stdout","time":517.193440129,"data":"[bw     1 Gbit/s] pipedream      epoch   48.11s busy [0.336, 0.291] wait [31.76, 32.83]\n"}
+,{"stream_name":"stdout","time":517.197591441,"data":"\n"}
+,{"stream_name":"stdout","time":517.197605749,"data":"| bandwidth (Gbit/s) | timeprest epoch (s) | pipedream epoch (s) | ratio timeprest/pipedream |\n"}
+,{"stream_name":"stdout","time":517.197609767,"data":"|---|---|---|---|\n"}
+,{"stream_name":"stdout","time":517.197613153,"data":"| inf | 17.54 | 18.54 | 0.946 |\n"}
+,{"stream_name":"stdout","time":517.197616556,"data":"| 2 | 29.72 | 32.55 | 0.913 |\n"}
+,{"stream_name":"stdout","time":517.197619972,"data":"| 1 | 44.61 | 48.11 | 0.927 |\n"}
+,{"stream_name":"stdout","time":517.197758462,"data":"N5K_BENCH_JSON [{\"system\": \"timeprest\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 17.536, \"busy_frac\": [0.955, 0.786], \"wait_time_s\": [0.6, 3.21], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2045.4], \"val_mae_kcal\": 116.71319, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 18.536, \"busy_frac\": [0.886, 0.731], \"wait_time_s\": [2.06, 4.65], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2034.9], \"val_mae_kcal\": 138.50046, \"epochs_timed\": 2}, {\"system\": \"timeprest\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 29.723, \"busy_frac\": [0.551, 0.469], \"wait_time_s\": [13.12, 14.86], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2128.6], \"val_mae_kcal\": 112.26268, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 32.553, \"busy_frac\": [0.502, 0.428], \"wait_time_s\": [16.08, 17.85], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2132.3], \"val_mae_kcal\": 199.12187, \"epochs_timed\": 2}, {\"system\": \"timeprest\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 44.614, \"busy_frac\": [0.366, 0.315], \"wait_time_s\": [28.04, 29.23], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2128.6], \"val_mae_kcal\": 135.95662, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 48.107, \"busy_frac\": [0.336, 0.291], \"wait_time_s\": [31.76, 32.83], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2132.3], \"val_mae_kcal\": 129.38803, \"epochs_timed\": 2}]\n"}
+,{"stream_name":"stdout","time":518.465043258,"data":"saved n5k/results/bench_comm/bench_comm.png\n"}
+,{"stream_name":"stdout","time":521.518286516,"data":"20:12:13 [+8.7m] ===== bench_comm: ok (exit 0, 8.2 min)\n"}
+,{"stream_name":"stdout","time":521.611493538,"data":"20:12:13 [+8.7m] KERNEL_DONE [{\"step\": \"weights\", \"status\": \"ok\", \"minutes\": 0.3}, {\"step\": \"bench_comm\", \"status\": \"ok\", \"minutes\": 8.2}]\n"}
+,{"stream_name":"stderr","time":523.853610904,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":523.853639923,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":524.297804154,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":524.29782907,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":525.062631394,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":526.158624433,"data":"[NbConvertApp] Writing 276512 bytes to __results__.html\n"}
+]

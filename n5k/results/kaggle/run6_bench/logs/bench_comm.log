@@ -1,0 +1,19 @@
+W1014 20:04:05.112000 67 torch/distributed/run.py:851] 
+W1014 20:04:05.112000 67 torch/distributed/run.py:851] *****************************************
+W1014 20:04:05.112000 67 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1014 20:04:05.112000 67 torch/distributed/run.py:851] *****************************************
+env: {'python': '3.13.15', 'torch': '2.11.0+cu128', 'cuda': '12.8', 'cudnn': 91900, 'gpu': 'Tesla T4', 'gpu_mem_gb': 14.56} | code 29b736f7026c
+[bw   inf Gbit/s] timeprest      epoch   17.54s busy [0.955, 0.786] wait [0.6, 3.21]
+[bw   inf Gbit/s] pipedream      epoch   18.54s busy [0.886, 0.731] wait [2.06, 4.65]
+[bw     2 Gbit/s] timeprest      epoch   29.72s busy [0.551, 0.469] wait [13.12, 14.86]
+[bw     2 Gbit/s] pipedream      epoch   32.55s busy [0.502, 0.428] wait [16.08, 17.85]
+[bw     1 Gbit/s] timeprest      epoch   44.61s busy [0.366, 0.315] wait [28.04, 29.23]
+[bw     1 Gbit/s] pipedream      epoch   48.11s busy [0.336, 0.291] wait [31.76, 32.83]
+
+| bandwidth (Gbit/s) | timeprest epoch (s) | pipedream epoch (s) | ratio timeprest/pipedream |
+|---|---|---|---|
+| inf | 17.54 | 18.54 | 0.946 |
+| 2 | 29.72 | 32.55 | 0.913 |
+| 1 | 44.61 | 48.11 | 0.927 |
+N5K_BENCH_JSON [{"system": "timeprest", "bandwidth_gbps": null, "latency_ms": 0.1, "epoch_time_s": 17.536, "busy_frac": [0.955, 0.786], "wait_time_s": [0.6, 3.21], "mb_sent": [3430.0, 3430.0], "msgs_sent": [70.0, 35.0], "peak_mem_mb": [8282.7, 2045.4], "val_mae_kcal": 116.71319, "epochs_timed": 2}, {"system": "pipedream", "bandwidth_gbps": null, "latency_ms": 0.1, "epoch_time_s": 18.536, "busy_frac": [0.886, 0.731], "wait_time_s": [2.06, 4.65], "mb_sent": [3430.0, 3430.0], "msgs_sent": [35.0, 35.0], "peak_mem_mb": [8390.3, 2034.9], "val_mae_kcal": 138.50046, "epochs_timed": 2}, {"system": "timeprest", "bandwidth_gbps": 2, "latency_ms": 0.1, "epoch_time_s": 29.723, "busy_frac": [0.551, 0.469], "wait_time_s": [13.12, 14.86], "mb_sent": [3430.0, 3430.0], "msgs_sent": [70.0, 35.0], "peak_mem_mb": [8282.7, 2128.6], "val_mae_kcal": 112.26268, "epochs_timed": 2}, {"system": "pipedream", "bandwidth_gbps": 2, "latency_ms": 0.1, "epoch_time_s": 32.553, "busy_frac": [0.502, 0.428], "wait_time_s": [16.08, 17.85], "mb_sent": [3430.0, 3430.0], "msgs_sent": [35.0, 35.0], "peak_mem_mb": [8390.3, 2132.3], "val_mae_kcal": 199.12187, "epochs_timed": 2}, {"system": "timeprest", "bandwidth_gbps": 1, "latency_ms": 0.1, "epoch_time_s": 44.614, "busy_frac": [0.366, 0.315], "wait_time_s": [28.04, 29.23], "mb_sent": [3430.0, 3430.0], "msgs_sent": [70.0, 35.0], "peak_mem_mb": [8282.7, 2128.6], "val_mae_kcal": 135.95662, "epochs_timed": 2}, {"system": "pipedream", "bandwidth_gbps": 1, "latency_ms": 0.1, "epoch_time_s": 48.107, "busy_frac": [0.336, 0.291], "wait_time_s": [31.76, 32.83], "mb_sent": [3430.0, 3430.0], "msgs_sent": [35.0, 35.0], "peak_mem_mb": [8390.3, 2132.3], "val_mae_kcal": 129.38803, "epochs_timed": 2}]
+saved n5k/results/bench_comm/bench_comm.png

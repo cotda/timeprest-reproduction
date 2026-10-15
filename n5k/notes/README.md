@@ -1,0 +1,17 @@
+# Ghi chép kết luận — task Nutrition5k + TiMePReSt
+
+Mỗi kết luận rút ra từ thí nghiệm có một file riêng trong thư mục này, để cuối dự án tổng hợp lại.
+- Tên file: `YYYY-MM-DD_HHMM_<chủ-đề>.md`, theo thời điểm viết ghi chú.
+- Đầu mỗi file ghi: thời điểm viết (giờ máy UTC+8 và UTC), ngày chạy thí nghiệm, nguồn số liệu (thư mục kết quả, kernel).
+- Chi tiết đầy đủ và quyết định thiết kế vẫn nằm ở `n5k/PLAN.md` (mục 10: quyết định, mục 11: kết quả). Ghi chú ở đây là bản tóm tắt kết luận.
+- Các ghi chú viết lúc 2026-10-15 12:05 tóm tắt lại những thí nghiệm chạy trước đó (ngày 2026-10-14).
+
+## Mục lục (theo thời gian)
+
+| Thời điểm viết | File | Nội dung |
+|---|---|---|
+| 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_tong-hop-B1-B5.md](2026-10-15_1205_tong-hop-B1-B5.md) | Dữ liệu, checks, partition, loss, nhánh tổng trực tiếp, lr, ảnh 224/320, DDP (thí nghiệm ngày 2026-10-14) |
+| 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_B6-chay-dai.md](2026-10-15_1205_B6-chay-dai.md) | Kết quả chính: 5 hệ × 3 seed × 30 epoch + bench_comm; TiMePReSt có lợi gì |
+| 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_run7-timing.md](2026-10-15_1205_run7-timing.md) | Vì sao thời gian single dao động |
+| 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_so-sanh-tai-lieu.md](2026-10-15_1205_so-sanh-tai-lieu.md) | So sánh độ chính xác với các nghiên cứu khác trên Nutrition5k |
+| 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_two-stream-quyet-dinh.md](2026-10-15_1205_two-stream-quyet-dinh.md) | Quyết định thử mô hình two-stream R50 + R50, quy tắc chọn |

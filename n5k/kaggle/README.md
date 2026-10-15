@@ -24,6 +24,8 @@
   Cách làm: `run0/` (CPU, không tốn quota GPU) gắn dataset gốc và tạo `n5k_cache/`; kernel GPU chỉ gắn output của run0.
 - Các lần chạy: `run1/` (đã hủy sau ~6 giờ, không có log, chỉ để lưu vết), `run0/` (CPU: tạo cache),
   `run1a/` (weights + báo cáo dữ liệu + checks, gắn run0), `run1b/` (sweep, gắn run0 + run1a để có cache và `n5k_results/checks`).
-  `run0b/`, `run0c/` (CPU: cache 320; run0c là lần thử lại của run0b), `run5a/` (ảnh 224: checks, single, DDP smoke), `run5b/` (ảnh 320: partition, single; gắn run0 + cache 320).
+  `run0b/`, `run0c/` (CPU: cache 320; run0c là lần thử lại của run0b), `run5a/` (ảnh 224: checks, single, DDP smoke), `run5b/` (ảnh 320: partition, single; gắn run0 + cache 320). `run6_s{0,1,2}/` (B6: chạy dài 30 epoch, mỗi seed một kernel), `run6_bench/` (bench_comm riêng).
+- Kaggle cho tối đa **2 phiên GPU batch cùng lúc** ("Maximum batch GPU session count of 2 reached").
+- `torchrun` chạy worker trong session riêng, nên `timeout` không dừng được worker. `kernel_lib.run_step` tự dừng mọi tiến trình con và cháu còn sống khi một bước kết thúc, và chép `n5k_results` sau mỗi bước (sửa sau khi `run6_s0` lần 1 treo hơn 3 giờ không có log).
 - `fetch_overhead.py`: tải riêng CSV + ảnh overhead về máy; bị giới hạn tốc độ (429), chỉ dùng khi cần vài file.
 - Sau khi đẩy code, chờ `kaggle datasets list --mine` hiện `lastUpdated` mới (giờ UTC) rồi mới đẩy kernel.

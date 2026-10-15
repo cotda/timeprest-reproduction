@@ -1,0 +1,39 @@
+W1014 19:29:12.353000 2702 torch/distributed/run.py:851] 
+W1014 19:29:12.353000 2702 torch/distributed/run.py:851] *****************************************
+W1014 19:29:12.353000 2702 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1014 19:29:12.353000 2702 torch/distributed/run.py:851] *****************************************
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 29b736f7026c | ranks 2
+[n5k ddp] W=2 M=64 (32/rank) K=195 device=cuda:0
+/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+ep   1/30 | train 27.8092 (MAE kcal 155.1) | val_loss 31.6598 | MAE kcal 127.8 (49.9%) mass 85.2 fat 8.77 carb 11.26 prot 12.11 | ingr F1 3.5 mAP 15.7 | lr 2.86e-04 | epoch 19.8s peak[7532.7|7532.7]MB | ETA 0.16h
+ep   2/30 | train 22.2948 (MAE kcal 108.9) | val_loss 23.0163 | MAE kcal 95.9 (37.4%) mass 67.3 fat 7.02 carb 9.16 prot 9.65 | ingr F1 38.5 mAP 29.0 | lr 1.03e-02 | epoch 12.6s peak[3054.8|3056.0]MB | ETA 0.10h
+ep   3/30 | train 18.5377 (MAE kcal 93.7) | val_loss 22.5841 | MAE kcal 116.4 (45.4%) mass 73.2 fat 7.22 carb 8.78 prot 10.53 | ingr F1 40.0 mAP 38.3 | lr 2.00e-02 | epoch 12.2s peak[3052.4|3056.0]MB | ETA 0.09h
+ep   4/30 | train 15.9944 (MAE kcal 86.9) | val_loss 19.3680 | MAE kcal 89.4 (34.9%) mass 74.8 fat 6.34 carb 7.97 prot 8.46 | ingr F1 56.4 mAP 48.0 | lr 1.99e-02 | epoch 11.9s peak[3052.4|3056.0]MB | ETA 0.09h
+ep   5/30 | train 13.5039 (MAE kcal 78.4) | val_loss 18.8261 | MAE kcal 86.0 (33.6%) mass 52.3 fat 6.15 carb 7.16 prot 8.61 | ingr F1 53.5 mAP 55.9 | lr 1.97e-02 | epoch 11.9s peak[3052.4|3056.0]MB | ETA 0.08h
+ep   6/30 | train 11.2717 (MAE kcal 73.2) | val_loss 17.9071 | MAE kcal 92.1 (36.0%) mass 58.7 fat 5.83 carb 6.95 prot 7.73 | ingr F1 58.4 mAP 59.4 | lr 1.94e-02 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.08h
+ep   7/30 | train 9.4109 (MAE kcal 74.2) | val_loss 16.4736 | MAE kcal 75.3 (29.4%) mass 47.9 fat 4.99 carb 6.83 prot 7.18 | ingr F1 65.5 mAP 63.9 | lr 1.90e-02 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.08h
+ep   8/30 | train 7.7370 (MAE kcal 69.5) | val_loss 14.2677 | MAE kcal 69.5 (27.1%) mass 52.6 fat 5.17 carb 6.13 prot 7.09 | ingr F1 71.6 mAP 72.0 | lr 1.85e-02 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.07h
+ep   9/30 | train 6.5230 (MAE kcal 66.7) | val_loss 13.5678 | MAE kcal 71.8 (28.0%) mass 47.6 fat 5.03 carb 6.02 prot 6.61 | ingr F1 73.6 mAP 74.9 | lr 1.78e-02 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.07h
+ep  10/30 | train 5.5441 (MAE kcal 66.3) | val_loss 13.0727 | MAE kcal 81.9 (32.0%) mass 48.8 fat 5.60 carb 6.21 prot 6.87 | ingr F1 76.4 mAP 76.6 | lr 1.71e-02 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.07h
+ep  11/30 | train 4.5065 (MAE kcal 60.6) | val_loss 11.1674 | MAE kcal 66.2 (25.8%) mass 44.3 fat 4.63 carb 5.82 prot 6.18 | ingr F1 80.8 mAP 81.6 | lr 1.62e-02 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.06h
+ep  12/30 | train 3.7454 (MAE kcal 58.1) | val_loss 12.5428 | MAE kcal 62.5 (24.4%) mass 40.4 fat 4.28 carb 5.64 prot 6.40 | ingr F1 78.5 mAP 81.7 | lr 1.53e-02 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.06h
+ep  13/30 | train 3.1746 (MAE kcal 58.6) | val_loss 10.3242 | MAE kcal 60.7 (23.7%) mass 35.9 fat 4.46 carb 5.13 prot 5.47 | ingr F1 83.4 mAP 84.7 | lr 1.43e-02 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.06h
+ep  14/30 | train 2.5447 (MAE kcal 53.7) | val_loss 9.5146 | MAE kcal 55.7 (21.7%) mass 33.8 fat 4.03 carb 5.30 prot 5.79 | ingr F1 85.5 mAP 86.0 | lr 1.33e-02 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.05h
+ep  15/30 | train 2.1420 (MAE kcal 53.0) | val_loss 9.3991 | MAE kcal 55.2 (21.5%) mass 37.6 fat 4.39 carb 4.96 prot 5.22 | ingr F1 85.6 mAP 86.1 | lr 1.22e-02 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.05h
+ep  16/30 | train 1.7866 (MAE kcal 47.1) | val_loss 9.4399 | MAE kcal 54.4 (21.2%) mass 34.6 fat 3.83 carb 4.81 prot 5.27 | ingr F1 85.6 mAP 86.6 | lr 1.11e-02 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.05h
+ep  17/30 | train 1.6380 (MAE kcal 45.1) | val_loss 9.0154 | MAE kcal 52.3 (20.4%) mass 33.6 fat 3.84 carb 4.78 prot 5.10 | ingr F1 86.3 mAP 86.6 | lr 1.00e-02 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.04h
+ep  18/30 | train 1.4677 (MAE kcal 49.7) | val_loss 8.8231 | MAE kcal 49.0 (19.1%) mass 36.3 fat 3.78 carb 4.89 prot 5.05 | ingr F1 86.9 mAP 86.7 | lr 8.88e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.04h
+ep  19/30 | train 1.3099 (MAE kcal 44.9) | val_loss 8.9633 | MAE kcal 55.3 (21.6%) mass 37.9 fat 3.89 carb 4.74 prot 5.22 | ingr F1 86.8 mAP 86.8 | lr 7.77e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.04h
+ep  20/30 | train 1.1616 (MAE kcal 43.4) | val_loss 8.8065 | MAE kcal 50.7 (19.8%) mass 31.5 fat 3.87 carb 4.76 prot 4.97 | ingr F1 87.1 mAP 87.2 | lr 6.70e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.03h
+ep  21/30 | train 1.0788 (MAE kcal 40.7) | val_loss 8.7674 | MAE kcal 49.5 (19.3%) mass 35.4 fat 3.66 carb 4.80 prot 4.89 | ingr F1 87.1 mAP 87.4 | lr 5.66e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.03h
+ep  22/30 | train 1.0098 (MAE kcal 38.4) | val_loss 8.6621 | MAE kcal 48.6 (19.0%) mass 32.0 fat 3.60 carb 4.67 prot 4.82 | ingr F1 87.4 mAP 87.6 | lr 4.68e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.03h
+ep  23/30 | train 0.9263 (MAE kcal 38.7) | val_loss 8.8864 | MAE kcal 49.1 (19.2%) mass 32.1 fat 3.60 carb 4.73 prot 4.80 | ingr F1 87.2 mAP 87.5 | lr 3.77e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.02h
+ep  24/30 | train 0.8932 (MAE kcal 38.3) | val_loss 8.7277 | MAE kcal 48.9 (19.1%) mass 31.3 fat 3.59 carb 4.59 prot 4.75 | ingr F1 87.2 mAP 87.6 | lr 2.93e-03 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.02h
+ep  25/30 | train 0.8529 (MAE kcal 37.7) | val_loss 8.7614 | MAE kcal 50.0 (19.5%) mass 31.1 fat 3.56 carb 4.59 prot 4.75 | ingr F1 87.4 mAP 87.8 | lr 2.18e-03 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.02h
+ep  26/30 | train 0.8186 (MAE kcal 37.4) | val_loss 8.8035 | MAE kcal 48.7 (19.0%) mass 30.6 fat 3.54 carb 4.56 prot 4.71 | ingr F1 87.5 mAP 87.8 | lr 1.53e-03 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.01h
+ep  27/30 | train 0.8088 (MAE kcal 36.7) | val_loss 8.7560 | MAE kcal 48.2 (18.8%) mass 31.7 fat 3.55 carb 4.70 prot 4.78 | ingr F1 87.4 mAP 87.6 | lr 9.90e-04 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.01h
+ep  28/30 | train 0.8117 (MAE kcal 36.3) | val_loss 8.8251 | MAE kcal 48.5 (18.9%) mass 30.4 fat 3.54 carb 4.55 prot 4.72 | ingr F1 87.5 mAP 87.5 | lr 5.61e-04 | epoch 12.0s peak[3052.4|3056.0]MB | ETA 0.01h
+ep  29/30 | train 0.7916 (MAE kcal 36.9) | val_loss 8.8046 | MAE kcal 48.5 (19.0%) mass 31.0 fat 3.53 carb 4.61 prot 4.69 | ingr F1 87.3 mAP 87.7 | lr 2.51e-04 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.00h
+ep  30/30 | train 0.7876 (MAE kcal 36.3) | val_loss 8.9020 | MAE kcal 47.9 (18.7%) mass 30.6 fat 3.53 carb 4.69 prot 4.72 | ingr F1 87.3 mAP 87.8 | lr 6.29e-05 | epoch 12.1s peak[3052.4|3056.0]MB | ETA 0.00h
+SUMMARY {"name": "n5k_ddp_s0", "system": "pipedream", "epochs_done": 30, "best_epoch": 30, "test_mae_kcal": 51.73702, "test_pmae_kcal": 19.38672, "test_ingr_f1": 86.92661, "mean_epoch_time_s": 12.064}
