@@ -171,6 +171,23 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - Sau bước này mới đề xuất bước 2 (sweep lr) và bước 3 (B6 với two-stream).
   - **Kết quả (`run9_2s_part`, xem mục 11): chọn `[0,4,18]`**, partition duy nhất vừa bộ nhớ (`[0,5,18]` và `[0,6,18]` thiếu bộ nhớ trên GPU0 ở D2). Chưa sửa config: two-stream chưa thành mô hình chính cho đến khi người dùng quyết định bước 2–3.
 - 2026-10-15 (người dùng): mỗi kết luận từ thí nghiệm cũng được ghi thành một file riêng, có ghi thời điểm, trong `n5k/notes/` (mục lục ở `n5k/notes/README.md`), để cuối dự án tổng hợp. PLAN vẫn là nơi ghi đầy đủ.
+- 2026-10-16 00:45 (16:45 UTC ngày 15; người dùng chọn hướng 1): **bước 2 của two-stream: sweep lr ngắn + đo thời gian 4 hệ trên cùng máy** (`run10_2s_sweep`, kernel `kaggleolap/n5k-run10-2s-sweep`, đẩy 16:47 UTC ngày 15; code không đổi so với lần đẩy 04:06 UTC, chỉ thêm script kernel; DDP two-stream đã chạy thử trên CPU).
+  - Cấu hình: `model.name=n5k_resnet50_2s`, partition `[0,4,18]` cho PipeDream/TiMePReSt (run9), 8 epoch, warmup 1 (giống `n5k_sweep.yaml`), seed 0. Truyền bằng `--set`; `n5k_base.yaml` chưa đổi.
+  - Khác `run3`: PipeDream và TiMePReSt chạy **pipeline thật trên 2 GPU** (`dist_train`), không chạy engine mô phỏng trên 1 GPU như sweep cũ, vì engine mô phỏng giữ activation của nhiều mini-batch trên một GPU mà two-stream single đã dùng 13,8 GB. Single chỉ dùng GPU0 (như run8). DDP dùng lr của single (cùng SGD trên M=64), chỉ chạy lr 0.02 (để có thời gian và một số liệu chất lượng).
+  - Lưới lr: {0.02, 0.01} (hai giá trị đã chọn ở run3; 0.05 bị loại ở run3 cho mọi hệ).
+  - Thứ tự (đối xứng, để máy chậm dần không lệch về một hệ): checks D0–D4 (two-stream, `[0,4,18]`, D4 2 epoch) → single 0.02 → DDP 0.02 → PipeDream 0.02 → TiMePReSt 0.02 → TiMePReSt 0.01 → PipeDream 0.01 → single 0.01. Chạy tuần tự, không chạy song song hai lần chạy, để thời gian đo được không ảnh hưởng nhau.
+  - Quy tắc chọn lr (đặt trước, giống `run3` / PN §22.9): mỗi hệ lấy lr có best val MAE kcal nhỏ nhất. Nếu hai lr chênh nhau dưới 1% kcal thì lấy lr có mAP val (tại epoch đó) cao hơn.
+  - Thời gian: lấy trung bình s/epoch (bỏ epoch 1) ở lr 0.02; báo tỉ lệ DDP / PipeDream / TiMePReSt so với single, và TiMePReSt / PipeDream ở cả hai lr. Chỉ so tỉ lệ trong kernel này (run7).
+  - Sau bước này mới đề xuất có chạy B6 với two-stream (khoảng 7 giờ GPU) hay không; không tự chạy.
+  - **Kết quả (`run10_2s_sweep`, xem mục 11):** lr giữ như mô hình một nhánh (single / DDP / PipeDream 0.02, TiMePReSt 0.01). Pipeline 2 GPU chậm hơn single 10%, chậm hơn DDP 2,2 lần; TiMePReSt / PipeDream 0,986. Sau 8 epoch TiMePReSt kém PipeDream 13% kcal và 12 điểm mAP. Chưa đổi config; B6 với two-stream chờ người dùng quyết định.
+- 2026-10-16 02:20 (18:20 UTC ngày 15; người dùng chọn "hướng 2"): **mô hình một nhánh (`n5k_resnet50`, B6 3 seed) là kết quả chính; two-stream (run8–run10) là thí nghiệm phụ**, không chạy B6 với two-stream. `n5k_base.yaml` giữ nguyên (một nhánh, `[0,8,18]`). Báo cáo (B8) ghi two-stream như một kết quả âm tính về pipeline: tốt hơn về chất lượng ở single/DDP/PipeDream nhưng pipeline bất đồng bộ 2 GPU không có lợi về thời gian và bộ nhớ, TiMePReSt kém hơn. Bước tiếp theo: B7 (đề xuất kế hoạch trước khi code).
+- 2026-10-16 02:30 (người dùng duyệt kế hoạch B7, chọn "TiMePReSt + single"): **B7 — bản đồ calories và deletion test** (`timeprest/n5k/explain.py`, mục `explain:` trong config, kernel `run11_b7`).
+  - Checkpoint: B6 không lưu checkpoint (kernel bỏ `*.pt`), nên huấn luyện lại TiMePReSt N=2 (`n5k_timeprest.yaml`, pipeline 2 GPU) và single (`n5k_single.yaml`), seed 0, 30 epoch, đúng config B6. Lần này giữ best checkpoint trong output kernel. So MAE/mAP với B6 seed 0 để kiểm tra lần huấn luyện lại.
+  - Bản đồ calories từ nguyên liệu (mục 4): với k đoán có (xác suất ≥ 0,5), `A_k = ReLU(CAM_k) / Σ ReLU(CAM_k)` (nếu ReLU(CAM_k) bằng 0 khắp nơi thì chia đều), `C = Σ_k kcal_k · A_k` với `kcal_k` = gram dự đoán × kcal/g. Tổng của C bằng tổng kcal của các nguyên liệu đoán có. Thêm bản đồ kcal của nhánh tổng trực tiếp (kênh kcal của `total_map`, chỉ dùng thứ hạng tương đối, không có tổng ý nghĩa). Phóng 7×7 → 224×224 (bilinear) để phủ lên ảnh.
+  - Hình: 8 món test (4 món ở phân vị 12,5/37,5/62,5/87,5% của sai số kcal, 4 món ngẫu nhiên seed cố định); mỗi món: RGB, depth, bản đồ calories từ nguyên liệu, bản đồ kcal trực tiếp, CAM của 3 nguyên liệu có xác suất cao nhất, bảng dự đoán so với nhãn.
+  - Deletion test trên toàn bộ test: lưới 7×7 ô (32×32 px, đúng độ phân giải CAM); ô bị che điền 0 sau chuẩn hóa (= trung bình dữ liệu). Với mỗi cặp (món, k) mà k đoán có và thật sự có: che c ∈ {2, 5, 10} ô có CAM_k cao nhất, so với c ô ngẫu nhiên (trung bình 5 lần bốc). Đo: mức giảm xác suất của k; mức giảm tương đối gram của k; trung bình |thay đổi xác suất| của các nguyên liệu khác đoán có (độ riêng của vùng). Với mỗi món: che c ô cao nhất của bản đồ calories (đo mức giảm tương đối kcal từ nguyên liệu) và của bản đồ kcal trực tiếp (đo mức giảm tương đối kcal trực tiếp), so với ngẫu nhiên.
+  - Quy tắc kết luận (đặt trước): một loại bản đồ là **trung thực với mô hình** nếu ở c = 5, mức giảm khi che theo bản đồ lớn hơn che ngẫu nhiên, kiểm định Wilcoxon cặp đôi một phía p < 0,01. Chỉ kết luận "trung thực với mô hình", không kết luận định vị đúng vị trí thật. So sánh TiMePReSt với single chỉ mô tả, không có quy tắc.
+  - Code xong (`timeprest/n5k/explain.py`, mục `explain:` trong `n5k_base.yaml`, test `timeprest/n5k/tests/test_explain.py`: 7 test; toàn bộ 57 test n5k PASS). Đẩy code 18:28 UTC ngày 15, kernel `kaggleolap/n5k-run11-b7` (`n5k/kaggle/run11_b7/`) đẩy 18:29 UTC: checks → TiMePReSt s0 → single s0 → giữ checkpoint (`/kaggle/working/b7_ckpt/`) → explain từng hệ.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
@@ -271,6 +288,30 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - (4) "Bộ nhớ TiMePReSt ≈ PipeDream": đúng (−0,9% trên GPU0).
 - N=4 so với N=2: chậm hơn 8,5% và MAE kém hơn 1 kcal; không có lợi ở W=2.
 - (*) Thời gian của single chưa dùng để so sánh được: các lần chạy dài cho 23–27 s, trong khi sweep cùng config cho 21,5 s. Đã đo nguyên nhân ở `run7_timing` (xem mục dưới): **không phải do số GPU nhìn thấy hay do chạy sau checks**, mà do máy chậm dần theo thời gian chạy. Vì vậy chỉ so sánh tỉ lệ giữa các hệ chạy trên cùng máy (các tỉ lệ ở trên); không so sánh giá trị tuyệt đối của s/epoch giữa các kernel.
+
+### Sweep lr + thời gian 4 hệ của two-stream (`run10_2s_sweep`, 2026-10-15, chạy 16:47–18:00 UTC, 80 phút; seed 0, 8 epoch; log ở `n5k/results/kaggle/run10_2s_sweep/`)
+- Checks D0–D4 (two-stream, `[0,4,18]`, D4 2 epoch): PASS hết. 7 lần chạy đều xong. Bước `summary` lỗi (`KeyError: 'wall_time_s'`): `sweep.py` chỉ đọc cột thời gian của engine 1 GPU, `dist_train` ghi `epoch_time_s`. Đã sửa `sweep.py` để đọc cả hai cột (sửa nhỏ, 50 test n5k PASS); bảng dưới tính lại từ `metrics.csv`.
+- Số liệu val ở epoch có MAE kcal tốt nhất; s/epoch là trung bình bỏ epoch 1.
+
+| hệ | lr | MAE kcal (ep) | mAP | Test kcal | Test mAP | s/epoch | Peak MB |
+|---|---|---|---|---|---|---|---|
+| single (GPU0) | **0.02** | **62,11** (6) | 71,8 | 59,8 | 71,3 | 54,7 | 13803 |
+| single (GPU0) | 0.01 | 63,00 (8) | 71,3 | 63,7 | 70,7 | 54,8 | 13804 |
+| DDP | 0.02 | 60,37 (7) | 73,9 | 60,8 | 74,4 | 27,9 | 7372 / 7380 |
+| PipeDream | **0.02** | **60,33** (8) | 75,1 | 62,0 | 73,8 | 61,0 | 13442 / 9412 |
+| PipeDream | 0.01 | 65,10 (8) | 71,0 | 62,2 | 69,7 | 60,5 | 13442 / 9412 |
+| TiMePReSt | 0.02 | 69,19 (8) | 62,0 | 67,7 | 65,0 | 60,2 | 13341 / 9329 |
+| TiMePReSt | **0.01** | **68,18** (8) | 63,1 | 66,3 | 65,6 | 59,8 | 13341 / 9328 |
+
+- **lr theo quy tắc: single / DDP / PipeDream = 0.02, TiMePReSt = 0.01**, giống mô hình một nhánh (run3). Single: 0.02 hơn 0.01 1,4% kcal (> 1%). TiMePReSt: 0.01 hơn 0.02 1,5% kcal, mAP cũng cao hơn.
+- **Thời gian (cùng máy, lr 0.02), so với single:** DDP 0,51; PipeDream 1,12; TiMePReSt 1,10. TiMePReSt / PipeDream = 0,986 (lr 0.02) và 0,987 (lr 0.01).
+  - **Pipeline bất đồng bộ trên 2 GPU chậm hơn single GPU khoảng 10%** với two-stream, và chậm hơn DDP khoảng 2,2 lần. GPU bận 0,50 / 0,95: lệch tải do chỉ cắt được ở khối 4.
+  - DDP dùng 7,4 GB mỗi GPU; pipeline vẫn cần 13,4 GB ở GPU0, gần bằng single (13,8 GB).
+  - So với mô hình một nhánh (B6): TiMePReSt / PipeDream 0,95 → 0,986, nghĩa là lợi thế thời gian của TiMePReSt gần như mất.
+- **Chất lượng sau 8 epoch:** TiMePReSt kém PipeDream 13% kcal (68,2 so với 60,3) và 12 điểm mAP (63,1 so với 75,1). Khoảng cách lớn hơn ở mô hình một nhánh (run3: 68,6 so với 63,5; 10 điểm mAP). Single, DDP và PipeDream đều tốt lên với two-stream (run3 một nhánh: 64,4 / – / 63,5), còn TiMePReSt thì gần như không (68,6 → 68,2).
+  - PipeDream và TiMePReSt đều có best ở epoch 8, tức vẫn đang tiến bộ. Ở B6 một nhánh, khoảng cách 8 epoch (8%) còn 8% ở 30 epoch, nên khoảng cách này có thể không thu hẹp nhiều.
+  - Lưu ý: run3 chạy PipeDream/TiMePReSt bằng engine mô phỏng, run10 bằng pipeline thật (D1 cho thấy hai cách khớp nhau ở thứ tự tĩnh). Mỗi cấu hình chỉ có 1 seed; biến động single lr 0.02 giữa các lần chạy khoảng ±3 kcal (run3/run4). Ở đây single lr 0.02 seed 0 cho 62,11, gần với run8 (61,75).
+- Kết luận: với two-stream trên 2×T4, pipeline bất đồng bộ (cả PipeDream và TiMePReSt) **không có lợi về thời gian lẫn bộ nhớ** so với single GPU và DDP; TiMePReSt còn kém hơn về chất lượng. Đây là kết quả âm tính có ích cho câu hỏi "khi nào TiMePReSt có lợi".
 
 ### Partition của two-stream (`run9_2s_part`, 2026-10-15, chạy 09:34–10:01 UTC; checks D0–D4 với từng partition; log ở `n5k/results/kaggle/run9_2s_part/`)
 - `[0,5,18]` và `[0,6,18]`: D0, D1 PASS; **D2 thiếu bộ nhớ trên GPU0** (14,5 GB), kernel tự dừng bước đó (NCCL timeout rồi SIGABRT, khoảng 6,7 phút mỗi bước).

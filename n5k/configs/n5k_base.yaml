@@ -55,3 +55,13 @@ checks:
   resume_subset: 256
   short_epochs: 2
   short_warmup_epochs: 0.5
+explain:                                 # B7: python -m timeprest.n5k.explain (PLAN mục 10, 2026-10-16)
+  presence_threshold: 0.5                # ingredient predicted present (same threshold as F1)
+  cells: [2, 5, 10]                      # masked cells of the h x w head grid (7 x 7 at 224 px, 32 px cells)
+  random_draws: 5                        # random-cell control: mean of this many draws
+  rule_cells: 5                          # the decision rule uses this c ...
+  rule_alpha: 0.01                       # ... and this one-sided paired Wilcoxon level
+  figure_dishes: 8                       # half at kcal-error quantiles, half at random
+  top_cams: 3                            # CAM panels per figure (highest presence probabilities)
+  seed: 0
+  dir: n5k/results/explain/{name}

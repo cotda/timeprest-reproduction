@@ -17,3 +17,5 @@ Mỗi kết luận rút ra từ thí nghiệm có một file riêng trong thư m
 | 2026-10-15 12:05 (04:05 UTC) | [2026-10-15_1205_two-stream-quyet-dinh.md](2026-10-15_1205_two-stream-quyet-dinh.md) | Quyết định thử mô hình two-stream R50 + R50, quy tắc chọn |
 | 2026-10-15 17:30 (09:30 UTC) | [2026-10-15_1730_two-stream-ket-qua.md](2026-10-15_1730_two-stream-ket-qua.md) | Kết quả run8_2s: two-stream đạt quy tắc (điểm −0,091), chậm 2,15 lần; pipeline cần chia lại |
 | 2026-10-15 18:04 (10:04 UTC) | [2026-10-15_1804_two-stream-partition.md](2026-10-15_1804_two-stream-partition.md) | run9: chỉ `[0,4,18]` vừa bộ nhớ; pipeline two-stream không nhanh hơn single, lệch tải 0,55 / 0,94 |
+| 2026-10-16 02:15 (18:15 UTC ngày 15) | [2026-10-16_0215_two-stream-sweep-thoi-gian.md](2026-10-16_0215_two-stream-sweep-thoi-gian.md) | run10: lr giữ như một nhánh; pipeline 2 GPU chậm hơn single 10%, DDP nhanh 2 lần; TiMePReSt kém PipeDream 13% kcal sau 8 epoch |
+| 2026-10-16 02:20 (18:20 UTC ngày 15) | [2026-10-16_0220_chot-mo-hinh-chinh.md](2026-10-16_0220_chot-mo-hinh-chinh.md) | Người dùng chọn: mô hình một nhánh là kết quả chính; two-stream là thí nghiệm phụ; chuyển sang B7 |

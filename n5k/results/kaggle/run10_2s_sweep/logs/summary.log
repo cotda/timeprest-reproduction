@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/working/code/timeprest/n5k/sweep.py", line 121, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/working/code/timeprest/n5k/sweep.py", line 117, in main
+    summary(args)
+    ~~~~~~~^^^^^^
+  File "/kaggle/working/code/timeprest/n5k/sweep.py", line 85, in summary
+    "epoch_s": float(last["wall_time_s"])})
+                     ~~~~^^^^^^^^^^^^^^^
+KeyError: 'wall_time_s'

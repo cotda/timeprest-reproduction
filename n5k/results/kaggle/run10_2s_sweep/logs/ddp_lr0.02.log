@@ -1,0 +1,17 @@
+W1015 17:04:22.769000 2262 torch/distributed/run.py:851] 
+W1015 17:04:22.769000 2262 torch/distributed/run.py:851] *****************************************
+W1015 17:04:22.769000 2262 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1015 17:04:22.769000 2262 torch/distributed/run.py:851] *****************************************
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 1ffd8b2f03bd | ranks 2
+[n5k ddp] W=2 M=64 (32/rank) K=195 device=cuda:0
+/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+ep   1/8 | train 26.7105 (MAE kcal 142.2) | val_loss 39.3090 | MAE kcal 192.3 (75.1%) mass 113.4 fat 10.58 carb 11.64 prot 14.75 | ingr F1 2.4 mAP 12.5 | lr 5.71e-04 | epoch 37.0s peak[11602.1|11602.1]MB | ETA 0.07h
+ep   2/8 | train 21.0148 (MAE kcal 97.8) | val_loss 21.4699 | MAE kcal 92.8 (36.2%) mass 55.4 fat 6.20 carb 7.97 prot 8.98 | ingr F1 45.1 mAP 36.9 | lr 2.00e-02 | epoch 27.8s peak[7372.8|7380.2]MB | ETA 0.05h
+ep   3/8 | train 16.9366 (MAE kcal 87.1) | val_loss 22.3327 | MAE kcal 85.4 (33.3%) mass 90.3 fat 6.31 carb 8.01 prot 9.74 | ingr F1 39.9 mAP 44.6 | lr 1.90e-02 | epoch 27.6s peak[7372.3|7380.2]MB | ETA 0.04h
+ep   4/8 | train 13.9869 (MAE kcal 77.9) | val_loss 17.2282 | MAE kcal 74.1 (28.9%) mass 47.3 fat 5.79 carb 7.13 prot 7.81 | ingr F1 59.6 mAP 57.8 | lr 1.62e-02 | epoch 28.2s peak[7372.3|7380.2]MB | ETA 0.03h
+ep   5/8 | train 10.9506 (MAE kcal 70.2) | val_loss 14.7054 | MAE kcal 65.9 (25.7%) mass 40.3 fat 4.85 carb 6.37 prot 6.57 | ingr F1 67.0 mAP 65.9 | lr 1.22e-02 | epoch 27.9s peak[7372.3|7380.2]MB | ETA 0.02h
+ep   6/8 | train 8.4754 (MAE kcal 61.5) | val_loss 12.5619 | MAE kcal 68.0 (26.6%) mass 39.9 fat 4.84 carb 7.01 prot 6.31 | ingr F1 74.9 mAP 71.4 | lr 7.77e-03 | epoch 27.8s peak[7372.3|7380.2]MB | ETA 0.02h
+ep   7/8 | train 6.9840 (MAE kcal 62.3) | val_loss 11.8703 | MAE kcal 60.4 (23.6%) mass 37.2 fat 4.72 carb 5.97 prot 6.40 | ingr F1 77.1 mAP 73.9 | lr 3.77e-03 | epoch 27.9s peak[7372.3|7380.2]MB | ETA 0.01h
+ep   8/8 | train 6.2358 (MAE kcal 60.1) | val_loss 11.7488 | MAE kcal 61.2 (23.9%) mass 38.3 fat 4.69 carb 5.91 prot 6.34 | ingr F1 77.8 mAP 74.9 | lr 9.90e-04 | epoch 28.2s peak[7372.3|7380.2]MB | ETA 0.00h
+SUMMARY {"name": "sweep_ddp_2s_lr0.02", "system": "pipedream", "epochs_done": 8, "best_epoch": 7, "test_mae_kcal": 60.78638, "test_pmae_kcal": 22.77766, "test_ingr_f1": 76.84164, "mean_epoch_time_s": 27.936285714285713}

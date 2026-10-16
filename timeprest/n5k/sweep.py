@@ -82,7 +82,7 @@ def summary(args) -> list[dict]:
                          "best_val_mae_kcal": float(best["val_mae_kcal"]), "best_epoch": int(best["epoch"]),
                          "last_val_mae_kcal": float(last["val_mae_kcal"]), "last_val_pmae_kcal": float(last["val_pmae_kcal"]),
                          "last_val_ingr_f1": float(last["val_ingr_f1"]), "last_train_loss": float(last["train_loss"]),
-                         "epoch_s": float(last["wall_time_s"])})
+                         "epoch_s": float(last.get("wall_time_s") or last["epoch_time_s"])})  # engine | dist_train
     print(f"{'system':<14}{'lr':>8}{'ep':>4}{'best MAE kcal (ep)':>20}{'last MAE kcal':>15}{'last %':>8}"
           f"{'ingr F1':>9}{'train loss':>12}{'s/epoch':>9}")
     for r in rows:
