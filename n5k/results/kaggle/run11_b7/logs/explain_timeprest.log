@@ -1,0 +1,8 @@
+[explain] n5k/results/runs/b7_timeprest_s0 (best epoch 26): test MAE kcal 57.63 on 486 dishes
+/kaggle/working/code/timeprest/n5k/explain.py:190: RuntimeWarning: Mean of empty slice
+  r = np.nanmean(np.array([pair_vals(jj, k) for jj in rj]), axis=0) if rj else [np.nan] * 3
+[explain] deletion 100/486 dishes, 1827 pair rows
+[explain] deletion 200/486 dishes, 3552 pair rows
+[explain] deletion 300/486 dishes, 5202 pair rows
+[explain] deletion 400/486 dishes, 7248 pair rows
+N5K_EXPLAIN_JSON {"name": "b7_timeprest_s0", "test_mae_kcal": 57.628, "n_pairs": 3011, "faithful": {"cam_presence": true, "cam_gram": true, "calorie_map_ingr": true, "kcal_map_direct": true}, "at_c5": {"cam_presence": {"n": 3011, "map": 0.5041, "rand": 0.0726, "frac_map_gt_rand": 0.9601, "p_wilcoxon": 0.0}, "cam_gram": {"n": 3011, "map": 0.5582, "rand": 0.1192, "frac_map_gt_rand": 0.9229, "p_wilcoxon": 0.0}, "calorie_map_ingr": {"n": 486, "map": 0.5791, "rand": 0.1505, "frac_map_gt_rand": 0.9424, "p_wilcoxon": 0.0}, "kcal_map_direct": {"n": 486, "map": 0.2662, "rand": -0.0339, "frac_map_gt_rand": 0.9342, "p_wilcoxon": 0.0}}}

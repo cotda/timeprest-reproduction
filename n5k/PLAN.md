@@ -188,6 +188,7 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - Deletion test trên toàn bộ test: lưới 7×7 ô (32×32 px, đúng độ phân giải CAM); ô bị che điền 0 sau chuẩn hóa (= trung bình dữ liệu). Với mỗi cặp (món, k) mà k đoán có và thật sự có: che c ∈ {2, 5, 10} ô có CAM_k cao nhất, so với c ô ngẫu nhiên (trung bình 5 lần bốc). Đo: mức giảm xác suất của k; mức giảm tương đối gram của k; trung bình |thay đổi xác suất| của các nguyên liệu khác đoán có (độ riêng của vùng). Với mỗi món: che c ô cao nhất của bản đồ calories (đo mức giảm tương đối kcal từ nguyên liệu) và của bản đồ kcal trực tiếp (đo mức giảm tương đối kcal trực tiếp), so với ngẫu nhiên.
   - Quy tắc kết luận (đặt trước): một loại bản đồ là **trung thực với mô hình** nếu ở c = 5, mức giảm khi che theo bản đồ lớn hơn che ngẫu nhiên, kiểm định Wilcoxon cặp đôi một phía p < 0,01. Chỉ kết luận "trung thực với mô hình", không kết luận định vị đúng vị trí thật. So sánh TiMePReSt với single chỉ mô tả, không có quy tắc.
   - Code xong (`timeprest/n5k/explain.py`, mục `explain:` trong `n5k_base.yaml`, test `timeprest/n5k/tests/test_explain.py`: 7 test; toàn bộ 57 test n5k PASS). Đẩy code 18:28 UTC ngày 15, kernel `kaggleolap/n5k-run11-b7` (`n5k/kaggle/run11_b7/`) đẩy 18:29 UTC: checks → TiMePReSt s0 → single s0 → giữ checkpoint (`/kaggle/working/b7_ckpt/`) → explain từng hệ.
+  - **Kết quả (`run11_b7`, xem mục 11): theo quy tắc, cả bốn loại bản đồ (CAM theo xác suất, CAM theo gram, bản đồ calories từ nguyên liệu, bản đồ kcal trực tiếp) đều trung thực với mô hình, ở cả TiMePReSt và single.** Giới hạn: vùng CAM chỉ riêng một phần cho từng nguyên liệu. Lần huấn luyện lại khớp B6 seed 0. **B7 xong**; tiếp theo B8 (báo cáo).
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
 ## 11. Kết quả
@@ -288,6 +289,34 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - (4) "Bộ nhớ TiMePReSt ≈ PipeDream": đúng (−0,9% trên GPU0).
 - N=4 so với N=2: chậm hơn 8,5% và MAE kém hơn 1 kcal; không có lợi ở W=2.
 - (*) Thời gian của single chưa dùng để so sánh được: các lần chạy dài cho 23–27 s, trong khi sweep cùng config cho 21,5 s. Đã đo nguyên nhân ở `run7_timing` (xem mục dưới): **không phải do số GPU nhìn thấy hay do chạy sau checks**, mà do máy chậm dần theo thời gian chạy. Vì vậy chỉ so sánh tỉ lệ giữa các hệ chạy trên cùng máy (các tỉ lệ ở trên); không so sánh giá trị tuyệt đối của s/epoch giữa các kernel.
+
+### B7 — bản đồ calories và deletion test (`run11_b7`, 2026-10-15, đẩy 18:29 UTC, chạy khoảng 32 phút; log ở `n5k/results/kaggle/run11_b7/`)
+- Mọi bước đều xong: checks PASS (3,0 phút), TiMePReSt s0 11,3 phút, single s0 12,4 phút, explain khoảng 2 phút mỗi hệ. Checkpoint tải về `n5k/results/kaggle/run11_b7/b7_ckpt/` (290 MB, `*.pt` đã nằm trong `.gitignore`).
+- **Lần huấn luyện lại khớp B6 seed 0:**
+
+| hệ | test MAE kcal (run11 / B6 s0) | test mAP | best epoch | s/epoch |
+|---|---|---|---|---|
+| TiMePReSt N=2 | 57,63 / 56,00 | 85,4 / 84,6 | 26 / 24 | 18,8 / 18,3 |
+| single | 50,67 / 50,31 | 86,6 / 86,9 | 27 / 28 | 21,8 / 23,0 |
+
+- **Deletion test** (486 món test; khoảng 3000 cặp (món, nguyên liệu) đoán có và thật sự có). Mức giảm khi che c ô theo bản đồ so với c ô ngẫu nhiên:
+
+| hệ | c | xác suất k (bản đồ / ngẫu nhiên) | gram k | xác suất nguyên liệu khác | kcal từ nguyên liệu (bản đồ calories) | kcal trực tiếp (bản đồ kcal) |
+|---|---|---|---|---|---|---|
+| TiMePReSt | 2 | 0,21 / 0,03 | 31% / 5% | 0,13 / 0,05 | 29% / 6% | 12% / −1% |
+| TiMePReSt | **5** | **0,50 / 0,07** | **56% / 12%** | 0,30 / 0,10 | **58% / 15%** | **27% / −3%** |
+| TiMePReSt | 10 | 0,74 / 0,16 | 72% / 23% | 0,49 / 0,18 | 79% / 30% | 39% / −8% |
+| single | 2 | 0,25 / 0,03 | 39% / 8% | 0,15 / 0,05 | 35% / 7% | 13% / −4% |
+| single | **5** | **0,58 / 0,09** | **64% / 17%** | 0,36 / 0,12 | **63% / 18%** | **26% / −9%** |
+| single | 10 | 0,83 / 0,21 | 79% / 32% | 0,57 / 0,24 | 82% / 35% | 35% / −15% |
+
+- **Theo quy tắc (c = 5, Wilcoxon một phía p < 0,01): cả bốn loại bản đồ đều trung thực với mô hình, ở cả hai hệ** (p < 1e-70; che theo bản đồ giảm nhiều hơn che ngẫu nhiên ở 92–98% số cặp/món).
+- Giới hạn, cần ghi khi báo cáo:
+  - **Vùng CAM chỉ riêng một phần cho từng nguyên liệu**: che vùng CAM của k cũng làm giảm xác suất các nguyên liệu khác (0,30 so với 0,10 khi che ngẫu nhiên, TiMePReSt c = 5). Mức giảm của chính k lớn hơn mức giảm của các nguyên liệu khác trung bình 0,20, nhưng chỉ ở 65% số cặp. Một phần hiệu ứng là "vùng có thức ăn so với nền", không phải định vị từng nguyên liệu.
+  - Che ô ngẫu nhiên làm kcal trực tiếp **tăng** nhẹ (3–15%): ô điền giá trị trung bình nằm ngoài phân bố ảnh thật. Vì vậy chỉ so sánh tương đối giữa che theo bản đồ và che ngẫu nhiên.
+  - Bản đồ calories từ nguyên liệu chỉ chứa kcal của các nguyên liệu đoán có (p ≥ 0,5). Tổng của nó bằng khoảng 0,7 lần kcal trực tiếp (trung vị; tứ phân vị 0,44–0,96), vì nhánh gram vốn kém (MAE kcal từ gram khoảng 115). Bản đồ này cho biết phân bố, không phải con số calo chính xác.
+  - TiMePReSt và single cho cùng kết luận. Mức giảm của TiMePReSt nhỏ hơn single một chút (0,50 so với 0,58 ở c = 5); chỉ mô tả, 1 seed.
+- Hình: 8 món mỗi hệ ở `n5k/results/kaggle/run11_b7/n5k_results/explain/b7_<hệ>_s0/figures/`. Nhìn bằng mắt, nhiều CAM nằm đúng chỗ (dứa ở góc phải trên, trứng bác ở vùng vàng), nhưng đây chỉ là minh họa, không phải phép đo. Lỗi hiển thị nhỏ: khi món có ít hơn 3 nguyên liệu đoán có, ô CAM thứ 3 vẫn vẽ nguyên liệu có p ≈ 0 (ví dụ "deprecated"); không ảnh hưởng deletion test.
 
 ### Sweep lr + thời gian 4 hệ của two-stream (`run10_2s_sweep`, 2026-10-15, chạy 16:47–18:00 UTC, 80 phút; seed 0, 8 epoch; log ở `n5k/results/kaggle/run10_2s_sweep/`)
 - Checks D0–D4 (two-stream, `[0,4,18]`, D4 2 epoch): PASS hết. 7 lần chạy đều xong. Bước `summary` lỗi (`KeyError: 'wall_time_s'`): `sweep.py` chỉ đọc cột thời gian của engine 1 GPU, `dist_train` ghi `epoch_time_s`. Đã sửa `sweep.py` để đọc cả hai cột (sửa nhỏ, 50 test n5k PASS); bảng dưới tính lại từ `metrics.csv`.

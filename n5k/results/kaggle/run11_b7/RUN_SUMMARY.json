@@ -1,0 +1,149 @@
+{
+ "started": "2026-10-15 18:28:59",
+ "budget_min": 170,
+ "steps": [
+  {
+   "step": "weights",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.3,
+   "json": [],
+   "tail": [
+    "Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth",
+    "",
+    "  0%|          | 0.00/97.8M [00:00<?, ?B/s]",
+    " 20%|\u2588\u2589        | 19.5M/97.8M [00:00<00:00, 204MB/s]",
+    " 42%|\u2588\u2588\u2588\u2588\u258f     | 40.6M/97.8M [00:00<00:00, 214MB/s]",
+    " 63%|\u2588\u2588\u2588\u2588\u2588\u2588\u258e   | 61.9M/97.8M [00:00<00:00, 218MB/s]",
+    " 85%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258c | 83.4M/97.8M [00:00<00:00, 220MB/s]",
+    "100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 97.8M/97.8M [00:00<00:00, 219MB/s]"
+   ]
+  },
+  {
+   "step": "checks",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.0,
+   "json": [
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 10.3, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 17.6, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 6.42, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 6.23, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 17}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 38.1, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.72496, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.73297, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 98.6, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.10944, 20.80459], \"val_mae_kcal_by_epoch\": [146.70542, 90.39077], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [7.61665, 46.629], \"epoch_time_s\": 18.858, \"busy_frac_per_gpu\": \"0.906|0.798\", \"peak_mem_mb_per_gpu\": \"8391.3|2166.0\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 19.1, \"est_full_run_h\": 0.16}, \"timeprest\": {\"train_loss_by_epoch\": [27.49989, 22.80363], \"val_mae_kcal_by_epoch\": [148.70028, 99.45019], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [10.89796, 39.4831], \"epoch_time_s\": 17.73, \"busy_frac_per_gpu\": \"0.897|0.892\", \"peak_mem_mb_per_gpu\": \"8302.5|2149.2\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 18.0, \"est_full_run_h\": 0.15}}}]}"
+   ],
+   "tail": [
+    "ep   1/2 | train 27.4999 (MAE kcal 146.9) | val_loss 37.6784 | MAE kcal 148.7 (58.0%) mass 216.1 fat 8.93 carb 13.56 prot 13.33 | ingr F1 10.9 mAP 12.2 | lr 1.18e-03 | epoch 17.3s busy[0.907|0.889] peak[8302.5|2151.4]MB sent[3430.0|3430.0]MB bwd_overlap=33 | ETA 0.00h",
+    "ep   2/2 | train 22.8036 (MAE kcal 113.6) | val_loss 22.5041 | MAE kcal 99.5 (38.8%) mass 65.9 fat 7.29 carb 9.54 prot 10.44 | ingr F1 39.5 mAP 24.8 | lr 1.48e-02 | epoch 17.7s busy[0.897|0.892] peak[8302.5|2149.2]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.00h",
+    "[PASS] short_run (98.6s) - short run per system on the real pipeline",
+    "    pipedream: {'train_loss_by_epoch': [26.10944, 20.80459], 'val_mae_kcal_by_epoch': [146.70542, 90.39077], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [7.61665, 46.629], 'epoch_time_s': 18.858, 'busy_frac_per_gpu': '0.906|0.798', 'peak_mem_mb_per_gpu': '8391.3|2166.0', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 19.1, 'est_full_run_h': 0.16}",
+    "    timeprest: {'train_loss_by_epoch': [27.49989, 22.80363], 'val_mae_kcal_by_epoch': [148.70028, 99.45019], 'median_predictor_val_mae_kcal': 165.81, 'val_ingr_f1_by_epoch': [10.89796, 39.4831], 'epoch_time_s': 17.73, 'busy_frac_per_gpu': '0.897|0.892', 'peak_mem_mb_per_gpu': '8302.5|2149.2', 'mb_sent_per_gpu': '3430.0|3430.0', 'bwd_overlap_minibatches': 34, 'est_full_epoch_s': 18.0, 'est_full_run_h': 0.15}",
+    "",
+    "============================================================",
+    "D0 data                    PASS      0.0s",
+    "D1 static_equals_engine    PASS     10.3s",
+    "D2 dynamic_versions        PASS     17.6s",
+    "D3 checkpoint_resume       PASS     38.1s",
+    "D4 short_run               PASS     98.6s",
+    "ALL N5K CHECKS PASS: True",
+    "saved n5k/results/checks/latest.json",
+    "N5K_CHECKS_JSON {\"all_pass\": true, \"results\": [{\"id\": 0, \"name\": \"data\", \"status\": \"PASS\", \"seconds\": 0.0, \"message\": \"cache, splits, labels\", \"metrics\": {\"n_train_val_test\": [2270, 486, 486], \"K\": 195, \"dropped\": [\"dish_1564159636 (val: empty depth_raw.png)\", \"dish_1558722871 (test: missing depth_raw.png)\"], \"dropped_frac\": 0.0006, \"labels_finite\": true, \"cache_dir\": \"/kaggle/input/notebooks/kaggleolap/n5k-run0-cache/n5k_cache\", \"build_time_s\": 35.4}}, {\"id\": 1, \"name\": \"static_equals_engine\", \"status\": \"PASS\", \"seconds\": 10.3, \"message\": \"static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4\", \"metrics\": {\"pipedream\": {\"max_rel_param_diff_vs_engine\": 0.0}, \"timeprest\": {\"max_rel_param_diff_vs_engine\": 0.0}}}, {\"id\": 2, \"name\": \"dynamic_versions\", \"status\": \"PASS\", \"seconds\": 17.6, \"message\": \"dynamic order, 10 mini-batches, version invariants\", \"metrics\": {\"pipedream\": {\"wall_s\": 6.42, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"backward_uses_forward_version\": true}, \"timeprest\": {\"wall_s\": 6.23, \"peak_mem_mb\": [8388.3, 2154.6], \"no_recompute\": true, \"forward_vertical_sync\": true, \"backward_uses_live_version\": true, \"micro_forwarded_with_older_version\": 17}}}, {\"id\": 3, \"name\": \"checkpoint_resume\", \"status\": \"PASS\", \"seconds\": 38.1, \"message\": \"2 epochs vs 1 + resume (static order, deterministic), tol 1e-5\", \"metrics\": {\"pipedream\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.72496, \"epoch\": 2}}, \"timeprest\": {\"resumed\": true, \"param_max_diff\": 0.0, \"last_epoch_loss_diff\": 0.0, \"best_after_resume\": {\"score\": 149.73297, \"epoch\": 2}}}}, {\"id\": 4, \"name\": \"short_run\", \"status\": \"PASS\", \"seconds\": 98.6, \"message\": \"short run per system on the real pipeline\", \"metrics\": {\"pipedream\": {\"train_loss_by_epoch\": [26.10944, 20.80459], \"val_mae_kcal_by_epoch\": [146.70542, 90.39077], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [7.61665, 46.629], \"epoch_time_s\": 18.858, \"busy_frac_per_gpu\": \"0.906|0.798\", \"peak_mem_mb_per_gpu\": \"8391.3|2166.0\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 19.1, \"est_full_run_h\": 0.16}, \"timeprest\": {\"train_loss_by_epoch\": [27.49989, 22.80363], \"val_mae_kcal_by_epoch\": [148.70028, 99.45019], \"median_predictor_val_mae_kcal\": 165.81, \"val_ingr_f1_by_epoch\": [10.89796, 39.4831], \"epoch_time_s\": 17.73, \"busy_frac_per_gpu\": \"0.897|0.892\", \"peak_mem_mb_per_gpu\": \"8302.5|2149.2\", \"mb_sent_per_gpu\": \"3430.0|3430.0\", \"bwd_overlap_minibatches\": 34, \"est_full_epoch_s\": 18.0, \"est_full_run_h\": 0.15}}}]}"
+   ]
+  },
+  {
+   "step": "timeprest_s0",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 11.3,
+   "json": [],
+   "tail": [
+    "ep  17/30 | train 2.9771 (MAE kcal 74.5) | val_loss 10.6399 | MAE kcal 104.8 (40.9%) mass 94.3 fat 4.73 carb 5.42 prot 6.21 | ingr F1 83.3 mAP 83.5 | lr 5.00e-03 | epoch 18.8s busy[0.919|0.855] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.07h",
+    "ep  18/30 | train 2.6439 (MAE kcal 78.4) | val_loss 9.8790 | MAE kcal 89.3 (34.8%) mass 100.4 fat 4.47 carb 5.17 prot 5.82 | ingr F1 83.8 mAP 83.6 | lr 4.44e-03 | epoch 18.7s busy[0.925|0.857] peak[8288.7|2043.5]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.06h",
+    "ep  19/30 | train 2.4487 (MAE kcal 61.5) | val_loss 9.6487 | MAE kcal 70.4 (27.5%) mass 42.5 fat 4.72 carb 5.18 prot 6.16 | ingr F1 84.3 mAP 84.0 | lr 3.89e-03 | epoch 18.8s busy[0.917|0.857] peak[8288.7|2045.6]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.06h",
+    "ep  20/30 | train 2.2099 (MAE kcal 58.7) | val_loss 9.6184 | MAE kcal 73.7 (28.8%) mass 55.1 fat 4.40 carb 5.11 prot 5.70 | ingr F1 84.2 mAP 84.4 | lr 3.35e-03 | epoch 18.8s busy[0.915|0.856] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.05h",
+    "ep  21/30 | train 1.9552 (MAE kcal 54.8) | val_loss 9.4074 | MAE kcal 61.0 (23.8%) mass 60.8 fat 4.33 carb 5.06 prot 5.75 | ingr F1 84.7 mAP 84.9 | lr 2.83e-03 | epoch 18.8s busy[0.915|0.859] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.05h",
+    "ep  22/30 | train 1.8573 (MAE kcal 50.7) | val_loss 9.3457 | MAE kcal 59.1 (23.1%) mass 47.2 fat 4.43 carb 5.13 prot 5.69 | ingr F1 84.9 mAP 84.6 | lr 2.34e-03 | epoch 18.8s busy[0.910|0.861] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.04h",
+    "ep  23/30 | train 1.7084 (MAE kcal 48.3) | val_loss 9.3051 | MAE kcal 58.4 (22.8%) mass 40.4 fat 4.28 carb 5.07 prot 5.69 | ingr F1 85.1 mAP 85.0 | lr 1.88e-03 | epoch 18.9s busy[0.913|0.860] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.04h",
+    "ep  24/30 | train 1.6971 (MAE kcal 48.2) | val_loss 9.2520 | MAE kcal 57.1 (22.3%) mass 38.2 fat 4.09 carb 5.11 prot 5.54 | ingr F1 85.0 mAP 84.8 | lr 1.46e-03 | epoch 18.8s busy[0.919|0.858] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.03h",
+    "ep  25/30 | train 1.5745 (MAE kcal 46.7) | val_loss 9.2834 | MAE kcal 57.4 (22.4%) mass 38.0 fat 4.09 carb 5.08 prot 5.54 | ingr F1 84.9 mAP 84.9 | lr 1.09e-03 | epoch 18.8s busy[0.924|0.857] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.03h",
+    "ep  26/30 | train 1.5096 (MAE kcal 46.2) | val_loss 9.2111 | MAE kcal 57.0 (22.2%) mass 37.8 fat 4.10 carb 5.01 prot 5.59 | ingr F1 85.1 mAP 85.2 | lr 7.66e-04 | epoch 18.9s busy[0.909|0.862] peak[8288.7|2044.5]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.02h",
+    "ep  27/30 | train 1.4566 (MAE kcal 45.0) | val_loss 9.3067 | MAE kcal 57.1 (22.3%) mass 37.4 fat 4.08 carb 5.09 prot 5.43 | ingr F1 85.0 mAP 84.9 | lr 4.95e-04 | epoch 18.9s busy[0.921|0.854] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.02h",
+    "ep  28/30 | train 1.4799 (MAE kcal 45.2) | val_loss 9.2160 | MAE kcal 58.3 (22.8%) mass 37.2 fat 4.27 carb 5.08 prot 5.64 | ingr F1 85.2 mAP 85.4 | lr 2.81e-04 | epoch 19.0s busy[0.909|0.857] peak[8288.7|2046.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.01h",
+    "ep  29/30 | train 1.4965 (MAE kcal 45.8) | val_loss 9.3504 | MAE kcal 57.6 (22.5%) mass 37.2 fat 4.18 carb 5.01 prot 5.52 | ingr F1 85.1 mAP 85.2 | lr 1.25e-04 | epoch 18.9s busy[0.914|0.857] peak[8288.7|2044.5]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.01h",
+    "ep  30/30 | train 1.4499 (MAE kcal 44.3) | val_loss 9.2391 | MAE kcal 57.0 (22.3%) mass 37.1 fat 4.09 carb 5.03 prot 5.45 | ingr F1 85.2 mAP 85.1 | lr 3.14e-05 | epoch 18.9s busy[0.920|0.853] peak[8288.7|2044.4]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.00h",
+    "SUMMARY {\"name\": \"b7_timeprest_s0\", \"system\": \"timeprest\", \"epochs_done\": 30, \"best_epoch\": 26, \"test_mae_kcal\": 57.62752, \"test_pmae_kcal\": 21.59398, \"test_ingr_f1\": 85.43056, \"mean_epoch_time_s\": 18.821689655172413}"
+   ]
+  },
+  {
+   "step": "single_s0",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 12.4,
+   "json": [],
+   "tail": [
+    "ep  17/30 | train 1.4783 (MAE kcal 45.3) | val_loss 9.4372 | MAE kcal 52.8 (20.6%) mass 33.0 fat 4.27 carb 4.75 prot 5.30 | ingr F1 85.6 mAP 85.7 | lr 1.00e-02 | 21.7s peak 5642.4MB | ETA 0.09h",
+    "ep  18/30 | train 1.3025 (MAE kcal 50.8) | val_loss 9.3037 | MAE kcal 50.4 (19.7%) mass 37.4 fat 3.97 carb 4.97 prot 5.06 | ingr F1 85.8 mAP 85.7 | lr 8.88e-03 | 21.8s peak 5642.4MB | ETA 0.08h",
+    "ep  19/30 | train 1.1401 (MAE kcal 43.7) | val_loss 9.1701 | MAE kcal 59.1 (23.1%) mass 35.3 fat 4.00 carb 4.83 prot 5.25 | ingr F1 86.1 mAP 86.1 | lr 7.77e-03 | 21.9s peak 5642.4MB | ETA 0.07h",
+    "ep  20/30 | train 1.0306 (MAE kcal 39.7) | val_loss 9.2590 | MAE kcal 49.6 (19.4%) mass 31.7 fat 3.86 carb 4.96 prot 5.06 | ingr F1 86.3 mAP 86.0 | lr 6.70e-03 | 21.8s peak 5642.4MB | ETA 0.07h",
+    "ep  21/30 | train 0.9427 (MAE kcal 38.5) | val_loss 9.2661 | MAE kcal 49.2 (19.2%) mass 35.8 fat 3.82 carb 4.95 prot 4.90 | ingr F1 86.2 mAP 86.2 | lr 5.66e-03 | 21.7s peak 5642.4MB | ETA 0.06h",
+    "ep  22/30 | train 0.8563 (MAE kcal 36.3) | val_loss 9.1562 | MAE kcal 49.4 (19.3%) mass 33.0 fat 3.76 carb 4.88 prot 4.83 | ingr F1 86.4 mAP 86.2 | lr 4.68e-03 | 21.8s peak 5642.4MB | ETA 0.05h",
+    "ep  23/30 | train 0.7931 (MAE kcal 37.4) | val_loss 9.1870 | MAE kcal 49.5 (19.3%) mass 32.2 fat 3.76 carb 5.01 prot 4.82 | ingr F1 86.5 mAP 86.3 | lr 3.77e-03 | 21.9s peak 5642.4MB | ETA 0.05h",
+    "ep  24/30 | train 0.7563 (MAE kcal 35.1) | val_loss 9.1471 | MAE kcal 48.9 (19.1%) mass 33.8 fat 3.73 carb 4.84 prot 4.74 | ingr F1 86.6 mAP 86.2 | lr 2.93e-03 | 21.8s peak 5642.4MB | ETA 0.04h",
+    "ep  25/30 | train 0.7157 (MAE kcal 35.1) | val_loss 9.1737 | MAE kcal 48.5 (19.0%) mass 31.9 fat 3.73 carb 4.87 prot 4.76 | ingr F1 86.6 mAP 86.2 | lr 2.18e-03 | 21.8s peak 5642.4MB | ETA 0.03h",
+    "ep  26/30 | train 0.6805 (MAE kcal 34.7) | val_loss 9.1533 | MAE kcal 48.7 (19.0%) mass 31.5 fat 3.73 carb 4.79 prot 4.74 | ingr F1 86.7 mAP 86.3 | lr 1.53e-03 | 21.8s peak 5642.4MB | ETA 0.03h",
+    "ep  27/30 | train 0.6635 (MAE kcal 34.1) | val_loss 9.2145 | MAE kcal 48.0 (18.7%) mass 31.5 fat 3.72 carb 4.84 prot 4.75 | ingr F1 86.5 mAP 86.2 | lr 9.90e-04 | 21.9s peak 5642.4MB | ETA 0.02h",
+    "ep  28/30 | train 0.6618 (MAE kcal 34.3) | val_loss 9.1682 | MAE kcal 48.0 (18.7%) mass 31.7 fat 3.72 carb 4.83 prot 4.75 | ingr F1 86.6 mAP 86.3 | lr 5.61e-04 | 21.7s peak 5642.4MB | ETA 0.01h",
+    "ep  29/30 | train 0.6415 (MAE kcal 33.2) | val_loss 9.1442 | MAE kcal 48.2 (18.8%) mass 31.6 fat 3.72 carb 4.85 prot 4.73 | ingr F1 86.6 mAP 86.4 | lr 2.51e-04 | 21.7s peak 5642.4MB | ETA 0.01h",
+    "ep  30/30 | train 0.6421 (MAE kcal 33.3) | val_loss 9.1524 | MAE kcal 48.3 (18.9%) mass 31.5 fat 3.74 carb 4.87 prot 4.73 | ingr F1 86.6 mAP 86.3 | lr 6.29e-05 | 21.8s peak 5642.4MB | ETA 0.00h",
+    "SUMMARY {\"name\": \"b7_single_s0\", \"system\": \"pipedream\", \"epochs_done\": 30, \"best_epoch\": 27, \"test_mae_kcal\": 50.66681, \"test_pmae_kcal\": 18.98569, \"test_ingr_f1\": 86.15872, \"mean_epoch_time_s\": 21.788344827586204}"
+   ]
+  },
+  {
+   "step": "keep_ckpt",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.1,
+   "json": [],
+   "tail": [
+    "kept n5k/results/runs/b7_single_s0/best.pt",
+    "kept n5k/results/runs/b7_timeprest_s0/best_stage0.pt",
+    "kept n5k/results/runs/b7_timeprest_s0/best_stage1.pt"
+   ]
+  },
+  {
+   "step": "explain_timeprest",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 2.2,
+   "json": [
+    "N5K_EXPLAIN_JSON {\"name\": \"b7_timeprest_s0\", \"test_mae_kcal\": 57.628, \"n_pairs\": 3011, \"faithful\": {\"cam_presence\": true, \"cam_gram\": true, \"calorie_map_ingr\": true, \"kcal_map_direct\": true}, \"at_c5\": {\"cam_presence\": {\"n\": 3011, \"map\": 0.5041, \"rand\": 0.0726, \"frac_map_gt_rand\": 0.9601, \"p_wilcoxon\": 0.0}, \"cam_gram\": {\"n\": 3011, \"map\": 0.5582, \"rand\": 0.1192, \"frac_map_gt_rand\": 0.9229, \"p_wilcoxon\": 0.0}, \"calorie_map_ingr\": {\"n\": 486, \"map\": 0.5791, \"rand\": 0.1505, \"frac_map_gt_rand\": 0.9424, \"p_wilcoxon\": 0.0}, \"kcal_map_direct\": {\"n\": 486, \"map\": 0.2662, \"rand\": -0.0339, \"frac_map_gt_rand\": 0.9342, \"p_wilcoxon\": 0.0}}}"
+   ],
+   "tail": [
+    "[explain] n5k/results/runs/b7_timeprest_s0 (best epoch 26): test MAE kcal 57.63 on 486 dishes",
+    "/kaggle/working/code/timeprest/n5k/explain.py:190: RuntimeWarning: Mean of empty slice",
+    "  r = np.nanmean(np.array([pair_vals(jj, k) for jj in rj]), axis=0) if rj else [np.nan] * 3",
+    "[explain] deletion 100/486 dishes, 1827 pair rows",
+    "[explain] deletion 200/486 dishes, 3552 pair rows",
+    "[explain] deletion 300/486 dishes, 5202 pair rows",
+    "[explain] deletion 400/486 dishes, 7248 pair rows",
+    "N5K_EXPLAIN_JSON {\"name\": \"b7_timeprest_s0\", \"test_mae_kcal\": 57.628, \"n_pairs\": 3011, \"faithful\": {\"cam_presence\": true, \"cam_gram\": true, \"calorie_map_ingr\": true, \"kcal_map_direct\": true}, \"at_c5\": {\"cam_presence\": {\"n\": 3011, \"map\": 0.5041, \"rand\": 0.0726, \"frac_map_gt_rand\": 0.9601, \"p_wilcoxon\": 0.0}, \"cam_gram\": {\"n\": 3011, \"map\": 0.5582, \"rand\": 0.1192, \"frac_map_gt_rand\": 0.9229, \"p_wilcoxon\": 0.0}, \"calorie_map_ingr\": {\"n\": 486, \"map\": 0.5791, \"rand\": 0.1505, \"frac_map_gt_rand\": 0.9424, \"p_wilcoxon\": 0.0}, \"kcal_map_direct\": {\"n\": 486, \"map\": 0.2662, \"rand\": -0.0339, \"frac_map_gt_rand\": 0.9342, \"p_wilcoxon\": 0.0}}}"
+   ]
+  },
+  {
+   "step": "explain_single",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 2.1,
+   "json": [
+    "N5K_EXPLAIN_JSON {\"name\": \"b7_single_s0\", \"test_mae_kcal\": 50.667, \"n_pairs\": 2991, \"faithful\": {\"cam_presence\": true, \"cam_gram\": true, \"calorie_map_ingr\": true, \"kcal_map_direct\": true}, \"at_c5\": {\"cam_presence\": {\"n\": 2991, \"map\": 0.578, \"rand\": 0.0922, \"frac_map_gt_rand\": 0.9646, \"p_wilcoxon\": 0.0}, \"cam_gram\": {\"n\": 2991, \"map\": 0.6391, \"rand\": 0.1742, \"frac_map_gt_rand\": 0.9425, \"p_wilcoxon\": 0.0}, \"calorie_map_ingr\": {\"n\": 486, \"map\": 0.6274, \"rand\": 0.1841, \"frac_map_gt_rand\": 0.9712, \"p_wilcoxon\": 0.0}, \"kcal_map_direct\": {\"n\": 486, \"map\": 0.2626, \"rand\": -0.0924, \"frac_map_gt_rand\": 0.9794, \"p_wilcoxon\": 0.0}}}"
+   ],
+   "tail": [
+    "[explain] n5k/results/runs/b7_single_s0 (best epoch 27): test MAE kcal 50.67 on 486 dishes",
+    "/kaggle/working/code/timeprest/n5k/explain.py:190: RuntimeWarning: Mean of empty slice",
+    "  r = np.nanmean(np.array([pair_vals(jj, k) for jj in rj]), axis=0) if rj else [np.nan] * 3",
+    "[explain] deletion 100/486 dishes, 1833 pair rows",
+    "[explain] deletion 200/486 dishes, 3531 pair rows",
+    "[explain] deletion 300/486 dishes, 5169 pair rows",
+    "[explain] deletion 400/486 dishes, 7203 pair rows",
+    "N5K_EXPLAIN_JSON {\"name\": \"b7_single_s0\", \"test_mae_kcal\": 50.667, \"n_pairs\": 2991, \"faithful\": {\"cam_presence\": true, \"cam_gram\": true, \"calorie_map_ingr\": true, \"kcal_map_direct\": true}, \"at_c5\": {\"cam_presence\": {\"n\": 2991, \"map\": 0.578, \"rand\": 0.0922, \"frac_map_gt_rand\": 0.9646, \"p_wilcoxon\": 0.0}, \"cam_gram\": {\"n\": 2991, \"map\": 0.6391, \"rand\": 0.1742, \"frac_map_gt_rand\": 0.9425, \"p_wilcoxon\": 0.0}, \"calorie_map_ingr\": {\"n\": 486, \"map\": 0.6274, \"rand\": 0.1841, \"frac_map_gt_rand\": 0.9712, \"p_wilcoxon\": 0.0}, \"kcal_map_direct\": {\"n\": 486, \"map\": 0.2626, \"rand\": -0.0924, \"frac_map_gt_rand\": 0.9794, \"p_wilcoxon\": 0.0}}}"
+   ]
+  }
+ ],
+ "commit": "b390cf4-dirty",
+ "finished": "2026-10-15 19:00:34"
+}

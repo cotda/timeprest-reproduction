@@ -1,0 +1,210 @@
+[
+  {
+    "dish_id": "dish_1566590987",
+    "index": 437,
+    "kcal_true": 639.911865234375,
+    "kcal_pred": 631.1455078125,
+    "top_ingredients": [
+      {
+        "name": "pepper",
+        "p": 1.0,
+        "grams_pred": 10.61,
+        "grams_true": 8.560165405273438
+      },
+      {
+        "name": "salt",
+        "p": 0.9999,
+        "grams_pred": 0.75,
+        "grams_true": 0.42800799012184143
+      },
+      {
+        "name": "arugula",
+        "p": 0.9997,
+        "grams_pred": 1.38,
+        "grams_true": 6.848132133483887
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558373352",
+    "index": 228,
+    "kcal_true": 69.0,
+    "kcal_pred": 96.98416137695312,
+    "top_ingredients": [
+      {
+        "name": "grapes",
+        "p": 0.9997,
+        "grams_pred": 105.16,
+        "grams_true": 100.0
+      },
+      {
+        "name": "deprecated",
+        "p": 0.0083,
+        "grams_pred": 7.47,
+        "grams_true": 0.0
+      },
+      {
+        "name": "almonds",
+        "p": 0.0055,
+        "grams_pred": 2.89,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564086658",
+    "index": 351,
+    "kcal_true": 260.8529968261719,
+    "kcal_pred": 313.2908630371094,
+    "top_ingredients": [
+      {
+        "name": "caesar salad",
+        "p": 0.9995,
+        "grams_pred": 82.91,
+        "grams_true": 99.0
+      },
+      {
+        "name": "corn on the cob",
+        "p": 0.9904,
+        "grams_pred": 81.72,
+        "grams_true": 82.0
+      },
+      {
+        "name": "cheese pizza",
+        "p": 0.9815,
+        "grams_pred": 37.58,
+        "grams_true": 49.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563295400",
+    "index": 408,
+    "kcal_true": 402.98480224609375,
+    "kcal_pred": 518.898681640625,
+    "top_ingredients": [
+      {
+        "name": "scrambled eggs",
+        "p": 0.9995,
+        "grams_pred": 90.73,
+        "grams_true": 74.0
+      },
+      {
+        "name": "bacon",
+        "p": 0.9991,
+        "grams_pred": 24.57,
+        "grams_true": 22.0
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9975,
+        "grams_pred": 2.26,
+        "grams_true": 7.054303169250488
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565811529",
+    "index": 130,
+    "kcal_true": 116.84203338623047,
+    "kcal_pred": 137.32879638671875,
+    "top_ingredients": [
+      {
+        "name": "mustard",
+        "p": 0.9999,
+        "grams_pred": 0.82,
+        "grams_true": 0.6582279801368713
+      },
+      {
+        "name": "vinegar",
+        "p": 0.9999,
+        "grams_pred": 5.83,
+        "grams_true": 5.265822887420654
+      },
+      {
+        "name": "salt",
+        "p": 0.9998,
+        "grams_pred": 0.48,
+        "grams_true": 0.32911399006843567
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562170356",
+    "index": 246,
+    "kcal_true": 385.333984375,
+    "kcal_pred": 421.88397216796875,
+    "top_ingredients": [
+      {
+        "name": "pineapple",
+        "p": 0.9967,
+        "grams_pred": 112.38,
+        "grams_true": 107.0
+      },
+      {
+        "name": "berries",
+        "p": 0.9943,
+        "grams_pred": 117.68,
+        "grams_true": 178.0
+      },
+      {
+        "name": "watermelon",
+        "p": 0.9877,
+        "grams_pred": 50.02,
+        "grams_true": 48.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558631932",
+    "index": 410,
+    "kcal_true": 214.93199157714844,
+    "kcal_pred": 159.77886962890625,
+    "top_ingredients": [
+      {
+        "name": "corn on the cob",
+        "p": 0.9999,
+        "grams_pred": 124.13,
+        "grams_true": 112.0
+      },
+      {
+        "name": "apple",
+        "p": 0.9795,
+        "grams_pred": 121.79,
+        "grams_true": 154.0
+      },
+      {
+        "name": "cherry tomatoes",
+        "p": 0.9553,
+        "grams_pred": 50.79,
+        "grams_true": 89.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568056046",
+    "index": 306,
+    "kcal_true": 88.08000183105469,
+    "kcal_pred": 153.48936462402344,
+    "top_ingredients": [
+      {
+        "name": "carrot",
+        "p": 0.9979,
+        "grams_pred": 69.88,
+        "grams_true": 58.0
+      },
+      {
+        "name": "olives",
+        "p": 0.9735,
+        "grams_pred": 40.5,
+        "grams_true": 32.0
+      },
+      {
+        "name": "cherry tomatoes",
+        "p": 0.889,
+        "grams_pred": 29.8,
+        "grams_true": 55.0
+      }
+    ]
+  }
+]
