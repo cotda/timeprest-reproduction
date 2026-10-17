@@ -13,6 +13,10 @@ Tiến độ được theo dõi qua git: mỗi thay đổi là một commit nh�
 - `configs/` — file cấu hình YAML (quick.yaml cho kiểm tra; full_timeprest.yaml / full_pipedream.yaml cho chạy dài, kế thừa base_cifar100.yaml).
 - `notebooks/` — notebook Colab / Kaggle, chỉ chứa các cell gọi lệnh, không chứa logic.
 - `results/` — log CSV/JSON, biểu đồ (không commit checkpoint).
+- `report/` — báo cáo, slides của phần tái hiện TiMePReSt. `archive/` — thí nghiệm cũ (chỉ đọc, xem `archive/README.md`).
+- Nutrition5k: `n5k/` (PLAN, configs, kaggle, notes, report, `analysis/` = script tính lại bảng/kết luận) và `n5k/added/`
+  (nghiên cứu thêm, thử nghiệm, chưa phải đóng góp cho tới khi người dùng nói); code ở `timeprest/n5k/` và `timeprest/n5k/added/`.
+- Token Kaggle: `kaggle_accounts.json` ở gốc (đã ignore, quản lý bằng `n5k/kaggle/accounts.py`); không in, không commit.
 
 ## Quy trình chạy (người dùng tự chạy trên Colab)
 Agent viết code ở máy local; người dùng push lên git rồi chạy trên Colab. Agent KHÔNG chạy được Colab,

@@ -2,7 +2,7 @@
 
 - Viết lúc: 2026-10-17 00:50 (UTC+8) = 2026-10-16 16:50 UTC.
 - Không chạy thêm; phân tích `metrics.csv` của `n5k/results/kaggle/run6_s{0,1,2}/` (B6, chạy 2026-10-14). Bảng đầy đủ ở `n5k/PLAN.md` mục 11 ("B8 (phân tích)").
-- Script: scratchpad `time_mae_b6.py` (val MAE kcal; thời gian = thời gian train cộng dồn).
+- Script: `n5k/analysis/time_mae_b6.py` (val MAE kcal; thời gian = thời gian train cộng dồn).
 
 ## Số liệu chính (val MAE kcal, trung bình 3 seed)
 - Epoch 5: PipeDream 111,1, TiMePReSt 92,4. Epoch 15: PipeDream 57,9, TiMePReSt 100,1. Epoch 30: PipeDream 49,4, TiMePReSt 55,2.

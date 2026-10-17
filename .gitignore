@@ -35,3 +35,44 @@ results/checks/dist_work/
 # Kaggle tokens (n5k/kaggle/accounts.py), never commit
 kaggle_accounts.json
 token.txt
+
+# LaTeX build artifacts of the slide decks (rebuilt by latexmk; .tex, .bib, figures stay tracked)
+n5k/report/*.aux
+n5k/report/*.bbl
+n5k/report/*.blg
+n5k/report/*.fdb_latexmk
+n5k/report/*.fls
+n5k/report/*.log
+n5k/report/*.nav
+n5k/report/*.out
+n5k/report/*.snm
+n5k/report/*.toc
+n5k/report/*.vrb
+n5k/report/*.synctex.gz
+report/slides/*.aux
+report/slides/*.bbl
+report/slides/*.blg
+report/slides/*.fdb_latexmk
+report/slides/*.fls
+report/slides/*.log
+report/slides/*.nav
+report/slides/*.out
+report/slides/*.snm
+report/slides/*.toc
+report/slides/*.vrb
+report/slides/*.synctex.gz
+template_slides_UIT/*.aux
+template_slides_UIT/*.bbl
+template_slides_UIT/*.blg
+template_slides_UIT/*.fdb_latexmk
+template_slides_UIT/*.fls
+template_slides_UIT/*.log
+template_slides_UIT/*.nav
+template_slides_UIT/*.out
+template_slides_UIT/*.snm
+template_slides_UIT/*.toc
+template_slides_UIT/*.vrb
+template_slides_UIT/*.synctex.gz
+
+# Session output dumps
+/output.txt

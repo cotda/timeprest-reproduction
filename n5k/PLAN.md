@@ -6,7 +6,7 @@
 
 ## 1. Phạm vi task
 
-- Task (mentor nhóm FoodAI xác nhận): kết hợp phương pháp song song đã tìm hiểu (TiMePReSt) với bài Nutrition5k đã chạy (`nutrition5k_distributed_project/`, Exp 1–5).
+- Task (mentor nhóm FoodAI xác nhận): kết hợp phương pháp song song đã tìm hiểu (TiMePReSt) với bài Nutrition5k đã chạy (`archive/nutrition5k_distributed_project/`, Exp 1–5).
 - Gồm 3 việc trong **một** mô hình: (1) **nhận diện** món ăn có những nguyên liệu nào; (2) **hàm lượng**: gram từng nguyên liệu, rồi suy ra kcal / fat / carb / protein; (3) **vị trí**: vùng nào trên ảnh chứa nguyên liệu đó và mang bao nhiêu calories (bản đồ calories). Nutrition5k chỉ là dataset.
 - Huấn luyện bằng pipeline 2 GPU (Kaggle T4×2) với TiMePReSt, so sánh với các hệ ở mục 7.
 - Workload này **không có trong paper TiMePReSt**: hồi quy multi-task, backbone pretrained. Mọi lựa chọn dưới đây là lựa chọn triển khai của project trừ khi ghi khác.
@@ -37,7 +37,7 @@ Code cũ (`timeprest/*.py`, `timeprest/dist/*.py`) chỉ được sửa ở mứ
 | Nhanh hơn 9–16 % khi mạng 1–2 Gbit/s | PN §23.1, §24.2, §25.2 | Chạy `bench_comm` ∞ / 2 / 1 Gbit/s |
 | Bộ nhớ `graph` ≈ PipeDream; pipeline đồng bộ ít hơn ~3 lần | PN §22.10, §26.1 | Không tuyên bố tiết kiệm bộ nhớ |
 | `graph` phân kỳ khi lr cao + warmup ngắn | PN §22.7 | Warmup + sweep lr |
-| Exp cũ: ResNet18 102 ảnh/s, ResNet50 82 ảnh/s (1 GPU) | `nutrition5k_distributed_project/*/results` | Nghi nghẽn đọc PNG (suy luận, chưa đo): phải cache ảnh trước khi so thời gian |
+| Exp cũ: ResNet18 102 ảnh/s, ResNet50 82 ảnh/s (1 GPU) | `archive/nutrition5k_distributed_project/*/results` | Nghi nghẽn đọc PNG (suy luận, chưa đo): phải cache ảnh trước khi so thời gian |
 | Exp 1–2: MAE ResNet18 ~204–243 kcal, ResNet50 77 kcal cùng setup | như trên | Nghi do target không chuẩn hóa (giả thuyết): bắt buộc chuẩn hóa target |
 
 ## 4. Mô hình và nhãn
@@ -63,7 +63,7 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
 ## 5. Dữ liệu
 
 - Dataset Kaggle `gillesokhin/nutrition5k-dataset`, `imagery/realsense_overhead/<dish>/{rgb.png, depth_raw.png}`.
-- **Split**: dùng lại split cố định của Exp 1–3 (`nutrition5k_distributed_project/exp_00*/*/splits/{train,val,test}.csv`, 3 bản trùng md5; 2270 / 487 / 487). Loại mẫu có depth hỏng và ghi danh sách dish_id bị loại vào log. Hiện biết `dish_1558722871` (thuộc **test**, file `depth_raw.png_.gstmp` 0 byte), nên test còn 486. Notebook `*_ModelParallel` của Exp 4–5 tạo split RGB-D khác, **không** dùng.
+- **Split**: dùng lại split cố định của Exp 1–3 (`archive/nutrition5k_distributed_project/exp_00*/*/splits/{train,val,test}.csv`, 3 bản trùng md5; 2270 / 487 / 487). Loại mẫu có depth hỏng và ghi danh sách dish_id bị loại vào log. Hiện biết `dish_1558722871` (thuộc **test**, file `depth_raw.png_.gstmp` 0 byte), nên test còn 486. Notebook `*_ModelParallel` của Exp 4–5 tạo split RGB-D khác, **không** dùng.
 - Depth: cắt theo P1 / P99 của train (Exp 4: 3038 / 4860) rồi đưa về [0, 1].
 - **Cache**: giải mã một lần ra uint8 `.npy` (~650 MB ở 224×224×4), như Tiny-ImageNet (PN §24.1). Augmentation áp như nhau cho RGB và depth (lật ngang/dọc; không đổi màu kênh depth).
 
