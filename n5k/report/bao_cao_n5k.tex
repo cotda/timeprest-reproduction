@@ -442,6 +442,45 @@ Cả hai hệ tốt nhất ở lr 0.02. Ở lr tốt nhất, TiMePReSt vẫn ké
 \end{frame}
 }{}
 
+%--- 60 epoch ---
+\begin{frame}{Lịch 60 epoch (trung bình 3 seed)}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+\textbf{Hệ} & \textbf{lr} & \textbf{Epoch} & \textbf{Best val kcal} & \textbf{Test kcal} & \textbf{Test mAP} & \textbf{Tổng thời gian} \\
+\midrule
+TiMePReSt & 0.01 & 30 / \textbf{60} & 54,8 / 50,7 & 56,3 / \textbf{53,3} & 85,3 / 87,7 & 566 / 1150 s \\
+TiMePReSt & 0.02 & 30 / \textbf{60} & 53,6 / 49,4 & 54,7 / \textbf{54,7} & 85,5 / 86,6 & 577 / 1167 s \\
+PipeDream & 0.02 & 30 / \textbf{60} & 49,1 / 47,1 & \textbf{52,0} / 53,8 & 86,2 / 87,5 & 596 / 1216 s \\
+\bottomrule
+\end{tabular}
+
+{\tiny Độ lệch chuẩn test giữa 3 seed: 0,4--1,4 kcal.}
+
+\vspace{0.2cm}
+\begin{columns}[T]
+\column{0.47\textwidth}
+\begin{greenbox}{\faArrowUp\; Thêm epoch}
+\scriptsize
+\begin{itemize}
+  \item Chỉ TiMePReSt lr 0.01 tốt hơn (test $-2{,}9$); lr 0.02 không đổi; PipeDream kém đi $1{,}8$ (train 24,8: overfit).
+  \item TiMePReSt (lr chọn theo val: 0.02) \highlight{bắt kịp PipeDream 60 epoch}: kém 0,9 kcal ($<2$).
+\end{itemize}
+\end{greenbox}
+\column{0.47\textwidth}
+\begin{accentbox}{\faClock\; Nhưng tính theo tổng thời gian}
+\scriptsize
+\begin{itemize}
+  \item \highlight{PipeDream 30 epoch vẫn tốt nhất} (52,0 trong khoảng 600 s); không cấu hình TiMePReSt nào đạt, kể cả gấp đôi thời gian.
+  \item TiMePReSt chỉ nhanh hơn 4--5\%/epoch; dao động 69--84 kcal so với 8.
+\end{itemize}
+\end{accentbox}
+\end{columns}
+\end{frame}
+
 %--- Đối chiếu dự đoán ---
 \begin{frame}{Đối chiếu với dự đoán ghi trước khi chạy}
 \centering
@@ -584,7 +623,7 @@ IGSMNet (2025) & RGB-D + ngữ nghĩa & 12,2\% \\
 \begin{uitbox}{\faFlag\; Kết luận}
 \scriptsize
 \begin{itemize}
-  \item TiMePReSt chạy đúng trên bài toán hồi quy đa nhiệm (kiểm tra PASS), nhanh hơn PipeDream 5\% (7--9\% khi mạng chậm), nhưng \highlight{kém 5\% MAE} (lr tốt nhất của mỗi hệ) và dao động mạnh giữa quá trình ở mọi lr.
+  \item TiMePReSt chạy đúng trên bài toán hồi quy đa nhiệm (kiểm tra PASS), nhanh hơn PipeDream 5\% (7--9\% khi mạng chậm), nhưng \highlight{kém 5\% MAE} (lr tốt nhất của mỗi hệ, 30 epoch) và dao động mạnh giữa quá trình ở mọi lr; với 60 epoch thì bắt kịp PipeDream 60 epoch (3 seed) nhưng \highlight{không đạt PipeDream 30 epoch}.
   \item Trên 2 GPU cùng máy, \highlight{DDP tốt nhất} ở mọi tiêu chí; mô hình nặng hơn (two-stream) làm lợi thế của pipeline mất hẳn.
   \item Bản đồ calories và CAM \highlight{trung thực với mô hình}, kể cả khi huấn luyện bằng TiMePReSt.
 \end{itemize}
@@ -592,7 +631,7 @@ IGSMNet (2025) & RGB-D + ngữ nghĩa & 12,2\% \\
 \vspace{0.1cm}
 \begin{accentbox}{\faExclamationTriangle\; Hạn chế}
 \scriptsize
-Chỉ $W = 2$ GPU, một loại phần cứng, một dataset; mô hình vừa 1 GPU; sweep lr và 60 epoch mới có ở một số cấu hình.
+Chỉ $W = 2$ GPU, một loại phần cứng, một dataset; mô hình vừa 1 GPU; sweep lr và 60 epoch mới có ở một số cấu hình; chọn theo val trên 486 món có nhiễu 1--2 kcal.
 \end{accentbox}
 
 \column{0.46\textwidth}
@@ -600,7 +639,7 @@ Chỉ $W = 2$ GPU, một loại phần cứng, một dataset; mô hình vừa 1 
 \scriptsize
 \begin{itemize}
   \item \kw{Đã xong:} sweep lr 30 epoch và bản đồ calories cho cả TiMePReSt và PipeDream (để chọn một trong hai làm phương pháp chính).
-  \item \kw{Đang chạy:} lịch 60 epoch cho TiMePReSt và PipeDream (seed 0).
+  \item \kw{Đã xong:} lịch 60 epoch (3 seed): TiMePReSt bắt kịp PipeDream 60 epoch, nhưng PipeDream 30 epoch vẫn tốt nhất với một nửa thời gian.
   \item \kw{Đề xuất:} DDP khi mạng chậm.
 \end{itemize}
 \end{greenbox}

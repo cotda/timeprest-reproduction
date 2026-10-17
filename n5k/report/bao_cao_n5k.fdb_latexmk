@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex bao_cao_n5k"] 1792208498.20301 "bao_cao_n5k.aux" "bao_cao_n5k.bbl" "bao_cao_n5k" 1792208505.13886 0
+["bibtex bao_cao_n5k"] 1792217081.85662 "bao_cao_n5k.aux" "bao_cao_n5k.bbl" "bao_cao_n5k" 1792217088.71398 0
   "./references.bib" 1792169772.23774 1625 a552ae0db978f84ade5f2c29c9626bad ""
   "C:/Users/admin/AppData/Local/Programs/MiKTeXs/bibtex/bst/bibtex/apalike.bst" 1291972791 24635 604dafcc79f521a11ea73e506e1fbd98 ""
-  "bao_cao_n5k.aux" 1792208503.6089 5571 9ce2047fb70d5a4021e28c1895b6abf3 "pdflatex"
+  "bao_cao_n5k.aux" 1792217087.3048 5742 6acb9e9f5e5e589577ea86ee6f4509f4 "pdflatex"
   (generated)
   "bao_cao_n5k.bbl"
   "bao_cao_n5k.blg"
   (rewritten before read)
-["pdflatex"] 1792208498.63391 "bao_cao_n5k.tex" "bao_cao_n5k.pdf" "bao_cao_n5k" 1792208505.13985 0
+["pdflatex"] 1792217082.26085 "bao_cao_n5k.tex" "bao_cao_n5k.pdf" "bao_cao_n5k" 1792217088.71501 0
   "../../report/slides/logo_nhom_nc.png" 1790774571.19019 33763 c4846cadf6403737e976b14748b6b33b ""
   "../../report/slides/logo_nhom_thuchien.png" 1790774571.20001 1107844 16d7dbb0d0dfa2825e4c8147cd3dd5f4 ""
   "../../report/slides/section_bg.png" 1790774571.18241 1017109 ed1750bb853a81be8cbe97a4fd7bce00 ""
@@ -346,11 +346,11 @@
   "C:/Users/admin/AppData/Local/Programs/MiKTeXs/tex/latex/vntex/vietnam.sty" 1368738347 2477 91784aa2c9213f74609391e3cae65a13 ""
   "C:/Users/admin/AppData/Local/Programs/MiKTeXs/tex/latex/vntex/vncaps.tex" 1368738347 3273 a55ebdb07413d2fea580f210e3c0b252 ""
   "C:/Users/admin/AppData/Local/Programs/MiKTeXs/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "bao_cao_n5k.aux" 1792208503.6089 5571 9ce2047fb70d5a4021e28c1895b6abf3 "pdflatex"
-  "bao_cao_n5k.bbl" 1792208498.51049 1577 7dcf32c057c23a786cf232597574148f "bibtex bao_cao_n5k"
-  "bao_cao_n5k.nav" 1792208503.61588 2643 01e6ec02a73237eeee63c2cf2824fa13 "pdflatex"
-  "bao_cao_n5k.out" 1792208503.61189 546 db6e55125e5f14101a49882f898fb3a9 "pdflatex"
-  "bao_cao_n5k.tex" 1792208486.63745 28650 5c9db2ecb1b6c5666bdc7e88ace3d3ff ""
+  "bao_cao_n5k.aux" 1792217087.3048 5742 6acb9e9f5e5e589577ea86ee6f4509f4 "pdflatex"
+  "bao_cao_n5k.bbl" 1792217082.14514 1577 7dcf32c057c23a786cf232597574148f "bibtex bao_cao_n5k"
+  "bao_cao_n5k.nav" 1792217087.31286 2735 ab02152352531b558a333652bc8405a3 "pdflatex"
+  "bao_cao_n5k.out" 1792217087.30986 546 db6e55125e5f14101a49882f898fb3a9 "pdflatex"
+  "bao_cao_n5k.tex" 1792217074.26392 30535 a63b8e95fd77cf44456d9a8dd3995215 ""
   "figures/fig_deletion.png" 1792208460.91165 54073 855e9fc4da3bf19686599aedc2b2fcf0 ""
   "figures/fig_lr_sweep.png" 1792208461.23347 45955 e7f59b59a936791951d82a016e9405ac ""
   "figures/fig_mae_epoch_time.png" 1792208460.28322 151512 5733e776fefdd9a1e055dff209b257d7 ""

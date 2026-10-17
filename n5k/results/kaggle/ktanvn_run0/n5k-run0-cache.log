@@ -1,0 +1,37 @@
+[{"stream_name":"stdout","time":0.92701608,"data":"18:08:50 kernel start\n"}
+,{"stream_name":"stdout","time":1.021616191,"data":"18:08:50 [+0.0m] code 1d42493-dirty from /kaggle/input/datasets/ktanvn/timeprest-code/timeprest_code\n"}
+,{"stream_name":"stdout","time":13.497936857,"data":"18:09:03 [+0.2m] ===== data (limit 300 min): /usr/bin/python3 -m timeprest.n5k.data --config n5k/configs/n5k_quick.yaml\n"}
+,{"stream_name":"stdout","time":18.345189282,"data":"[n5k data] decoding 3244 dishes from /kaggle/input/datasets/gillesokhin/nutrition5k-dataset/imagery/realsense_overhead with 16 threads\n"}
+,{"stream_name":"stdout","time":22.543419577,"data":"[n5k data] 250/3244 dishes  5s  eta 56s\n"}
+,{"stream_name":"stdout","time":26.243629519,"data":"[n5k data] 500/3244 dishes  8s  eta 46s\n"}
+,{"stream_name":"stdout","time":29.990734736,"data":"[n5k data] 750/3244 dishes  12s  eta 40s\n"}
+,{"stream_name":"stdout","time":33.866204864,"data":"[n5k data] 1000/3244 dishes  16s  eta 36s\n"}
+,{"stream_name":"stdout","time":37.637080824,"data":"[n5k data] 1250/3244 dishes  20s  eta 31s\n"}
+,{"stream_name":"stdout","time":41.411007715,"data":"[n5k data] 1500/3244 dishes  24s  eta 27s\n"}
+,{"stream_name":"stdout","time":45.162358855,"data":"[n5k data] 1750/3244 dishes  27s  eta 23s\n"}
+,{"stream_name":"stdout","time":48.871622609,"data":"[n5k data] 2000/3244 dishes  31s  eta 19s\n"}
+,{"stream_name":"stdout","time":52.546280452,"data":"[n5k data] 2250/3244 dishes  35s  eta 15s\n"}
+,{"stream_name":"stdout","time":52.730494088,"data":"[n5k data] train: kept 2270/2270  (35s)\n"}
+,{"stream_name":"stdout","time":56.261725093,"data":"[n5k data] 2500/3244 dishes  38s  eta 11s\n"}
+,{"stream_name":"stdout","time":59.980756717,"data":"[n5k data] 2750/3244 dishes  42s  eta 8s\n"}
+,{"stream_name":"stdout","time":59.996081276,"data":"[n5k data] val: kept 486/487  (42s)\n"}
+,{"stream_name":"stdout","time":63.903265628,"data":"[n5k data] 3000/3244 dishes  46s  eta 4s\n"}
+,{"stream_name":"stdout","time":67.314018508,"data":"[n5k data] test: kept 486/487  (49s)\n"}
+,{"stream_name":"stdout","time":68.325545196,"data":"[n5k data] cache written to /kaggle/working/n5k_cache in 49.7s\n"}
+,{"stream_name":"stdout","time":71.044435376,"data":"cache: /kaggle/working/n5k_cache  source: /kaggle/input/datasets/gillesokhin/nutrition5k-dataset  image 224px  vocab K=195  build 49.7s\n"}
+,{"stream_name":"stdout","time":71.044487722,"data":"depth clip [3048, 4835]  per-gram fallback for 0 ingredient(s)\n"}
+,{"stream_name":"stdout","time":71.044493468,"data":"dropped 2: dish_1564159636 (val: empty depth_raw.png); dish_1558722871 (test: missing depth_raw.png)\n"}
+,{"stream_name":"stdout","time":71.044498793,"data":"train: n=2270  unknown-ingredient dishes=0 (kcal share 0.00%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.00 (median rel 0.0%)  mass from grams MAE=0.01 (median rel 0.0%)  fat from grams MAE=0.00 (median rel 0.0%)  carb from grams MAE=0.00 (median rel 0.0%)  protein from grams MAE=0.00 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":71.044504092,"data":"  val: n=486  unknown-ingredient dishes=6 (kcal share 0.54%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=1.37 (median rel 0.0%)  mass from grams MAE=0.63 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.25 (median rel 0.0%)  protein from grams MAE=0.04 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":71.044508191,"data":" test: n=486  unknown-ingredient dishes=2 (kcal share 0.29%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.76 (median rel 0.0%)  mass from grams MAE=0.45 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.12 (median rel 0.0%)  protein from grams MAE=0.02 (median rel 0.0%)\n"}
+,{"stream_name":"stdout","time":71.184420381,"data":"sample: x (4, 224, 224) rgb mean -0.064 depth mean -0.155  y (200,)\n"}
+,{"stream_name":"stdout","time":71.184697155,"data":"N5K_DATA_JSON {\"n\": [2270, 486, 486], \"K\": 195, \"dropped\": [{\"dish_id\": \"dish_1564159636\", \"split\": \"val\", \"reason\": \"empty depth_raw.png\"}, {\"dish_id\": \"dish_1558722871\", \"split\": \"test\", \"reason\": \"missing depth_raw.png\"}], \"report\": {\"dropped\": 2, \"vocab_size\": 195, \"per_gram_fallback\": [], \"train\": {\"n\": 2270, \"dishes_with_unknown_ingredient\": 0, \"unknown_ingredient_kcal_share\": 0.0, \"kcal_sum_ingredients_mae\": 1.1191390661603085e-05, \"kcal_from_grams_mae\": 1.1182510693699847e-05, \"kcal_from_grams_median_rel\": 3.1544794922552264e-08, \"mass_from_grams_mae\": 0.005728427308000263, \"mass_from_grams_median_rel\": 3.615722936742446e-10, \"fat_from_grams_mae\": 5.673228553337233e-07, \"fat_from_grams_median_rel\": 1.577220798640322e-08, \"carb_from_grams_mae\": 8.493944865916438e-07, \"carb_from_grams_median_rel\": 2.7186531606899474e-08, \"protein_from_grams_mae\": 7.986301931846473e-07, \"protein_from_grams_median_rel\": 1.8190834432308646e-08}, \"val\": {\"n\": 486, \"dishes_with_unknown_ingredient\": 6, \"unknown_ingredient_kcal_share\": 0.005362958754894609, \"kcal_sum_ingredients_mae\": 1.1554791768445771e-05, \"kcal_from_grams_mae\": 1.3739446096045274, \"kcal_from_grams_median_rel\": 3.2994580832052306e-08, \"mass_from_grams_mae\": 0.6256446113691132, \"mass_from_grams_median_rel\": 1.5434519126316165e-09, \"fat_from_grams_mae\": 0.02848833446828893, \"fat_from_grams_median_rel\": 2.077119628679398e-08, \"carb_from_grams_mae\": 0.24548820173394828, \"carb_from_grams_median_rel\": 2.887480112198558e-08, \"protein_from_grams_mae\": 0.03762633673490207, \"protein_from_grams_median_rel\": 1.9913566692554218e-08}, \"test\": {\"n\": 486, \"dishes_with_unknown_ingredient\": 2, \"unknown_ingredient_kcal_share\": 0.0028630346384620983, \"kcal_sum_ingredients_mae\": 1.2446341974803732e-05, \"kcal_from_grams_mae\": 0.7640659510144437, \"kcal_from_grams_median_rel\": 3.2729458353249415e-08, \"mass_from_grams_mae\": 0.44856119550833545, \"mass_from_grams_median_rel\": 2.552139923396206e-10, \"fat_from_grams_mae\": 0.0266137392290927, \"fat_from_grams_median_rel\": 1.5699365091356356e-08, \"carb_from_grams_mae\": 0.1166263286247009, \"carb_from_grams_median_rel\": 2.6884734227461096e-08, \"protein_from_grams_mae\": 0.018861041078768164, \"protein_from_grams_median_rel\": 2.1074349518983733e-08}}}\n"}
+,{"stream_name":"stdout","time":73.551708555,"data":"18:10:03 [+1.2m] ===== data: ok (exit 0, 1.0 min)\n"}
+,{"stream_name":"stdout","time":73.558766319,"data":"18:10:03 [+1.2m] KERNEL_DONE [{\"step\": \"data\", \"status\": \"ok\", \"minutes\": 1.0}]\n"}
+,{"stream_name":"stderr","time":76.251001585,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":76.251059713,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":76.610729363,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":76.610765377,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":77.594368228,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":78.884180225,"data":"[NbConvertApp] Writing 275480 bytes to __results__.html\n"}
+]

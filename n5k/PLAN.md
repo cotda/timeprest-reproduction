@@ -200,12 +200,20 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - So sánh cuối giữa hai phương pháp dùng lr tốt nhất của mỗi hệ theo quy tắc trên (val MAE kcal, 3 seed), báo cáo cả test MAE/mAP, thời gian/epoch (B6, cùng máy), mạng chậm (`bench_comm`) và kết quả B7.
   - **Kết quả (run12 + run13, xem mục 11), 2026-10-17 11:40 (03:40 UTC):** theo quy tắc, **lr tốt nhất ở 30 epoch: TiMePReSt 0.02** (không phải 0.01 như sweep 8 epoch), PipeDream 0.02. Từ nay kết quả chính của TiMePReSt dùng lr 0.02: test MAE kcal 54,7 ± 1,1 (B6 lr 0.01: 56,3), vẫn kém PipeDream 5% (52,0). Dao động không mất ở lr nào (TiMePReSt 40–60 kcal, PipeDream 8–10). B7 của PipeDream: cả 4 loại bản đồ trung thực với mô hình.
   - run14 (60 epoch, đã đẩy 03:38 UTC ngày 17 trên `ktanvn`, vì phiên trước bị ngắt trước khi đẩy) vẫn dùng lr B6 của TiMePReSt (0.01) như đã ghi trước.
+  - run14 trên `ktanvn` bị treo trước khi script chạy (không có log trên web sau 13 phút, trong khi run15 đẩy sau 6 phút đã có log; cache không phải nguyên nhân vì run15 dùng cùng cache). Người dùng hủy trên web; **đẩy lại run14 lên `kaggleolap` lúc 03:52 UTC**, nội dung không đổi.
 - 2026-10-17 01:27 (17:27 UTC ngày 16; người dùng đưa token tài khoản Kaggle thứ hai, cho phép lưu trong repo nếu ignore): thêm tài khoản `ktanvn` để chạy thêm 2 phiên GPU. Thay đổi kỹ thuật, không đổi thiết kế thí nghiệm: token ở `kaggle_accounts.json` (ignore), script `n5k/kaggle/accounts.py`; `push_code.py` đọc chủ dataset từ `N5K_KAGGLE_USER` (mặc định `kaggleolap`) và không gói `n5k/report/`. Đã tạo `ktanvn/timeprest-code` và đẩy `ktanvn/n5k-run0-cache` (CPU) lúc 17:27 UTC. Máy ở hai tài khoản có thể khác nhau, nên thời gian chỉ so trong cùng một kernel (như trước).
 - 2026-10-17 01:30 (17:30 UTC ngày 16; người dùng: "oke chạy 60 epoch"): **lịch 60 epoch cho TiMePReSt và PipeDream** (`run14_60ep`, tài khoản `ktanvn`, kernel `ktanvn/n5k-run14-60ep`).
   - Lý do: ở 30 epoch, single và PipeDream gần bão hòa còn TiMePReSt đang underfit (train MAE 45 so với 35), xem mục 11 "B8 (phân tích)".
   - Cấu hình: đúng B6 (`n5k_timeprest.yaml` lr 0.01, `n5k_pipedream.yaml` lr 0.02, một nhánh, `[0,8,18]`), chỉ đổi `training.epochs=60` (warmup giữ 2 epoch, cosine trải trên 60 epoch), seed 0. lr giữ như B6 kể cả khi run12/run13 chọn lr khác (nếu khác, ghi chú khi báo cáo).
   - So với B6 seed 0 (30 epoch): test MAE kcal TiMePReSt 56,0, PipeDream 51,8. Biến động khi huấn luyện lại cùng cấu hình khoảng 1,6 kcal (run11 so với B6). Quy tắc (đặt trước): "60 epoch tốt hơn" với một hệ nếu test MAE kcal giảm hơn 2 kcal so với B6 seed 0; "thu hẹp khoảng cách" nếu khoảng cách TiMePReSt − PipeDream (test) nhỏ hơn 4,2 − 2 = 2,2 kcal. Chỉ 1 seed, nên đây là dấu hiệu, không phải kết luận chắc.
   - Đo thêm: độ dao động (cùng cách tính với run12), train MAE ở epoch cuối, thời gian/epoch (chỉ so trong kernel này).
+  - **Kết quả (run14 + run15, xem mục 11):** TiMePReSt lr 0.01 tốt hơn ở 60 epoch (test −2,3); TiMePReSt lr 0.02 và PipeDream thì không (−0,03 và +3,0). Ở 60 epoch TiMePReSt bắt kịp PipeDream (test 53,7 / 53,9 so với 54,8; val gần bằng nhau), nhưng PipeDream 30 epoch đã đạt mức đó trong một nửa thời gian. 1 seed.
+- 2026-10-17 11:45 (03:45 UTC; người dùng: "chạy thêm timeprest lr 0.02 60 epoch"): **TiMePReSt lr 0.02, 60 epoch, seed 0** (`run15_tp60_lr02`, tài khoản `ktanvn`, kernel `ktanvn/n5k-run15-tp60-lr02`), vì run12 cho thấy lr tốt nhất của TiMePReSt ở 30 epoch là 0.02 còn run14 dùng 0.01.
+  - Cấu hình: `n5k_timeprest.yaml` với `training.lr=0.02`, `training.epochs=60` (warmup 2, cosine trên 60 epoch), seed 0.
+  - Quy tắc (đặt trước, giống run14): so với TiMePReSt lr 0.02 seed 0 ở 30 epoch (run12: test MAE kcal 54,0). "60 epoch tốt hơn" nếu test giảm hơn 2 kcal. So thêm với PipeDream 60 epoch (run14) để xem khoảng cách. Chỉ 1 seed.
+- 2026-10-17 12:50 (04:50 UTC; người dùng: "chạy thêm seed 1 và 2"): **60 epoch cho seed 1 và 2** (`run16_s1` trên kaggleolap, `run16_s2` trên ktanvn), cùng 3 cấu hình như run14/run15: TiMePReSt lr 0.01, TiMePReSt lr 0.02, PipeDream lr 0.02. Mỗi kernel một seed, 3 cấu hình chạy nối tiếp trên cùng máy, thứ tự xen kẽ: s1 TP.01 → PD → TP.02; s2 TP.02 → PD → TP.01.
+  - Quy tắc (đặt trước): dùng trung bình 3 seed (seed 0 từ run14/run15). (a) "60 epoch tốt hơn 30 epoch" với một cấu hình nếu trung bình test MAE kcal giảm hơn 2 kcal so với trung bình 3 seed ở 30 epoch (TiMePReSt lr 0.01: 56,3; lr 0.02: 54,7; PipeDream: 52,0). (b) "TiMePReSt bắt kịp PipeDream ở 60 epoch" nếu trung bình test của TiMePReSt (lr tốt nhất theo val ở 60 epoch) không kém PipeDream 60 epoch quá 2 kcal. (c) So thêm với PipeDream 30 epoch (52,0) để biết có lợi theo tổng thời gian không.
+  - **Kết quả (6 lần chạy OK, xem mục 11 "60 epoch, 3 seed"):** (a) chỉ TiMePReSt lr 0.01 tốt hơn ở 60 epoch (test −2,9); TiMePReSt lr 0.02 không đổi (+0,05); PipeDream kém đi (+1,8, overfit). (b) lr tốt nhất theo val ở 60 epoch của TiMePReSt là 0.02, test 54,7 so với PipeDream 60 epoch 53,8: kém 0,9 < 2 → **bắt kịp**, nhưng chủ yếu vì PipeDream kém đi. (c) PipeDream 30 epoch (52,0, khoảng 600 s) vẫn tốt nhất mọi cấu hình, với một nửa thời gian. Hai tài khoản chạy song song được (ktanvn cho 1 phiên cùng lúc với kaggleolap).
 - 2026-10-17 00:50 (người dùng): **báo cáo B8 là bộ slides LaTeX mới** (cùng mẫu với `report/slides/bao_cao_TiMePReSt.tex`, nhưng là file riêng, không nối vào slides cũ). Đặt ở `n5k/report/` (slides + script vẽ hình từ `n5k/results/`); logo và ảnh nền lấy từ `report/slides/` qua `\graphicspath`, không chép.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
@@ -307,6 +315,43 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - (4) "Bộ nhớ TiMePReSt ≈ PipeDream": đúng (−0,9% trên GPU0).
 - N=4 so với N=2: chậm hơn 8,5% và MAE kém hơn 1 kcal; không có lợi ở W=2.
 - (*) Thời gian của single chưa dùng để so sánh được: các lần chạy dài cho 23–27 s, trong khi sweep cùng config cho 21,5 s. Đã đo nguyên nhân ở `run7_timing` (xem mục dưới): **không phải do số GPU nhìn thấy hay do chạy sau checks**, mà do máy chậm dần theo thời gian chạy. Vì vậy chỉ so sánh tỉ lệ giữa các hệ chạy trên cùng máy (các tỉ lệ ở trên); không so sánh giá trị tuyệt đối của s/epoch giữa các kernel.
+
+### Lịch 60 epoch (`run14_60ep` trên kaggleolap, chạy 03:52–04:41 UTC ngày 17; `run15_tp60_lr02` trên ktanvn, 03:44–04:10 UTC; seed 0; log ở `n5k/results/kaggle/run14_60ep/`, `run15_tp60_lr02/`)
+- Mọi bước xong, checks PASS. So với cùng seed 0 ở 30 epoch (B6 `run6_s0`, run12). Dao động tính trên cùng phần của lịch (epoch 12–36 của 60, tương ứng 6–18 của 30).
+
+| hệ | lr | epoch | best val MAE kcal (epoch) | test MAE kcal | test mAP | dao động | train cuối | s/epoch |
+|---|---|---|---|---|---|---|---|---|
+| TiMePReSt | 0.01 | 30 | 52,8 (24) | 56,0 | 84,6 | 44,8 | 44,8 | 18,3 |
+| TiMePReSt | 0.01 | **60** | 49,7 (51) | **53,7** | 87,5 | 67,5 | 33,0 | 18,7 |
+| TiMePReSt | 0.02 | 30 | 56,7 (30) | 54,0 | 85,7 | 71,6 | 42,2 | 19,0 |
+| TiMePReSt | 0.02 | **60** | 48,9 (42) | **53,9** | 86,5 | 107,3 | 29,6 | 19,2 |
+| PipeDream | 0.02 | 30 | 49,9 (30) | 51,8 | 85,9 | 17,0 | 34,5 | 19,3 |
+| PipeDream | 0.02 | **60** | 49,6 (49) | **54,8** | 87,2 | 4,5 | 23,9 | 19,9 |
+
+- Theo quy tắc (giảm hơn 2 kcal test so với 30 epoch): **TiMePReSt lr 0.01: 60 epoch tốt hơn (−2,3)**; TiMePReSt lr 0.02: không đổi trên test (−0,03) dù val tốt hơn 7,7 kcal; **PipeDream: không tốt hơn, test còn kém đi 3,0** (val gần như không đổi; train 23,9 nên nhiều khả năng overfit).
+- **Ở 60 epoch, TiMePReSt bắt kịp PipeDream:** val 49,7 / 48,9 so với 49,6; test 53,7 / 53,9 so với 54,8; mAP 87,5 / 86,5 so với 87,2. Khoảng cách test (seed 0) đổi từ +4,2 / +2,2 ở 30 epoch sang −1,1 / −0,8. Cùng máy (run14), TiMePReSt 18,7 s/epoch so với PipeDream 19,9 (nhanh hơn 6%).
+- **Nhưng PipeDream 30 epoch đã đạt mức đó:** val 49,9, test 51,8, trong một nửa thời gian. Tính theo tổng thời gian, PipeDream 30 epoch (khoảng 580 s) vẫn tốt hơn hoặc bằng TiMePReSt 60 epoch (khoảng 1120 s). Thêm epoch chỉ giúp TiMePReSt đuổi kịp, không làm nó vượt.
+- Dao động của TiMePReSt không mất khi lịch dài hơn mà kéo dài hơn (lr 0.02: val nhảy lên 189 ở epoch 21, 188 ở epoch 22), rồi hết khi lr giảm (từ khoảng epoch 36).
+- Hạn chế: 1 seed. Biến động giữa các seed ở 30 epoch khoảng 1–3 kcal test, nên khoảng cách dưới 2 kcal ở 60 epoch chưa phân biệt được. Val và test lệch nhau (TiMePReSt lr 0.02: val tốt hơn 7,7 nhưng test không đổi; PipeDream: val như cũ nhưng test kém 3,0).
+- Ghi chú hạ tầng: trên ktanvn, run15 (đẩy 03:44) chạy ngay, còn run14 (đẩy 03:38) không bao giờ bắt đầu và bị hủy; chưa rõ ktanvn cho mấy phiên GPU cùng lúc.
+
+### 60 epoch, 3 seed (seed 0 từ run14/run15; seed 1 `run16_s1` trên kaggleolap, seed 2 `run16_s2` trên ktanvn, cả hai chạy 04:47–06:00 UTC ngày 17; log ở `n5k/results/kaggle/run16_s{1,2}/`)
+- Mọi bước OK, checks PASS, mỗi lần chạy 22–24 phút. Mốc 30 epoch là trung bình 3 seed của run12 (TiMePReSt lr 0.02), B6 (TiMePReSt lr 0.01) và run13 (PipeDream). Trung bình ± độ lệch chuẩn qua 3 seed. Dao động tính như mục trên.
+
+| hệ | lr | epoch | best val MAE kcal | test MAE kcal | test từng seed | test mAP | dao động | train cuối | s/epoch | tổng thời gian |
+|---|---|---|---|---|---|---|---|---|---|---|
+| TiMePReSt | 0.01 | 30 | 54,8 ± 2,1 | 56,3 ± 0,4 | 56,0 / 56,1 / 56,8 | 85,3 | 46,5 | 44,8 | 18,9 | 566 s |
+| TiMePReSt | 0.01 | **60** | 50,7 ± 0,9 | **53,3 ± 1,1** | 53,7 / 52,2 / 54,2 | 87,7 | 69,1 | 33,8 | 19,2 | 1150 s |
+| TiMePReSt | 0.02 | 30 | 53,6 ± 2,8 | 54,7 ± 1,1 | 54,0 / 54,1 / 55,9 | 85,5 | 59,6 | 42,5 | 19,2 | 577 s |
+| TiMePReSt | 0.02 | **60** | 49,4 ± 1,3 | **54,7 ± 1,4** | 53,9 / 56,3 / 53,9 | 86,6 | 83,9 | 30,6 | 19,5 | 1167 s |
+| PipeDream | 0.02 | 30 | 49,1 ± 1,7 | **52,0 ± 0,9** | 51,8 / 51,2 / 52,9 | 86,2 | 8,9 | 34,7 | 19,9 | 596 s |
+| PipeDream | 0.02 | **60** | 47,1 ± 2,3 | 53,8 ± 1,0 | 54,8 / 52,7 / 53,9 | 87,5 | 8,1 | 24,8 | 20,3 | 1216 s |
+
+- (a) **60 epoch chỉ giúp TiMePReSt lr 0.01** (test −2,9). TiMePReSt lr 0.02: val tốt hơn 4,2 nhưng test không đổi (+0,05). PipeDream: val tốt hơn 2,0 nhưng test kém đi 1,8 (train 24,8: overfit). mAP nguyên liệu tăng 1–2 điểm ở mọi cấu hình.
+- (b) **TiMePReSt bắt kịp PipeDream ở 60 epoch** theo quy tắc: lr tốt nhất theo val là 0.02, test 54,7 so với 53,8 (kém 0,9 < 2). Nếu chọn lr 0.01 (val kém hơn) thì test 53,3, ngang PipeDream. Khoảng cách thu hẹp chủ yếu vì PipeDream kém đi khi lịch dài, không phải vì TiMePReSt vượt.
+- (c) **PipeDream 30 epoch vẫn là cấu hình tốt nhất** (test 52,0 trong khoảng 600 s). Không cấu hình TiMePReSt nào đạt mức đó, kể cả khi dùng gấp đôi thời gian (53,3 trong 1150 s). Cùng máy, TiMePReSt nhanh hơn PipeDream khoảng 4–5% mỗi epoch (19,2–19,5 so với 20,3 s).
+- Dao động của TiMePReSt không giảm khi lịch dài hơn (69–84 kcal so với 8 của PipeDream); nó chỉ hết khi lr đã giảm nhiều ở cuối lịch cosine.
+- Val và test lệch nhau ở cả ba cấu hình (val tốt hơn 2–4 kcal ở 60 epoch nhưng test không tốt hơn tương ứng): chọn lr/số epoch theo val trên tập 486 món này có nhiễu khoảng 1–2 kcal.
 
 ### Sweep lr ở 30 epoch: TiMePReSt (`run12_tp_lr`) và PipeDream (`run13_pd`) (2026-10-16, đẩy 16:49 / 16:50 UTC, mỗi kernel khoảng 75 phút; lr B6 lấy từ `run6_s*`; log ở `n5k/results/kaggle/run12_tp_lr/`, `run13_pd/`)
 - Mọi bước xong, checks PASS. 3 seed mỗi ô; best val = MAE kcal val tốt nhất; test ở checkpoint tốt nhất; dao động = trung bình 3 seed của bước tăng lớn nhất của val MAE kcal giữa hai epoch liền nhau trong epoch 6–18; train = train MAE kcal ở epoch 30.

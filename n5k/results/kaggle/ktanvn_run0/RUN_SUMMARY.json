@@ -1,0 +1,34 @@
+{
+ "started": "2026-10-16 18:08:50",
+ "budget_min": 330,
+ "steps": [
+  {
+   "step": "data",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 1.0,
+   "json": [
+    "N5K_DATA_JSON {\"n\": [2270, 486, 486], \"K\": 195, \"dropped\": [{\"dish_id\": \"dish_1564159636\", \"split\": \"val\", \"reason\": \"empty depth_raw.png\"}, {\"dish_id\": \"dish_1558722871\", \"split\": \"test\", \"reason\": \"missing depth_raw.png\"}], \"report\": {\"dropped\": 2, \"vocab_size\": 195, \"per_gram_fallback\": [], \"train\": {\"n\": 2270, \"dishes_with_unknown_ingredient\": 0, \"unknown_ingredient_kcal_share\": 0.0, \"kcal_sum_ingredients_mae\": 1.1191390661603085e-05, \"kcal_from_grams_mae\": 1.1182510693699847e-05, \"kcal_from_grams_median_rel\": 3.1544794922552264e-08, \"mass_from_grams_mae\": 0.005728427308000263, \"mass_from_grams_median_rel\": 3.615722936742446e-10, \"fat_from_grams_mae\": 5.673228553337233e-07, \"fat_from_grams_median_rel\": 1.577220798640322e-08, \"carb_from_grams_mae\": 8.493944865916438e-07, \"carb_from_grams_median_rel\": 2.7186531606899474e-08, \"protein_from_grams_mae\": 7.986301931846473e-07, \"protein_from_grams_median_rel\": 1.8190834432308646e-08}, \"val\": {\"n\": 486, \"dishes_with_unknown_ingredient\": 6, \"unknown_ingredient_kcal_share\": 0.005362958754894609, \"kcal_sum_ingredients_mae\": 1.1554791768445771e-05, \"kcal_from_grams_mae\": 1.3739446096045274, \"kcal_from_grams_median_rel\": 3.2994580832052306e-08, \"mass_from_grams_mae\": 0.6256446113691132, \"mass_from_grams_median_rel\": 1.5434519126316165e-09, \"fat_from_grams_mae\": 0.02848833446828893, \"fat_from_grams_median_rel\": 2.077119628679398e-08, \"carb_from_grams_mae\": 0.24548820173394828, \"carb_from_grams_median_rel\": 2.887480112198558e-08, \"protein_from_grams_mae\": 0.03762633673490207, \"protein_from_grams_median_rel\": 1.9913566692554218e-08}, \"test\": {\"n\": 486, \"dishes_with_unknown_ingredient\": 2, \"unknown_ingredient_kcal_share\": 0.0028630346384620983, \"kcal_sum_ingredients_mae\": 1.2446341974803732e-05, \"kcal_from_grams_mae\": 0.7640659510144437, \"kcal_from_grams_median_rel\": 3.2729458353249415e-08, \"mass_from_grams_mae\": 0.44856119550833545, \"mass_from_grams_median_rel\": 2.552139923396206e-10, \"fat_from_grams_mae\": 0.0266137392290927, \"fat_from_grams_median_rel\": 1.5699365091356356e-08, \"carb_from_grams_mae\": 0.1166263286247009, \"carb_from_grams_median_rel\": 2.6884734227461096e-08, \"protein_from_grams_mae\": 0.018861041078768164, \"protein_from_grams_median_rel\": 2.1074349518983733e-08}}}"
+   ],
+   "tail": [
+    "[n5k data] train: kept 2270/2270  (35s)",
+    "[n5k data] 2500/3244 dishes  38s  eta 11s",
+    "[n5k data] 2750/3244 dishes  42s  eta 8s",
+    "[n5k data] val: kept 486/487  (42s)",
+    "[n5k data] 3000/3244 dishes  46s  eta 4s",
+    "[n5k data] test: kept 486/487  (49s)",
+    "[n5k data] cache written to /kaggle/working/n5k_cache in 49.7s",
+    "cache: /kaggle/working/n5k_cache  source: /kaggle/input/datasets/gillesokhin/nutrition5k-dataset  image 224px  vocab K=195  build 49.7s",
+    "depth clip [3048, 4835]  per-gram fallback for 0 ingredient(s)",
+    "dropped 2: dish_1564159636 (val: empty depth_raw.png); dish_1558722871 (test: missing depth_raw.png)",
+    "train: n=2270  unknown-ingredient dishes=0 (kcal share 0.00%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.00 (median rel 0.0%)  mass from grams MAE=0.01 (median rel 0.0%)  fat from grams MAE=0.00 (median rel 0.0%)  carb from grams MAE=0.00 (median rel 0.0%)  protein from grams MAE=0.00 (median rel 0.0%)",
+    "  val: n=486  unknown-ingredient dishes=6 (kcal share 0.54%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=1.37 (median rel 0.0%)  mass from grams MAE=0.63 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.25 (median rel 0.0%)  protein from grams MAE=0.04 (median rel 0.0%)",
+    " test: n=486  unknown-ingredient dishes=2 (kcal share 0.29%)  sum(ingredient kcal) vs dish MAE=0.00  kcal from grams MAE=0.76 (median rel 0.0%)  mass from grams MAE=0.45 (median rel 0.0%)  fat from grams MAE=0.03 (median rel 0.0%)  carb from grams MAE=0.12 (median rel 0.0%)  protein from grams MAE=0.02 (median rel 0.0%)",
+    "sample: x (4, 224, 224) rgb mean -0.064 depth mean -0.155  y (200,)",
+    "N5K_DATA_JSON {\"n\": [2270, 486, 486], \"K\": 195, \"dropped\": [{\"dish_id\": \"dish_1564159636\", \"split\": \"val\", \"reason\": \"empty depth_raw.png\"}, {\"dish_id\": \"dish_1558722871\", \"split\": \"test\", \"reason\": \"missing depth_raw.png\"}], \"report\": {\"dropped\": 2, \"vocab_size\": 195, \"per_gram_fallback\": [], \"train\": {\"n\": 2270, \"dishes_with_unknown_ingredient\": 0, \"unknown_ingredient_kcal_share\": 0.0, \"kcal_sum_ingredients_mae\": 1.1191390661603085e-05, \"kcal_from_grams_mae\": 1.1182510693699847e-05, \"kcal_from_grams_median_rel\": 3.1544794922552264e-08, \"mass_from_grams_mae\": 0.005728427308000263, \"mass_from_grams_median_rel\": 3.615722936742446e-10, \"fat_from_grams_mae\": 5.673228553337233e-07, \"fat_from_grams_median_rel\": 1.577220798640322e-08, \"carb_from_grams_mae\": 8.493944865916438e-07, \"carb_from_grams_median_rel\": 2.7186531606899474e-08, \"protein_from_grams_mae\": 7.986301931846473e-07, \"protein_from_grams_median_rel\": 1.8190834432308646e-08}, \"val\": {\"n\": 486, \"dishes_with_unknown_ingredient\": 6, \"unknown_ingredient_kcal_share\": 0.005362958754894609, \"kcal_sum_ingredients_mae\": 1.1554791768445771e-05, \"kcal_from_grams_mae\": 1.3739446096045274, \"kcal_from_grams_median_rel\": 3.2994580832052306e-08, \"mass_from_grams_mae\": 0.6256446113691132, \"mass_from_grams_median_rel\": 1.5434519126316165e-09, \"fat_from_grams_mae\": 0.02848833446828893, \"fat_from_grams_median_rel\": 2.077119628679398e-08, \"carb_from_grams_mae\": 0.24548820173394828, \"carb_from_grams_median_rel\": 2.887480112198558e-08, \"protein_from_grams_mae\": 0.03762633673490207, \"protein_from_grams_median_rel\": 1.9913566692554218e-08}, \"test\": {\"n\": 486, \"dishes_with_unknown_ingredient\": 2, \"unknown_ingredient_kcal_share\": 0.0028630346384620983, \"kcal_sum_ingredients_mae\": 1.2446341974803732e-05, \"kcal_from_grams_mae\": 0.7640659510144437, \"kcal_from_grams_median_rel\": 3.2729458353249415e-08, \"mass_from_grams_mae\": 0.44856119550833545, \"mass_from_grams_median_rel\": 2.552139923396206e-10, \"fat_from_grams_mae\": 0.0266137392290927, \"fat_from_grams_median_rel\": 1.5699365091356356e-08, \"carb_from_grams_mae\": 0.1166263286247009, \"carb_from_grams_median_rel\": 2.6884734227461096e-08, \"protein_from_grams_mae\": 0.018861041078768164, \"protein_from_grams_median_rel\": 2.1074349518983733e-08}}}"
+   ]
+  }
+ ],
+ "commit": "1d42493-dirty",
+ "finished": "2026-10-16 18:10:03"
+}
