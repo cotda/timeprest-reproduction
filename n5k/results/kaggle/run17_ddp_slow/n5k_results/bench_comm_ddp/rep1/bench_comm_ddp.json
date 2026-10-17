@@ -1,0 +1,75 @@
+{
+  "code_hash": "875fd2f9b1b1",
+  "config": "n5k/configs/n5k_bench_comm_ddp.yaml",
+  "overrides": [
+    "output.dir=n5k/results/bench_comm_ddp/rep1"
+  ],
+  "bench": {
+    "bandwidths_gbps": [
+      null,
+      2,
+      1
+    ],
+    "latency_ms": 0.1,
+    "epochs": 2,
+    "native_reference": true
+  },
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "rows": [
+    {
+      "system": "native",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.0,
+      "epoch_time_s": 10.779,
+      "allreduce_mb": null,
+      "allreduce_buckets": null,
+      "link_busy_s": 0.0,
+      "peak_mem_mb": "3054.0|3055.1",
+      "val_mae_kcal": 105.20396,
+      "epochs_timed": 2
+    },
+    {
+      "system": "ddp",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 11.483,
+      "allreduce_mb": 3247.1,
+      "allreduce_buckets": 175,
+      "link_busy_s": 0.0,
+      "peak_mem_mb": "3056.1|3055.7",
+      "val_mae_kcal": 140.58028,
+      "epochs_timed": 2
+    },
+    {
+      "system": "ddp",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 15.048,
+      "allreduce_mb": 3247.1,
+      "allreduce_buckets": 175,
+      "link_busy_s": 13.619,
+      "peak_mem_mb": "3066.4|3063.5",
+      "val_mae_kcal": 101.10837,
+      "epochs_timed": 2
+    },
+    {
+      "system": "ddp",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 28.475,
+      "allreduce_mb": 3247.1,
+      "allreduce_buckets": 175,
+      "link_busy_s": 27.239,
+      "peak_mem_mb": "3076.3|3076.7",
+      "val_mae_kcal": 104.44186,
+      "epochs_timed": 2
+    }
+  ]
+}

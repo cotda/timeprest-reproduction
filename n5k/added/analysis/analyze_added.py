@@ -43,3 +43,16 @@ for sysn in ["timeprest", "pipedream"]:
               "osc %.1f" % st.mean(x[k]["osc"] for x in w))
     print("  diff vs A live %.2f" % st.mean(x["live"]["test"] - y["live"]["test"] for x, y in zip(w, a)),
           "paired", [round(x["live"]["test"] - y["live"]["test"], 2) for x, y in zip(w, a)])
+print("== B3: w_total = 10 vs 3 vs 1, seed 0 (rule: best val -1.5 vs w3 AND val mAP at best epoch >= w1 - 2)")
+for sysn in ["timeprest", "pipedream"]:
+    runs = {w: f"added_{sysn}_{t}_s0" for w, t in (("1", "ema"), ("3", "wtot3"), ("10", "wtot10"))}
+    if not all(n in res for n in runs.values()):
+        continue
+    for w, n in runs.items():
+        rd = next(os.path.dirname(p) for p in glob.glob(os.path.join(root, "**", n, "summary.json"), recursive=True))
+        s = json.load(open(os.path.join(rd, "summary.json"))); rows = list(csv.DictReader(open(os.path.join(rd, "metrics.csv"))))
+        i = min(range(len(rows)), key=lambda j: float(rows[j]["val_mae_kcal"]))
+        print(f"{sysn} w{w:>2}: bestval {float(rows[i]['val_mae_kcal']):.2f}@{i + 1} valmAP@best {float(rows[i]['val_ingr_map']):.1f}",
+              f"test {s['test_mae_kcal']:.2f} mAP {s['test_ingr_map']:.1f} F1 {s['test_ingr_f1']:.1f} kcal_ingr {s['test_mae_kcal_ingr']:.1f}",
+              f"osc {res[n]['live']['osc']:.1f} gshare15 {res[n]['gshare_total_ep15']:.2f} EMA0.99 {res[n]['ema0.99']['test']:.2f}",
+              f"mass {s['test_mae_mass']:.1f} fat {s['test_mae_fat']:.2f} carb {s['test_mae_carb']:.2f} prot {s['test_mae_protein']:.2f}")

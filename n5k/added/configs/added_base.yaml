@@ -2,6 +2,8 @@
 base: ../../configs/n5k_base.yaml
 output:
   dir: n5k/results/added/runs/{name}
+loss:
+  w_total: 1.0                           # A/B ran at w_total = 1 (base was 1 then; base is 3 since 2026-10-17 20:27)
 added:
   balance:                               # C: python -m timeprest.n5k.added.balance (op_trace analysis)
     min_trace_epoch: 10                  # skip the epoch-1 trace (warm-up kernels, cudnn autotune)

@@ -1,0 +1,68 @@
+W1017 12:06:38.727000 18133 torch/distributed/run.py:851] 
+W1017 12:06:38.727000 18133 torch/distributed/run.py:851] *****************************************
+W1017 12:06:38.727000 18133 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1017 12:06:38.727000 18133 torch/distributed/run.py:851] *****************************************
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 875fd2f9b1b1 | gpus 2 | p2p gloo | ema [0.98, 0.99, 0.995]
+[n5k dist] W=2 system=pipedream N=1 M=64 backward=stashed rule=graph partition=[0, 8, 18] K=195 params/stage=1.45M,22.87M device=cuda:0
+   ema val MAE kcal: ema0.98 129.6 ema0.99 129.6 ema0.995 129.6
+ep   1/30 | train 29.9177 (MAE kcal 126.8) | val_loss 39.8728 | MAE kcal 146.8 (57.3%) mass 104.2 fat 10.74 carb 9.49 prot 15.11 | ingr F1 0.2 mAP 12.1 | lr 2.86e-04 | epoch 18.8s busy[0.880|0.798] peak[8374.1|2302.3]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.15h
+   ema val MAE kcal: ema0.98 100.0 ema0.99 100.0 ema0.995 100.0
+ep   2/30 | train 24.2995 (MAE kcal 110.3) | val_loss 25.4967 | MAE kcal 103.5 (40.4%) mass 75.2 fat 6.68 carb 8.94 prot 9.06 | ingr F1 38.3 mAP 24.2 | lr 1.03e-02 | epoch 19.2s busy[0.876|0.772] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.15h
+   ema val MAE kcal: ema0.98 128.5 ema0.99 128.5 ema0.995 128.5
+ep   3/30 | train 21.1771 (MAE kcal 96.3) | val_loss 31.7118 | MAE kcal 209.9 (81.9%) mass 93.2 fat 10.70 carb 8.04 prot 13.42 | ingr F1 24.0 mAP 28.6 | lr 2.00e-02 | epoch 19.2s busy[0.877|0.773] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.14h
+   ema val MAE kcal: ema0.98 97.7 ema0.99 97.7 ema0.995 97.7
+ep   4/30 | train 17.9846 (MAE kcal 91.5) | val_loss 22.5923 | MAE kcal 92.8 (36.2%) mass 101.9 fat 6.75 carb 7.78 prot 10.09 | ingr F1 51.0 mAP 42.3 | lr 1.99e-02 | epoch 19.2s busy[0.878|0.771] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.14h
+   ema val MAE kcal: ema0.98 66.6 ema0.99 66.6 ema0.995 66.6
+ep   5/30 | train 16.3922 (MAE kcal 99.5) | val_loss 30.7257 | MAE kcal 94.1 (36.7%) mass 106.9 fat 6.11 carb 8.98 prot 10.49 | ingr F1 23.2 mAP 40.4 | lr 1.97e-02 | epoch 19.2s busy[0.880|0.768] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.13h
+   ema val MAE kcal: ema0.98 68.5 ema0.99 68.5 ema0.995 68.5
+ep   6/30 | train 13.7829 (MAE kcal 115.5) | val_loss 26.3476 | MAE kcal 104.6 (40.8%) mass 84.8 fat 7.03 carb 11.83 prot 9.11 | ingr F1 42.8 mAP 47.6 | lr 1.94e-02 | epoch 19.3s busy[0.873|0.771] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.13h
+   ema val MAE kcal: ema0.98 60.3 ema0.99 60.3 ema0.995 60.3
+ep   7/30 | train 11.9197 (MAE kcal 98.8) | val_loss 18.9341 | MAE kcal 100.2 (39.1%) mass 122.6 fat 5.54 carb 6.72 prot 7.15 | ingr F1 61.1 mAP 61.0 | lr 1.90e-02 | epoch 19.2s busy[0.877|0.772] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.12h
+   ema val MAE kcal: ema0.98 63.1 ema0.99 63.1 ema0.995 63.1
+ep   8/30 | train 10.7603 (MAE kcal 98.8) | val_loss 16.3867 | MAE kcal 124.7 (48.7%) mass 71.2 fat 6.96 carb 6.03 prot 9.59 | ingr F1 66.7 mAP 69.0 | lr 1.85e-02 | epoch 19.2s busy[0.878|0.768] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.12h
+   ema val MAE kcal: ema0.98 62.2 ema0.99 62.2 ema0.995 62.2
+ep   9/30 | train 8.5777 (MAE kcal 84.0) | val_loss 15.3188 | MAE kcal 94.6 (36.9%) mass 84.4 fat 6.16 carb 5.84 prot 8.61 | ingr F1 71.3 mAP 71.8 | lr 1.78e-02 | epoch 19.3s busy[0.868|0.770] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.11h
+   ema val MAE kcal: ema0.98 56.2 ema0.99 56.2 ema0.995 56.2
+ep  10/30 | train 7.4076 (MAE kcal 89.7) | val_loss 15.7663 | MAE kcal 93.6 (36.6%) mass 93.7 fat 5.26 carb 6.27 prot 10.70 | ingr F1 71.2 mAP 74.6 | lr 1.71e-02 | epoch 19.2s busy[0.874|0.769] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.11h
+   ema val MAE kcal: ema0.98 53.6 ema0.99 53.6 ema0.995 53.6
+ep  11/30 | train 6.1129 (MAE kcal 82.6) | val_loss 12.4304 | MAE kcal 123.4 (48.2%) mass 74.0 fat 4.80 carb 6.71 prot 6.16 | ingr F1 79.3 mAP 78.5 | lr 1.62e-02 | epoch 19.4s busy[0.875|0.766] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.10h
+   ema val MAE kcal: ema0.98 52.1 ema0.99 52.1 ema0.995 52.1
+ep  12/30 | train 5.1113 (MAE kcal 72.6) | val_loss 12.5726 | MAE kcal 90.8 (35.4%) mass 93.9 fat 4.42 carb 5.81 prot 5.35 | ingr F1 79.5 mAP 80.1 | lr 1.53e-02 | epoch 19.3s busy[0.872|0.771] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.10h
+   ema val MAE kcal: ema0.98 50.7 ema0.99 50.7 ema0.995 50.7
+ep  13/30 | train 4.3723 (MAE kcal 74.8) | val_loss 11.6763 | MAE kcal 81.5 (31.8%) mass 64.6 fat 4.78 carb 5.45 prot 5.69 | ingr F1 80.9 mAP 81.2 | lr 1.43e-02 | epoch 19.3s busy[0.879|0.766] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.09h
+   ema val MAE kcal: ema0.98 50.7 ema0.99 50.5 ema0.995 50.5
+ep  14/30 | train 3.7977 (MAE kcal 68.7) | val_loss 11.6974 | MAE kcal 80.4 (31.4%) mass 79.2 fat 4.46 carb 5.32 prot 7.05 | ingr F1 82.6 mAP 82.6 | lr 1.33e-02 | epoch 19.2s busy[0.878|0.766] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.09h
+   ema val MAE kcal: ema0.98 48.6 ema0.99 48.4 ema0.995 48.4
+ep  15/30 | train 3.2358 (MAE kcal 70.0) | val_loss 10.8287 | MAE kcal 77.8 (30.4%) mass 64.2 fat 4.33 carb 6.02 prot 4.94 | ingr F1 83.0 mAP 83.4 | lr 1.22e-02 | epoch 19.3s busy[0.877|0.772] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.08h
+   ema val MAE kcal: ema0.98 49.2 ema0.99 48.9 ema0.995 48.9
+ep  16/30 | train 2.6807 (MAE kcal 61.0) | val_loss 10.5448 | MAE kcal 65.2 (25.5%) mass 76.0 fat 4.02 carb 6.09 prot 5.05 | ingr F1 84.3 mAP 84.3 | lr 1.11e-02 | epoch 19.2s busy[0.881|0.769] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.07h
+   ema val MAE kcal: ema0.98 45.6 ema0.99 45.8 ema0.995 45.8
+ep  17/30 | train 2.4311 (MAE kcal 55.0) | val_loss 10.6495 | MAE kcal 58.8 (23.0%) mass 74.3 fat 3.89 carb 5.28 prot 5.23 | ingr F1 84.1 mAP 84.4 | lr 1.00e-02 | epoch 19.2s busy[0.876|0.770] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.07h
+   ema val MAE kcal: ema0.98 44.7 ema0.99 44.8 ema0.995 44.8
+ep  18/30 | train 2.0939 (MAE kcal 59.8) | val_loss 9.9310 | MAE kcal 58.5 (22.8%) mass 48.6 fat 4.45 carb 5.12 prot 4.42 | ingr F1 84.6 mAP 85.0 | lr 8.88e-03 | epoch 19.2s busy[0.878|0.766] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.06h
+   ema val MAE kcal: ema0.98 46.6 ema0.99 45.9 ema0.995 45.9
+ep  19/30 | train 1.8422 (MAE kcal 56.2) | val_loss 9.7004 | MAE kcal 65.3 (25.5%) mass 40.6 fat 3.62 carb 4.49 prot 5.08 | ingr F1 85.0 mAP 85.3 | lr 7.77e-03 | epoch 19.2s busy[0.879|0.770] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.06h
+   ema val MAE kcal: ema0.98 45.0 ema0.99 44.8 ema0.995 44.8
+ep  20/30 | train 1.5567 (MAE kcal 42.2) | val_loss 9.6606 | MAE kcal 49.4 (19.3%) mass 46.0 fat 3.64 carb 4.30 prot 4.30 | ingr F1 85.4 mAP 85.0 | lr 6.70e-03 | epoch 19.2s busy[0.880|0.768] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.05h
+   ema val MAE kcal: ema0.98 43.1 ema0.99 43.5 ema0.995 43.5
+ep  21/30 | train 1.4293 (MAE kcal 38.9) | val_loss 9.7758 | MAE kcal 57.1 (22.3%) mass 58.5 fat 3.48 carb 4.23 prot 4.05 | ingr F1 85.6 mAP 85.3 | lr 5.66e-03 | epoch 19.3s busy[0.881|0.770] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.05h
+   ema val MAE kcal: ema0.98 42.2 ema0.99 42.6 ema0.995 42.6
+ep  22/30 | train 1.2980 (MAE kcal 34.1) | val_loss 9.7110 | MAE kcal 45.0 (17.5%) mass 37.1 fat 3.36 carb 4.22 prot 3.98 | ingr F1 85.7 mAP 85.2 | lr 4.68e-03 | epoch 19.4s busy[0.880|0.763] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.04h
+   ema val MAE kcal: ema0.98 42.3 ema0.99 42.3 ema0.995 42.3
+ep  23/30 | train 1.1621 (MAE kcal 30.2) | val_loss 9.6767 | MAE kcal 44.7 (17.4%) mass 35.6 fat 3.30 carb 4.75 prot 4.09 | ingr F1 86.1 mAP 85.6 | lr 3.77e-03 | epoch 19.3s busy[0.871|0.774] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.04h
+   ema val MAE kcal: ema0.98 42.1 ema0.99 42.0 ema0.995 42.0
+ep  24/30 | train 1.1483 (MAE kcal 28.1) | val_loss 9.7373 | MAE kcal 44.0 (17.2%) mass 43.3 fat 3.22 carb 4.23 prot 3.95 | ingr F1 85.7 mAP 85.4 | lr 2.93e-03 | epoch 19.3s busy[0.885|0.763] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.03h
+   ema val MAE kcal: ema0.98 41.8 ema0.99 41.7 ema0.995 41.7
+ep  25/30 | train 1.0259 (MAE kcal 25.9) | val_loss 9.7614 | MAE kcal 41.6 (16.3%) mass 29.8 fat 3.25 carb 4.15 prot 3.89 | ingr F1 85.9 mAP 85.6 | lr 2.18e-03 | epoch 19.3s busy[0.877|0.766] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.03h
+   ema val MAE kcal: ema0.98 41.9 ema0.99 41.7 ema0.995 41.7
+ep  26/30 | train 0.9649 (MAE kcal 24.3) | val_loss 9.7646 | MAE kcal 44.3 (17.3%) mass 30.0 fat 3.21 carb 4.15 prot 3.86 | ingr F1 85.9 mAP 85.5 | lr 1.53e-03 | epoch 19.3s busy[0.880|0.765] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.02h
+   ema val MAE kcal: ema0.98 42.2 ema0.99 41.9 ema0.995 41.9
+ep  27/30 | train 0.9233 (MAE kcal 23.3) | val_loss 9.8365 | MAE kcal 42.6 (16.6%) mass 29.2 fat 3.24 carb 4.18 prot 3.85 | ingr F1 85.9 mAP 85.5 | lr 9.90e-04 | epoch 19.2s busy[0.875|0.772] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.02h
+   ema val MAE kcal: ema0.98 42.4 ema0.99 42.0 ema0.995 42.0
+ep  28/30 | train 0.9272 (MAE kcal 22.1) | val_loss 9.8311 | MAE kcal 43.1 (16.8%) mass 29.5 fat 3.22 carb 4.19 prot 3.88 | ingr F1 85.9 mAP 85.5 | lr 5.61e-04 | epoch 19.3s busy[0.879|0.770] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.01h
+   ema val MAE kcal: ema0.98 42.5 ema0.99 42.1 ema0.995 42.1
+ep  29/30 | train 0.9283 (MAE kcal 22.1) | val_loss 9.8370 | MAE kcal 43.3 (16.9%) mass 29.5 fat 3.26 carb 4.23 prot 3.89 | ingr F1 85.9 mAP 85.5 | lr 2.51e-04 | epoch 19.4s busy[0.862|0.772] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.01h
+   ema val MAE kcal: ema0.98 42.6 ema0.99 42.3 ema0.995 42.2
+ep  30/30 | train 0.9214 (MAE kcal 21.6) | val_loss 9.7859 | MAE kcal 42.8 (16.7%) mass 29.1 fat 3.23 carb 4.21 prot 3.86 | ingr F1 86.1 mAP 85.5 | lr 6.29e-05 | epoch 19.3s busy[0.871|0.770] peak[8374.1|2308.1]MB sent[3430.0|3430.0]MB bwd_overlap=34 | ETA 0.00h
+SUMMARY {"name": "added_pipedream_wtot10_s0", "system": "pipedream", "epochs_done": 30, "best_epoch": 25, "test_mae_kcal": 49.64344, "test_pmae_kcal": 18.60222, "test_ingr_f1": 85.36514, "mean_epoch_time_s": 19.28372413793103}
+N5K_EMA_JSON {"name": "added_pipedream_wtot10_s0", "live": 49.64344, "ema0.98": 48.87835, "ema0.99": 48.46471, "ema0.995": 48.46303}

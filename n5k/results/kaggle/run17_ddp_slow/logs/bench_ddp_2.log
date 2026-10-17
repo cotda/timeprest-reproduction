@@ -1,0 +1,15 @@
+W1017 11:29:08.964000 4455 torch/distributed/run.py:851] 
+W1017 11:29:08.964000 4455 torch/distributed/run.py:851] *****************************************
+W1017 11:29:08.964000 4455 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1017 11:29:08.964000 4455 torch/distributed/run.py:851] *****************************************
+env: {'python': '3.13.15', 'torch': '2.11.0+cu128', 'cuda': '12.8', 'cudnn': 91900, 'gpu': 'Tesla T4', 'gpu_mem_gb': 14.56} | code 875fd2f9b1b1
+/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+[rank0]:[W1017 11:29:14.226731855 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+[bw   inf Gbit/s] native epoch   13.97s all-reduce None MB in None buckets, link busy 0.0s
+[bw   inf Gbit/s] ddp    epoch   12.99s all-reduce 3247.1 MB in 175 buckets, link busy 0.0s
+[bw     2 Gbit/s] ddp    epoch   15.27s all-reduce 3247.1 MB in 175 buckets, link busy 13.6s
+[bw     1 Gbit/s] ddp    epoch   28.62s all-reduce 3247.1 MB in 175 buckets, link busy 27.2s
+N5K_BENCH_DDP_JSON [{"system": "native", "bandwidth_gbps": null, "latency_ms": 0.0, "epoch_time_s": 13.968, "allreduce_mb": null, "allreduce_buckets": null, "link_busy_s": 0.0, "peak_mem_mb": "3054.8|3057.3", "val_mae_kcal": 106.76635, "epochs_timed": 2}, {"system": "ddp", "bandwidth_gbps": null, "latency_ms": 0.1, "epoch_time_s": 12.994, "allreduce_mb": 3247.1, "allreduce_buckets": 175, "link_busy_s": 0.0, "peak_mem_mb": "3058.9|3061.9", "val_mae_kcal": 122.90753, "epochs_timed": 2}, {"system": "ddp", "bandwidth_gbps": 2, "latency_ms": 0.1, "epoch_time_s": 15.272, "allreduce_mb": 3247.1, "allreduce_buckets": 175, "link_busy_s": 13.619, "peak_mem_mb": "3067.0|3073.0", "val_mae_kcal": 126.80887, "epochs_timed": 2}, {"system": "ddp", "bandwidth_gbps": 1, "latency_ms": 0.1, "epoch_time_s": 28.623, "allreduce_mb": 3247.1, "allreduce_buckets": 175, "link_busy_s": 27.239, "peak_mem_mb": "3074.9|3078.4", "val_mae_kcal": 102.29694, "epochs_timed": 2}]

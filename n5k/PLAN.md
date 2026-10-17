@@ -221,6 +221,21 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
   - Đo: một kernel, cùng máy: DDP bench (∞ / 2 / 1 Gbit/s, 2 epoch, đo epoch cuối) → `bench_comm` cũ (TiMePReSt, PipeDream, cùng config `n5k_bench_comm.yaml`) → DDP bench lần 2 (để thấy máy chậm dần bao nhiêu). Test CPU trước: 2 tiến trình gloo, hook cho train/val trùng DDP thường, và link chậm làm epoch chậm hơn đúng cỡ.
   - Quy tắc (đặt trước): ở mỗi băng thông, "pipeline thắng DDP" nếu thời gian/epoch của TiMePReSt nhỏ hơn của DDP quá 5% (DDP lấy trung bình hai lần đo); "DDP thắng" nếu ngược lại quá 5%; còn lại "ngang nhau".
   - 18:31 (10:31 UTC): code xong (`bench_comm_ddp.py`, config `n5k_bench_comm_ddp.yaml` có thêm DDP gốc không hook ở ∞ để đo chi phí của hook). Test CPU 2 tiến trình: val của DDP gốc, hook ở ∞ và hook ở 0,5 Gbit/s trùng nhau; ở 0,5 Gbit/s đường truyền bận 9,0 s, epoch tăng 6,4 s (phần còn lại chồng lên backward). Toàn bộ test n5k: 65 PASS. Đã đẩy `ktanvn/n5k-run17-ddp-slow` (`n5k/kaggle/run17_ddp_slow/`).
+  - **Kết quả (19:55, 11:55 UTC; chạy 11:16–11:32 UTC, mọi bước OK; mục 11 "DDP khi mạng chậm"):** theo quy tắc, **DDP thắng ở cả ∞ / 2 / 1 Gbit/s** (TiMePReSt/DDP = 1,56 / 1,97 / 1,60). Dự đoán đúng. DDP che khoảng 79% thời gian truyền ở 2 Gbit/s; ở 1 Gbit/s DDP bị giới hạn bởi đường truyền (epoch 28,5 s so với đường truyền bận 27,2 s), nhưng vẫn nhanh hơn TiMePReSt (45,7 s).
+- 2026-10-17 20:27 (12:27 UTC; người dùng: "làm ý 2", tức đưa w_total = 3 vào cấu hình chính): **`loss.w_total` 1 → 3 trong cấu hình chính**. Đây là thay đổi đầu tiên lấy từ phần added (`n5k/added/README.md`, B/B2/B3) vào phần chính. Theo B2 (3 seed), w_total = 3 tốt hơn ở cả hai hệ: TiMePReSt 57,5 → 55,0, PipeDream 51,0 → 49,3, cả 6 cặp seed đều giảm, và mass bình thường ở cả 6 lần chạy (30–40 g). Không lấy w_total = 10 vì ở B3 đầu ra mass của TiMePReSt bị chết.
+  - Đổi config: `n5k_base.yaml` `loss.w_total: 3.0`. TiMePReSt N=2 và N=4 đổi lr 0.01 → 0.02, là lr tốt nhất ở 30 epoch theo quy tắc chọn lr (run12, mục 11); như vậy cả 5 hệ cùng lr 0.02. `n5k/added/configs/added_base.yaml` ghi rõ `w_total: 1.0`, để các thử nghiệm A/B cũ vẫn tái hiện đúng. `n5k_bench_comm*.yaml` không đổi vì chỉ đo thời gian. Kết quả cũ (w_total = 1) vẫn giữ trong mục 11 làm lịch sử.
+  - Chạy lại B6 (3 seed × single, DDP, PipeDream, TiMePReSt N=2, N=4; 30 epoch; checks trước) và B7 (seed 0: giữ checkpoint tốt nhất của single, PipeDream và TiMePReSt từ chính các lần chạy B6, rồi chạy `explain`). Mỗi seed một kernel (`n5k/kaggle/run18_s{0,1,2}/`); tên run `n5k_<hệ>_w3_s<seed>`. Không chạy lại `bench_comm` và run17, vì w_total không đổi thời gian.
+  - Dự đoán (ghi trước):
+    - (1) Test MAE kcal trung bình 3 seed gần B2: TiMePReSt khoảng 55, PipeDream khoảng 49,3, lệch không quá 2 kcal, vì cùng config và chỉ khác trainer (trainer EMA cho kết quả huấn luyện trùng khớp).
+    - (2) Thứ hạng kcal không đổi so với B6: single, DDP và PipeDream tốt hơn TiMePReSt.
+    - (3) Không đầu ra nào bị chết: test MAE mass dưới 60 g ở mọi lần chạy.
+    - (4) Thời gian/epoch không đổi so với B6, lệch không quá 5% trong cùng kernel.
+    - (5) Deletion test ở B7 vẫn cho kết luận "bản đồ trung thực với mô hình" ở cả ba hệ.
+  - Quy tắc (đặt trước):
+    - Bảng chính ở mục 11 và slides đổi sang w_total = 3 nếu mọi lần chạy đều OK và (3) đúng.
+    - Nếu một hệ có đầu ra chết, hệ đó báo cáo cả hai giá trị w_total và ghi rõ.
+    - So sánh TiMePReSt với PipeDream giống B6: trung bình ± độ lệch chuẩn 3 seed, test lấy ở checkpoint tốt nhất theo val.
+  - 20:34 (12:34 UTC): đã sửa config. Toàn bộ test n5k: 65 PASS. Code đã đẩy lên cả hai tài khoản. Kernel: `ktanvn/n5k-run18-s0` (B6 + B7), `kaggleolap/n5k-run18-s1`, `ktanvn/n5k-run18-s2`.
 - 2026-10-17 00:50 (người dùng): **báo cáo B8 là bộ slides LaTeX mới** (cùng mẫu với `report/slides/bao_cao_TiMePReSt.tex`, nhưng là file riêng, không nối vào slides cũ). Đặt ở `n5k/report/` (slides + script vẽ hình từ `n5k/results/`); logo và ảnh nền lấy từ `report/slides/` qua `\graphicspath`, không chép.
 - Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
 
@@ -310,6 +325,19 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
 | ∞ (cùng máy) | 17,54 | 18,54 | 0,946 |
 | 2 Gbit/s | 29,72 | 32,55 | 0,913 |
 | 1 Gbit/s | 44,61 | 48,11 | 0,927 |
+
+- **DDP khi mạng chậm** (`run17_ddp_slow`, ktanvn, 2026-10-17 11:16–11:32 UTC, commit d9a30ff; một máy: DDP lần 1 → `bench_comm` pipeline → DDP lần 2; 2 epoch, đo epoch cuối; script `n5k/analysis/analyze_run17.py`; note `n5k/notes/2026-10-17_1955_ddp-mang-cham.md`):
+
+| Băng thông | DDP (s, TB 2 lần) | DDP bận đường truyền (s) | TiMePReSt (s) | PipeDream (s) | TiMePReSt/DDP | Quy tắc 5% |
+|---|---|---|---|---|---|---|
+| ∞ (cùng máy) | 12,24 (11,48 / 12,99) | 0 | 19,05 | 20,36 | 1,56 | DDP thắng |
+| 2 Gbit/s | 15,16 (15,05 / 15,27) | 13,6 | 29,82 | 34,92 | 1,97 | DDP thắng |
+| 1 Gbit/s | 28,55 (28,48 / 28,62) | 27,2 | 45,72 | 49,19 | 1,60 | DDP thắng |
+
+  - Lượng truyền mỗi epoch gần bằng nhau: DDP all-reduce 3247 MB (35 bước × khoảng 93 MB gradient); pipeline 3430 MB mỗi chiều. DDP chồng truyền lên backward (2 Gbit/s: +2,9 s so với ∞, trong khi đường truyền bận 13,6 s); pipeline che được ít (TiMePReSt +10,8 s / +26,7 s so với khoảng 14 / 29 s truyền).
+  - TiMePReSt/PipeDream trên máy này 0,936 / 0,854 / 0,930 (run6_bench: 0,946 / 0,913 / 0,927).
+  - Chi phí của hook ở ∞ không đo được: DDP gốc 10,78 / 13,97 s so với hook 11,48 / 12,99 s; nhiễu giữa hai lần đo lớn hơn.
+  - Val MAE sau 2 epoch khác nhau giữa các biến thể (DDP 101–141): do GPU không tất định; test CPU cho val trùng khớp. Không dùng để so độ chính xác.
 
 - Đối chiếu dự đoán ở mục 8:
   - (1) "MAE cuối TiMePReSt ≈ PipeDream": **không đúng**. TiMePReSt kém 4,3 kcal (+8%), ổn định qua 3 seed (độ lệch chuẩn 0,4–0,9); mAP kém 0,9 điểm.

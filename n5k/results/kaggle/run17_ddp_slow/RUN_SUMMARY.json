@@ -1,0 +1,104 @@
+{
+ "started": "2026-10-17 11:16:31",
+ "budget_min": 100,
+ "steps": [
+  {
+   "step": "weights",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 0.5,
+   "json": [],
+   "tail": [
+    "Downloading: \"https://download.pytorch.org/models/resnet50-11ad3fa6.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth",
+    "",
+    "  0%|          | 0.00/97.8M [00:00<?, ?B/s]",
+    "  2%|\u258f         | 1.75M/97.8M [00:00<00:05, 18.3MB/s]",
+    " 22%|\u2588\u2588\u258f       | 21.1M/97.8M [00:00<00:00, 127MB/s]",
+    " 46%|\u2588\u2588\u2588\u2588\u258c     | 45.0M/97.8M [00:00<00:00, 183MB/s]",
+    " 70%|\u2588\u2588\u2588\u2588\u2588\u2588\u2589   | 68.4M/97.8M [00:00<00:00, 207MB/s]",
+    " 94%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d| 91.9M/97.8M [00:00<00:00, 221MB/s]",
+    "100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 97.8M/97.8M [00:00<00:00, 195MB/s]"
+   ]
+  },
+  {
+   "step": "bench_ddp_1",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.3,
+   "json": [
+    "N5K_BENCH_DDP_JSON [{\"system\": \"native\", \"bandwidth_gbps\": null, \"latency_ms\": 0.0, \"epoch_time_s\": 10.779, \"allreduce_mb\": null, \"allreduce_buckets\": null, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3054.0|3055.1\", \"val_mae_kcal\": 105.20396, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 11.483, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3056.1|3055.7\", \"val_mae_kcal\": 140.58028, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 15.048, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 13.619, \"peak_mem_mb\": \"3066.4|3063.5\", \"val_mae_kcal\": 101.10837, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 28.475, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 27.239, \"peak_mem_mb\": \"3076.3|3076.7\", \"val_mae_kcal\": 104.44186, \"epochs_timed\": 2}]"
+   ],
+   "tail": [
+    "W1017 11:17:18.908000 67 torch/distributed/run.py:851]",
+    "W1017 11:17:18.908000 67 torch/distributed/run.py:851] *****************************************",
+    "W1017 11:17:18.908000 67 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed.",
+    "W1017 11:17:18.908000 67 torch/distributed/run.py:851] *****************************************",
+    "env: {'python': '3.13.15', 'torch': '2.11.0+cu128', 'cuda': '12.8', 'cudnn': 91900, 'gpu': 'Tesla T4', 'gpu_mem_gb': 14.56} | code 875fd2f9b1b1",
+    "/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.",
+    "  return func(*args, **kwargs)",
+    "[rank0]:[W1017 11:17:42.473260033 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()",
+    "/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.",
+    "  return func(*args, **kwargs)",
+    "[bw   inf Gbit/s] native epoch   10.78s all-reduce None MB in None buckets, link busy 0.0s",
+    "[bw   inf Gbit/s] ddp    epoch   11.48s all-reduce 3247.1 MB in 175 buckets, link busy 0.0s",
+    "[bw     2 Gbit/s] ddp    epoch   15.05s all-reduce 3247.1 MB in 175 buckets, link busy 13.6s",
+    "[bw     1 Gbit/s] ddp    epoch   28.48s all-reduce 3247.1 MB in 175 buckets, link busy 27.2s",
+    "N5K_BENCH_DDP_JSON [{\"system\": \"native\", \"bandwidth_gbps\": null, \"latency_ms\": 0.0, \"epoch_time_s\": 10.779, \"allreduce_mb\": null, \"allreduce_buckets\": null, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3054.0|3055.1\", \"val_mae_kcal\": 105.20396, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 11.483, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3056.1|3055.7\", \"val_mae_kcal\": 140.58028, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 15.048, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 13.619, \"peak_mem_mb\": \"3066.4|3063.5\", \"val_mae_kcal\": 101.10837, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 28.475, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 27.239, \"peak_mem_mb\": \"3076.3|3076.7\", \"val_mae_kcal\": 104.44186, \"epochs_timed\": 2}]"
+   ]
+  },
+  {
+   "step": "bench_pipeline",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 8.5,
+   "json": [
+    "N5K_BENCH_JSON [{\"system\": \"timeprest\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 19.049, \"busy_frac\": [0.908, 0.871], \"wait_time_s\": [1.48, 1.75], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2044.5], \"val_mae_kcal\": 122.72111, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 20.355, \"busy_frac\": [0.825, 0.811], \"wait_time_s\": [3.49, 3.49], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2034.7], \"val_mae_kcal\": 140.22408, \"epochs_timed\": 2}, {\"system\": \"timeprest\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 29.823, \"busy_frac\": [0.505, 0.532], \"wait_time_s\": [14.68, 13.0], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2124.0], \"val_mae_kcal\": 115.31928, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 34.92, \"busy_frac\": [0.476, 0.465], \"wait_time_s\": [18.1, 17.79], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2132.7], \"val_mae_kcal\": 131.4977, \"epochs_timed\": 2}, {\"system\": \"timeprest\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 45.723, \"busy_frac\": [0.36, 0.348], \"wait_time_s\": [29.0, 28.45], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2124.0], \"val_mae_kcal\": 124.83874, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 49.186, \"busy_frac\": [0.332, 0.322], \"wait_time_s\": [32.65, 32.02], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2132.7], \"val_mae_kcal\": 126.20096, \"epochs_timed\": 2}]"
+   ],
+   "tail": [
+    "env: {'python': '3.13.15', 'torch': '2.11.0+cu128', 'cuda': '12.8', 'cudnn': 91900, 'gpu': 'Tesla T4', 'gpu_mem_gb': 14.56} | code 875fd2f9b1b1",
+    "[bw   inf Gbit/s] timeprest      epoch   19.05s busy [0.908, 0.871] wait [1.48, 1.75]",
+    "[bw   inf Gbit/s] pipedream      epoch   20.36s busy [0.825, 0.811] wait [3.49, 3.49]",
+    "[bw     2 Gbit/s] timeprest      epoch   29.82s busy [0.505, 0.532] wait [14.68, 13.0]",
+    "[bw     2 Gbit/s] pipedream      epoch   34.92s busy [0.476, 0.465] wait [18.1, 17.79]",
+    "[bw     1 Gbit/s] timeprest      epoch   45.72s busy [0.36, 0.348] wait [29.0, 28.45]",
+    "[bw     1 Gbit/s] pipedream      epoch   49.19s busy [0.332, 0.322] wait [32.65, 32.02]",
+    "",
+    "| bandwidth (Gbit/s) | timeprest epoch (s) | pipedream epoch (s) | ratio timeprest/pipedream |",
+    "|---|---|---|---|",
+    "| inf | 19.05 | 20.36 | 0.936 |",
+    "| 2 | 29.82 | 34.92 | 0.854 |",
+    "| 1 | 45.72 | 49.19 | 0.930 |",
+    "N5K_BENCH_JSON [{\"system\": \"timeprest\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 19.049, \"busy_frac\": [0.908, 0.871], \"wait_time_s\": [1.48, 1.75], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2044.5], \"val_mae_kcal\": 122.72111, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 20.355, \"busy_frac\": [0.825, 0.811], \"wait_time_s\": [3.49, 3.49], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2034.7], \"val_mae_kcal\": 140.22408, \"epochs_timed\": 2}, {\"system\": \"timeprest\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 29.823, \"busy_frac\": [0.505, 0.532], \"wait_time_s\": [14.68, 13.0], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2124.0], \"val_mae_kcal\": 115.31928, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 34.92, \"busy_frac\": [0.476, 0.465], \"wait_time_s\": [18.1, 17.79], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2132.7], \"val_mae_kcal\": 131.4977, \"epochs_timed\": 2}, {\"system\": \"timeprest\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 45.723, \"busy_frac\": [0.36, 0.348], \"wait_time_s\": [29.0, 28.45], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [70.0, 35.0], \"peak_mem_mb\": [8282.7, 2124.0], \"val_mae_kcal\": 124.83874, \"epochs_timed\": 2}, {\"system\": \"pipedream\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 49.186, \"busy_frac\": [0.332, 0.322], \"wait_time_s\": [32.65, 32.02], \"mb_sent\": [3430.0, 3430.0], \"msgs_sent\": [35.0, 35.0], \"peak_mem_mb\": [8390.3, 2132.7], \"val_mae_kcal\": 126.20096, \"epochs_timed\": 2}]",
+    "saved n5k/results/bench_comm/bench_comm.png"
+   ]
+  },
+  {
+   "step": "bench_ddp_2",
+   "status": "ok",
+   "exit": 0,
+   "minutes": 3.2,
+   "json": [
+    "N5K_BENCH_DDP_JSON [{\"system\": \"native\", \"bandwidth_gbps\": null, \"latency_ms\": 0.0, \"epoch_time_s\": 13.968, \"allreduce_mb\": null, \"allreduce_buckets\": null, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3054.8|3057.3\", \"val_mae_kcal\": 106.76635, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 12.994, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3058.9|3061.9\", \"val_mae_kcal\": 122.90753, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 15.272, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 13.619, \"peak_mem_mb\": \"3067.0|3073.0\", \"val_mae_kcal\": 126.80887, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 28.623, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 27.239, \"peak_mem_mb\": \"3074.9|3078.4\", \"val_mae_kcal\": 102.29694, \"epochs_timed\": 2}]"
+   ],
+   "tail": [
+    "W1017 11:29:08.964000 4455 torch/distributed/run.py:851]",
+    "W1017 11:29:08.964000 4455 torch/distributed/run.py:851] *****************************************",
+    "W1017 11:29:08.964000 4455 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed.",
+    "W1017 11:29:08.964000 4455 torch/distributed/run.py:851] *****************************************",
+    "env: {'python': '3.13.15', 'torch': '2.11.0+cu128', 'cuda': '12.8', 'cudnn': 91900, 'gpu': 'Tesla T4', 'gpu_mem_gb': 14.56} | code 875fd2f9b1b1",
+    "/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.",
+    "  return func(*args, **kwargs)",
+    "[rank0]:[W1017 11:29:14.226731855 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()",
+    "/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.",
+    "  return func(*args, **kwargs)",
+    "[bw   inf Gbit/s] native epoch   13.97s all-reduce None MB in None buckets, link busy 0.0s",
+    "[bw   inf Gbit/s] ddp    epoch   12.99s all-reduce 3247.1 MB in 175 buckets, link busy 0.0s",
+    "[bw     2 Gbit/s] ddp    epoch   15.27s all-reduce 3247.1 MB in 175 buckets, link busy 13.6s",
+    "[bw     1 Gbit/s] ddp    epoch   28.62s all-reduce 3247.1 MB in 175 buckets, link busy 27.2s",
+    "N5K_BENCH_DDP_JSON [{\"system\": \"native\", \"bandwidth_gbps\": null, \"latency_ms\": 0.0, \"epoch_time_s\": 13.968, \"allreduce_mb\": null, \"allreduce_buckets\": null, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3054.8|3057.3\", \"val_mae_kcal\": 106.76635, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": null, \"latency_ms\": 0.1, \"epoch_time_s\": 12.994, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 0.0, \"peak_mem_mb\": \"3058.9|3061.9\", \"val_mae_kcal\": 122.90753, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 2, \"latency_ms\": 0.1, \"epoch_time_s\": 15.272, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 13.619, \"peak_mem_mb\": \"3067.0|3073.0\", \"val_mae_kcal\": 126.80887, \"epochs_timed\": 2}, {\"system\": \"ddp\", \"bandwidth_gbps\": 1, \"latency_ms\": 0.1, \"epoch_time_s\": 28.623, \"allreduce_mb\": 3247.1, \"allreduce_buckets\": 175, \"link_busy_s\": 27.239, \"peak_mem_mb\": \"3074.9|3078.4\", \"val_mae_kcal\": 102.29694, \"epochs_timed\": 2}]"
+   ]
+  }
+ ],
+ "commit": "d9a30ff-dirty",
+ "finished": "2026-10-17 11:32:17"
+}

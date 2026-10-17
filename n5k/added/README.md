@@ -49,6 +49,9 @@ kết luận của `n5k/PLAN.md` hay slides chính, cho đến khi người dùn
     1,5 kcal so với w_total = 3 cùng seed 0 (TiMePReSt 54,5; PipeDream 44,7) **và** val mAP nguyên liệu ở epoch đó không
     thấp hơn w_total = 1 seed 0 quá 2 điểm (TiMePReSt 84,4; PipeDream 86,5). Nếu cả hai hệ đạt: chạy thêm seed 1/2 trước khi
     chọn 10. Nếu không: giữ đề xuất w_total = 3. Ghi thêm test, dao động, gshare_total.
+  - 19:45 (11:45 UTC): kernel trên kaggleolap vẫn QUEUED sau 1 giờ 40 phút (có thể hết quota GPU hoặc kẹt phiên), nên
+    đẩy cùng kernel sang `ktanvn/n5k-addb3-wtot10`. Bản nào xong trước thì dùng bản đó. Nếu cả hai đều chạy thì bản sau
+    là lần chạy lại cùng config, dùng để xem nhiễu khi huấn luyện lại.
 
 ## Kết quả
 - **C (2026-10-17 14:38, note `notes/2026-10-17_1438_can-bang-tai.md`):** từ op_trace của B6 (3 seed) và run16. Lệch tải
@@ -67,3 +70,9 @@ kết luận của `n5k/PLAN.md` hay slides chính, cho đến khi người dùn
   hai hệ** (3 seed, trọng số thường): TiMePReSt 57,45 → 55,01 (−2,44), PipeDream 50,99 → 49,33 (−1,66; EMA 48,71); cả 6
   cặp seed đều giảm. Khoảng cách TiMePReSt − PipeDream 6,5 → 5,7. Dao động tăng ở cả hai (TiMePReSt 60 → 93; PipeDream
   10 → 35, chủ yếu do seed 1).
+- **B3 (2026-10-17 20:26, note `notes/2026-10-17_2026_w-total-10.md`):** w_total = 10, seed 0 (`ktanvn/n5k-addb3-wtot10`).
+  Theo quy tắc, cả hai hệ đạt: best val TiMePReSt 54,5 → 47,9, PipeDream 44,7 → 41,6; val mAP thấp hơn w_total = 1 khoảng
+  1 điểm. Test kcal: TiMePReSt 51,8 (w_total = 3: 55,0), PipeDream 49,6 (49,4, không đổi). **Nhưng đầu ra mass của TiMePReSt
+  chết**: val MAE mass cố định 214 g từ epoch 8, test 223 g (các w_total khác khoảng 35 g); nhiều khả năng softplus của
+  nhánh tổng bão hòa ở 0 sau đoạn dao động mạnh. Quy tắc không có điều kiện cho mass nên không bắt được. Đề xuất: giữ
+  w_total = 3; chưa chạy seed 1/2 (chờ người dùng). Bản kaggleolap (cùng seed) chạy từ 12:22 UTC, là lần chạy lại.

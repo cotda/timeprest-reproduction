@@ -13,5 +13,6 @@ Chỉ đọc kết quả, không chạy huấn luyện. Chạy từ gốc repo, 
 | `analyze_lr30.py` | `n5k/results/kaggle` | run12/run13 + B6: sweep lr 30 epoch, dao động |
 | `analyze_60ep.py` | `n5k/results/kaggle` | run14/run15: 60 epoch, seed 0 |
 | `analyze_60ep_3s.py` | `n5k/results/kaggle` | run14/15/16: 60 epoch, 3 seed, quy tắc (a)(b)(c) |
+| `analyze_run17.py` | `n5k/results/kaggle/run17_ddp_slow` | run17: DDP so với TiMePReSt / PipeDream khi mạng chậm, quy tắc 5% |
 
 Phần nghiên cứu thêm có script riêng ở `n5k/added/analysis/` (và `python -m timeprest.n5k.added.balance` cho phân tích cân bằng tải).

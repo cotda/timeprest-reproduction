@@ -22,7 +22,7 @@ model:
 loss:
   w_presence: 1.0
   w_gram: 1.0
-  w_total: 1.0
+  w_total: 3.0                           # 1 -> 3 on 2026-10-17 (added B2: better for both systems, 3 seeds; PLAN mục 10 20:27)
   ingredient_reduce: sum                 # mean | sum over the K ingredients (presence + gram terms); sum: run4 (PLAN mục 10)
 pipeline:
   num_stages: 2                          # W

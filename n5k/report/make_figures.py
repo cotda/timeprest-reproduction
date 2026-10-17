@@ -124,23 +124,34 @@ def fig_time():
     a.set(ylabel="s / epoch (mean of 3 seeds)", ylim=(0, max(vals) * 1.18))
     a.set_title("(a) 2 x T4, one machine (B6)", loc="left", fontsize=10, color=INK)
     a.grid(axis="x", visible=False)
-    p = os.path.join(K, "run6_bench", "n5k_results", "bench_comm", "bench_comm.json")
-    rows = json.load(open(p))["rows"]
+    # run17 measured DDP (twice, around the pipeline bench) and the pipeline on one machine; run6_bench had no DDP
+    r17 = os.path.join(K, "run17_ddp_slow", "n5k_results")
+    systems = ("timeprest", "pipedream")
+    if os.path.exists(os.path.join(r17, "bench_comm_ddp", "rep2", "bench_comm_ddp.json")):
+        rows = json.load(open(os.path.join(r17, "bench_comm", "bench_comm.json")))["rows"]
+        reps = [json.load(open(os.path.join(r17, "bench_comm_ddp", f"rep{i}", "bench_comm_ddp.json")))["rows"] for i in (1, 2)]
+        for bw in (None, 2, 1):
+            rows.append({"system": "ddp", "bandwidth_gbps": bw, "epoch_time_s": float(np.mean(
+                [next(r["epoch_time_s"] for r in rep if r["system"] == "ddp" and r["bandwidth_gbps"] == bw) for rep in reps]))})
+        systems = ("timeprest", "pipedream", "ddp")
+    else:
+        rows = json.load(open(os.path.join(K, "run6_bench", "n5k_results", "bench_comm", "bench_comm.json")))["rows"]
     bws = [None, 2, 1]
-    w = 0.36
-    for j, system in enumerate(("timeprest", "pipedream")):
+    w = 0.72 / len(systems)
+    for j, system in enumerate(systems):
         v = [next(r["epoch_time_s"] for r in rows if r["system"] == system and r["bandwidth_gbps"] == bw) for bw in bws]
-        xs = np.arange(3) + (j - 0.5) * w
+        xs = np.arange(3) + (j - (len(systems) - 1) / 2) * w
         b.bar(xs, v, width=w, color=STYLE[system][1], edgecolor="#fcfcfb", linewidth=2, label=STYLE[system][0])
         for xx, vv in zip(xs, v):
             b.text(xx, vv + 0.6, f"{vv:.1f}", ha="center", fontsize=8.5, color=INK)
     for i, bw in enumerate(bws):
         tp = next(r["epoch_time_s"] for r in rows if r["system"] == "timeprest" and r["bandwidth_gbps"] == bw)
         pd = next(r["epoch_time_s"] for r in rows if r["system"] == "pipedream" and r["bandwidth_gbps"] == bw)
-        b.text(i, max(tp, pd) + 4.5, f"x{tp / pd:.3f}", ha="center", fontsize=8.5, color=INK2)
+        b.text(i, max(tp, pd) + 4.5, f"TP/PD x{tp / pd:.2f}", ha="center", fontsize=8, color=INK2)
     b.set_xticks(range(3), ["same machine", "2 Gbit/s", "1 Gbit/s"])
     b.set(ylabel="s / epoch", ylim=(0, 60))
-    b.set_title("(b) emulated link between the 2 GPUs", loc="left", fontsize=10, color=INK)
+    b.set_title("(b) emulated link between the 2 GPUs" + (" (run17, one machine)" if "ddp" in systems else ""), loc="left",
+                fontsize=10, color=INK)
     b.legend(loc="upper left", fontsize=8.5)
     b.grid(axis="x", visible=False)
     save(fig, "fig_time.png")

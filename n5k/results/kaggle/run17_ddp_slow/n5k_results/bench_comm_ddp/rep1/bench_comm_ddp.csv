@@ -1,0 +1,5 @@
+system,bandwidth_gbps,latency_ms,epoch_time_s,allreduce_mb,allreduce_buckets,link_busy_s,peak_mem_mb,val_mae_kcal,epochs_timed
+native,,0.0,10.779,,,0.0,3054.0|3055.1,105.20396,2
+ddp,,0.1,11.483,3247.1,175,0.0,3056.1|3055.7,140.58028,2
+ddp,2,0.1,15.048,3247.1,175,13.619,3066.4|3063.5,101.10837,2
+ddp,1,0.1,28.475,3247.1,175,27.239,3076.3|3076.7,104.44186,2

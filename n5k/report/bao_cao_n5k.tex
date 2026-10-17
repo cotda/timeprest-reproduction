@@ -382,7 +382,7 @@ TiMePReSt $N=4$ & 57,3 $\pm$ 0,6 & 21,5 & 85,1 & 85,0 & 20,5 & 8298 / 1995 \\
 \scriptsize
 \begin{itemize}
   \item TiMePReSt \highlight{kém PipeDream 5\%} MAE kcal ở lr tốt nhất của mỗi hệ (54,7 so với 52,0); 3 seed đều kém.
-  \item DDP nhanh nhất (gấp 1,45 lần TiMePReSt) và ít bộ nhớ nhất.
+  \item DDP nhanh nhất (gấp 1,45 lần TiMePReSt; 1,6--2,0 lần khi mạng 2 / 1 Gbit/s) và ít bộ nhớ nhất.
 \end{itemize}
 \end{accentbox}
 \end{columns}
@@ -395,7 +395,7 @@ TiMePReSt $N=4$ & 57,3 $\pm$ 0,6 & 21,5 & 85,1 & 85,0 & 20,5 & 8298 / 1995 \\
 \vspace{0.05cm}
 \begin{uitbox}{\faNetworkWired\; Nhận xét}
 \scriptsize
-Cùng máy, TiMePReSt nhanh hơn PipeDream 5\%. Khi giả lập đường truyền 2 / 1 Gbit/s giữa 2 GPU, lợi thế tăng lên \highlight{7--9\%} (cùng xu hướng phần tái hiện TiMePReSt trước đây). DDP chưa được đo ở mạng chậm.
+Cùng máy, TiMePReSt nhanh hơn PipeDream 5\%; khi giả lập đường truyền 2 / 1 Gbit/s giữa 2 GPU, lợi thế tăng lên \highlight{7--15\%} (hai lần đo, run6 và run17). Nhưng \highlight{DDP vẫn nhanh hơn TiMePReSt 1,6--2,0 lần} ở mọi băng thông: lượng truyền gần bằng nhau (3,2 so với 3,4 GB/epoch), và DDP che khoảng 79\% thời gian truyền vào backward (2 Gbit/s), còn pipeline gần như không che được.
 \end{uitbox}
 \end{frame}
 
@@ -494,7 +494,7 @@ PipeDream & 0.02 & 30 / \textbf{60} & 49,1 / 47,1 & \textbf{52,0} / 53,8 & 86,2 
 MAE cuối TiMePReSt $\approx$ PipeDream & \textcolor{red!60!black}{\textbf{Sai:}} kém 5\% ở lr tốt nhất (54,7 so với 52,0) \\
 TiMePReSt học nhanh hơn ở giữa quá trình & \textcolor{accent}{\textbf{Chỉ đúng ở đầu}} (epoch $\le$ 5), sau đó dao động \\
 Cùng máy: DDP nhanh nhất; TiMePReSt có thể chậm hơn PipeDream & \textcolor{greenteal}{\textbf{Đúng phần DDP;}} TiMePReSt lại nhanh hơn PipeDream 5\% \\
-Mạng 1--2 Gbit/s: TiMePReSt nhanh hơn PipeDream & \textcolor{greenteal}{\textbf{Đúng:}} nhanh hơn 7--9\% \\
+Mạng 1--2 Gbit/s: TiMePReSt nhanh hơn PipeDream & \textcolor{greenteal}{\textbf{Đúng:}} nhanh hơn 7--15\% (nhưng DDP vẫn nhanh hơn) \\
 Bộ nhớ TiMePReSt và PipeDream gần như nhau & \textcolor{greenteal}{\textbf{Đúng:}} 8283 so với 8360 MB ở GPU0 \\
 \bottomrule
 \end{tabular}
@@ -623,8 +623,8 @@ IGSMNet (2025) & RGB-D + ngữ nghĩa & 12,2\% \\
 \begin{uitbox}{\faFlag\; Kết luận}
 \scriptsize
 \begin{itemize}
-  \item TiMePReSt chạy đúng trên bài toán hồi quy đa nhiệm (kiểm tra PASS), nhanh hơn PipeDream 5\% (7--9\% khi mạng chậm), nhưng \highlight{kém 5\% MAE} (lr tốt nhất của mỗi hệ, 30 epoch) và dao động mạnh giữa quá trình ở mọi lr; với 60 epoch thì bắt kịp PipeDream 60 epoch (3 seed) nhưng \highlight{không đạt PipeDream 30 epoch}.
-  \item Trên 2 GPU cùng máy, \highlight{DDP tốt nhất} ở mọi tiêu chí; mô hình nặng hơn (two-stream) làm lợi thế của pipeline mất hẳn.
+  \item TiMePReSt chạy đúng trên bài toán hồi quy đa nhiệm (kiểm tra PASS), nhanh hơn PipeDream 5\% (7--15\% khi mạng chậm), nhưng \highlight{kém 5\% MAE} (30 epoch) và dao động mạnh giữa quá trình; 60 epoch thì bắt kịp PipeDream 60 epoch nhưng \highlight{không đạt PipeDream 30 epoch}.
+  \item Trên 2 GPU, \highlight{DDP tốt nhất} ở mọi tiêu chí, cả khi mạng chậm; two-stream làm lợi thế của pipeline mất hẳn.
   \item Bản đồ calories và CAM \highlight{trung thực với mô hình}, kể cả khi huấn luyện bằng TiMePReSt.
 \end{itemize}
 \end{uitbox}
@@ -639,8 +639,8 @@ Chỉ $W = 2$ GPU, một loại phần cứng, một dataset; mô hình vừa 1 
 \scriptsize
 \begin{itemize}
   \item \kw{Đã xong:} sweep lr 30 epoch và bản đồ calories cho cả TiMePReSt và PipeDream (để chọn một trong hai làm phương pháp chính).
-  \item \kw{Đã xong:} lịch 60 epoch (3 seed): TiMePReSt bắt kịp PipeDream 60 epoch, nhưng PipeDream 30 epoch vẫn tốt nhất với một nửa thời gian.
-  \item \kw{Đề xuất:} DDP khi mạng chậm.
+  \item \kw{Đã xong:} lịch 60 epoch (3 seed): PipeDream 30 epoch vẫn tốt nhất.
+  \item \kw{Đã xong:} DDP khi mạng chậm: vẫn nhanh hơn TiMePReSt 1,6--2,0 lần ở 2 / 1 Gbit/s.
 \end{itemize}
 \end{greenbox}
 \vspace{0.1cm}

@@ -5,4 +5,4 @@ system: timeprest
 pipeline:
   num_microbatches: 4
 training:
-  lr: 0.01                               # = TiMePReSt N=2 (run3); N is the only change
+  lr: 0.02                               # = TiMePReSt N=2; N is the only change

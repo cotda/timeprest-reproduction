@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.14)  17 OCT 2026 14:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.14)  17 OCT 2026 19:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1773,11 +1773,11 @@ ne 389.
  [5
 
 ]
-<figures/fig_time.png, id=108, 664.45888pt x 241.89194pt>
+<figures/fig_time.png, id=108, 718.87395pt x 241.89194pt>
 File: figures/fig_time.png Graphic file (type png)
 <use figures/fig_time.png>
 Package pdftex.def Info: figures/fig_time.png  used on input line 400.
-(pdftex.def)             Requested size: 334.60295pt x 121.81303pt.
+(pdftex.def)             Requested size: 334.60295pt x 112.593pt.
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
@@ -1914,7 +1914,7 @@ Package pdftex.def Info: ../../report/slides/section_bg.png  used on input line
  [18
 
 ]
-Overfull \vbox (13.64186pt too high) detected at line 655
+Overfull \vbox (3.05302pt too high) detected at line 655
  []
 
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
@@ -1960,10 +1960,10 @@ Package rerunfilecheck Info: File `bao_cao_n5k.out' has not changed.
 (rerunfilecheck)             Checksum: DB6E55125E5F14101A49882F898FB3A9;546.
  ) 
 Here is how much of TeX's memory you used:
- 47823 strings out of 467691
- 1157403 string characters out of 5414506
- 1678357 words of memory out of 5000000
- 75995 multiletter control sequences out of 15000+600000
+ 47824 strings out of 467691
+ 1157422 string characters out of 5414506
+ 1677357 words of memory out of 5000000
+ 75996 multiletter control sequences out of 15000+600000
  657233 words of font info for 95 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,15n,123p,734b,1673s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1986,7 +1986,7 @@ rograms/MiKTeXs/fonts/type1/vntex/vnr/vnssbx10.pfb><C:/Users/admin/AppData/Loca
 l/Programs/MiKTeXs/fonts/type1/vntex/vnr/vnssi10.pfb><C:/Users/admin/AppData/Lo
 cal/Programs/MiKTeXs/fonts/type1/vntex/vnr/vnssi8.pfb><C:/Users/admin/AppData/L
 ocal/Programs/MiKTeXs/fonts/type1/vntex/vnr/vntt8.pfb>
-Output written on bao_cao_n5k.pdf (20 pages, 4700062 bytes).
+Output written on bao_cao_n5k.pdf (20 pages, 4707112 bytes).
 PDF statistics:
  312 PDF objects out of 1000 (max. 8388607)
  51 named destinations out of 1000 (max. 500000)

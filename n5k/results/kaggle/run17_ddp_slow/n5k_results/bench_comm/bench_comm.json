@@ -1,0 +1,208 @@
+{
+  "code_hash": "875fd2f9b1b1",
+  "config": "n5k/configs/n5k_bench_comm.yaml",
+  "overrides": [],
+  "bench": {
+    "systems": [
+      {
+        "name": "timeprest",
+        "system": "timeprest",
+        "set": {
+          "training.lr": 0.01
+        }
+      },
+      {
+        "name": "pipedream",
+        "system": "pipedream",
+        "set": {
+          "training.lr": 0.02
+        }
+      }
+    ],
+    "bandwidths_gbps": [
+      null,
+      2,
+      1
+    ],
+    "latency_ms": 0.1,
+    "epochs": 2
+  },
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "rows": [
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 19.049,
+      "busy_frac": [
+        0.908,
+        0.871
+      ],
+      "wait_time_s": [
+        1.48,
+        1.75
+      ],
+      "mb_sent": [
+        3430.0,
+        3430.0
+      ],
+      "msgs_sent": [
+        70.0,
+        35.0
+      ],
+      "peak_mem_mb": [
+        8282.7,
+        2044.5
+      ],
+      "val_mae_kcal": 122.72111,
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": null,
+      "latency_ms": 0.1,
+      "epoch_time_s": 20.355,
+      "busy_frac": [
+        0.825,
+        0.811
+      ],
+      "wait_time_s": [
+        3.49,
+        3.49
+      ],
+      "mb_sent": [
+        3430.0,
+        3430.0
+      ],
+      "msgs_sent": [
+        35.0,
+        35.0
+      ],
+      "peak_mem_mb": [
+        8390.3,
+        2034.7
+      ],
+      "val_mae_kcal": 140.22408,
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 29.823,
+      "busy_frac": [
+        0.505,
+        0.532
+      ],
+      "wait_time_s": [
+        14.68,
+        13.0
+      ],
+      "mb_sent": [
+        3430.0,
+        3430.0
+      ],
+      "msgs_sent": [
+        70.0,
+        35.0
+      ],
+      "peak_mem_mb": [
+        8282.7,
+        2124.0
+      ],
+      "val_mae_kcal": 115.31928,
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 2,
+      "latency_ms": 0.1,
+      "epoch_time_s": 34.92,
+      "busy_frac": [
+        0.476,
+        0.465
+      ],
+      "wait_time_s": [
+        18.1,
+        17.79
+      ],
+      "mb_sent": [
+        3430.0,
+        3430.0
+      ],
+      "msgs_sent": [
+        35.0,
+        35.0
+      ],
+      "peak_mem_mb": [
+        8390.3,
+        2132.7
+      ],
+      "val_mae_kcal": 131.4977,
+      "epochs_timed": 2
+    },
+    {
+      "system": "timeprest",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 45.723,
+      "busy_frac": [
+        0.36,
+        0.348
+      ],
+      "wait_time_s": [
+        29.0,
+        28.45
+      ],
+      "mb_sent": [
+        3430.0,
+        3430.0
+      ],
+      "msgs_sent": [
+        70.0,
+        35.0
+      ],
+      "peak_mem_mb": [
+        8282.7,
+        2124.0
+      ],
+      "val_mae_kcal": 124.83874,
+      "epochs_timed": 2
+    },
+    {
+      "system": "pipedream",
+      "bandwidth_gbps": 1,
+      "latency_ms": 0.1,
+      "epoch_time_s": 49.186,
+      "busy_frac": [
+        0.332,
+        0.322
+      ],
+      "wait_time_s": [
+        32.65,
+        32.02
+      ],
+      "mb_sent": [
+        3430.0,
+        3430.0
+      ],
+      "msgs_sent": [
+        35.0,
+        35.0
+      ],
+      "peak_mem_mb": [
+        8390.3,
+        2132.7
+      ],
+      "val_mae_kcal": 126.20096,
+      "epochs_timed": 2
+    }
+  ]
+}

@@ -2,4 +2,4 @@ base: n5k_base.yaml
 name: n5k_timeprest_s0
 system: timeprest
 training:
-  lr: 0.01                               # best of the final sweep (run3, PLAN mục 11)
+  lr: 0.02                               # best at 30 epochs (run12, PLAN mục 11; was 0.01 from the 8-epoch sweep run3)
