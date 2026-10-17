@@ -43,6 +43,12 @@ kết luận của `n5k/PLAN.md` hay slides chính, cho đến khi người dùn
   - Quy tắc (đặt trước): dùng trung bình 3 seed (seed 0 từ B). "w_total = 3 tốt hơn w_total = 1" với một hệ nếu trung bình
     test MAE kcal (trọng số thường) giảm hơn 1,5 kcal so với A (cùng code, 3 seed: TiMePReSt 57,45; PipeDream 50,99).
     Ghi thêm khoảng cách TiMePReSt − PipeDream ở w_total = 3 (so với 6,5 ở A), dao động, và EMA.
+- 2026-10-17 18:05 (10:05 UTC; người dùng: "chạy thử w_total 10"): **B3: `loss.w_total` = 10**, TiMePReSt và PipeDream,
+  lr 0.02, 30 epoch, seed 0, cùng code/trainer (`kaggleolap/n5k-addb3-wtot10`).
+  - Quy tắc (đặt trước; chọn theo val, không theo test): với mỗi hệ, "w_total = 10 tốt hơn 3" nếu best val MAE kcal giảm hơn
+    1,5 kcal so với w_total = 3 cùng seed 0 (TiMePReSt 54,5; PipeDream 44,7) **và** val mAP nguyên liệu ở epoch đó không
+    thấp hơn w_total = 1 seed 0 quá 2 điểm (TiMePReSt 84,4; PipeDream 86,5). Nếu cả hai hệ đạt: chạy thêm seed 1/2 trước khi
+    chọn 10. Nếu không: giữ đề xuất w_total = 3. Ghi thêm test, dao động, gshare_total.
 
 ## Kết quả
 - **C (2026-10-17 14:38, note `notes/2026-10-17_1438_can-bang-tai.md`):** từ op_trace của B6 (3 seed) và run16. Lệch tải

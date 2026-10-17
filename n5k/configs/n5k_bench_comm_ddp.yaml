@@ -1,0 +1,14 @@
+# DDP epoch time vs emulated network bandwidth (n5k/PLAN.md mục 10, 2026-10-17 18:21): the DDP counterpart of
+# n5k_bench_comm.yaml (same bandwidths, latency, epochs; run in the same kernel, same machine). Each bandwidth trains
+# `epochs` epochs from the pretrained weights; the last one is timed.
+#     torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.bench_comm_ddp --config n5k/configs/n5k_bench_comm_ddp.yaml
+base: n5k_ddp.yaml
+name: n5k_bench_comm_ddp
+output:
+  dir: n5k/results/bench_comm_ddp
+  require_checks: false
+bench:
+  bandwidths_gbps: [null, 2, 1]    # null = no bandwidth limit (latency still applied, as the pipeline bench)
+  latency_ms: 0.1                  # per message (2 (W-1) messages per ring all-reduce)
+  epochs: 2
+  native_reference: true           # also plain DDP without the hook at full speed (cost of the hook itself)
