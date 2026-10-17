@@ -1,0 +1,17 @@
+{
+ "id": "kaggleolap/n5k-addb2-wtot3-s2",
+ "title": "n5k-addb2-wtot3-s2",
+ "code_file": "addB2_wtot3_s2.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "kaggleolap/n5k-run0-cache"
+ ]
+}

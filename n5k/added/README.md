@@ -37,9 +37,27 @@ kết luận của `n5k/PLAN.md` hay slides chính, cho đến khi người dùn
   toàn cục quanh các lần đánh giá thêm (mỗi DataLoader đánh giá lấy một base seed từ RNG toàn cục; không khôi phục thì
   augmentation các epoch sau khác đi). Đã đẩy: `kaggleolap/n5k-adda-ema` (A: 6 lần chạy, khoảng 105 phút) và
   `ktanvn/n5k-addb-wtotal` (B: 4 lần chạy, khoảng 72 phút). Kernel ở `n5k/added/kaggle/`.
+- 2026-10-17 16:50 (08:50 UTC; người dùng: "chạy w_total 3 seed 1 và 2"): **B2: `loss.w_total` = 3, seed 1 và 2**, TiMePReSt và
+  PipeDream, lr 0.02, 30 epoch, cùng code và trainer EMA như A/B (không đẩy code mới). Seed 1 trên kaggleolap
+  (`n5k-addb2-wtot3-s1`), seed 2 trên ktanvn (`n5k-addb2-wtot3-s2`), thứ tự hệ xen kẽ giữa hai seed.
+  - Quy tắc (đặt trước): dùng trung bình 3 seed (seed 0 từ B). "w_total = 3 tốt hơn w_total = 1" với một hệ nếu trung bình
+    test MAE kcal (trọng số thường) giảm hơn 1,5 kcal so với A (cùng code, 3 seed: TiMePReSt 57,45; PipeDream 50,99).
+    Ghi thêm khoảng cách TiMePReSt − PipeDream ở w_total = 3 (so với 6,5 ở A), dao động, và EMA.
 
 ## Kết quả
 - **C (2026-10-17 14:38, note `notes/2026-10-17_1438_can-bang-tai.md`):** từ op_trace của B6 (3 seed) và run16. Lệch tải
   giữa 2 GPU chỉ 1,06–1,12 (stage 0 là nút cổ chai; chia lại partition hoàn hảo lợi khoảng 7%). Tổng thời gian bận của
   2 GPU bằng 1,23–1,41 lần single, nên pipeline chỉ nhanh hơn single 1,2–1,4 lần (DDP 1,9). Nguồn của việc làm thêm
   (chép qua gloo, chép trọng số, hay tính) chưa tách được; đề xuất C2 (đo riêng) chưa làm.
+- **A (2026-10-17 16:29, note `notes/2026-10-17_1629_ema-va-w-total.md`):** theo quy tắc, **EMA không tốt hơn** (test
+  TiMePReSt 57,45 → 57,45–57,55; PipeDream 50,99 → 50,98–51,00; 3 seed). Checkpoint tốt nhất ở epoch 27–30, lúc lr gần 0
+  nên EMA trùng trọng số thường. EMA chỉ làm phẳng giữa quá trình (dao động TiMePReSt 60 → 5). Lỗi thiết kế: warmup làm
+  ba decay gần như trùng nhau (khoảng 0,975) tới epoch 12,6 / 25,4 / 51.
+- **B (cùng note):** theo quy tắc, **w_total ảnh hưởng dao động của TiMePReSt** (0,3: 13,9; 1: khoảng 60; 3: 137),
+  PipeDream vẫn dưới 15. w_total = 3 cho test tốt hơn ở cả hai hệ (TiMePReSt 55,0; PipeDream 49,4; 1 seed); 0,3 kém hơn.
+- Phát hiện phụ: cùng config với run12, TiMePReSt huấn luyện lại cho test kém hơn 2,8 kcal (trung bình 3 seed) dù val gần
+  như nhau; PipeDream tốt hơn 1,0. Gộp 6 lần: khoảng cách TiMePReSt − PipeDream khoảng 4,6 kcal (9%) thay vì 2,7 (5%).
+- **B2 (2026-10-17 17:57, note `notes/2026-10-17_1757_w-total-3-ba-seed.md`):** theo quy tắc, **w_total = 3 tốt hơn ở cả
+  hai hệ** (3 seed, trọng số thường): TiMePReSt 57,45 → 55,01 (−2,44), PipeDream 50,99 → 49,33 (−1,66; EMA 48,71); cả 6
+  cặp seed đều giảm. Khoảng cách TiMePReSt − PipeDream 6,5 → 5,7. Dao động tăng ở cả hai (TiMePReSt 60 → 93; PipeDream
+  10 → 35, chủ yếu do seed 1).
