@@ -1,0 +1,42 @@
+\begin{thebibliography}{}
+
+\bibitem[dpf, 2023]{dpfnutrition}
+ (2023).
+\newblock {DPF-Nutrition} (2023), số liệu trích từ bảng so sánh của
+  {OmniFood8K}.
+\newblock \url{https://arxiv.org/pdf/2604.12356}.
+
+\bibitem[igs, 2025]{igsmnet}
+ (2025).
+\newblock {IGSMNet}.
+\newblock \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12610319/}.
+
+\bibitem[rdi, 2026]{rdinet}
+ (2026).
+\newblock {RDINet}.
+\newblock Applied Sciences 16(1):454,
+  \url{https://www.mdpi.com/2076-3417/16/1/454}.
+
+\bibitem[Dutta et~al., 2026]{dutta2026timeprest}
+Dutta, A., Chaki, N., and De, R.~K. (2026).
+\newblock {TiMePReSt}: Time and memory efficient pipeline parallel {DNN}
+  training with removed staleness.
+\newblock {\em Future Generation Computer Systems}, 178:108260.
+
+\bibitem[Narayanan et~al., 2019]{narayanan2019pipedream}
+Narayanan, D., Harlap, A., Phanishayee, A., Seshadri, V., Devanur, N.~R.,
+  Ganger, G.~R., Gibbons, P.~B., and Zaharia, M. (2019).
+\newblock {PipeDream}: Generalized pipeline parallelism for {DNN} training.
+\newblock In {\em Proceedings of the 27th ACM Symposium on Operating Systems
+  Principles}, pages 1--15.
+
+\bibitem[Thames et~al., 2021]{thames2021nutrition5k}
+Thames, Q., Karpur, A., Norris, W., Xia, F., Panait, L., Weyand, T., and Sim,
+  J. (2021).
+\newblock {Nutrition5k}: Towards automatic nutritional understanding of generic
+  food.
+\newblock In {\em Proceedings of the IEEE/CVF Conference on Computer Vision and
+  Pattern Recognition}, pages 8903--8911.
+\newblock arXiv:2103.03375.
+
+\end{thebibliography}

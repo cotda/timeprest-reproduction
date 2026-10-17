@@ -31,3 +31,7 @@ results/runs/
 .pytest_cache/
 results/sweep/
 results/checks/dist_work/
+
+# Kaggle tokens (n5k/kaggle/accounts.py), never commit
+kaggle_accounts.json
+token.txt

@@ -1,0 +1,4 @@
+\beamer@sectionintoc {1}{Kết quả chính}{4}{0}{1}
+\beamer@sectionintoc {2}{Bản đồ calories}{11}{0}{2}
+\beamer@sectionintoc {3}{Thí nghiệm phụ và so sánh}{14}{0}{3}
+\beamer@sectionintoc {4}{Kết luận}{17}{0}{4}

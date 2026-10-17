@@ -1,0 +1,145 @@
+{
+  "name": "b7_pipedream_s0",
+  "checkpoint": "n5k/results/runs/b7_pipedream_s0",
+  "best_epoch": 23,
+  "test_mae_kcal": 52.407745361328125,
+  "n_dishes": 486,
+  "n_pairs": 2992,
+  "rule": {
+    "cells": 5,
+    "alpha": 0.01
+  },
+  "faithful": {
+    "cam_presence": true,
+    "cam_gram": true,
+    "calorie_map_ingr": true,
+    "kcal_map_direct": true
+  },
+  "stats": {
+    "pairs": {
+      "drop_p@2": {
+        "n": 2992,
+        "map": 0.25991850735294114,
+        "rand": 0.0351994702540107,
+        "frac_map_gt_rand": 0.8399064171122995,
+        "p_wilcoxon": 0.0
+      },
+      "drop_g@2": {
+        "n": 2992,
+        "map": 0.38966223562834224,
+        "rand": 0.08770768783422458,
+        "frac_map_gt_rand": 0.8776737967914439,
+        "p_wilcoxon": 0.0
+      },
+      "off_p@2": {
+        "n": 2874,
+        "map": 0.16112600417536535,
+        "rand": 0.05351712282533055,
+        "frac_map_gt_rand": 0.7609603340292276,
+        "p_wilcoxon": 4.1160125517741545e-256
+      },
+      "drop_p@5": {
+        "n": 2992,
+        "map": 0.5697552002005347,
+        "rand": 0.10545043181818181,
+        "frac_map_gt_rand": 0.9435160427807486,
+        "p_wilcoxon": 0.0
+      },
+      "drop_g@5": {
+        "n": 2992,
+        "map": 0.6388750137032085,
+        "rand": 0.20220776169786098,
+        "frac_map_gt_rand": 0.9361631016042781,
+        "p_wilcoxon": 0.0
+      },
+      "off_p@5": {
+        "n": 2874,
+        "map": 0.3540727536534447,
+        "rand": 0.131469841684064,
+        "frac_map_gt_rand": 0.8190675017397355,
+        "p_wilcoxon": 0.0
+      },
+      "drop_p@10": {
+        "n": 2992,
+        "map": 0.8122356517379679,
+        "rand": 0.2329360250668449,
+        "frac_map_gt_rand": 0.9899732620320856,
+        "p_wilcoxon": 0.0
+      },
+      "drop_g@10": {
+        "n": 2992,
+        "map": 0.794247369986631,
+        "rand": 0.3709978295454545,
+        "frac_map_gt_rand": 0.9552139037433155,
+        "p_wilcoxon": 0.0
+      },
+      "off_p@10": {
+        "n": 2874,
+        "map": 0.5686776955462769,
+        "rand": 0.25625685977731383,
+        "frac_map_gt_rand": 0.8789144050104384,
+        "p_wilcoxon": 0.0
+      }
+    },
+    "dishes": {
+      "drop_kcal_ingr@2": {
+        "n": 486,
+        "map": 0.3489276234567901,
+        "rand": 0.08380205967078189,
+        "frac_map_gt_rand": 0.8765432098765432,
+        "p_wilcoxon": 2.5381091275679243e-66
+      },
+      "drop_kcal_direct@2": {
+        "n": 486,
+        "map": 0.14412347942386833,
+        "rand": 0.005316551440329218,
+        "frac_map_gt_rand": 0.8724279835390947,
+        "p_wilcoxon": 1.4534565046607185e-63
+      },
+      "drop_kcal_ingr@5": {
+        "n": 486,
+        "map": 0.6278566975308643,
+        "rand": 0.2195326851851852,
+        "frac_map_gt_rand": 0.9506172839506173,
+        "p_wilcoxon": 4.46690748659289e-78
+      },
+      "drop_kcal_direct@5": {
+        "n": 486,
+        "map": 0.3069303456790123,
+        "rand": 0.006095841563786008,
+        "frac_map_gt_rand": 0.9403292181069959,
+        "p_wilcoxon": 1.3813950261736335e-77
+      },
+      "drop_kcal_ingr@10": {
+        "n": 486,
+        "map": 0.8288946255144034,
+        "rand": 0.4154863991769547,
+        "frac_map_gt_rand": 0.977366255144033,
+        "p_wilcoxon": 2.7712545796247003e-80
+      },
+      "drop_kcal_direct@10": {
+        "n": 486,
+        "map": 0.4318217016460905,
+        "rand": 0.014424823045267491,
+        "frac_map_gt_rand": 0.9547325102880658,
+        "p_wilcoxon": 8.978218982020559e-80
+      }
+    }
+  },
+  "explain": {
+    "presence_threshold": 0.5,
+    "cells": [
+      2,
+      5,
+      10
+    ],
+    "random_draws": 5,
+    "rule_cells": 5,
+    "rule_alpha": 0.01,
+    "figure_dishes": 8,
+    "top_cams": 3,
+    "seed": 0,
+    "dir": "n5k/results/explain/{name}"
+  },
+  "code_hash": "8808661b52a8"
+}

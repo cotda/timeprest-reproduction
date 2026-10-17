@@ -1,0 +1,210 @@
+[
+  {
+    "dish_id": "dish_1567612986",
+    "index": 290,
+    "kcal_true": 340.2263488769531,
+    "kcal_pred": 349.1943664550781,
+    "top_ingredients": [
+      {
+        "name": "egg whites",
+        "p": 1.0,
+        "grams_pred": 517.3,
+        "grams_true": 369.0
+      },
+      {
+        "name": "sweet potato",
+        "p": 0.998,
+        "grams_pred": 90.41,
+        "grams_true": 151.21951293945312
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9938,
+        "grams_pred": 3.17,
+        "grams_true": 3.7804880142211914
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565811529",
+    "index": 130,
+    "kcal_true": 116.84203338623047,
+    "kcal_pred": 139.431396484375,
+    "top_ingredients": [
+      {
+        "name": "vinegar",
+        "p": 1.0,
+        "grams_pred": 6.21,
+        "grams_true": 5.265822887420654
+      },
+      {
+        "name": "salt",
+        "p": 0.9999,
+        "grams_pred": 0.37,
+        "grams_true": 0.32911399006843567
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9999,
+        "grams_pred": 13.65,
+        "grams_true": 10.531645774841309
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561060976",
+    "index": 56,
+    "kcal_true": 265.50726318359375,
+    "kcal_pred": 311.205322265625,
+    "top_ingredients": [
+      {
+        "name": "olive oil",
+        "p": 1.0,
+        "grams_pred": 3.78,
+        "grams_true": 1.4938169717788696
+      },
+      {
+        "name": "salt",
+        "p": 1.0,
+        "grams_pred": 0.42,
+        "grams_true": 0.6471800208091736
+      },
+      {
+        "name": "pepper",
+        "p": 1.0,
+        "grams_pred": 0.02,
+        "grams_true": 0.11193100363016129
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566332085",
+    "index": 189,
+    "kcal_true": 24.75,
+    "kcal_pred": 125.14356231689453,
+    "top_ingredients": [
+      {
+        "name": "spinach (raw)",
+        "p": 1.0,
+        "grams_pred": 56.82,
+        "grams_true": 65.0
+      },
+      {
+        "name": "cucumbers",
+        "p": 0.9924,
+        "grams_pred": 65.26,
+        "grams_true": 98.0
+      },
+      {
+        "name": "avocado",
+        "p": 0.1644,
+        "grams_pred": 8.87,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566851584",
+    "index": 132,
+    "kcal_true": 286.29498291015625,
+    "kcal_pred": 180.5176239013672,
+    "top_ingredients": [
+      {
+        "name": "cheese pizza",
+        "p": 0.9977,
+        "grams_pred": 76.3,
+        "grams_true": 85.0
+      },
+      {
+        "name": "caesar salad",
+        "p": 0.9936,
+        "grams_pred": 120.61,
+        "grams_true": 137.0
+      },
+      {
+        "name": "olive oil",
+        "p": 0.3175,
+        "grams_pred": 0.43,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565024707",
+    "index": 248,
+    "kcal_true": 299.2979736328125,
+    "kcal_pred": 326.33306884765625,
+    "top_ingredients": [
+      {
+        "name": "scrambled eggs",
+        "p": 0.9997,
+        "grams_pred": 149.35,
+        "grams_true": 115.0
+      },
+      {
+        "name": "turkey bacon",
+        "p": 0.9992,
+        "grams_pred": 3.13,
+        "grams_true": 34.0
+      },
+      {
+        "name": "roasted potatoes",
+        "p": 0.5455,
+        "grams_pred": 8.28,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558725226",
+    "index": 411,
+    "kcal_true": 19.75,
+    "kcal_pred": 41.66135025024414,
+    "top_ingredients": [
+      {
+        "name": "cauliflower",
+        "p": 0.9998,
+        "grams_pred": 71.04,
+        "grams_true": 79.0
+      },
+      {
+        "name": "egg whites",
+        "p": 0.0011,
+        "grams_pred": 7.15,
+        "grams_true": 0.0
+      },
+      {
+        "name": "eggs",
+        "p": 0.001,
+        "grams_pred": 5.42,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558110245",
+    "index": 309,
+    "kcal_true": 29.06999969482422,
+    "kcal_pred": 54.89533615112305,
+    "top_ingredients": [
+      {
+        "name": "berries",
+        "p": 0.9986,
+        "grams_pred": 34.41,
+        "grams_true": 51.0
+      },
+      {
+        "name": "olives",
+        "p": 0.006,
+        "grams_pred": 1.9,
+        "grams_true": 0.0
+      },
+      {
+        "name": "cottage cheese",
+        "p": 0.0051,
+        "grams_pred": 1.58,
+        "grams_true": 0.0
+      }
+    ]
+  }
+]

@@ -17,7 +17,7 @@ import tempfile
 import zipfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATASET = "kaggleolap/timeprest-code"
+DATASET = os.environ.get("N5K_KAGGLE_USER", "kaggleolap") + "/timeprest-code"   # other accounts: accounts.py
 PATHS = ["timeprest", "n5k", "configs", "pyproject.toml"]
 
 
@@ -27,7 +27,7 @@ def git(*args) -> str:
 
 def files() -> list[str]:
     out = git("ls-files", "--cached", "--others", "--exclude-standard", "--", *PATHS).splitlines()
-    return sorted(f for f in out if os.path.isfile(os.path.join(REPO, f)) and not f.startswith("n5k/results/"))
+    return sorted(f for f in out if os.path.isfile(os.path.join(REPO, f)) and not f.startswith(("n5k/results/", "n5k/report/")))
 
 
 def main():
