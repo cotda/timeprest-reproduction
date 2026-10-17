@@ -1,0 +1,11 @@
+# Nghiên cứu thêm (thử nghiệm, chưa phải đóng góp; n5k/added/README.md). Kế thừa cấu hình chính của task.
+base: ../../configs/n5k_base.yaml
+output:
+  dir: n5k/results/added/runs/{name}
+added:
+  balance:                               # C: python -m timeprest.n5k.added.balance (op_trace analysis)
+    min_trace_epoch: 10                  # skip the epoch-1 trace (warm-up kernels, cudnn autotune)
+    steady_trim: 0.25                    # cycle = median over the middle (1 - 2*trim) of the mini-batches
+  ema:                                   # A: python -m timeprest.n5k.added.ema_train (EMA weights at evaluation)
+    decays: [0.98, 0.99, 0.995]          # ~1.5 / 3 / 6 epochs at 35 steps per epoch
+    warmup: true                         # decay_t = min(decay, (1 + t) / (10 + t)) as tf.train.ExponentialMovingAverage(num_updates)

@@ -1,0 +1,6 @@
+# A/B (n5k/added/README.md): PipeDream at lr 0.02 (B6 / run13), with the EMA trainer.
+base: added_base.yaml
+name: added_pipedream_s0
+system: pipedream
+training:
+  lr: 0.02

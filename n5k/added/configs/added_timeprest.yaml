@@ -1,0 +1,6 @@
+# A/B (n5k/added/README.md): TiMePReSt N=2 at lr 0.02 (best 30-epoch lr, run12), with the EMA trainer.
+base: added_base.yaml
+name: added_timeprest_s0
+system: timeprest
+training:
+  lr: 0.02
