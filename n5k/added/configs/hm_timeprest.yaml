@@ -1,0 +1,4 @@
+# HM, TiMePReSt N=2 on 2 GPUs (as n5k/configs/n5k_timeprest.yaml)
+base: hm_base.yaml
+name: hm_timeprest_s0
+system: timeprest

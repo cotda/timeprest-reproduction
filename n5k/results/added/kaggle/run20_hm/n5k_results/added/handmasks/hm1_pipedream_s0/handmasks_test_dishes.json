@@ -1,0 +1,3800 @@
+[
+  {
+    "dish_id": "dish_1564427455",
+    "area_food": 0.1712372448979592,
+    "n_regions": 3,
+    "cmap_m1_in": 0.33501949689991845,
+    "cmap_m2_mae": 0.18904262226451263,
+    "area_m2_mae": 0.1725832233743603,
+    "tmap_m1_in": 0.5619224565626094,
+    "tmap_m2_mae": 0.04631437373124849,
+    "m3": [
+      {
+        "group": "fruit_fatty",
+        "hit": true,
+        "chance": 0.7647058823529411
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.8823529411764706
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.5882352941176471
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564686966",
+    "area_food": 0.04498166454081633,
+    "n_regions": 2,
+    "cmap_m1_in": 0.3106220556023411,
+    "cmap_m2_mae": 0.029570923711775318,
+    "area_m2_mae": 0.010263520802486485,
+    "tmap_m1_in": 0.11886823644494057,
+    "tmap_m2_mae": 0.060539394005146255,
+    "m3": [
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563478751",
+    "area_food": 0.3123804209183674,
+    "n_regions": 4,
+    "cmap_m1_in": 0.62153554414916,
+    "cmap_m2_mae": 0.19193000435448127,
+    "area_m2_mae": 0.20851902178160847,
+    "tmap_m1_in": 0.656275380993219,
+    "tmap_m2_mae": 0.21729704472293498,
+    "m3": [
+      {
+        "group": "herb",
+        "hit": false,
+        "chance": 0.10344827586206896
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.5517241379310345
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.6206896551724138
+      },
+      {
+        "group": "pasta",
+        "hit": true,
+        "chance": 0.9310344827586207
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564588820",
+    "area_food": 0.1309191645408163,
+    "n_regions": 1,
+    "cmap_m1_in": 0.538035107106391,
+    "tmap_m1_in": 0.10871479989933906,
+    "m3": [
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560975517",
+    "area_food": 0.16551737882653061,
+    "n_regions": 2,
+    "cmap_m1_in": 0.7334001264761244,
+    "cmap_m2_mae": 0.02073691256158907,
+    "area_m2_mae": 0.04486083540371308,
+    "tmap_m1_in": 0.060015562013550995,
+    "tmap_m2_mae": 0.10733663599905634,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.2222222222222222
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.8888888888888888
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559751744",
+    "area_food": 0.13237404336734693,
+    "n_regions": 3,
+    "cmap_m1_in": 0.3003628295695903,
+    "cmap_m2_mae": 0.3356404119493477,
+    "area_m2_mae": 0.10045568727460565,
+    "tmap_m1_in": 0.4991820800107695,
+    "tmap_m2_mae": 0.013666491283711779,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.42857142857142855
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.7857142857142857
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559848929",
+    "area_food": 0.11756616709183673,
+    "n_regions": 3,
+    "cmap_m1_in": 0.40525605237439344,
+    "cmap_m2_mae": 0.30779298334426586,
+    "area_m2_mae": 0.13854655225577078,
+    "tmap_m1_in": 0.33827582338269147,
+    "tmap_m2_mae": 0.37294101643497624,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.9375
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558468731",
+    "area_food": 0.40108816964285715,
+    "n_regions": 6,
+    "cmap_m1_in": 0.7137955707035198,
+    "cmap_m2_mae": 0.25556802385885063,
+    "area_m2_mae": 0.23118208328465573,
+    "tmap_m1_in": 0.5851997478858735,
+    "tmap_m2_mae": 0.22069103051270958,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.22580645161290322
+      },
+      {
+        "group": "fruit_fatty",
+        "hit": false,
+        "chance": 0.3225806451612903
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      },
+      {
+        "group": "mushroom",
+        "hit": false,
+        "chance": 0.3225806451612903
+      },
+      {
+        "group": "poultry",
+        "hit": false,
+        "chance": 0.1935483870967742
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": false,
+        "chance": 0.12903225806451613
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1557862738",
+    "area_food": 0.07493622448979592,
+    "n_regions": 1,
+    "cmap_m1_in": 0.5036153998744378,
+    "tmap_m1_in": 0.42174584305297846,
+    "m3": [
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563566725",
+    "area_food": 0.23294005102040816,
+    "n_regions": 4,
+    "cmap_m1_in": 0.5836585986757472,
+    "tmap_m1_in": 0.5822028379600105,
+    "m3": [
+      {
+        "group": "fruit_fatty",
+        "hit": true,
+        "chance": 0.2916666666666667
+      },
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.375
+      },
+      {
+        "group": "leafy_greens",
+        "hit": false,
+        "chance": 0.08333333333333333
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.7083333333333334
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558636928",
+    "area_food": 0.06963488520408163,
+    "n_regions": 1,
+    "cmap_m1_in": 0.28481543697488315,
+    "tmap_m1_in": 0.00874234762133311,
+    "m3": [
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560356523",
+    "area_food": 0.1765186543367347,
+    "n_regions": 1,
+    "cmap_m1_in": 0.5220912793033469,
+    "tmap_m1_in": 0.5274535950293058,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564773903",
+    "area_food": 0.21715561224489796,
+    "n_regions": 4,
+    "cmap_m1_in": 0.5289319947624759,
+    "cmap_m2_mae": 0.1742119885423007,
+    "area_m2_mae": 0.18161923558046406,
+    "tmap_m1_in": 0.1962095330280957,
+    "tmap_m2_mae": 0.08642063777879831,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.375
+      },
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.375
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.4583333333333333
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558458737",
+    "area_food": 0.05275430484693878,
+    "n_regions": 1,
+    "cmap_m1_in": 0.3537069526307331,
+    "tmap_m1_in": 0.0001910946320919118,
+    "m3": [
+      {
+        "group": "rice",
+        "hit": false,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558632475",
+    "area_food": 0.05291374362244898,
+    "n_regions": 1,
+    "cmap_m1_in": 0.31192642339886256,
+    "tmap_m1_in": 0.09188003822966241,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565107211",
+    "area_food": 0.42958785076530615,
+    "n_regions": 6,
+    "cmap_m1_in": 0.7878091341992908,
+    "cmap_m2_mae": 0.1020445503076598,
+    "area_m2_mae": 0.08683075430915993,
+    "tmap_m1_in": 0.6883001393136665,
+    "tmap_m2_mae": 0.09501016277153718,
+    "m3": [
+      {
+        "group": "condiment_dressing",
+        "hit": false,
+        "chance": 0.4411764705882353
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.20588235294117646
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.5588235294117647
+      },
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.23529411764705882
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.3235294117647059
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.38235294117647056
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560526530",
+    "area_food": 0.29390545280612246,
+    "n_regions": 9,
+    "cmap_m1_in": 0.6213137844408484,
+    "cmap_m2_mae": 0.09709985154447866,
+    "area_m2_mae": 0.11753991859453373,
+    "tmap_m1_in": 0.5894869024027495,
+    "tmap_m2_mae": 0.09831062069064525,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.2916666666666667
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.75
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 0.20833333333333334
+      },
+      {
+        "group": "sausage",
+        "hit": false,
+        "chance": 0.16666666666666666
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562686664",
+    "area_food": 0.13313137755102042,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5260254582711731,
+    "cmap_m2_mae": 0.023903491662556092,
+    "area_m2_mae": 0.04131736526946106,
+    "tmap_m1_in": 0.00900595873535348,
+    "tmap_m2_mae": 0.04482558342196455,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563567372",
+    "area_food": 0.3801817602040816,
+    "n_regions": 6,
+    "cmap_m1_in": 0.617536844363621,
+    "cmap_m2_mae": 0.0817697463390727,
+    "area_m2_mae": 0.048479544976707034,
+    "tmap_m1_in": 0.5941591935980777,
+    "tmap_m2_mae": 0.06882281299516459,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": false,
+        "chance": 0.25806451612903225
+      },
+      {
+        "group": "fish",
+        "hit": false,
+        "chance": 0.5483870967741935
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.3870967741935484
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.12903225806451613
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.7419354838709677
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566846997",
+    "area_food": 0.12763073979591838,
+    "n_regions": 1,
+    "cmap_m1_in": 0.4453240117844602,
+    "tmap_m1_in": 0.4309903367699839,
+    "m3": [
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558468401",
+    "area_food": 0.04400510204081633,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "fruit_fatty",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564773876",
+    "area_food": 0.1456672512755102,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5023444616386739,
+    "cmap_m2_mae": 0.2726672866863754,
+    "area_m2_mae": 0.33235458543155905,
+    "tmap_m1_in": 0.13549819939674068,
+    "tmap_m2_mae": 0.13514686150496108,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.4444444444444444
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559844506",
+    "area_food": 0.11959901147959184,
+    "n_regions": 3,
+    "cmap_m1_in": 0.3474965540688812,
+    "cmap_m2_mae": 0.274012288271161,
+    "area_m2_mae": 0.14569386419069386,
+    "tmap_m1_in": 0.04288492360073055,
+    "tmap_m2_mae": 0.37651576394502834,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.4117647058823529
+      },
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.5294117647058824
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.23529411764705882
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562959517",
+    "area_food": 0.15921954719387754,
+    "n_regions": 1,
+    "cmap_m1_in": 0.40443478197676264,
+    "tmap_m1_in": 0.007931485930277976,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558640705",
+    "area_food": 0.1434948979591837,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5292202490572373,
+    "cmap_m2_mae": 0.13848257617507662,
+    "area_m2_mae": 0.20726539892517573,
+    "tmap_m1_in": 0.15136652115217794,
+    "tmap_m2_mae": 0.3802947829237964,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.3157894736842105
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.5789473684210527
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.3684210526315789
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560442279",
+    "area_food": 0.26076211734693877,
+    "n_regions": 5,
+    "cmap_m1_in": 0.5032598156325552,
+    "cmap_m2_mae": 0.12777088854174223,
+    "area_m2_mae": 0.10791406424810646,
+    "tmap_m1_in": 0.6410497970591985,
+    "tmap_m2_mae": 0.08099881937593836,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 0.38461538461538464
+      },
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.6153846153846154
+      },
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.3076923076923077
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561574456",
+    "area_food": 0.30393016581632654,
+    "n_regions": 6,
+    "cmap_m1_in": 0.6840396968093272,
+    "cmap_m2_mae": 0.12058929416440219,
+    "area_m2_mae": 0.17805970519071782,
+    "tmap_m1_in": 0.6019275626201412,
+    "tmap_m2_mae": 0.12860587179241129,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": false,
+        "chance": 0.10344827586206896
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.3103448275862069
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.3448275862068966
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.3103448275862069
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.41379310344827586
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558461431",
+    "area_food": 0.054388552295918366,
+    "n_regions": 1,
+    "cmap_m1_in": 0.4643277523656888,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565118729",
+    "area_food": 0.17143654336734693,
+    "n_regions": 2,
+    "cmap_m1_in": 0.6589332822850509,
+    "cmap_m2_mae": 0.049393772055249474,
+    "area_m2_mae": 0.2874786870741403,
+    "tmap_m1_in": 0.6001317100332614,
+    "tmap_m2_mae": 0.03419247054835775,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.4375
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.75
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563464480",
+    "area_food": 0.17883051658163265,
+    "n_regions": 5,
+    "cmap_m1_in": 0.5991642763367651,
+    "cmap_m2_mae": 0.09644254729540824,
+    "area_m2_mae": 0.101008355242302,
+    "tmap_m1_in": 0.39874480737505863,
+    "tmap_m2_mae": 0.12906074375579965,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 0.6842105263157895
+      },
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.42105263157894735
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.47368421052631576
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.3684210526315789
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558723926",
+    "area_food": 0.055544483418367346,
+    "n_regions": 1,
+    "cmap_m1_in": 0.2846020619841478,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561654346",
+    "area_food": 0.19477439413265307,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5924947874893712,
+    "cmap_m2_mae": 0.4311769457477097,
+    "area_m2_mae": 0.3244601718388578,
+    "tmap_m1_in": 0.00917996690162291,
+    "tmap_m2_mae": 0.4632780032792206,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": false,
+        "chance": 0.13043478260869565
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.2608695652173913
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.8260869565217391
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560802048",
+    "area_food": 0.16410235969387754,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5165839158233835,
+    "cmap_m2_mae": 0.29688296352599447,
+    "area_m2_mae": 0.23578380816411146,
+    "tmap_m1_in": 0.0012218167290483806,
+    "tmap_m2_mae": 0.38694565740708775,
+    "m3": [
+      {
+        "group": "cheese",
+        "hit": false,
+        "chance": 0.2631578947368421
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.8947368421052632
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.3684210526315789
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565894889",
+    "area_food": 0.08045679209183673,
+    "n_regions": 2,
+    "cmap_m1_in": 0.3065569336193595,
+    "cmap_m2_mae": 0.22528024819112294,
+    "area_m2_mae": 0.19298817088921613,
+    "tmap_m1_in": 0.4310573069498082,
+    "tmap_m2_mae": 0.3559174022371699,
+    "m3": [
+      {
+        "group": "dessert",
+        "hit": true,
+        "chance": 0.4166666666666667
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.75
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563391959",
+    "area_food": 0.23182397959183673,
+    "n_regions": 5,
+    "cmap_m1_in": 0.5963713621534507,
+    "cmap_m2_mae": 0.13489646104063802,
+    "area_m2_mae": 0.1744771916586289,
+    "tmap_m1_in": 0.613499808401373,
+    "tmap_m2_mae": 0.07715690146513651,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.5714285714285714
+      },
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.5238095238095238
+      },
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.47619047619047616
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.38095238095238093
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.38095238095238093
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566328745",
+    "area_food": 0.2091438137755102,
+    "n_regions": 2,
+    "cmap_m1_in": NaN,
+    "cmap_m2_mae": NaN,
+    "area_m2_mae": 0.15369610510031134,
+    "tmap_m1_in": 0.5905537166071444,
+    "tmap_m2_mae": 0.022976279119242674,
+    "m3": [
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 1.0
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.18181818181818182
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562007866",
+    "area_food": 0.3813576211734694,
+    "n_regions": 8,
+    "cmap_m1_in": 0.6865337410236193,
+    "cmap_m2_mae": 0.10740953030002184,
+    "area_m2_mae": 0.11988045702117217,
+    "tmap_m1_in": 0.6813801583885015,
+    "tmap_m2_mae": 0.10651904138859489,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.16666666666666666
+      },
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.4
+      },
+      {
+        "group": "herb",
+        "hit": false,
+        "chance": 0.2
+      },
+      {
+        "group": "leafy_greens",
+        "hit": false,
+        "chance": 0.13333333333333333
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.2
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566851584",
+    "area_food": 0.25761320153061223,
+    "n_regions": 2,
+    "cmap_m1_in": 0.6205739025061863,
+    "cmap_m2_mae": 0.11066923461309225,
+    "area_m2_mae": 0.4037137678738674,
+    "tmap_m1_in": 0.5208818236172361,
+    "tmap_m2_mae": 0.09551350583356974,
+    "m3": [
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.5454545454545454
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.6363636363636364
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1557937335",
+    "area_food": 0.03258529974489796,
+    "n_regions": 1,
+    "cmap_m1_in": 0.18357274242878596,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566847043",
+    "area_food": 0.320491868622449,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5948435764711604,
+    "cmap_m2_mae": 0.6005712115548005,
+    "area_m2_mae": 0.5267244938646622,
+    "tmap_m1_in": 0.570156650385215,
+    "tmap_m2_mae": 0.08471710211805308,
+    "m3": [
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.3870967741935484
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.7741935483870968
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562700496",
+    "area_food": 0.07924107142857142,
+    "n_regions": 1,
+    "cmap_m1_in": 0.42164460086400557,
+    "tmap_m1_in": 0.08902496634822034,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565808975",
+    "area_food": 0.15068957270408162,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5666738407479577,
+    "cmap_m2_mae": 0.19583097143261263,
+    "area_m2_mae": 0.1620816611677801,
+    "tmap_m1_in": 0.0,
+    "tmap_m2_mae": NaN,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": true,
+        "chance": 1.0
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.625
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566938026",
+    "area_food": 0.19224330357142858,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5625934151949282,
+    "cmap_m2_mae": 0.31833757910804616,
+    "area_m2_mae": 0.034593703311677076,
+    "tmap_m1_in": 0.5172165532577697,
+    "tmap_m2_mae": 0.10034038295050024,
+    "m3": [
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.7
+      },
+      {
+        "group": "poultry",
+        "hit": false,
+        "chance": 0.4
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568405405",
+    "area_food": 0.15411750637755103,
+    "n_regions": 4,
+    "cmap_m1_in": 0.4321761623418308,
+    "tmap_m1_in": 0.13461202765013572,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": false,
+        "chance": 0.3157894736842105
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.7894736842105263
+      },
+      {
+        "group": "root_vegetable",
+        "hit": false,
+        "chance": 0.21052631578947367
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.3157894736842105
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562947409",
+    "area_food": 0.13430723852040816,
+    "n_regions": 3,
+    "cmap_m1_in": 0.46806111793597915,
+    "cmap_m2_mae": 0.11149074307714811,
+    "area_m2_mae": 0.13994682072035133,
+    "tmap_m1_in": 0.108046735985142,
+    "tmap_m2_mae": 0.2474405346638713,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.5625
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.5625
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560456370",
+    "area_food": 0.2354113520408163,
+    "n_regions": 4,
+    "cmap_m1_in": 0.4844683303537932,
+    "cmap_m2_mae": 0.1608832707410971,
+    "area_m2_mae": 0.24579999477895345,
+    "tmap_m1_in": 0.49218905312159555,
+    "tmap_m2_mae": 0.17560118910604705,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.4074074074074074
+      },
+      {
+        "group": "legumes_green",
+        "hit": true,
+        "chance": 0.2222222222222222
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.2962962962962963
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.2962962962962963
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558635618",
+    "area_food": 0.24990035076530612,
+    "n_regions": 4,
+    "cmap_m1_in": 0.7428122135264613,
+    "cmap_m2_mae": 0.1319907357078205,
+    "area_m2_mae": 0.12715355432212158,
+    "tmap_m1_in": 0.5065208566443683,
+    "tmap_m2_mae": 0.1780444142464655,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": true,
+        "chance": 0.2962962962962963
+      },
+      {
+        "group": "cruciferous",
+        "hit": false,
+        "chance": 0.4444444444444444
+      },
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.2962962962962963
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.4074074074074074
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558376768",
+    "area_food": 0.04139429209183673,
+    "n_regions": 1,
+    "cmap_m1_in": 0.33852199798384314,
+    "tmap_m1_in": 0.1032863043746088,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559243974",
+    "area_food": 0.19630899234693877,
+    "n_regions": 3,
+    "cmap_m1_in": 0.38308704299978097,
+    "cmap_m2_mae": 0.1862733231725697,
+    "area_m2_mae": 0.21430528551819983,
+    "tmap_m1_in": 0.5243540353427122,
+    "tmap_m2_mae": 0.09917556454327366,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.4
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.6
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 0.45
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558629517",
+    "area_food": 0.16832748724489796,
+    "n_regions": 3,
+    "cmap_m1_in": 0.6538365691959752,
+    "cmap_m2_mae": 0.12272494735470606,
+    "area_m2_mae": 0.31347238848935477,
+    "tmap_m1_in": 0.6703881802842647,
+    "tmap_m2_mae": 0.21456655116753606,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.6
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.55
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562959295",
+    "area_food": 0.05586336096938776,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "vegetable_other",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565119493",
+    "area_food": 0.31979432397959184,
+    "n_regions": 5,
+    "cmap_m1_in": 0.502583850121713,
+    "cmap_m2_mae": 0.21974422245263323,
+    "area_m2_mae": 0.20345371404107349,
+    "tmap_m1_in": 0.4934271073087475,
+    "tmap_m2_mae": 0.08033604263595309,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.13333333333333333
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.43333333333333335
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.23333333333333334
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.3
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.3333333333333333
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561405411",
+    "area_food": 0.27072704081632654,
+    "n_regions": 5,
+    "cmap_m1_in": 0.5714789916087814,
+    "cmap_m2_mae": 0.2114426019646479,
+    "area_m2_mae": 0.23211843314200653,
+    "tmap_m1_in": 0.7954458815980505,
+    "tmap_m2_mae": 0.2485656823918025,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.1724137931034483
+      },
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.41379310344827586
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.8275862068965517
+      },
+      {
+        "group": "legumes_other",
+        "hit": false,
+        "chance": 0.13793103448275862
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.20689655172413793
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565884833",
+    "area_food": 0.38572225765306123,
+    "n_regions": 4,
+    "cmap_m1_in": 0.7805815793898644,
+    "cmap_m2_mae": 0.20233521812757735,
+    "area_m2_mae": 0.11813099480679574,
+    "tmap_m1_in": 0.685253458168923,
+    "tmap_m2_mae": 0.07762391464034482,
+    "m3": [
+      {
+        "group": "condiment_dressing",
+        "hit": false,
+        "chance": 0.24242424242424243
+      },
+      {
+        "group": "dessert",
+        "hit": true,
+        "chance": 0.36363636363636365
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.6060606060606061
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.30303030303030304
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558641416",
+    "area_food": 0.02463329081632653,
+    "n_regions": 1,
+    "cmap_m1_in": 0.25676520157223687,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565020755",
+    "area_food": 0.04536033163265306,
+    "n_regions": 1,
+    "cmap_m1_in": 0.18799982949617947,
+    "tmap_m1_in": 0.03317042067297435,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558376212",
+    "area_food": 0.06945551658163265,
+    "n_regions": 1,
+    "cmap_m1_in": 0.49676583820636444,
+    "tmap_m1_in": 0.4664615445094832,
+    "m3": [
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565194823",
+    "area_food": 0.3898875956632653,
+    "n_regions": 4,
+    "cmap_m1_in": 0.7496105585423346,
+    "cmap_m2_mae": 0.030943084092192194,
+    "area_m2_mae": 0.027016544773663314,
+    "tmap_m1_in": 0.6793084480907391,
+    "tmap_m2_mae": 0.043806921348588455,
+    "m3": [
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.5882352941176471
+      },
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.2647058823529412
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 0.14705882352941177
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.47058823529411764
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560975601",
+    "area_food": 0.30759725765306123,
+    "n_regions": 6,
+    "cmap_m1_in": 0.7313229575741201,
+    "cmap_m2_mae": 0.21026612907029066,
+    "area_m2_mae": 0.1600240696170741,
+    "tmap_m1_in": 0.40419182778593016,
+    "tmap_m2_mae": 0.1056595201118415,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": false,
+        "chance": 0.09375
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.375
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.25
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.34375
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.125
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561577947",
+    "area_food": 0.37814891581632654,
+    "n_regions": 5,
+    "cmap_m1_in": 0.7022373794114571,
+    "tmap_m1_in": 0.732980117209093,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.8
+      },
+      {
+        "group": "pasta",
+        "hit": true,
+        "chance": 0.36666666666666664
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.5333333333333333
+      },
+      {
+        "group": "root_vegetable",
+        "hit": false,
+        "chance": 0.16666666666666666
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.06666666666666667
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560270585",
+    "area_food": 0.08864795918367346,
+    "n_regions": 2,
+    "cmap_m1_in": 0.392706006051124,
+    "cmap_m2_mae": 0.11937722382964369,
+    "area_m2_mae": 0.1531610328175816,
+    "tmap_m1_in": 0.022682266872975247,
+    "tmap_m2_mae": 0.3763280437632805,
+    "m3": [
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.6363636363636364
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.6363636363636364
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558459602",
+    "area_food": 0.09935028698979592,
+    "n_regions": 1,
+    "cmap_m1_in": 0.5833817351665848,
+    "tmap_m1_in": 0.004804939011492606,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558544663",
+    "area_food": 0.09432796556122448,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.3817395338508245,
+    "m3": [
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565035746",
+    "area_food": 0.1612125318877551,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5045942960203535,
+    "cmap_m2_mae": 0.17920660483305897,
+    "area_m2_mae": 0.13724748369287268,
+    "tmap_m1_in": 0.12878161723205295,
+    "tmap_m2_mae": 0.10807466525407658,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": true,
+        "chance": 0.5789473684210527
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.5263157894736842
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561579576",
+    "area_food": 0.18775908801020408,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5616586063360801,
+    "cmap_m2_mae": 0.272660682498442,
+    "area_m2_mae": 0.1466153413554245,
+    "tmap_m1_in": 0.4447154890651278,
+    "tmap_m2_mae": 0.13352906844943957,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.55
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.65
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558028606",
+    "area_food": 0.04940609056122449,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559590130",
+    "area_food": 0.16322544642857142,
+    "n_regions": 2,
+    "cmap_m1_in": 0.4798036414896607,
+    "cmap_m2_mae": 0.7490520298025471,
+    "area_m2_mae": 0.32757350567911975,
+    "tmap_m1_in": 0.5208307806591758,
+    "tmap_m2_mae": 0.01983249479808634,
+    "m3": [
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.6363636363636364
+      },
+      {
+        "group": "vegetable_other",
+        "hit": true,
+        "chance": 0.5
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565896745",
+    "area_food": 0.3428332270408163,
+    "n_regions": 3,
+    "cmap_m1_in": 0.6313474331531684,
+    "cmap_m2_mae": 0.46068915075896655,
+    "area_m2_mae": 0.49501523040575596,
+    "tmap_m1_in": 0.7859608264630824,
+    "tmap_m2_mae": 0.3536311953196334,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.9354838709677419
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.22580645161290322
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568665052",
+    "area_food": 0.3510243941326531,
+    "n_regions": 4,
+    "cmap_m1_in": 0.654013685529033,
+    "cmap_m2_mae": 0.2687349643032603,
+    "area_m2_mae": 0.3080859064547941,
+    "tmap_m1_in": 0.6967386275277702,
+    "tmap_m2_mae": 0.15768796755260414,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": false,
+        "chance": 0.21212121212121213
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.7272727272727273
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.3939393939393939
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.2727272727272727
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558373352",
+    "area_food": 0.06734295280612244,
+    "n_regions": 1,
+    "cmap_m1_in": 0.41782909390359413,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562873814",
+    "area_food": 0.3314931441326531,
+    "n_regions": 2,
+    "cmap_m1_in": 0.7780398480129448,
+    "cmap_m2_mae": 0.3322152814726882,
+    "area_m2_mae": 0.37684852159079907,
+    "tmap_m1_in": 0.09066109420765625,
+    "tmap_m2_mae": 0.3556904735100427,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.7931034482758621
+      },
+      {
+        "group": "legumes_green",
+        "hit": true,
+        "chance": 0.41379310344827586
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563824279",
+    "area_food": 0.09913105867346939,
+    "n_regions": 2,
+    "cmap_m1_in": 0.41315619429155825,
+    "cmap_m2_mae": 0.37706377799297663,
+    "area_m2_mae": 0.37254817199608614,
+    "tmap_m1_in": 0.34810541564007874,
+    "tmap_m2_mae": 0.28578165144267986,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": true,
+        "chance": 1.0
+      },
+      {
+        "group": "fruit_fatty",
+        "hit": true,
+        "chance": 0.8333333333333334
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558113430",
+    "area_food": 0.12952407525510204,
+    "n_regions": 1,
+    "cmap_m1_in": 0.6417943430302573,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563551134",
+    "area_food": 0.1796277104591837,
+    "n_regions": 3,
+    "cmap_m1_in": 0.6823527176597779,
+    "cmap_m2_mae": 0.31415867189233565,
+    "area_m2_mae": 0.2873068485667812,
+    "tmap_m1_in": 0.37756457415330447,
+    "tmap_m2_mae": 0.26560347303745385,
+    "m3": [
+      {
+        "group": "bread",
+        "hit": true,
+        "chance": 0.55
+      },
+      {
+        "group": "cheese",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.6
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562603598",
+    "area_food": 0.16027582908163265,
+    "n_regions": 5,
+    "cmap_m1_in": 0.4140196324338898,
+    "cmap_m2_mae": 0.22856282608318565,
+    "area_m2_mae": 0.08152403112611085,
+    "tmap_m1_in": 0.29783858996754065,
+    "tmap_m2_mae": 0.12027288795843341,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 0.5263157894736842
+      },
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.631578947368421
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.3157894736842105
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561060613",
+    "area_food": 0.26602359693877553,
+    "n_regions": 8,
+    "cmap_m1_in": 0.6056740397859357,
+    "tmap_m1_in": 0.5097546300796226,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.2916666666666667
+      },
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.2916666666666667
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.4166666666666667
+      },
+      {
+        "group": "leafy_greens",
+        "hit": false,
+        "chance": 0.25
+      },
+      {
+        "group": "legumes_green",
+        "hit": true,
+        "chance": 0.16666666666666666
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.25
+      },
+      {
+        "group": "tofu",
+        "hit": true,
+        "chance": 0.20833333333333334
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562690917",
+    "area_food": 0.11641023596938775,
+    "n_regions": 3,
+    "cmap_m1_in": 0.4322796120201828,
+    "cmap_m2_mae": 0.12465755907663138,
+    "area_m2_mae": 0.161667250233943,
+    "tmap_m1_in": 0.16312789435698435,
+    "tmap_m2_mae": 0.33572699653568777,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.6428571428571429
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.5714285714285714
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564428181",
+    "area_food": 0.317203443877551,
+    "n_regions": 4,
+    "cmap_m1_in": 0.5939809921347543,
+    "cmap_m2_mae": 0.13118901466898808,
+    "area_m2_mae": 0.24176680886145888,
+    "tmap_m1_in": 0.5823369634678187,
+    "tmap_m2_mae": 0.11185422504538833,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.17857142857142858
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.32142857142857145
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.7142857142857143
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.6071428571428571
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566416421",
+    "area_food": 0.30759725765306123,
+    "n_regions": 4,
+    "cmap_m1_in": 0.615241754609469,
+    "cmap_m2_mae": 0.18235311998463133,
+    "area_m2_mae": 0.21598841231588778,
+    "tmap_m1_in": 0.5284228839314224,
+    "tmap_m2_mae": 0.22432112795081266,
+    "m3": [
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.23333333333333334
+      },
+      {
+        "group": "legumes_green",
+        "hit": true,
+        "chance": 0.4666666666666667
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.4
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559841891",
+    "area_food": 0.09691884566326531,
+    "n_regions": 2,
+    "cmap_m1_in": 0.4271986747505962,
+    "cmap_m2_mae": 0.4626101691069138,
+    "area_m2_mae": 0.16800130356260384,
+    "tmap_m1_in": 0.2185950756775402,
+    "tmap_m2_mae": 0.6501230663193176,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560801797",
+    "area_food": 0.07278380102040816,
+    "n_regions": 2,
+    "cmap_m1_in": 0.33198762276440463,
+    "cmap_m2_mae": 0.012281068465597567,
+    "area_m2_mae": 0.012237416784989297,
+    "tmap_m1_in": 0.23860556122845647,
+    "tmap_m2_mae": 0.20818994789187117,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.8461538461538461
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.6153846153846154
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559841163",
+    "area_food": 0.2486846301020408,
+    "n_regions": 5,
+    "cmap_m1_in": 0.7128890826108137,
+    "cmap_m2_mae": 0.29557494881003743,
+    "area_m2_mae": 0.13059593337866432,
+    "tmap_m1_in": 0.5709582835386617,
+    "tmap_m2_mae": 0.08168186001176674,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": false,
+        "chance": 0.3
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.45
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "sausage",
+        "hit": true,
+        "chance": 0.4
+      },
+      {
+        "group": "tuber",
+        "hit": false,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563389626",
+    "area_food": 0.21918845663265307,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5325088459237877,
+    "cmap_m2_mae": 0.5776593251253025,
+    "area_m2_mae": 0.5774684584719524,
+    "tmap_m1_in": 0.582188614745181,
+    "tmap_m2_mae": 0.5967963842490264,
+    "m3": [
+      {
+        "group": "poultry",
+        "hit": false,
+        "chance": 0.22727272727272727
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 1.0
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.13636363636363635
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560527745",
+    "area_food": 0.09281329719387756,
+    "n_regions": 1,
+    "cmap_m1_in": 0.44907334444839936,
+    "tmap_m1_in": 0.022540610685617826,
+    "m3": [
+      {
+        "group": "yogurt",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562007904",
+    "area_food": 0.3975805165816326,
+    "n_regions": 9,
+    "cmap_m1_in": 0.84023854585737,
+    "cmap_m2_mae": 0.10002862635071817,
+    "area_m2_mae": 0.10547911966569004,
+    "tmap_m1_in": 0.7135671524290184,
+    "tmap_m2_mae": 0.09358852533162719,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.16129032258064516
+      },
+      {
+        "group": "fruit_fatty",
+        "hit": false,
+        "chance": 0.12903225806451613
+      },
+      {
+        "group": "grain_other",
+        "hit": true,
+        "chance": 0.45161290322580644
+      },
+      {
+        "group": "leafy_greens",
+        "hit": false,
+        "chance": 0.25806451612903225
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.5161290322580645
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.5161290322580645
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.16129032258064516
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558376938",
+    "area_food": 0.049884406887755105,
+    "n_regions": 1,
+    "cmap_m1_in": 0.3314013960946405,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558719336",
+    "area_food": 0.09426817602040816,
+    "n_regions": 1,
+    "cmap_m1_in": 0.47455588043514346,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560974707",
+    "area_food": 0.1328922193877551,
+    "n_regions": 4,
+    "cmap_m1_in": 0.4033491013697611,
+    "cmap_m2_mae": 0.36330923878159793,
+    "area_m2_mae": 0.3542340398658931,
+    "tmap_m1_in": 0.0,
+    "tmap_m2_mae": NaN,
+    "m3": [
+      {
+        "group": "condiment_dressing",
+        "hit": false,
+        "chance": 0.23529411764705882
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      },
+      {
+        "group": "legumes_other",
+        "hit": false,
+        "chance": 0.058823529411764705
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.29411764705882354
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566847431",
+    "area_food": 0.04918686224489796,
+    "n_regions": 2,
+    "cmap_m1_in": 0.3487292105929385,
+    "cmap_m2_mae": 0.09381740498173097,
+    "area_m2_mae": 0.12059670027494626,
+    "tmap_m1_in": 0.10252023515969748,
+    "tmap_m2_mae": 0.26341804045395756,
+    "m3": [
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.75
+      },
+      {
+        "group": "leafy_greens",
+        "hit": false,
+        "chance": 0.875
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558372525",
+    "area_food": 0.057716836734693876,
+    "n_regions": 1,
+    "cmap_m1_in": 0.40988343120402,
+    "tmap_m1_in": 0.46268523758846464,
+    "m3": [
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568061272",
+    "area_food": 0.3692203443877551,
+    "n_regions": 6,
+    "cmap_m1_in": 0.6662005905087401,
+    "cmap_m2_mae": 0.057461054849980285,
+    "area_m2_mae": 0.11325798309173991,
+    "tmap_m1_in": 0.5837132301615477,
+    "tmap_m2_mae": 0.05260373857743637,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.2571428571428571
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.22857142857142856
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.22857142857142856
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.2857142857142857
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.17142857142857143
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.45714285714285713
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562691064",
+    "area_food": 0.3634008290816326,
+    "n_regions": 7,
+    "cmap_m1_in": 0.8052371366124272,
+    "cmap_m2_mae": 0.05053538253839902,
+    "area_m2_mae": 0.05953495810500022,
+    "tmap_m1_in": 0.6579037976330044,
+    "tmap_m2_mae": 0.06217051493876869,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.23333333333333334
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.3
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.4666666666666667
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.23333333333333334
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.4666666666666667
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.2
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568044634",
+    "area_food": 0.37073501275510207,
+    "n_regions": 4,
+    "cmap_m1_in": 0.7046578012815047,
+    "cmap_m2_mae": 0.13082307663398401,
+    "area_m2_mae": 0.1734179884596482,
+    "tmap_m1_in": 0.6913953704164796,
+    "tmap_m2_mae": 0.17689998084833142,
+    "m3": [
+      {
+        "group": "condiment_dressing",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.65625
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.3125
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.28125
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561654707",
+    "area_food": 0.11210538903061225,
+    "n_regions": 1,
+    "cmap_m1_in": 0.6111688690261268,
+    "tmap_m1_in": 0.6155504002599421,
+    "m3": [
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561406762",
+    "area_food": 0.04374601403061224,
+    "n_regions": 1,
+    "cmap_m1_in": 0.27820749144654694,
+    "tmap_m1_in": 0.006094333586117332,
+    "m3": [
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558718906",
+    "area_food": 0.22482860331632654,
+    "n_regions": 4,
+    "cmap_m1_in": 0.7508815812161254,
+    "cmap_m2_mae": 0.1885459515546808,
+    "area_m2_mae": 0.1944524109653092,
+    "tmap_m1_in": 0.5270881698657608,
+    "tmap_m2_mae": 0.20236548170341892,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": true,
+        "chance": 0.28
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.4
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.4
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.4
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565118782",
+    "area_food": 0.37075494260204084,
+    "n_regions": 3,
+    "cmap_m1_in": 0.6158028791966791,
+    "cmap_m2_mae": 0.3457127479108129,
+    "area_m2_mae": 0.4705100916594076,
+    "tmap_m1_in": 0.6692710230987204,
+    "tmap_m2_mae": 0.22279883902836342,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.896551724137931
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.3103448275862069
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562611620",
+    "area_food": 0.08964445153061225,
+    "n_regions": 2,
+    "cmap_m1_in": NaN,
+    "cmap_m2_mae": NaN,
+    "area_m2_mae": 0.09800443541999726,
+    "tmap_m1_in": 0.3152984854328809,
+    "tmap_m2_mae": 0.1328504434897163,
+    "m3": [
+      {
+        "group": "meat_red",
+        "hit": false,
+        "chance": 0.5
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.5833333333333334
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566850031",
+    "area_food": 0.30440848214285715,
+    "n_regions": 5,
+    "cmap_m1_in": 0.7127383995975688,
+    "cmap_m2_mae": 0.08914661909331216,
+    "area_m2_mae": 0.08948639113288735,
+    "tmap_m1_in": 0.7277112012230361,
+    "tmap_m2_mae": 0.09389465069862721,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": true,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "condiment_dressing",
+        "hit": false,
+        "chance": 0.2962962962962963
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.7777777777777778
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 0.4074074074074074
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.25925925925925924
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566851704",
+    "area_food": 0.38968829719387754,
+    "n_regions": 4,
+    "cmap_m1_in": 0.6727289129479028,
+    "cmap_m2_mae": 0.047247390144214994,
+    "area_m2_mae": 0.16804391417625422,
+    "tmap_m1_in": 0.5425077487996277,
+    "tmap_m2_mae": 0.0996908129496383,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.1875
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.40625
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.34375
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.46875
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562168648",
+    "area_food": 0.13936941964285715,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.0003090837078316358,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564605293",
+    "area_food": 0.16647401147959184,
+    "n_regions": 1,
+    "cmap_m1_in": 0.6112578462996046,
+    "tmap_m1_in": 0.5461402911823432,
+    "m3": [
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560454488",
+    "area_food": 0.15108816964285715,
+    "n_regions": 1,
+    "cmap_m1_in": 0.4582652347850103,
+    "tmap_m1_in": 0.02620718672641623,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563984296",
+    "area_food": 0.4379384566326531,
+    "n_regions": 5,
+    "cmap_m1_in": 0.8275225399211363,
+    "cmap_m2_mae": 0.17564030654749488,
+    "area_m2_mae": 0.1268957066071418,
+    "tmap_m1_in": 0.7600589262578485,
+    "tmap_m2_mae": 0.1747935907237021,
+    "m3": [
+      {
+        "group": "condiment_dressing",
+        "hit": false,
+        "chance": 0.4166666666666667
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.6111111111111112
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.19444444444444445
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.25
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.3333333333333333
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563295016",
+    "area_food": 0.09209582270408163,
+    "n_regions": 2,
+    "cmap_m1_in": 0.46792575262806063,
+    "cmap_m2_mae": 0.022563704590913614,
+    "area_m2_mae": 0.20230882839807962,
+    "tmap_m1_in": 0.39662746894261863,
+    "tmap_m2_mae": 0.10847827694310586,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 0.6
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.5333333333333333
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564000459",
+    "area_food": 0.14174107142857142,
+    "n_regions": 3,
+    "cmap_m1_in": 0.6612868401313217,
+    "cmap_m2_mae": 0.08518589241124148,
+    "area_m2_mae": 0.11038159738258387,
+    "tmap_m1_in": 0.5337012079392693,
+    "tmap_m2_mae": 0.039365293641605736,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.35294117647058826
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.6470588235294118
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.4117647058823529
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560801859",
+    "area_food": 0.2081672512755102,
+    "n_regions": 5,
+    "cmap_m1_in": 0.45476994264329396,
+    "cmap_m2_mae": 0.17206328262410625,
+    "area_m2_mae": 0.1453396943309667,
+    "tmap_m1_in": 0.5233417858628107,
+    "tmap_m2_mae": 0.05003881789254916,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.3448275862068966
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.2413793103448276
+      },
+      {
+        "group": "meat_red",
+        "hit": false,
+        "chance": 0.3103448275862069
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.3793103448275862
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.27586206896551724
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562173267",
+    "area_food": 0.23776307397959184,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5965165572542646,
+    "cmap_m2_mae": 0.1601656377170062,
+    "area_m2_mae": 0.016359794760317486,
+    "tmap_m1_in": 0.5959130884611595,
+    "tmap_m2_mae": 0.010640128952107059,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 0.5454545454545454
+      },
+      {
+        "group": "bread",
+        "hit": true,
+        "chance": 0.6818181818181818
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558468285",
+    "area_food": 0.3311344068877551,
+    "n_regions": 1,
+    "cmap_m1_in": 0.6358177500812506,
+    "tmap_m1_in": 0.35729510448660984,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562776428",
+    "area_food": 0.06590800382653061,
+    "n_regions": 1,
+    "cmap_m1_in": 0.3148301777384966,
+    "tmap_m1_in": 0.09027895118525567,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560975628",
+    "area_food": 0.3475366709183674,
+    "n_regions": 7,
+    "cmap_m1_in": 0.7640977304367554,
+    "cmap_m2_mae": 0.19229560175841387,
+    "area_m2_mae": 0.12859591245926585,
+    "tmap_m1_in": 0.6023599196220182,
+    "tmap_m2_mae": 0.07520206070992075,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": false,
+        "chance": 0.09375
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.34375
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.25
+      },
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.1875
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.34375
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.125
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563984242",
+    "area_food": 0.4260204081632653,
+    "n_regions": 4,
+    "cmap_m1_in": 0.7685600023007104,
+    "cmap_m2_mae": 0.06026770614640155,
+    "area_m2_mae": 0.04895563948159242,
+    "tmap_m1_in": 0.692043067107244,
+    "tmap_m2_mae": 0.07776526906300682,
+    "m3": [
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.7027027027027027
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.21621621621621623
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.2702702702702703
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.2702702702702703
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565382803",
+    "area_food": 0.1533801020408163,
+    "n_regions": 3,
+    "cmap_m1_in": 0.6258550103221346,
+    "cmap_m2_mae": 0.25082556856750726,
+    "area_m2_mae": 0.161827744910884,
+    "tmap_m1_in": 0.6423982121445233,
+    "tmap_m2_mae": 0.1164845353266873,
+    "m3": [
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.5294117647058824
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 0.29411764705882354
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.47058823529411764
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559844323",
+    "area_food": 0.1442920918367347,
+    "n_regions": 2,
+    "cmap_m1_in": 0.6228664489481599,
+    "cmap_m2_mae": 0.14208138852782368,
+    "area_m2_mae": 0.2564077798266282,
+    "tmap_m1_in": 0.6114537941532522,
+    "tmap_m2_mae": 0.08115836433199011,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.625
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558548958",
+    "area_food": 0.05428890306122449,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563984140",
+    "area_food": 0.2568359375,
+    "n_regions": 1,
+    "cmap_m1_in": 0.7617308976354746,
+    "tmap_m1_in": 0.4645497236099299,
+    "m3": [
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564516483",
+    "area_food": 0.27134486607142855,
+    "n_regions": 7,
+    "cmap_m1_in": 0.5698553787431855,
+    "cmap_m2_mae": 0.17837735516605102,
+    "area_m2_mae": 0.0808866800406868,
+    "tmap_m1_in": 0.3971502207912821,
+    "tmap_m2_mae": 0.059979038105772584,
+    "m3": [
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.391304347826087
+      },
+      {
+        "group": "fruit_fatty",
+        "hit": true,
+        "chance": 0.21739130434782608
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.43478260869565216
+      },
+      {
+        "group": "legumes_other",
+        "hit": false,
+        "chance": 0.13043478260869565
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.43478260869565216
+      },
+      {
+        "group": "root_vegetable",
+        "hit": true,
+        "chance": 0.34782608695652173
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.391304347826087
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558376734",
+    "area_food": 0.04165338010204082,
+    "n_regions": 1,
+    "cmap_m1_in": 0.37498663095200446,
+    "tmap_m1_in": 0.3580518618683234,
+    "m3": [
+      {
+        "group": "sausage",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560442374",
+    "area_food": 0.06849888392857142,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558639440",
+    "area_food": 0.043247767857142856,
+    "n_regions": 1,
+    "cmap_m1_in": 0.3078292555689769,
+    "tmap_m1_in": 0.20134527089712426,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562686492",
+    "area_food": 0.05416932397959184,
+    "n_regions": 1,
+    "cmap_m1_in": NaN,
+    "tmap_m1_in": 0.14603946836909565,
+    "m3": [
+      {
+        "group": "sausage",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559849097",
+    "area_food": 0.15419722576530612,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5218779816264663,
+    "cmap_m2_mae": 0.09691872658690859,
+    "area_m2_mae": 0.18362005399668666,
+    "tmap_m1_in": 0.4671707804004937,
+    "tmap_m2_mae": 0.10433849307785742,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.625
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.625
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1567007783",
+    "area_food": 0.08761160714285714,
+    "n_regions": 5,
+    "cmap_m1_in": 0.42330600576651906,
+    "cmap_m2_mae": 0.08527876724065955,
+    "area_m2_mae": 0.0867494813466788,
+    "tmap_m1_in": 0.01601575424689905,
+    "tmap_m2_mae": 0.25712,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": true,
+        "chance": 0.7272727272727273
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.6363636363636364
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561661377",
+    "area_food": 0.29512117346938777,
+    "n_regions": 5,
+    "cmap_m1_in": 0.6409074475945746,
+    "cmap_m2_mae": 0.27457345264170674,
+    "area_m2_mae": 0.2708080028511509,
+    "tmap_m1_in": 0.5401438724286678,
+    "tmap_m2_mae": 0.26994759391100603,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.32
+      },
+      {
+        "group": "legumes_green",
+        "hit": true,
+        "chance": 0.32
+      },
+      {
+        "group": "poultry",
+        "hit": false,
+        "chance": 0.32
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.4
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.64
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564687013",
+    "area_food": 0.13225446428571427,
+    "n_regions": 6,
+    "cmap_m1_in": 0.45605002738609485,
+    "cmap_m2_mae": 0.13249563434633913,
+    "area_m2_mae": 0.08384323008822918,
+    "tmap_m1_in": 0.4327480348249197,
+    "tmap_m2_mae": 0.14265177442722057,
+    "m3": [
+      {
+        "group": "condiment_dressing",
+        "hit": true,
+        "chance": 0.4375
+      },
+      {
+        "group": "fish",
+        "hit": false,
+        "chance": 0.75
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.1875
+      },
+      {
+        "group": "herb",
+        "hit": false,
+        "chance": 0.1875
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.4375
+      },
+      {
+        "group": "rice",
+        "hit": false,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563306392",
+    "area_food": 0.11995774872448979,
+    "n_regions": 2,
+    "cmap_m1_in": 0.5137424305846101,
+    "cmap_m2_mae": 0.031495725491186094,
+    "area_m2_mae": 0.034946187537263446,
+    "tmap_m1_in": 0.4484524978697393,
+    "tmap_m2_mae": 0.03799079451241538,
+    "m3": [
+      {
+        "group": "herb",
+        "hit": false,
+        "chance": 0.25
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563295400",
+    "area_food": 0.2474091198979592,
+    "n_regions": 5,
+    "cmap_m1_in": 0.6726546626105352,
+    "cmap_m2_mae": 0.06057256900452559,
+    "area_m2_mae": 0.07205070155961224,
+    "tmap_m1_in": 0.6448867249142489,
+    "tmap_m2_mae": 0.07250349549079046,
+    "m3": [
+      {
+        "group": "bacon",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.65
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.55
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563207301",
+    "area_food": 0.1534797512755102,
+    "n_regions": 3,
+    "cmap_m1_in": 0.49852578584183,
+    "cmap_m2_mae": 0.07952959612927303,
+    "area_m2_mae": 0.07617632764920536,
+    "tmap_m1_in": 0.3295465258762662,
+    "tmap_m2_mae": 0.034643641729977935,
+    "m3": [
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.7272727272727273
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558631932",
+    "area_food": 0.16653380102040816,
+    "n_regions": 3,
+    "cmap_m1_in": 0.5915449276016783,
+    "cmap_m2_mae": 0.21308636432356629,
+    "area_m2_mae": 0.2278748885828826,
+    "tmap_m1_in": 0.5529918468562719,
+    "tmap_m2_mae": 0.2965969474813521,
+    "m3": [
+      {
+        "group": "corn",
+        "hit": true,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 0.6111111111111112
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561393741",
+    "area_food": 0.17225366709183673,
+    "n_regions": 2,
+    "cmap_m1_in": 0.445505016800422,
+    "cmap_m2_mae": 0.09082243287613198,
+    "area_m2_mae": 0.34224478915325596,
+    "tmap_m1_in": 0.36782331107315375,
+    "tmap_m2_mae": 0.07866703013235041,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.43478260869565216
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.7391304347826086
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561748950",
+    "area_food": 0.14552774234693877,
+    "n_regions": 3,
+    "cmap_m1_in": 0.44777857903774815,
+    "cmap_m2_mae": 0.32491548435977163,
+    "area_m2_mae": 0.25077612363130736,
+    "tmap_m1_in": 0.29537320165749786,
+    "tmap_m2_mae": 0.16130117639144992,
+    "m3": [
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.42857142857142855
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.7142857142857143
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.19047619047619047
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565117463",
+    "area_food": 0.29296875,
+    "n_regions": 2,
+    "cmap_m1_in": 0.6434496556479203,
+    "cmap_m2_mae": 0.05619006372143641,
+    "area_m2_mae": 0.32451117595251,
+    "tmap_m1_in": 0.5348004609566955,
+    "tmap_m2_mae": 0.058173010902348846,
+    "m3": [
+      {
+        "group": "pizza",
+        "hit": true,
+        "chance": 0.6296296296296297
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.5555555555555556
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1559841979",
+    "area_food": 0.06814014668367346,
+    "n_regions": 2,
+    "cmap_m1_in": 0.3180662049473666,
+    "cmap_m2_mae": 0.5913035862677107,
+    "area_m2_mae": 0.37390479787804154,
+    "tmap_m1_in": 0.3062075699579082,
+    "tmap_m2_mae": 0.3591806808306562,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.6666666666666666
+      },
+      {
+        "group": "fruit_tropical",
+        "hit": true,
+        "chance": 0.4444444444444444
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565627751",
+    "area_food": 0.056521045918367346,
+    "n_regions": 1,
+    "cmap_m1_in": 0.31195551028077223,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564428144",
+    "area_food": 0.22000558035714285,
+    "n_regions": 3,
+    "cmap_m1_in": 0.663875637968699,
+    "tmap_m1_in": 0.45135072749503424,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": false,
+        "chance": 0.18181818181818182
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.8636363636363636
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.2727272727272727
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562774206",
+    "area_food": 0.2948421556122449,
+    "n_regions": 6,
+    "cmap_m1_in": 0.5937196158937809,
+    "cmap_m2_mae": 0.06224306272852368,
+    "area_m2_mae": 0.14405974092001714,
+    "tmap_m1_in": 0.5136087896685185,
+    "tmap_m2_mae": 0.08695245075950599,
+    "m3": [
+      {
+        "group": "berry",
+        "hit": false,
+        "chance": 0.25
+      },
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.4166666666666667
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.5416666666666666
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.2916666666666667
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.25
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562691705",
+    "area_food": 0.32792570153061223,
+    "n_regions": 7,
+    "cmap_m1_in": 0.6792768017395191,
+    "cmap_m2_mae": 0.08092604649445487,
+    "area_m2_mae": 0.08226836147670766,
+    "tmap_m1_in": 0.742611352183834,
+    "tmap_m2_mae": 0.05809188535885966,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.26666666666666666
+      },
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 0.5666666666666667
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.26666666666666666
+      },
+      {
+        "group": "sausage",
+        "hit": false,
+        "chance": 0.23333333333333334
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.5
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558373405",
+    "area_food": 0.03415975765306122,
+    "n_regions": 1,
+    "cmap_m1_in": 0.3007474580226261,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "melon",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563221054",
+    "area_food": 0.23899872448979592,
+    "n_regions": 3,
+    "cmap_m1_in": 0.4095907231220474,
+    "cmap_m2_mae": 0.1440359158103671,
+    "area_m2_mae": 0.3833426934982776,
+    "tmap_m1_in": 0.5228932336258696,
+    "tmap_m2_mae": 0.14921478180592085,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": false,
+        "chance": 0.7037037037037037
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.6296296296296297
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1564774773",
+    "area_food": 0.10190130739795919,
+    "n_regions": 1,
+    "cmap_m1_in": 0.43288771067295795,
+    "tmap_m1_in": 0.004201998799361779,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566414412",
+    "area_food": 0.4467673788265306,
+    "n_regions": 8,
+    "cmap_m1_in": 0.6714908723621271,
+    "cmap_m2_mae": 0.12050353662477156,
+    "area_m2_mae": 0.14435490169567755,
+    "tmap_m1_in": 0.7830615914326067,
+    "tmap_m2_mae": 0.11482103875438412,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": false,
+        "chance": 0.18181818181818182
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.2727272727272727
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.6666666666666666
+      },
+      {
+        "group": "peppers",
+        "hit": false,
+        "chance": 0.21212121212121213
+      },
+      {
+        "group": "poultry",
+        "hit": true,
+        "chance": 0.36363636363636365
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.06060606060606061
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.30303030303030304
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562009148",
+    "area_food": 0.20457987882653061,
+    "n_regions": 8,
+    "cmap_m1_in": 0.47823746905860914,
+    "tmap_m1_in": 0.39994038743349336,
+    "m3": [
+      {
+        "group": "cruciferous",
+        "hit": true,
+        "chance": 0.8888888888888888
+      },
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.2222222222222222
+      },
+      {
+        "group": "meat_red",
+        "hit": false,
+        "chance": 0.3333333333333333
+      },
+      {
+        "group": "peppers",
+        "hit": false,
+        "chance": 0.2222222222222222
+      },
+      {
+        "group": "rice",
+        "hit": false,
+        "chance": 0.4444444444444444
+      },
+      {
+        "group": "tofu",
+        "hit": false,
+        "chance": 0.1111111111111111
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558380414",
+    "area_food": 0.03533561862244898,
+    "n_regions": 1,
+    "cmap_m1_in": 0.2999155179571855,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562010293",
+    "area_food": 0.361507493622449,
+    "n_regions": 4,
+    "cmap_m1_in": 0.5296538634848805,
+    "cmap_m2_mae": 0.046125294201860456,
+    "area_m2_mae": 0.2086718190014527,
+    "tmap_m1_in": 0.6094151548701019,
+    "tmap_m2_mae": 0.03411050093743527,
+    "m3": [
+      {
+        "group": "grain_other",
+        "hit": false,
+        "chance": 0.125
+      },
+      {
+        "group": "herb",
+        "hit": false,
+        "chance": 0.0625
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.59375
+      },
+      {
+        "group": "salad_prepared",
+        "hit": true,
+        "chance": 0.625
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558719097",
+    "area_food": 0.05329241071428571,
+    "n_regions": 1,
+    "cmap_m1_in": 0.257168472627337,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "tomato",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558549150",
+    "area_food": 0.04611766581632653,
+    "n_regions": 1,
+    "cmap_m1_in": 0.2988222216423782,
+    "tmap_m1_in": 0.0,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558113941",
+    "area_food": 0.18971221301020408,
+    "n_regions": 2,
+    "cmap_m1_in": 0.6346970599050838,
+    "cmap_m2_mae": 0.27557605482860026,
+    "area_m2_mae": 0.6213500305444342,
+    "tmap_m1_in": 0.7054799483512717,
+    "tmap_m2_mae": 0.17930826157609575,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.7
+      },
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 0.55
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558629818",
+    "area_food": 0.04547991071428571,
+    "n_regions": 1,
+    "cmap_m1_in": 0.30500798730073136,
+    "tmap_m1_in": 0.32366929982084625,
+    "m3": [
+      {
+        "group": "nuts_seeds",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1560366438",
+    "area_food": 0.25388632015306123,
+    "n_regions": 4,
+    "cmap_m1_in": 0.5459179784619711,
+    "tmap_m1_in": 0.24190724490158735,
+    "m3": [
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.6153846153846154
+      },
+      {
+        "group": "squash_eggplant",
+        "hit": true,
+        "chance": 0.2692307692307692
+      },
+      {
+        "group": "tomato",
+        "hit": false,
+        "chance": 0.07692307692307693
+      },
+      {
+        "group": "vegetable_other",
+        "hit": false,
+        "chance": 0.4230769230769231
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563551164",
+    "area_food": 0.2080875318877551,
+    "n_regions": 4,
+    "cmap_m1_in": 0.5758285459418909,
+    "cmap_m2_mae": 0.18528117303380098,
+    "area_m2_mae": 0.17625299339499112,
+    "tmap_m1_in": 0.5388474821034468,
+    "tmap_m2_mae": 0.17891750978469925,
+    "m3": [
+      {
+        "group": "bread",
+        "hit": true,
+        "chance": 0.5
+      },
+      {
+        "group": "cheese",
+        "hit": true,
+        "chance": 0.45454545454545453
+      },
+      {
+        "group": "egg_whites",
+        "hit": true,
+        "chance": 0.6363636363636364
+      },
+      {
+        "group": "tuber",
+        "hit": true,
+        "chance": 0.5909090909090909
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562686520",
+    "area_food": 0.15401785714285715,
+    "n_regions": 2,
+    "cmap_m1_in": 0.6586230934379526,
+    "cmap_m2_mae": 0.35758223154899355,
+    "area_m2_mae": 0.1099496420193769,
+    "tmap_m1_in": 0.45694868555725954,
+    "tmap_m2_mae": 0.13602738258787947,
+    "m3": [
+      {
+        "group": "egg",
+        "hit": true,
+        "chance": 0.7777777777777778
+      },
+      {
+        "group": "sausage",
+        "hit": true,
+        "chance": 0.4444444444444444
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562785132",
+    "area_food": 0.1243423150510204,
+    "n_regions": 3,
+    "cmap_m1_in": 0.53195539105438,
+    "cmap_m2_mae": 0.1386159232660434,
+    "area_m2_mae": 0.11603374867561667,
+    "tmap_m1_in": 0.4865528633299274,
+    "tmap_m2_mae": 0.12710878650464807,
+    "m3": [
+      {
+        "group": "alium_vegetable",
+        "hit": false,
+        "chance": 0.4666666666666667
+      },
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.8666666666666667
+      },
+      {
+        "group": "rice",
+        "hit": false,
+        "chance": 0.5333333333333333
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565898402",
+    "area_food": 0.19648836096938777,
+    "n_regions": 5,
+    "cmap_m1_in": 0.5968004351095598,
+    "cmap_m2_mae": 0.1712952237752336,
+    "area_m2_mae": 0.21306147427517494,
+    "tmap_m1_in": 0.477295734211515,
+    "tmap_m2_mae": 0.13564819725197302,
+    "m3": [
+      {
+        "group": "fish",
+        "hit": true,
+        "chance": 0.14285714285714285
+      },
+      {
+        "group": "leafy_greens",
+        "hit": true,
+        "chance": 0.38095238095238093
+      },
+      {
+        "group": "legumes_green",
+        "hit": true,
+        "chance": 0.42857142857142855
+      },
+      {
+        "group": "meat_red",
+        "hit": true,
+        "chance": 0.5238095238095238
+      },
+      {
+        "group": "rice",
+        "hit": true,
+        "chance": 0.3333333333333333
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558635994",
+    "area_food": 0.09526466836734694,
+    "n_regions": 1,
+    "cmap_m1_in": 0.36885571353528895,
+    "tmap_m1_in": 0.04358775705592682,
+    "m3": [
+      {
+        "group": "fruit_tree",
+        "hit": true,
+        "chance": 1.0
+      }
+    ]
+  }
+]

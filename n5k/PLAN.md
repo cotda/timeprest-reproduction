@@ -236,8 +236,89 @@ RGB-D 4 kênh 224×224 → ResNet-50 (stem imagenet, pretrained ImageNet) → fe
     - Nếu một hệ có đầu ra chết, hệ đó báo cáo cả hai giá trị w_total và ghi rõ.
     - So sánh TiMePReSt với PipeDream giống B6: trung bình ± độ lệch chuẩn 3 seed, test lấy ở checkpoint tốt nhất theo val.
   - 20:34 (12:34 UTC): đã sửa config. Toàn bộ test n5k: 65 PASS. Code đã đẩy lên cả hai tài khoản. Kernel: `ktanvn/n5k-run18-s0` (B6 + B7), `kaggleolap/n5k-run18-s1`, `ktanvn/n5k-run18-s2`.
+  - **Kết quả (23:17, 15:17 UTC; 15/15 lần chạy và 3 explain đều OK; mục 11 "B6 với w_total = 3"; note `n5k/notes/2026-10-17_2317_b6-w-total-3.md`):** cả 5 dự đoán đều đúng.
+    - (1) TiMePReSt 54,28 (dự đoán khoảng 55), PipeDream 50,34 (khoảng 49,3), cả hai lệch dưới 2 kcal.
+    - (2) Thứ hạng không đổi: DDP 48,05, single 48,38, PipeDream 50,34, TiMePReSt 54,28.
+    - (3) Mass lớn nhất 39,3 g, dưới 60 g.
+    - (4) TiMePReSt/PipeDream = 0,948–0,951 (B6: 0,945–0,953).
+    - (5) B7 trung thực ở cả 3 hệ, cả 4 loại bản đồ.
+    → Theo quy tắc, **bảng chính và slides chuyển sang w_total = 3**.
+- 2026-10-17 21:32 (13:32 UTC; người dùng: "có dataset nào vừa có mask vừa có kcal ... làm giúp tôi đi"): **KẾ HOẠCH (chờ xác nhận) — B7b: đánh giá vị trí so với thực tế bằng mask nguyên liệu của Nutrition5k.** Trả lời điểm mở (a) ở dưới mà không cần FoodSeg103.
+  - Dữ liệu: Hand và cộng sự 2026 (Frontiers in Nutrition 13:1927530), repo `github.com/liamhand/ingredient-level-nutrition-regression`, commit 0997586. Mask theo CC BY 4.0, phải ghi nguồn Nutrition5k.
+    - 1056 ảnh chụp từ trên xuống của chính Nutrition5k, 2922 vùng nguyên liệu, 40 nhóm. Mask là PNG 640×480, mỗi pixel mang nhãn một vùng.
+    - Mỗi vùng có kcal / mass thật (2824/2922 vùng có). Dầu và đường không được gán mask.
+    - Không có bảng ánh xạ từ 195 nguyên liệu của mình sang 40 nhóm.
+  - Trùng với split của mình (đã đếm): **val 157 món, test 154 món, 888 vùng**. 629 món còn lại nằm trong train của mình nên không dùng. Split train/test của họ không dùng.
+  - Căn ảnh: mình resize cả ảnh 640×480 về 224×224, không crop. Mask resize cùng cách (NEAREST), rồi tính tỉ lệ diện tích vùng trong từng ô của lưới 7×7, tức độ phân giải của bản đồ.
+    - Hạn chế phải ghi rõ: mỗi ô tương ứng khoảng 91×69 px của ảnh gốc, nên vùng nhỏ chỉ chiếm một phần ô.
+  - Mô hình: checkpoint B7 của run18_s0 (w_total = 3, seed 0) cho single, PipeDream, TiMePReSt. Bản đồ dùng là bản đồ calories nguyên liệu C, và bản đồ kcal trực tiếp chỉ để xếp hạng (định nghĩa ở `explain.py`).
+  - Metric. M1 và M2 không cần ánh xạ nhãn; M3 cần ánh xạ.
+    - **M1, thức ăn so với nền:** phần kcal của C nằm trong hợp các mask, so với tỉ lệ diện tích của hợp đó (mức mà một bản đồ đều sẽ đạt).
+    - **M2, kcal theo vùng** (trả lời câu hỏi 3 trực tiếp): kcal dự đoán của mỗi vùng là tổng của C trên vùng. Chuẩn hóa thành tỉ lệ trong món, rồi so với tỉ lệ kcal thật của vùng. Đo bằng MAE của tỉ lệ, và Spearman trong từng món có từ 2 vùng.
+      - Mốc so sánh là tỉ lệ theo diện tích, tức bản đồ đều trên thức ăn.
+      - Chỉ dùng món mà mọi vùng đều có kcal thật.
+    - **M3, pointing game theo nhóm** (phụ): CAM của các nguyên liệu thuộc nhóm g, lấy ô cao nhất; trúng nếu ô đó giao với vùng của nhóm g. Mốc so sánh là một ô ngẫu nhiên trên thức ăn.
+      - Cần bảng ánh xạ 195 tên nguyên liệu → 40 nhóm, viết tay trong config. Kiểm tra bảng bằng cách so khối lượng của vùng với tổng gram của các nguyên liệu mình gán vào nhóm đó (metadata Nutrition5k).
+  - Quy tắc (đặt trước, trên test; val báo cáo kèm). Với mỗi hệ và mỗi bản đồ:
+    - M1 "đúng hơn ngẫu nhiên" nếu trung bình (phần kcal trong thức ăn − tỉ lệ diện tích) > 0,05, với Wilcoxon một phía p < 0,01.
+    - M2 "định vị kcal tốt hơn diện tích" nếu MAE tỉ lệ của C thấp hơn mốc diện tích hơn 10% (tương đối), với Wilcoxon cặp p < 0,01.
+    - M3 "đúng hơn ngẫu nhiên" nếu tỉ lệ trúng cao hơn mốc hơn 10 điểm.
+    - Kết luận được phép: "bản đồ định vị đúng vị trí thật ở mức X so với mốc", trên 154 món test, ở lưới 7×7.
+  - Dự đoán: M1 đạt ở cả ba hệ (bản đồ nằm trên đĩa); M2 khó hơn, đạt yếu hoặc không đạt vì lưới thô; M3 đạt với nhóm lớn (pizza, cơm, thịt), kém với nhóm nhỏ (rau thơm, hạt).
+  - Code:
+    - `timeprest/n5k/locate.py`: file mới, dùng lại phần dựng mô hình và bản đồ của `explain.py`, không sửa explain.
+    - Config `n5k/configs/n5k_locate.yaml` (đường dẫn mask, quy tắc, ánh xạ nhóm).
+    - Test CPU trên mask giả: bản đồ đặt đúng vùng thì M1, M2, M3 tốt nhất; bản đồ đều thì bằng mốc.
+  - Chạy: mask + 2 file CSV (khoảng 7 MB, không lấy cutouts) đưa lên dataset Kaggle riêng `ktanvn/n5k-ingr-masks` (không commit vào repo). Kernel `run19_locate` gắn output của `run18_s0` (checkpoint) và cache, chạy khoảng 10 phút.
+  - 21:40 (13:40 UTC; người dùng: "oke, nhưng nhớ phân biệt với dataset hiện tại không lại bị nhầm code"): **xác nhận, làm cả M3**; agent viết bảng ánh xạ, người dùng xem các tên mơ hồ. Quy ước tách hai nguồn dữ liệu:
+    - Gọi bộ mask là **"HandMasks"** (Hand 2026), không gọi là "Nutrition5k". Mọi tên trong code, config, thư mục và dataset Kaggle đều có `handmasks`: module `timeprest/n5k/handmasks.py` (thay cho `locate.py`), config `n5k/configs/n5k_handmasks.yaml` (khóa `handmasks.*`), bảng ánh xạ `n5k/configs/handmasks_groups.yaml`, kết quả `n5k/results/handmasks/`, dataset Kaggle `ktanvn/n5k-handmasks`, kernel `n5k/kaggle/run19_handmasks/`. Bản tải về để ở `n5k/handmasks_data/`, đã ignore.
+    - Dataset hiện tại (`timeprest/n5k/data.py`, cache, `n5k/splits/`) **không sửa và không ghi vào**. handmasks chỉ đọc cache và split để lấy ảnh, rồi lọc theo dish id. Có kiểm tra cứng: mọi món dùng phải nằm trong val/test của `n5k/splits`, mask đúng 640×480. Món của họ nằm trong train của mình thì bỏ, có đếm và ghi log.
+    - Nhãn của họ (40 nhóm, tên `annotation_name`) không bao giờ đi vào nhãn huấn luyện (195 nguyên liệu). Chiều ánh xạ duy nhất là 195 → 40, chỉ dùng khi đánh giá M3.
+  - 22:40 (14:40 UTC): code xong.
+    - Bảng ánh xạ `handmasks_groups.yaml`: viết theo tên, rồi kiểm tra bằng khối lượng (`--check-groups`, dùng metadata Nutrition5k). **2441/2444 vùng có một vùng mỗi nhóm khớp khối lượng (99,9%).** 6 tên đã sửa theo dữ liệu: radishes, celery, pepper, grapefruit juice, 2 mục "deprecated". 176/195 nguyên liệu có nhóm, 19 nguyên liệu null (gia vị, dầu, chất lỏng). Còn 18 tên `check: true` mà khối lượng không quyết định được, chờ người dùng xem.
+    - Đếm trên dữ liệu thật: 1056 món = train 741 (bỏ), val 157, test 154. Thức ăn chiếm trung bình 18,4% diện tích ảnh test (2,5–44,7%); đó là mốc của M1.
+    - `timeprest/n5k/handmasks.py`, config `n5k_handmasks.yaml`, test `test_handmasks.py` (4 PASS).
+    - Dataset Kaggle riêng tư `ktanvn/n5k-handmasks`: mask + 2 CSV + LICENSE-DATA + SOURCE.txt (6,6 MB). Kernel `n5k/kaggle/run19_handmasks/` (CPU) đẩy sau khi run18_s0 xong.
+  - **Kết quả (23:24, 15:24 UTC; `ktanvn/n5k-run19-handmasks` chạy 15:18–15:22 UTC trên CPU, cả 3 bước OK; mục 11 "B7b"; note `n5k/notes/2026-10-17_2324_vi-tri-handmasks.md`):**
+    - Theo quy tắc, trên 154 món test, **cả 3 hệ đều đạt M1, M2 và M3**, ở cả bản đồ calories và bản đồ kcal trực tiếp.
+    - M1 (bản đồ calories): khoảng 51% kcal của bản đồ nằm trên thức ăn, so với 18% nếu bản đồ đều (+0,33, p < 10^-25).
+    - M2: MAE của tỉ lệ kcal theo vùng giảm 16–22% so với chia theo diện tích.
+    - M3: trúng 83–85%, so với ngẫu nhiên 50%.
+    - Dự đoán M2 "yếu hoặc không đạt" là **sai**: M2 đạt. M1 và M3 đúng như dự đoán; nhóm nhỏ alium_vegetable gần mức ngẫu nhiên.
+    - Như vậy điểm mở (a) đã có câu trả lời mà không cần FoodSeg103. Kết luận được nâng lên: bản đồ **đặt kcal lên đúng vùng thức ăn thật, tốt hơn rõ so với mốc**, ở lưới 7×7.
 - 2026-10-17 00:50 (người dùng): **báo cáo B8 là bộ slides LaTeX mới** (cùng mẫu với `report/slides/bao_cao_TiMePReSt.tex`, nhưng là file riêng, không nối vào slides cũ). Đặt ở `n5k/report/` (slides + script vẽ hình từ `n5k/results/`); logo và ảnh nền lấy từ `report/slides/` qua `\graphicspath`, không chép.
-- Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: giữ 1 trừ khi D4 / sweep cho thấy một thành phần lấn át.
+- 2026-10-18 10:09 (02:09 UTC; người dùng: "oke làm hướng 2 đi"): **KẾ HOẠCH (chờ xác nhận) — GPU không đồng đều: khi nào pipeline thắng DDP.** Bối cảnh: paper TiMePReSt chạy trên GPU khác nhau (RTX 6000 24 GB + RTX 2080 12 GB, mỗi worker một máy) và chỉ so với các hệ pipeline, không so với DDP (paper_notes §9). Trên 2×T4 giống nhau, DDP thắng (B6, run17). Ở đây giả lập GPU1 chậm hơn GPU0 f lần, để xem pipeline có thắng DDP không.
+  - Cách giả lập (chỉ đổi thời gian, phép tính giữ nguyên):
+    - Trên rank chậm, mỗi khối của mô hình có hook. Sau forward của khối, chèn một kernel chờ trên GPU (`torch.cuda._sleep`). Khi backward tới đầu ra của khối, cũng chèn một kernel chờ (hook trên tensor đầu ra).
+    - Độ dài chờ = (f − 1) × thời gian forward/backward của khối đó, đo trước bằng CUDA event ở đầu chạy, trên đúng kích thước micro-batch (32 ảnh, giống nhau cho DDP và pipeline).
+    - Kernel chờ chạy trên stream của GPU nên làm chậm GPU thật sự, không đồng bộ CPU. Chồng lấp truyền và tính vẫn như thật.
+    - Bộ nhớ không giới hạn: ở ảnh 224 mọi hệ đều dưới 8,3 GB, nên giới hạn kiểu 12 GB không có tác dụng (ghi rõ trong hạn chế).
+  - Các hệ (cùng máy, 2 epoch, đo epoch cuối, như `bench_comm`):
+    - DDP chia đều (32 + 32 ảnh): rank nhanh phải chờ rank chậm.
+    - **DDP cân tải**: chia batch theo tốc độ, m0 = round(64·f/(1+f)), m1 = 64 − m0. Loss mỗi rank chia cho M rồi nhân W, nên gradient vẫn là trung bình trên đúng 64 ảnh, như DDP thường. Một người dùng DDP có kinh nghiệm sẽ làm vậy, nên đây là đối thủ công bằng.
+    - PipeDream và TiMePReSt N=2 ở partition mặc định `[0,8,18]`, và ở **partition cân tải**: chọn k để max(T0(k), f·T1(k)) nhỏ nhất, với T là thời gian từng khối đo trên 1 GPU.
+    - Mức chậm f ∈ {1; 1,5; 2; 3}. f = 1,5 gần mức chênh RTX 6000 / 2080 của paper; 2 và 3 là trường hợp nặng hơn. Ở f = 1 các hook vẫn chạy, chỉ chèn 0 chu kỳ, để đo chi phí của hook.
+  - Ước lượng trước khi chạy (từ B6: DDP 12,3 s, TiMePReSt 19,0 s, GPU bận khoảng 0,9; pipeline làm thêm 23–41% việc so với single, theo note C ở phần added):
+    - DDP chia đều ≈ 12,3·f (f = 2: khoảng 25 s).
+    - DDP cân tải ≈ 12,3·2/(1+1/f) (f = 2: khoảng 16 s).
+    - TiMePReSt cân tải, tốt nhất ≈ 34 GPU-giây / (1 + 1/f) (f = 2: khoảng 23 s).
+  - **Dự đoán:**
+    - TiMePReSt (partition cân tải) thắng **DDP chia đều** từ khoảng f ≥ 2.
+    - TiMePReSt **không thắng DDP cân tải** ở mức f nào, vì pipeline làm thêm việc.
+    - TiMePReSt vẫn nhanh hơn PipeDream.
+  - Quy tắc (đặt trước): ở mỗi f, "pipeline thắng" một biến thể DDP nếu thời gian/epoch của TiMePReSt (partition tốt hơn trong hai partition) nhỏ hơn biến thể đó quá 5%; "DDP thắng" nếu ngược lại quá 5%; còn lại là "ngang nhau". DDP lấy trung bình hai lần đo (trước và sau phần pipeline, như run17).
+  - Code:
+    - `timeprest/n5k/bench_hetero.py` (mới): bộ giả lập GPU chậm (hook + hiệu chuẩn), lớp con của trainer DDP (chia batch không đều) và của trainer pipeline (`dist_train`), chọn partition, ghi CSV/JSON.
+    - Móc nối nhỏ trong `ddp_train.py`: tách cách chia batch và hệ số chia loss thành 2 phương thức. Hành vi cũ giữ nguyên, test cũ phải PASS.
+    - Config `n5k/configs/n5k_bench_hetero.yaml`.
+    - Test CPU (2 tiến trình gloo): trên CPU, kernel chờ được thay bằng `time.sleep`. Kiểm tra: (1) DDP cân tải cho gradient và val trùng DDP chia đều; (2) rank chậm làm epoch chậm đi đúng cỡ; (3) hook ở f = 1 không đổi kết quả.
+  - Chạy: một kernel `run21_hetero` (2×T4), khoảng 60–90 phút. Chỉ gắn code + cache.
+  - Câu hỏi cho người dùng: đặt phần này ở **phần chính** (như run17, mạng chậm) hay ở `n5k/added/`?
+  - **10:20 (02:20 UTC; người dùng: "oke hoãn đi"): HOÃN**, chờ ý kiến mentor; chưa có code. Lý do: câu hỏi 1 đã có câu
+    trả lời; dự đoán là DDP cân tải vẫn thắng, nên thông tin thêm ít so với chi phí (nửa ngày code, 1–2 giờ Kaggle, và
+    chỉ là giả lập). Ghi vào phần hạn chế: paper dùng GPU khác nhau và không so với DDP; kết luận "DDP thắng" ở đây
+    chỉ đúng với GPU giống nhau.
+- Điểm còn mở: (a) mentor có cần độ chính xác vị trí so với thực tế không (nếu có: xét FoodSeg103); (b) hệ số loss từng thành phần: w_presence = w_gram = 1; w_total = 3 từ 2026-10-17 20:27 (dòng ở trên).
 
 ## 11. Kết quả
 
@@ -304,7 +385,24 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
 - Ở lr 0.01 (single), tổng dinh dưỡng học tốt: MAE kcal 158 → 83 (pMAE 32,7%), mass 62 g. Phần **nguyên liệu học rất yếu**: F1 6,2%, mAP 7,8%, MAE gram trên nguyên liệu có mặt 26,6 → 25,8 (gần như không đổi).
   - Giả thuyết (chưa kiểm chứng): loss presence/gram lấy trung bình trên K = 195 nguyên liệu, nên mỗi nguyên liệu chỉ nhận gradient khoảng 1/195, trong khi loss tổng chỉ trung bình trên 5 thành phần. Đây là điểm mở (b) ở mục 10.
 
-### B6 — kết quả chạy dài (`run6_s{0,1,2}` + `run6_bench`, 2026-10-14; log ở `n5k/results/kaggle/run6_*`)
+### B6 với w_total = 3 — kết quả chính hiện tại (`run18_s{0,1,2}`, 2026-10-17 12:34–15:12 UTC; log ở `n5k/results/kaggle/run18_s*`; script `n5k/analysis/analyze_run18.py`)
+- Cấu hình chính hiện tại: `loss.w_total` = 3, mọi hệ lr 0.02, 30 epoch (mục 10, dòng 20:27). Mỗi seed một kernel; các hệ chạy nối tiếp trên cùng máy.
+
+| hệ | test MAE kcal (3 seed) | B6 cũ (w_total = 1) | chênh | test MAE mass lớn nhất | test mAP | dao động | s/epoch |
+|---|---|---|---|---|---|---|---|
+| single | 48,38 ± 0,30 | 51,91 ± 2,79 | −3,53 | 32,6 | 87,1 | 47,0 | 23,1 |
+| DDP | **48,05 ± 1,47** | 53,25 ± 1,42 | −5,20 | 32,8 | 87,3 | 27,2 | 12,3 |
+| PipeDream | 50,34 ± 0,52 | 51,95 ± 0,89 | −1,62 | 33,6 | 86,6 | 28,0 | 20,1 |
+| TiMePReSt N=2 | 54,28 ± 1,12 | 56,28 ± 0,44 (lr 0.01) | −2,01 | 38,6 | 85,0 | 117,5 | 19,0 |
+| TiMePReSt N=4 | 55,88 ± 1,57 | 57,26 ± 0,62 (lr 0.01) | −1,38 | 39,3 | 85,1 | 97,4 | 20,1 |
+
+- B6 cũ của TiMePReSt dùng lr 0.01. Nếu so cùng lr 0.02 thì mốc w_total = 1 là 54,7 (run12) hoặc 57,5 (lần huấn luyện lại A ở phần added); w_total = 3 cho 54,3.
+- **TiMePReSt − PipeDream = 3,9 kcal (7,8%)**, theo từng seed 4,0 / 5,5 / 2,4. Ở w_total = 1 (lr tốt nhất): 2,7 (run12/run13), 6,5 (A).
+- Thời gian không đổi: TiMePReSt/PipeDream 0,948 / 0,951 / 0,948; DDP/PipeDream 0,60–0,63.
+- Dao động của TiMePReSt tăng, 117 so với 69–84 ở w_total = 1, khớp với phát hiện B của phần added. PipeDream 28.
+- B7 (seed 0): deletion test cho "trung thực" ở cả 4 loại bản đồ, cả 3 hệ. Test MAE trong explain: single 48,0, PipeDream 50,6, TiMePReSt 54,6.
+
+### B6 — kết quả chạy dài, w_total = 1 (lịch sử; `run6_s{0,1,2}` + `run6_bench`, 2026-10-14; log ở `n5k/results/kaggle/run6_*`)
 - Cấu hình: ảnh 224, partition `[0,8,18]`, M=64, 30 epoch, lr: single / DDP / PipeDream 0.02, TiMePReSt (N=2, N=4) 0.01. Test lấy ở checkpoint có val MAE kcal tốt nhất. Số liệu dạng trung bình ± độ lệch chuẩn trên 3 seed; mỗi seed là một kernel, các hệ chạy nối tiếp trên cùng máy.
 
 | Hệ | MAE kcal | %kcal | MAE mass | F1 | mAP | MAE gram | s/epoch | Peak MB (GPU lớn nhất) |
@@ -430,6 +528,20 @@ Mỗi bước ghi ngày, commit code, nguồn file kết quả.
   - DDP tốt nhất tại mọi mốc thời gian.
   - Dự đoán mục 8 "MAE cuối TiMePReSt ≈ PipeDream" **sai** (54,8 so với 49,1 val; 56,3 so với 51,9 test). Dự đoán "DDP nhanh nhất" và "ở 1–2 Gbit/s TiMePReSt nhanh hơn PipeDream" đúng.
 - Thêm epoch có tốt hơn không (người dùng hỏi, 2026-10-17): train / val MAE kcal ở epoch 30: single 34 / 49, PipeDream 35 / 49, TiMePReSt 45 / 55. Từ epoch 20 đến 30 val của single và PipeDream chỉ giảm 1–2 kcal: **gần bão hòa**, lịch dài hơn chủ yếu tăng overfit. **TiMePReSt đang underfit** (train cao hơn PipeDream 10 kcal), nên lịch dài hơn có thể thu hẹp khoảng cách; chưa kiểm chứng. Đề xuất: chờ run12/run13, nếu lr không giải thích khoảng cách thì thử 60 epoch seed 0 cho TiMePReSt và PipeDream.
+
+### B7b — vị trí so với mask thật HandMasks (`run19_handmasks`, 2026-10-17 15:18–15:22 UTC, CPU; checkpoint B7 của run18_s0, w_total = 3, seed 0; log ở `n5k/results/kaggle/run19_handmasks/`)
+- 154 món test và 157 món val của mình có mask (Hand 2026). Đánh giá ở lưới 7×7 của head. Quy tắc ở mục 10 (dòng 21:32). Kết quả trên test (val tương tự):
+
+| hệ | MAE kcal trên 154 món | M1: kcal trên thức ăn (mốc diện tích 0,184) | M2: MAE tỉ lệ kcal vùng (mốc diện tích 0,190) | M3: trúng (mốc 0,498) |
+|---|---|---|---|---|
+| single | 43,2 | 0,516 (bản đồ trực tiếp 0,374) ✓ | 0,159, −16% (trực tiếp 0,156) ✓ | 0,846 ✓ |
+| PipeDream | 46,4 | 0,515 (0,385) ✓ | 0,147, −22% (0,155) ✓ | 0,832 ✓ |
+| TiMePReSt | 48,6 | 0,511 (0,324) ✓ | 0,151, −21% (0,170, −12%) ✓ | 0,853 ✓ |
+
+- M1: p < 10^-14 ở mọi hệ và mọi bản đồ. M2: n = 96–99 món có từ 2 vùng, đều có kcal; p < 0,01. M3: 423 cặp (món, nhóm).
+- M3 theo nhóm (test, ít nhất 8 cặp): nhóm lớn hoặc dễ thấy trúng 90–100% (pizza, melon, fruit_tree, tuber, meat_red, cruciferous). Nhóm khó: alium_vegetable 0,38–0,62 so với ngẫu nhiên 0,52, rice 0,64–0,73, grain_other 0,61–0,78, tomato 0,65–0,78, berry 0,67.
+- Hạn chế: chỉ khoảng một nửa kcal của bản đồ nằm trên thức ăn, vì lưới 7×7 thô (một ô khoảng 91×69 px ảnh gốc) và thức ăn chỉ chiếm 18% ảnh. Mốc ngẫu nhiên của M3 cao (50%) cũng vì lưới thô. 18 tên trong bảng ánh xạ chưa được kiểm chứng (chỉ ảnh hưởng M3).
+- Ba hệ gần như ngang nhau về vị trí. TiMePReSt ngang PipeDream ở bản đồ calories; bản đồ trực tiếp của nó kém hơn một chút (M1 0,32 so với 0,39).
 
 ### B7 — bản đồ calories và deletion test (`run11_b7`, 2026-10-15, đẩy 18:29 UTC, chạy khoảng 32 phút; log ở `n5k/results/kaggle/run11_b7/`)
 - Mọi bước đều xong: checks PASS (3,0 phút), TiMePReSt s0 11,3 phút, single s0 12,4 phút, explain khoảng 2 phút mỗi hệ. Checkpoint tải về `n5k/results/kaggle/run11_b7/b7_ckpt/` (290 MB, `*.pt` đã nằm trong `.gitignore`).

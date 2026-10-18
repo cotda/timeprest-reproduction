@@ -333,7 +333,7 @@ Mạng chậm giả lập & $\infty$ / 2 / 1 Gbit/s giữa 2 GPU \\
 \scriptsize
 \begin{itemize}
   \item SGD momentum 0.9, 30 epoch, warmup 2 + cosine; partition \texttt{[0,8,18]} đo trên 2$\times$T4.
-  \item lr chọn bằng sweep 8 epoch, mỗi hệ lấy lr tốt nhất: 1 GPU / DDP / PipeDream 0.02, TiMePReSt 0.01.
+  \item lr 0.02 cho mọi hệ (lr tốt nhất ở sweep 30 epoch); loss: trọng số nhánh tổng $w_\text{total} = 3$ (thử nghiệm thêm, 3 seed).
   \item 3 seed cho mọi hệ; chọn checkpoint theo val, báo cáo trên test.
 \end{itemize}
 \end{greenbox}
@@ -357,16 +357,15 @@ Pipeline 2 GPU khớp engine 1 GPU (chênh lệch 0,0); phiên bản trọng s�
 \toprule
 \textbf{Hệ} & \textbf{MAE kcal} & \textbf{\% kcal} & \textbf{mAP} & \textbf{F1} & \textbf{s/epoch} & \textbf{Peak GPU (MB)} \\
 \midrule
-1 GPU & 51,9 $\pm$ 2,8 & 19,5 & 87,2 & 86,6 & 25,2 & 5642 \\
-DDP & 53,3 $\pm$ 1,4 & 20,0 & \textbf{87,4} & \textbf{86,8} & \textbf{13,0} & 3052 / 3056 \\
-PipeDream & \textbf{52,0 $\pm$ 0,9} & \textbf{19,5} & 86,2 & 86,0 & 19,9 & 8360 / 2041 \\
-TiMePReSt $N=2$ (lr 0.01) & 56,3 $\pm$ 0,4 & 21,1 & 85,3 & 85,3 & 18,9 & 8283 / 2044 \\
-\textbf{TiMePReSt $N=2$ (lr 0.02)}$^\ast$ & 54,7 $\pm$ 1,1 & 20,5 & 85,5 & 85,4 & 18,9$^\dagger$ & 8283 / 2044$^\dagger$ \\
-TiMePReSt $N=4$ & 57,3 $\pm$ 0,6 & 21,5 & 85,1 & 85,0 & 20,5 & 8298 / 1995 \\
+1 GPU & 48,4 $\pm$ 0,3 & 18,1 & 87,1 & 86,1 & 23,1 & 5642 \\
+DDP & \textbf{48,0 $\pm$ 1,5} & \textbf{18,0} & \textbf{87,3} & \textbf{86,7} & \textbf{12,3} & 3056 / 3056 \\
+PipeDream & 50,3 $\pm$ 0,5 & 18,9 & 86,6 & 86,2 & 20,1 & 8360 / 2041 \\
+\textbf{TiMePReSt $N=2$} & 54,3 $\pm$ 1,1 & 20,3 & 85,0 & 85,3 & 19,0 & 8283 / 2044 \\
+TiMePReSt $N=4$ & 55,9 $\pm$ 1,6 & 20,9 & 85,1 & 85,2 & 20,1 & 8300 / 1996 \\
 \bottomrule
 \end{tabular}
 
-{\tiny $^\ast$ lr tốt nhất của TiMePReSt ở 30 epoch (sweep 30 epoch, run12); B6 dùng lr 0.01 chọn từ sweep 8 epoch. $^\dagger$ thời gian, bộ nhớ không phụ thuộc lr (lấy từ B6, cùng máy).}
+{\tiny Cấu hình chính hiện tại: lr 0.02, $w_\text{total} = 3$ (run18). Với $w_\text{total} = 1$ (B6 cũ): 1 GPU 51,9; DDP 53,3; PipeDream 52,0; TiMePReSt 54,7 (lr 0.02).}
 \vspace{0.15cm}
 \begin{columns}[T]
 \column{0.47\textwidth}
@@ -381,8 +380,8 @@ TiMePReSt $N=4$ & 57,3 $\pm$ 0,6 & 21,5 & 85,1 & 85,0 & 20,5 & 8298 / 1995 \\
 \begin{accentbox}{\faExclamationTriangle\; Điểm chưa được}
 \scriptsize
 \begin{itemize}
-  \item TiMePReSt \highlight{kém PipeDream 5\%} MAE kcal ở lr tốt nhất của mỗi hệ (54,7 so với 52,0); 3 seed đều kém.
-  \item DDP nhanh nhất (gấp 1,45 lần TiMePReSt; 1,6--2,0 lần khi mạng 2 / 1 Gbit/s) và ít bộ nhớ nhất.
+  \item TiMePReSt \highlight{kém PipeDream 8\%} MAE kcal (54,3 so với 50,3); 3 seed đều kém.
+  \item DDP tốt nhất về kcal, nhanh nhất (gấp 1,55 lần TiMePReSt; 1,6--2,0 lần khi mạng 2 / 1 Gbit/s) và ít bộ nhớ nhất.
 \end{itemize}
 \end{accentbox}
 \end{columns}
@@ -406,7 +405,7 @@ Cùng máy, TiMePReSt nhanh hơn PipeDream 5\%; khi giả lập đường truy�
 \vspace{0.05cm}
 \begin{uitbox}{\faChartLine\; Nhận xét (val, trung bình 3 seed)}
 \scriptsize
-TiMePReSt chỉ học nhanh hơn PipeDream \highlight{ở đầu} (epoch 5: 92 so với 111 kcal; trước 180 s). Sau khoảng 270 s, nó kém PipeDream tại mọi mốc thời gian. DDP tốt nhất tại mọi mốc: đạt $\le$ 60 kcal sau 205 s, PipeDream 292 s, TiMePReSt 358 s.
+Với $w_\text{total} = 3$, TiMePReSt \highlight{kém PipeDream tại mọi mốc thời gian}, kể cả ở đầu (epoch 5: 125 so với 113 kcal; với $w_\text{total} = 1$ nó chỉ nhanh hơn ở đầu). DDP tốt nhất tại mọi mốc: đạt $\le$ 60 kcal sau 193 s, PipeDream 292 s, 1 GPU 321 s, TiMePReSt 455 s.
 \end{uitbox}
 \end{frame}
 
@@ -419,10 +418,10 @@ TiMePReSt chỉ học nhanh hơn PipeDream \highlight{ở đầu} (epoch 5: 92 s
 \column{0.5\textwidth}
 \begin{accentbox}{\faWaveSquare\; Quan sát (cả 3 seed)}
 \scriptsize
-Epoch 6--18 (lr còn lớn), val MAE của TiMePReSt nhảy kiểu 70 $\rightarrow$ 115, 76 $\rightarrow$ 144; PipeDream ổn định dần từ epoch 11. Hết dao động khi lr giảm. Cuối quá trình TiMePReSt vẫn \kw{underfit}: train MAE 45 so với 35 của PipeDream.
+Epoch 6--18 (lr còn lớn), val MAE của TiMePReSt nhảy kiểu 94 $\rightarrow$ 208, 121 $\rightarrow$ 237 (bước tăng lớn nhất trung bình 117 kcal; PipeDream 28). Hết dao động khi lr giảm. Cuối quá trình TiMePReSt vẫn \kw{underfit}: train MAE 38 so với 27 của PipeDream.
 \end{accentbox}
 \column{0.44\textwidth}
-\begin{uitbox}{\faSearch\; Kiểm chứng bằng sweep lr 30 epoch}
+\begin{uitbox}{\faSearch\; Sweep lr 30 epoch ($w_\text{total} = 1$)}
 \scriptsize
 Dao động \textbf{không mất} ở lr nào: bước tăng lớn nhất ở epoch 6--18 của TiMePReSt 40--60 kcal (lr 0.005--0.02), PipeDream 8--10 kcal. $\Rightarrow$ do cơ chế (backward dùng trọng số mới hơn lúc forward), không do lr.
 \end{uitbox}
@@ -431,7 +430,7 @@ Dao động \textbf{không mất} ở lr nào: bước tăng lớn nhất ở ep
 
 %--- Sweep lr (tự hiện khi có hình) ---
 \IfFileExists{figures/fig_lr_sweep.png}{
-\begin{frame}{Sweep lr ở 30 epoch (TiMePReSt và PipeDream)}
+\begin{frame}{Sweep lr ở 30 epoch (TiMePReSt và PipeDream, $w_\text{total} = 1$)}
 \centering
 \includegraphics[width=0.55\textwidth]{fig_lr_sweep.png}
 \vspace{0.05cm}
@@ -443,7 +442,7 @@ Cả hai hệ tốt nhất ở lr 0.02. Ở lr tốt nhất, TiMePReSt vẫn ké
 }{}
 
 %--- 60 epoch ---
-\begin{frame}{Lịch 60 epoch (trung bình 3 seed)}
+\begin{frame}{Lịch 60 epoch (trung bình 3 seed, $w_\text{total} = 1$)}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{5pt}
@@ -491,8 +490,8 @@ PipeDream & 0.02 & 30 / \textbf{60} & 49,1 / 47,1 & \textbf{52,0} / 53,8 & 86,2 
 \toprule
 \textbf{Dự đoán (ghi trước, dựa trên phần tái hiện TiMePReSt)} & \textbf{Kết quả trên Nutrition5k} \\
 \midrule
-MAE cuối TiMePReSt $\approx$ PipeDream & \textcolor{red!60!black}{\textbf{Sai:}} kém 5\% ở lr tốt nhất (54,7 so với 52,0) \\
-TiMePReSt học nhanh hơn ở giữa quá trình & \textcolor{accent}{\textbf{Chỉ đúng ở đầu}} (epoch $\le$ 5), sau đó dao động \\
+MAE cuối TiMePReSt $\approx$ PipeDream & \textcolor{red!60!black}{\textbf{Sai:}} kém 8\% (54,3 so với 50,3) \\
+TiMePReSt học nhanh hơn ở giữa quá trình & \textcolor{red!60!black}{\textbf{Sai:}} kém ở mọi mốc, dao động mạnh ($w_\text{total} = 1$: chỉ đúng ở epoch $\le$ 5) \\
 Cùng máy: DDP nhanh nhất; TiMePReSt có thể chậm hơn PipeDream & \textcolor{greenteal}{\textbf{Đúng phần DDP;}} TiMePReSt lại nhanh hơn PipeDream 5\% \\
 Mạng 1--2 Gbit/s: TiMePReSt nhanh hơn PipeDream & \textcolor{greenteal}{\textbf{Đúng:}} nhanh hơn 7--15\% (nhưng DDP vẫn nhanh hơn) \\
 Bộ nhớ TiMePReSt và PipeDream gần như nhau & \textcolor{greenteal}{\textbf{Đúng:}} 8283 so với 8360 MB ở GPU0 \\
@@ -509,7 +508,7 @@ Bộ nhớ TiMePReSt và PipeDream gần như nhau & \textcolor{greenteal}{\text
 \vspace{0.02cm}
 \begin{uitbox}{\faMap\; Cách tính}
 \scriptsize
-Với nguyên liệu $k$ đoán có ($p \ge 0{,}5$): $A_k = \mathrm{ReLU}(\mathrm{CAM}_k) / \sum \mathrm{ReLU}(\mathrm{CAM}_k)$; bản đồ calories $C = \sum_k \mathrm{kcal}_k \cdot A_k$ (tổng bằng kcal của các nguyên liệu đoán có). Món này: thật 385 kcal, đoán 422 kcal.
+Với nguyên liệu $k$ đoán có ($p \ge 0{,}5$): $A_k = \mathrm{ReLU}(\mathrm{CAM}_k) / \sum \mathrm{ReLU}(\mathrm{CAM}_k)$; bản đồ calories $C = \sum_k \mathrm{kcal}_k \cdot A_k$ (tổng bằng kcal của các nguyên liệu đoán có). Món này: thật 385 kcal, đoán 301 kcal.
 \end{uitbox}
 \end{frame}
 
@@ -526,17 +525,49 @@ Che 5 / 49 ô (lưới 7$\times$7) có giá trị cao nhất của bản đồ, 
 \column{0.39\textwidth}
 \begin{greenbox}{\faCheck\; Theo quy tắc ghi trước}
 \scriptsize
-Cả 4 loại bản đồ đều \highlight{trung thực với mô hình}, ở cả TiMePReSt, PipeDream và 1 GPU (Wilcoxon $p < 10^{-70}$; che theo bản đồ giảm nhiều hơn ở 92--98\% trường hợp).
+Cả 4 loại bản đồ đều \highlight{trung thực với mô hình}, ở cả TiMePReSt, PipeDream và 1 GPU (Wilcoxon $p < 10^{-76}$; che theo bản đồ giảm nhiều hơn ở 93--97\% trường hợp).
 \end{greenbox}
 \vspace{0.1cm}
 \begin{accentbox}{\faExclamationTriangle\; Giới hạn}
 \scriptsize
 \begin{itemize}
-  \item CAM chỉ riêng \kw{một phần} cho từng nguyên liệu: che CAM của $k$ cũng làm nguyên liệu khác giảm 0,30 (ngẫu nhiên 0,10).
+  \item CAM chỉ riêng \kw{một phần} cho từng nguyên liệu: che CAM của $k$ cũng làm nguyên liệu khác giảm 0,33--0,38 (ngẫu nhiên 0,14).
   \item Bản đồ calories cho \kw{phân bố}, không cho con số chính xác (tổng $\approx$ 0,7 lần kcal trực tiếp).
-  \item Chỉ kết luận "trung thực với mô hình", không phải "định vị đúng vị trí thật".
+  \item Deletion test chỉ cho "trung thực với mô hình"; vị trí thật đo ở slide sau bằng mask.
 \end{itemize}
 \end{accentbox}
+\end{columns}
+\end{frame}
+
+%--- Vị trí so với mask thật ---
+\begin{frame}{Bản đồ có đúng vị trí thật không? (mask nguyên liệu HandMasks)}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Hệ} (bản đồ calories) & \textbf{M1: kcal trên thức ăn} & \textbf{M2: sai số tỉ lệ kcal vùng} & \textbf{M3: pointing} \\
+\midrule
+Mốc (đều / diện tích / ngẫu nhiên) & 0,18 & 0,190 & 0,50 \\
+1 GPU & \textbf{0,52} & 0,159 ($-16\%$) & 0,85 \\
+PipeDream & \textbf{0,52} & \textbf{0,147} ($-22\%$) & 0,83 \\
+TiMePReSt & 0,51 & 0,151 ($-21\%$) & \textbf{0,85} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.15cm}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{uitbox}{\faMap\; Dữ liệu và cách đo}
+\scriptsize
+Mask nguyên liệu do Hand và cộng sự vẽ trên chính ảnh Nutrition5k \cite{hand2026segmentation}: 154 món test của mình (mô hình chưa thấy), mỗi vùng có kcal thật. So ở lưới 7$\times$7 của bản đồ. Quy tắc ghi trước; Wilcoxon $p < 0{,}01$.
+\end{uitbox}
+\column{0.44\textwidth}
+\begin{greenbox}{\faCheck\; Kết quả}
+\scriptsize
+Cả 3 hệ đạt cả 3 metric: bản đồ \highlight{đặt kcal lên đúng vùng thức ăn thật} và chia kcal giữa các vùng đúng hơn chia theo diện tích. Giới hạn: chỉ khoảng một nửa kcal nằm trên thức ăn (lưới thô); hành, tỏi gần mức ngẫu nhiên.
+\end{greenbox}
 \end{columns}
 \end{frame}
 
@@ -623,9 +654,9 @@ IGSMNet (2025) & RGB-D + ngữ nghĩa & 12,2\% \\
 \begin{uitbox}{\faFlag\; Kết luận}
 \scriptsize
 \begin{itemize}
-  \item TiMePReSt chạy đúng trên bài toán hồi quy đa nhiệm (kiểm tra PASS), nhanh hơn PipeDream 5\% (7--15\% khi mạng chậm), nhưng \highlight{kém 5\% MAE} (30 epoch) và dao động mạnh giữa quá trình; 60 epoch thì bắt kịp PipeDream 60 epoch nhưng \highlight{không đạt PipeDream 30 epoch}.
-  \item Trên 2 GPU, \highlight{DDP tốt nhất} ở mọi tiêu chí, cả khi mạng chậm; two-stream làm lợi thế của pipeline mất hẳn.
-  \item Bản đồ calories và CAM \highlight{trung thực với mô hình}, kể cả khi huấn luyện bằng TiMePReSt.
+  \item TiMePReSt chạy đúng trên bài toán hồi quy đa nhiệm (kiểm tra PASS), nhanh hơn PipeDream 5\% (7--15\% khi mạng chậm), nhưng \highlight{kém 8\% MAE} (30 epoch) và dao động mạnh giữa quá trình; 60 epoch thì bắt kịp PipeDream 60 epoch nhưng \highlight{không đạt PipeDream 30 epoch}.
+  \item Trên 2 GPU, \highlight{DDP tốt nhất} ở mọi tiêu chí, cả khi mạng chậm.
+  \item Bản đồ calories \highlight{trung thực} và \highlight{đúng vị trí thật} hơn rõ so với mốc (mask), cả với TiMePReSt.
 \end{itemize}
 \end{uitbox}
 \vspace{0.1cm}
@@ -647,7 +678,7 @@ Chỉ $W = 2$ GPU, một loại phần cứng, một dataset; mô hình vừa 1 
 \begin{uitbox}{\faQuestionCircle\; Xin ý kiến anh}
 \scriptsize
 \begin{itemize}
-  \item Có cần đánh giá vị trí so với thực tế (dataset có mask, ví dụ FoodSeg103) không?
+  \item Vị trí thật đã đo bằng mask HandMasks (cùng ảnh Nutrition5k); như vậy đã đủ chưa, hay cần thêm một dataset khác?
   \item Kết quả hiện tại nên viết thành bài theo hướng "khi nào TiMePReSt có lợi" không, và gửi ở đâu?
 \end{itemize}
 \end{uitbox}
@@ -655,13 +686,11 @@ Chỉ $W = 2$ GPU, một loại phần cứng, một dataset; mô hình vừa 1 
 \end{frame}
 
 %--- Tài liệu tham khảo ---
-\begin{frame}{Tài liệu tham khảo}
-\begin{uitbox}{\faBook\; Tài liệu tham khảo}
+\begin{frame}[allowframebreaks]{Tài liệu tham khảo}
 \tiny
 \nocite{dpfnutrition,rdinet,igsmnet}
 \bibliographystyle{apalike}
 \bibliography{references}
-\end{uitbox}
 \end{frame}
 
 \end{document}

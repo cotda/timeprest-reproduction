@@ -32,6 +32,10 @@
 
 ## Hai tài khoản (2026-10-17)
 - Mỗi tài khoản Kaggle chỉ chạy tối đa 2 phiên GPU cùng lúc (mỗi phiên = 1 máy 2×T4). Tài khoản thứ hai: `ktanvn`. Đã kiểm chứng 2026-10-17: run16_s1 (kaggleolap) và run16_s2 (ktanvn) chạy song song, mỗi kernel 3 lần chạy 60 epoch, khoảng 73 phút.
+- (2026-10-18) Kernel đang QUEUED cũng bị tính vào giới hạn 2 phiên GPU (lỗi `Maximum batch GPU session count of 2 reached`).
+  Kernel GPU gắn cả code + cache + dataset `n5k-handmasks` thì bị QUEUED rất lâu, trong khi từng nguồn riêng lẻ đều chạy
+  được trong vài phút (kiểm chứng bằng kernel thử nhỏ). Nên run20 tự tải mask từ GitHub thay vì gắn dataset
+  (`n5k/added/README.md`, 2026-10-18 00:34).
 - Token của các tài khoản ở `kaggle_accounts.json` (gốc repo, **đã ignore**, không commit, không in ra). Quản lý bằng `n5k/kaggle/accounts.py`:
   - `python n5k/kaggle/accounts.py list` (token che bớt), `add <user> --token-file <file>`, `whoami <user>`.
   - `python n5k/kaggle/accounts.py run <user> -- kaggle kernels status <user>/<slug>` (mọi lệnh kaggle với token của tài khoản đó).

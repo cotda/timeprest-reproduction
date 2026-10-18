@@ -1,0 +1,19 @@
+{
+ "id": "kaggleolap/n5k-run19-handmasks",
+ "title": "n5k-run19-handmasks",
+ "code_file": "run19_handmasks.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": false,
+ "enable_internet": true,
+ "dataset_sources": [
+  "kaggleolap/timeprest-code",
+  "kaggleolap/n5k-handmasks"
+ ],
+ "competition_sources": [],
+ "kernel_sources": [
+  "kaggleolap/n5k-run0-cache",
+  "kaggleolap/n5k-run18-s0"
+ ]
+}

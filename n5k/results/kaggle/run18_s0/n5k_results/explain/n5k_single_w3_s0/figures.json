@@ -1,0 +1,210 @@
+[
+  {
+    "dish_id": "dish_1560455179",
+    "index": 431,
+    "kcal_true": 103.32084655761719,
+    "kcal_pred": 111.60441589355469,
+    "top_ingredients": [
+      {
+        "name": "arugula",
+        "p": 0.9999,
+        "grams_pred": 24.06,
+        "grams_true": 19.411766052246094
+      },
+      {
+        "name": "mixed greens",
+        "p": 0.9999,
+        "grams_pred": 8.2,
+        "grams_true": 12.941176414489746
+      },
+      {
+        "name": "mustard",
+        "p": 0.9999,
+        "grams_pred": 0.35,
+        "grams_true": 0.40441200137138367
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568405273",
+    "index": 177,
+    "kcal_true": 386.19976806640625,
+    "kcal_pred": 364.7537536621094,
+    "top_ingredients": [
+      {
+        "name": "salt",
+        "p": 1.0,
+        "grams_pred": 0.57,
+        "grams_true": 0.4644539952278137
+      },
+      {
+        "name": "olive oil",
+        "p": 1.0,
+        "grams_pred": 16.43,
+        "grams_true": 10.573418617248535
+      },
+      {
+        "name": "garlic",
+        "p": 1.0,
+        "grams_pred": 1.2,
+        "grams_true": 0.6274510025978088
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563984242",
+    "index": 353,
+    "kcal_true": 402.1170349121094,
+    "kcal_pred": 440.4168701171875,
+    "top_ingredients": [
+      {
+        "name": "egg whites",
+        "p": 1.0,
+        "grams_pred": 387.55,
+        "grams_true": 472.0
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9991,
+        "grams_pred": 3.51,
+        "grams_true": 2.0243899822235107
+      },
+      {
+        "name": "pineapple",
+        "p": 0.9976,
+        "grams_pred": 66.29,
+        "grams_true": 62.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558635962",
+    "index": 35,
+    "kcal_true": 52.02899932861328,
+    "kcal_pred": 146.197021484375,
+    "top_ingredients": [
+      {
+        "name": "almonds",
+        "p": 0.9715,
+        "grams_pred": 21.55,
+        "grams_true": 9.0
+      },
+      {
+        "name": "orange",
+        "p": 0.0011,
+        "grams_pred": 0.68,
+        "grams_true": 0.0
+      },
+      {
+        "name": "cauliflower",
+        "p": 0.001,
+        "grams_pred": 4.6,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558721323",
+    "index": 131,
+    "kcal_true": 31.6200008392334,
+    "kcal_pred": 33.8697624206543,
+    "top_ingredients": [
+      {
+        "name": "cantaloupe",
+        "p": 0.9999,
+        "grams_pred": 89.53,
+        "grams_true": 93.0
+      },
+      {
+        "name": "deprecated",
+        "p": 0.0036,
+        "grams_pred": 0.22,
+        "grams_true": 0.0
+      },
+      {
+        "name": "carrot",
+        "p": 0.0026,
+        "grams_pred": 1.7,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1561405887",
+    "index": 247,
+    "kcal_true": 213.34347534179688,
+    "kcal_pred": 226.93597412109375,
+    "top_ingredients": [
+      {
+        "name": "salt",
+        "p": 1.0,
+        "grams_pred": 0.22,
+        "grams_true": 0.16079600155353546
+      },
+      {
+        "name": "olive oil",
+        "p": 1.0,
+        "grams_pred": 1.65,
+        "grams_true": 0.4805229902267456
+      },
+      {
+        "name": "soy sauce",
+        "p": 0.9999,
+        "grams_pred": 0.15,
+        "grams_true": 0.31039801239967346
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558631932",
+    "index": 410,
+    "kcal_true": 214.93199157714844,
+    "kcal_pred": 146.03897094726562,
+    "top_ingredients": [
+      {
+        "name": "corn on the cob",
+        "p": 1.0,
+        "grams_pred": 103.47,
+        "grams_true": 112.0
+      },
+      {
+        "name": "apple",
+        "p": 0.9955,
+        "grams_pred": 141.71,
+        "grams_true": 154.0
+      },
+      {
+        "name": "cherry tomatoes",
+        "p": 0.9658,
+        "grams_pred": 43.92,
+        "grams_true": 89.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558718906",
+    "index": 307,
+    "kcal_true": 282.58001708984375,
+    "kcal_pred": 551.6276245117188,
+    "top_ingredients": [
+      {
+        "name": "corn on the cob",
+        "p": 1.0,
+        "grams_pred": 126.62,
+        "grams_true": 107.0
+      },
+      {
+        "name": "cauliflower",
+        "p": 0.9996,
+        "grams_pred": 97.68,
+        "grams_true": 41.0
+      },
+      {
+        "name": "almonds",
+        "p": 0.9956,
+        "grams_pred": 51.33,
+        "grams_true": 23.0
+      }
+    ]
+  }
+]

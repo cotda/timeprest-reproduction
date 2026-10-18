@@ -23,6 +23,12 @@ Dutta, A., Chaki, N., and De, R.~K. (2026).
   training with removed staleness.
 \newblock {\em Future Generation Computer Systems}, 178:108260.
 
+\bibitem[Hand et~al., 2026]{hand2026segmentation}
+Hand, L., Camps, G., da~Silva~Torres, R., and Salah, A.~A. (2026).
+\newblock Effects of segmentation granularity on nutrient prediction from
+  real-world food images.
+\newblock {\em Frontiers in Nutrition}, 13:1927530.
+
 \bibitem[Narayanan et~al., 2019]{narayanan2019pipedream}
 Narayanan, D., Harlap, A., Phanishayee, A., Seshadri, V., Devanur, N.~R.,
   Ganger, G.~R., Gibbons, P.~B., and Zaharia, M. (2019).

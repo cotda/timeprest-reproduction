@@ -1,0 +1,4 @@
+# HM, PipeDream on 2 GPUs (as n5k/configs/n5k_pipedream.yaml)
+base: hm_base.yaml
+name: hm_pipedream_s0
+system: pipedream

@@ -1,0 +1,167 @@
+{
+  "code_hash": "875fd2f9b1b1",
+  "config": "n5k/configs/n5k_quick.yaml",
+  "overrides": [],
+  "systems": [
+    "pipedream",
+    "timeprest"
+  ],
+  "env": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91900,
+    "gpu": "Tesla T4",
+    "gpu_mem_gb": 14.56
+  },
+  "all_pass": true,
+  "results": [
+    {
+      "id": 0,
+      "name": "data",
+      "status": "PASS",
+      "seconds": 0.0,
+      "message": "cache, splits, labels",
+      "metrics": {
+        "n_train_val_test": [
+          2270,
+          486,
+          486
+        ],
+        "K": 195,
+        "dropped": [
+          "dish_1564159636 (val: empty depth_raw.png)",
+          "dish_1558722871 (test: missing depth_raw.png)"
+        ],
+        "dropped_frac": 0.0006,
+        "labels_finite": true,
+        "cache_dir": "/kaggle/input/notebooks/ktanvn/n5k-run0-cache/n5k_cache",
+        "build_time_s": 49.7
+      }
+    },
+    {
+      "id": 1,
+      "name": "static_equals_engine",
+      "status": "PASS",
+      "seconds": 11.6,
+      "message": "static order on W GPUs vs single-GPU engine, fp32 rel tol 1e-4",
+      "metrics": {
+        "pipedream": {
+          "max_rel_param_diff_vs_engine": 0.0
+        },
+        "timeprest": {
+          "max_rel_param_diff_vs_engine": 0.0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "dynamic_versions",
+      "status": "PASS",
+      "seconds": 17.7,
+      "message": "dynamic order, 10 mini-batches, version invariants",
+      "metrics": {
+        "pipedream": {
+          "wall_s": 6.48,
+          "peak_mem_mb": [
+            8388.3,
+            2154.6
+          ],
+          "no_recompute": true,
+          "backward_uses_forward_version": true
+        },
+        "timeprest": {
+          "wall_s": 6.48,
+          "peak_mem_mb": [
+            8388.3,
+            2154.6
+          ],
+          "no_recompute": true,
+          "forward_vertical_sync": true,
+          "backward_uses_live_version": true,
+          "micro_forwarded_with_older_version": 16
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "checkpoint_resume",
+      "status": "PASS",
+      "seconds": 36.1,
+      "message": "2 epochs vs 1 + resume (static order, deterministic), tol 1e-5",
+      "metrics": {
+        "pipedream": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0,
+          "best_after_resume": {
+            "score": 141.04843,
+            "epoch": 2
+          }
+        },
+        "timeprest": {
+          "resumed": true,
+          "param_max_diff": 0.0,
+          "last_epoch_loss_diff": 0.0,
+          "best_after_resume": {
+            "score": 142.59573,
+            "epoch": 2
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "short_run",
+      "status": "PASS",
+      "seconds": 93.7,
+      "message": "short run per system on the real pipeline",
+      "metrics": {
+        "pipedream": {
+          "train_loss_by_epoch": [
+            26.55466,
+            21.26299
+          ],
+          "val_mae_kcal_by_epoch": [
+            149.07867,
+            81.65827
+          ],
+          "median_predictor_val_mae_kcal": 165.81,
+          "val_ingr_f1_by_epoch": [
+            4.59709,
+            48.13958
+          ],
+          "epoch_time_s": 17.881,
+          "busy_frac_per_gpu": "0.933|0.732",
+          "peak_mem_mb_per_gpu": "8391.3|2068.0",
+          "mb_sent_per_gpu": "3430.0|3430.0",
+          "bwd_overlap_minibatches": 34,
+          "est_full_epoch_s": 18.1,
+          "est_full_run_h": 0.15
+        },
+        "timeprest": {
+          "train_loss_by_epoch": [
+            27.77461,
+            23.44966
+          ],
+          "val_mae_kcal_by_epoch": [
+            153.72945,
+            99.35972
+          ],
+          "median_predictor_val_mae_kcal": 165.81,
+          "val_ingr_f1_by_epoch": [
+            2.32919,
+            41.36065
+          ],
+          "epoch_time_s": 16.412,
+          "busy_frac_per_gpu": "0.954|0.777",
+          "peak_mem_mb_per_gpu": "8302.5|2076.9",
+          "mb_sent_per_gpu": "3430.0|3430.0",
+          "bwd_overlap_minibatches": 34,
+          "est_full_epoch_s": 16.6,
+          "est_full_run_h": 0.14
+        }
+      }
+    }
+  ]
+}

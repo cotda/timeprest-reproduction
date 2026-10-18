@@ -1,0 +1,33 @@
+env: {"python": "3.13.15", "torch": "2.11.0+cu128", "cuda": "12.8", "cudnn": 91900, "gpu": "Tesla T4", "gpu_mem_gb": 14.56} | code 875fd2f9b1b1
+[n5k] system=pipedream W=1 N=1 M=64 partition=[0, 18] K=195 device=cuda
+ep   1/30 | train 28.2440 (MAE kcal 146.2) | val_loss 28.7207 | MAE kcal 121.1 (47.3%) mass 70.7 fat 7.89 carb 10.33 prot 11.00 | ingr F1 15.8 mAP 18.0 | lr 2.86e-04 | 42.4s peak 10354.1MB | ETA 0.38h
+ep   2/30 | train 22.2773 (MAE kcal 100.0) | val_loss 36.8343 | MAE kcal 146.7 (57.2%) mass 83.8 fat 8.33 carb 10.75 prot 14.18 | ingr F1 10.6 mAP 17.9 | lr 1.03e-02 | 25.4s peak 5641.2MB | ETA 0.22h
+ep   3/30 | train 18.5685 (MAE kcal 91.9) | val_loss 27.8117 | MAE kcal 113.6 (44.3%) mass 74.6 fat 7.27 carb 8.58 prot 10.77 | ingr F1 25.8 mAP 34.1 | lr 2.00e-02 | 25.0s peak 5642.4MB | ETA 0.21h
+ep   4/30 | train 15.6430 (MAE kcal 85.9) | val_loss 23.2230 | MAE kcal 113.2 (44.2%) mass 67.7 fat 6.50 carb 7.49 prot 8.81 | ingr F1 44.0 mAP 43.0 | lr 1.99e-02 | 26.1s peak 5642.4MB | ETA 0.21h
+ep   5/30 | train 13.4429 (MAE kcal 89.7) | val_loss 19.0901 | MAE kcal 86.1 (33.6%) mass 70.4 fat 5.83 carb 6.53 prot 7.61 | ingr F1 50.3 mAP 56.7 | lr 1.97e-02 | 25.8s peak 5642.4MB | ETA 0.20h
+ep   6/30 | train 11.0709 (MAE kcal 83.4) | val_loss 17.3852 | MAE kcal 87.9 (34.3%) mass 66.9 fat 6.68 carb 8.14 prot 9.97 | ingr F1 62.9 mAP 61.9 | lr 1.94e-02 | 25.7s peak 5642.4MB | ETA 0.19h
+ep   7/30 | train 9.0734 (MAE kcal 72.2) | val_loss 15.8337 | MAE kcal 75.2 (29.3%) mass 50.0 fat 4.99 carb 6.35 prot 7.79 | ingr F1 67.4 mAP 68.5 | lr 1.90e-02 | 25.8s peak 5642.4MB | ETA 0.18h
+ep   8/30 | train 7.6869 (MAE kcal 88.3) | val_loss 14.9138 | MAE kcal 141.7 (55.3%) mass 63.6 fat 5.85 carb 5.78 prot 9.31 | ingr F1 72.0 mAP 72.3 | lr 1.85e-02 | 25.8s peak 5642.4MB | ETA 0.17h
+ep   9/30 | train 6.3559 (MAE kcal 88.7) | val_loss 12.8583 | MAE kcal 85.2 (33.3%) mass 50.9 fat 5.34 carb 5.71 prot 6.63 | ingr F1 76.0 mAP 77.5 | lr 1.78e-02 | 25.8s peak 5642.4MB | ETA 0.16h
+ep  10/30 | train 5.0934 (MAE kcal 70.1) | val_loss 12.4803 | MAE kcal 65.1 (25.4%) mass 57.0 fat 4.83 carb 5.66 prot 5.95 | ingr F1 77.6 mAP 78.9 | lr 1.71e-02 | 25.7s peak 5642.4MB | ETA 0.16h
+ep  11/30 | train 4.1655 (MAE kcal 59.5) | val_loss 11.7066 | MAE kcal 79.4 (31.0%) mass 54.3 fat 5.32 carb 5.85 prot 5.99 | ingr F1 80.0 mAP 82.0 | lr 1.62e-02 | 25.7s peak 5642.4MB | ETA 0.15h
+ep  12/30 | train 3.3718 (MAE kcal 59.7) | val_loss 10.5485 | MAE kcal 61.6 (24.0%) mass 44.4 fat 4.19 carb 5.45 prot 5.72 | ingr F1 81.9 mAP 83.0 | lr 1.53e-02 | 25.7s peak 5642.4MB | ETA 0.14h
+ep  13/30 | train 2.9163 (MAE kcal 55.2) | val_loss 10.1871 | MAE kcal 69.0 (26.9%) mass 47.7 fat 4.50 carb 5.11 prot 5.33 | ingr F1 83.4 mAP 84.5 | lr 1.43e-02 | 25.8s peak 5642.4MB | ETA 0.13h
+ep  14/30 | train 2.3262 (MAE kcal 56.2) | val_loss 10.4268 | MAE kcal 65.0 (25.4%) mass 48.8 fat 4.05 carb 5.50 prot 5.05 | ingr F1 83.7 mAP 83.9 | lr 1.33e-02 | 25.8s peak 5642.4MB | ETA 0.13h
+ep  15/30 | train 2.0403 (MAE kcal 56.9) | val_loss 9.5128 | MAE kcal 57.8 (22.6%) mass 37.7 fat 4.21 carb 4.87 prot 4.84 | ingr F1 85.1 mAP 85.1 | lr 1.22e-02 | 25.8s peak 5642.4MB | ETA 0.12h
+ep  16/30 | train 1.7366 (MAE kcal 45.3) | val_loss 9.2784 | MAE kcal 57.8 (22.6%) mass 39.1 fat 4.49 carb 4.79 prot 4.78 | ingr F1 85.6 mAP 85.1 | lr 1.11e-02 | 25.7s peak 5642.4MB | ETA 0.11h
+ep  17/30 | train 1.4848 (MAE kcal 43.3) | val_loss 9.1159 | MAE kcal 50.0 (19.5%) mass 34.8 fat 5.02 carb 5.72 prot 5.18 | ingr F1 86.3 mAP 85.8 | lr 1.00e-02 | 25.7s peak 5642.4MB | ETA 0.10h
+ep  18/30 | train 1.2787 (MAE kcal 43.4) | val_loss 9.0689 | MAE kcal 58.4 (22.8%) mass 39.1 fat 3.61 carb 4.54 prot 4.71 | ingr F1 86.6 mAP 86.2 | lr 8.88e-03 | 25.6s peak 5642.4MB | ETA 0.09h
+ep  19/30 | train 1.1075 (MAE kcal 37.2) | val_loss 9.0938 | MAE kcal 47.6 (18.6%) mass 31.2 fat 3.59 carb 5.23 prot 4.21 | ingr F1 86.8 mAP 86.4 | lr 7.77e-03 | 25.5s peak 5642.4MB | ETA 0.09h
+ep  20/30 | train 1.0274 (MAE kcal 38.0) | val_loss 8.9535 | MAE kcal 47.9 (18.7%) mass 32.0 fat 3.45 carb 4.43 prot 4.18 | ingr F1 87.2 mAP 86.6 | lr 6.70e-03 | 25.6s peak 5642.4MB | ETA 0.08h
+ep  21/30 | train 0.9361 (MAE kcal 33.1) | val_loss 8.9893 | MAE kcal 49.4 (19.3%) mass 33.0 fat 3.81 carb 4.27 prot 4.51 | ingr F1 87.1 mAP 86.4 | lr 5.66e-03 | 25.8s peak 5642.4MB | ETA 0.07h
+ep  22/30 | train 0.8675 (MAE kcal 33.5) | val_loss 8.9787 | MAE kcal 47.3 (18.5%) mass 30.6 fat 3.52 carb 4.29 prot 4.06 | ingr F1 87.3 mAP 86.5 | lr 4.68e-03 | 25.8s peak 5642.4MB | ETA 0.06h
+ep  23/30 | train 0.7952 (MAE kcal 31.1) | val_loss 8.8813 | MAE kcal 46.4 (18.1%) mass 30.1 fat 3.49 carb 4.27 prot 4.42 | ingr F1 87.4 mAP 86.4 | lr 3.77e-03 | 25.7s peak 5642.4MB | ETA 0.06h
+ep  24/30 | train 0.7517 (MAE kcal 29.2) | val_loss 9.0203 | MAE kcal 45.2 (17.7%) mass 31.1 fat 3.43 carb 4.20 prot 4.07 | ingr F1 86.9 mAP 86.3 | lr 2.93e-03 | 25.8s peak 5642.4MB | ETA 0.05h
+ep  25/30 | train 0.7425 (MAE kcal 28.4) | val_loss 9.0186 | MAE kcal 45.2 (17.6%) mass 29.4 fat 3.45 carb 4.18 prot 4.21 | ingr F1 87.3 mAP 86.5 | lr 2.18e-03 | 25.6s peak 5642.4MB | ETA 0.04h
+ep  26/30 | train 0.7112 (MAE kcal 28.0) | val_loss 8.9389 | MAE kcal 44.1 (17.2%) mass 28.6 fat 3.42 carb 4.14 prot 4.00 | ingr F1 87.4 mAP 86.6 | lr 1.53e-03 | 25.6s peak 5642.4MB | ETA 0.03h
+ep  27/30 | train 0.6763 (MAE kcal 26.6) | val_loss 8.9667 | MAE kcal 44.0 (17.2%) mass 28.7 fat 3.43 carb 4.19 prot 3.96 | ingr F1 87.3 mAP 86.5 | lr 9.90e-04 | 25.8s peak 5642.4MB | ETA 0.02h
+ep  28/30 | train 0.6691 (MAE kcal 26.1) | val_loss 8.9396 | MAE kcal 44.1 (17.2%) mass 28.9 fat 3.40 carb 4.17 prot 3.98 | ingr F1 87.5 mAP 86.6 | lr 5.61e-04 | 25.8s peak 5642.4MB | ETA 0.02h
+ep  29/30 | train 0.6624 (MAE kcal 26.3) | val_loss 8.9881 | MAE kcal 44.2 (17.3%) mass 28.7 fat 3.43 carb 4.21 prot 3.98 | ingr F1 87.5 mAP 86.5 | lr 2.51e-04 | 25.8s peak 5642.4MB | ETA 0.01h
+ep  30/30 | train 0.6548 (MAE kcal 25.7) | val_loss 8.9088 | MAE kcal 44.4 (17.3%) mass 28.8 fat 3.43 carb 4.23 prot 4.00 | ingr F1 87.6 mAP 86.5 | lr 6.29e-05 | 25.9s peak 5642.4MB | ETA 0.00h
+SUMMARY {"name": "n5k_single_w3_s1", "system": "pipedream", "epochs_done": 30, "best_epoch": 27, "test_mae_kcal": 48.47957, "test_pmae_kcal": 18.1661, "test_ingr_f1": 86.08032, "mean_epoch_time_s": 25.701241379310346}

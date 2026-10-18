@@ -1,0 +1,19 @@
+# B7b: location of the maps against the HandMasks ingredient masks (Hand et al. 2026), n5k/PLAN.md mục 10
+# (2026-10-17 21:32 / 21:40). python -m timeprest.n5k.handmasks --config n5k/configs/n5k_handmasks.yaml
+#   --set name=<run name> --ckpt <run dir>. The model section is the main one (same for every system); the
+# checkpoint decides one stage (best.pt) or two (best_stage*.pt). Explain settings (presence threshold) as in B7.
+base: n5k_base.yaml
+name: handmasks
+handmasks:
+  root_search:                           # first folder holding ingredient_nutrition.csv + masks/ (HandMasks data/)
+    - /kaggle/input/datasets/*/n5k-handmasks
+    - /kaggle/input/n5k-handmasks
+    - n5k/handmasks_data
+  mask_hw: [480, 640]                    # Nutrition5k overhead RGB frame; every mask is checked against it
+  groups_file: n5k/configs/handmasks_groups.yaml   # our 195 ingredients -> the 40 HandMasks groups (M3 only)
+  rules:                                 # set before the run (PLAN mục 10, 21:32); verdicts on our test split
+    m1_margin: 0.05                      # M1: mean(map share inside the food - food area share) > this
+    m2_rel_gain: 0.10                    # M2: 1 - MAE(map kcal shares) / MAE(area shares) > this
+    m3_margin: 0.10                      # M3: pointing hit rate - chance > this
+    alpha: 0.01                          # one-sided Wilcoxon (M1, M2)
+  dir: n5k/results/handmasks/{name}

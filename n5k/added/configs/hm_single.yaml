@@ -1,0 +1,7 @@
+# HM, 1 GPU (as n5k/configs/n5k_single.yaml): python -m timeprest.n5k.added.hm train --config n5k/added/configs/hm_single.yaml
+base: hm_base.yaml
+name: hm_single_s0
+system: pipedream                        # with one stage = plain SGD on the whole mini-batch
+pipeline:
+  num_stages: 1
+  partition: auto

@@ -1,0 +1,10 @@
+# HM (n5k/added/README.md, 2026-10-17 22:25 / 22:31; thử nghiệm, chưa phải đóng góp): train only on the dishes with
+# HandMasks, then locate (python -m timeprest.n5k.added.hm). Main config otherwise (w_total 3, lr 0.02, 30 epochs).
+base: ../../configs/n5k_handmasks.yaml
+output:
+  dir: n5k/results/added/runs/{name}
+handmasks:
+  dir: n5k/results/added/handmasks/{name}
+added:
+  hm:
+    labels: ingredients                  # ingredients = HM1 (195 labels) | groups = HM2 (40 HandMasks groups)

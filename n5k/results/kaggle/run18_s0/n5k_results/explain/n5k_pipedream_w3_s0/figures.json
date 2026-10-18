@@ -1,0 +1,210 @@
+[
+  {
+    "dish_id": "dish_1568316085",
+    "index": 118,
+    "kcal_true": 378.5371398925781,
+    "kcal_pred": 385.71142578125,
+    "top_ingredients": [
+      {
+        "name": "salt",
+        "p": 1.0,
+        "grams_pred": 0.53,
+        "grams_true": 0.4657590091228485
+      },
+      {
+        "name": "olive oil",
+        "p": 1.0,
+        "grams_pred": 6.77,
+        "grams_true": 8.271537780761719
+      },
+      {
+        "name": "vinegar",
+        "p": 1.0,
+        "grams_pred": 2.07,
+        "grams_true": 1.9473119974136353
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565204891",
+    "index": 171,
+    "kcal_true": 302.8864440917969,
+    "kcal_pred": 283.4308166503906,
+    "top_ingredients": [
+      {
+        "name": "olive oil",
+        "p": 1.0,
+        "grams_pred": 7.04,
+        "grams_true": 5.121230125427246
+      },
+      {
+        "name": "salt",
+        "p": 1.0,
+        "grams_pred": 1.83,
+        "grams_true": 1.5386099815368652
+      },
+      {
+        "name": "pepper",
+        "p": 1.0,
+        "grams_pred": 0.55,
+        "grams_true": 0.12915100157260895
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568649354",
+    "index": 87,
+    "kcal_true": 72.8707275390625,
+    "kcal_pred": 116.1386489868164,
+    "top_ingredients": [
+      {
+        "name": "broccoli",
+        "p": 0.998,
+        "grams_pred": 27.87,
+        "grams_true": 49.756099700927734
+      },
+      {
+        "name": "berries",
+        "p": 0.9974,
+        "grams_pred": 61.77,
+        "grams_true": 78.0
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9099,
+        "grams_pred": 1.02,
+        "grams_true": 1.2439019680023193
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566333194",
+    "index": 161,
+    "kcal_true": 461.58526611328125,
+    "kcal_pred": 360.2294616699219,
+    "top_ingredients": [
+      {
+        "name": "cheese pizza",
+        "p": 0.9999,
+        "grams_pred": 96.85,
+        "grams_true": 90.0
+      },
+      {
+        "name": "onions",
+        "p": 0.9995,
+        "grams_pred": 1.03,
+        "grams_true": 3.5522780418395996
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9995,
+        "grams_pred": 1.39,
+        "grams_true": 2.534142017364502
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1566851584",
+    "index": 132,
+    "kcal_true": 286.29498291015625,
+    "kcal_pred": 228.26443481445312,
+    "top_ingredients": [
+      {
+        "name": "cheese pizza",
+        "p": 0.9995,
+        "grams_pred": 86.6,
+        "grams_true": 85.0
+      },
+      {
+        "name": "caesar salad",
+        "p": 0.9983,
+        "grams_pred": 133.23,
+        "grams_true": 137.0
+      },
+      {
+        "name": "olive oil",
+        "p": 0.1494,
+        "grams_pred": 0.57,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565809120",
+    "index": 249,
+    "kcal_true": 365.6300048828125,
+    "kcal_pred": 287.976806640625,
+    "top_ingredients": [
+      {
+        "name": "cherry tomatoes",
+        "p": 0.956,
+        "grams_pred": 32.86,
+        "grams_true": 74.0
+      },
+      {
+        "name": "carrot",
+        "p": 0.9542,
+        "grams_pred": 40.68,
+        "grams_true": 52.0
+      },
+      {
+        "name": "onions",
+        "p": 0.9409,
+        "grams_pred": 27.87,
+        "grams_true": 56.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558725226",
+    "index": 411,
+    "kcal_true": 19.75,
+    "kcal_pred": 35.14593505859375,
+    "top_ingredients": [
+      {
+        "name": "cauliflower",
+        "p": 0.9993,
+        "grams_pred": 81.0,
+        "grams_true": 79.0
+      },
+      {
+        "name": "egg whites",
+        "p": 0.0013,
+        "grams_pred": 8.17,
+        "grams_true": 0.0
+      },
+      {
+        "name": "steak",
+        "p": 0.001,
+        "grams_pred": 1.14,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558110245",
+    "index": 309,
+    "kcal_true": 29.06999969482422,
+    "kcal_pred": 43.387454986572266,
+    "top_ingredients": [
+      {
+        "name": "berries",
+        "p": 0.9996,
+        "grams_pred": 42.86,
+        "grams_true": 51.0
+      },
+      {
+        "name": "cottage cheese",
+        "p": 0.0041,
+        "grams_pred": 1.34,
+        "grams_true": 0.0
+      },
+      {
+        "name": "grapes",
+        "p": 0.0036,
+        "grams_pred": 3.33,
+        "grams_true": 0.0
+      }
+    ]
+  }
+]

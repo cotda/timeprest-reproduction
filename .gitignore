@@ -76,3 +76,6 @@ template_slides_UIT/*.synctex.gz
 
 # Session output dumps
 /output.txt
+
+# HandMasks (Hand 2026, CC BY 4.0): third-party masks for the location evaluation; local copy only (n5k/PLAN.md mục 10)
+/n5k/handmasks_data/

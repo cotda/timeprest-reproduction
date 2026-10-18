@@ -38,11 +38,25 @@ def read_csv(path):
         return list(csv.DictReader(f))
 
 
+def main_run(system, s):
+    """Run dir of the main configuration: B6 with w_total = 3 (run18, n5k/PLAN.md mục 10, 2026-10-17 20:27) when
+    downloaded, else B6 with w_total = 1 (run6)."""
+    p = os.path.join(K, f"run18_s{s}", "n5k_results", "runs", f"n5k_{system}_w3_s{s}")
+    return p if os.path.exists(p) else os.path.join(K, f"run6_s{s}", "n5k_results", "runs", f"n5k_{system}_s{s}")
+
+
+def main_explain(system):
+    """explain dir of the B7 run of `system` (run18_s0 when downloaded, else run11_b7 / run13_pd)."""
+    p = os.path.join(K, "run18_s0", "n5k_results", "explain", f"n5k_{system}_w3_s0")
+    run = "run13_pd" if system == "pipedream" else "run11_b7"
+    return p if os.path.exists(p) else os.path.join(K, run, "n5k_results", "explain", f"b7_{system}_s0")
+
+
 def b6_runs(system):
-    """[(cum train time [E], val MAE kcal [E], val mAP [E])] of the B6 runs (run6_s0/1/2)."""
+    """[(cum train time [E], val MAE kcal [E], val mAP [E])] of the main B6 runs (main_run)."""
     out = []
     for s in SEEDS:
-        p = os.path.join(K, f"run6_s{s}", "n5k_results", "runs", f"n5k_{system}_s{s}", "metrics.csv")
+        p = os.path.join(main_run(system, s), "metrics.csv")
         if os.path.exists(p):
             h = read_csv(p)
             t = np.cumsum([float(r.get("epoch_time_s") or r["wall_time_s"]) for r in h])
@@ -93,6 +107,7 @@ def fig_oscillation():
     if not tp or not pd:
         return
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.1), sharey=True)
+    top = max(170, 10 * np.ceil((max(max(r[1]) for r in tp + pd) + 15) / 10))
     for s, ax in enumerate(axes):
         ax.axvspan(6, 18, color="#f0efec", lw=0)
         for system, runs in (("pipedream", pd), ("timeprest", tp)):
@@ -100,20 +115,19 @@ def fig_oscillation():
             v = runs[s][1]
             ax.plot(np.arange(1, len(v) + 1), v, color=color, ls=ls, lw=lw, marker="o", ms=3, label=name)
         ax.set_title(f"seed {s}", loc="left", fontsize=10, color=INK)
-        ax.set(xlabel="epoch", ylim=(40, 170))
+        ax.set(xlabel="epoch", ylim=(40, top))
     axes[0].set_ylabel("val MAE kcal")
     axes[0].legend(loc="upper right", fontsize=8.5)
-    axes[1].text(12, 163, "epoch 6-18", ha="center", fontsize=8.5, color=INK2)
+    axes[1].text(12, top - 7, "epoch 6-18", ha="center", fontsize=8.5, color=INK2)
     save(fig, "fig_oscillation.png")
 
 
 def fig_time():
-    """(a) epoch time of the 5 systems (B6, mean of 3 seeds); (b) TiMePReSt vs PipeDream at emulated bandwidth."""
+    """(a) epoch time of the 5 systems (main B6, mean of 3 seeds); (b) the systems at emulated bandwidth (run17)."""
     fig, (a, b) = plt.subplots(1, 2, figsize=(11, 3.4), gridspec_kw={"width_ratios": [1.25, 1]})
     names, vals = [], []
     for system in ("single", "ddp", "pipedream", "timeprest", "timeprest_n4"):
-        ss = [json.load(open(os.path.join(K, f"run6_s{s}", "n5k_results", "runs", f"n5k_{system}_s{s}", "summary.json")))
-              for s in SEEDS]
+        ss = [json.load(open(os.path.join(main_run(system, s), "summary.json"))) for s in SEEDS]
         names.append(system)
         vals.append(np.mean([x["mean_epoch_time_s"] for x in ss]))
     x = np.arange(len(names))
@@ -160,8 +174,8 @@ def fig_time():
 def fig_deletion():
     """Deletion test at the decision c (map vs random cells), one panel per system with an explain run."""
     found = []
-    for run, system in (("run11_b7", "timeprest"), ("run13_pd", "pipedream"), ("run11_b7", "single")):
-        p = os.path.join(K, run, "n5k_results", "explain", f"b7_{system}_s0", "deletion.json")
+    for system in ("timeprest", "pipedream", "single"):
+        p = os.path.join(main_explain(system), "deletion.json")
         if os.path.exists(p):
             found.append((system, json.load(open(p))))
     if not found:
@@ -189,7 +203,7 @@ def fig_deletion():
 
 def crop_examples():
     """The image + map rows of two B7 figures (TiMePReSt seed 0) for the slides."""
-    src = os.path.join(K, "run11_b7", "n5k_results", "explain", "b7_timeprest_s0", "figures")
+    src = os.path.join(main_explain("timeprest"), "figures")
     for dish in ("1562170356", "1563295400"):
         p = os.path.join(src, f"dish_dish_{dish}.png")
         if os.path.exists(p):

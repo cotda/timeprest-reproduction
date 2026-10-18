@@ -1,0 +1,203 @@
+# HandMasks (Hand et al. 2026) evaluation only, n5k/PLAN.md mục 10 (2026-10-17 21:32 / 21:40): map each of the 195
+# Nutrition5k ingredients of our model (cache meta, K = 195) to one of the 40 HandMasks region groups
+# (`annotation_name` of ingredient_nutrition.csv), so M3 can pool the CAMs of a group. One direction only (195 -> 40);
+# it never touches the training labels. group: null = not drawn as a region (seasoning, oil, liquid, deprecated).
+# check: true = name-based guess the mass check below could not settle; the user reviews these.
+# Built by the agent from the names, then checked against the region masses (python -m timeprest.n5k.handmasks
+# --check-groups): a region's mass should equal the summed grams of the dish's ingredients mapped to its group.
+groups:
+  ingr_0000000001: {name: cottage cheese, group: cheese}
+  ingr_0000000002: {name: strawberries, group: berry}
+  ingr_0000000003: {name: garden salad, group: leafy_greens}  # mass check: confirmed
+  ingr_0000000004: {name: bacon, group: bacon}
+  ingr_0000000005: {name: potatoes, group: tuber}
+  ingr_0000000006: {name: caesar salad, group: salad_prepared}
+  ingr_0000000007: {name: cauliflower, group: cruciferous}
+  ingr_0000000008: {name: scrambled eggs, group: egg}
+  ingr_0000000009: {name: wild rice, group: rice}
+  ingr_0000000010: {name: steak, group: meat_red}
+  ingr_0000000011: {name: cheese pizza, group: pizza}
+  ingr_0000000012: {name: olives, group: fruit_fatty}
+  ingr_0000000013: {name: berries, group: berry}
+  ingr_0000000014: {name: asparagus, group: vegetable_other}
+  ingr_0000000015: {name: hash browns, group: tuber}
+  ingr_0000000016: {name: brussels sprouts, group: cruciferous}
+  ingr_0000000017: {name: pasta salad, group: salad_prepared}
+  ingr_0000000019: {name: bread, group: bread}
+  ingr_0000000021: {name: squash, group: squash_eggplant}
+  ingr_0000000023: {name: brown rice, group: rice}
+  ingr_0000000025: {name: beef, group: meat_red}
+  ingr_0000000026: {name: white rice, group: rice}
+  ingr_0000000027: {name: broccoli, group: cruciferous}
+  ingr_0000000028: {name: chicken, group: poultry}
+  ingr_0000000029: {name: mixed greens, group: leafy_greens}
+  ingr_0000000030: {name: lettuce, group: leafy_greens}
+  ingr_0000000031: {name: cucumbers, group: cucumber}
+  ingr_0000000032: {name: tomatoes, group: tomato}
+  ingr_0000000033: {name: bell peppers, group: peppers}
+  ingr_0000000034: {name: celery, group: herb}                  # mass check: 2 regions
+  ingr_0000000035: {name: blue cheese, group: cheese}
+  ingr_0000000036: {name: spinach (raw), group: leafy_greens}
+  ingr_0000000037: {name: cantaloupe, group: melon}
+  ingr_0000000038: {name: pineapple, group: fruit_tropical}
+  ingr_0000000039: {name: sausage, group: sausage}
+  ingr_0000000040: {name: raspberries, group: berry}
+  ingr_0000000041: {name: blackberries, group: berry}
+  ingr_0000000042: {name: avocado, group: fruit_fatty}
+  ingr_0000000043: {name: green beans, group: legumes_green}
+  ingr_0000000045: {name: carrot, group: root_vegetable}
+  ingr_0000000046: {name: mushroom, group: mushroom}
+  ingr_0000000047: {name: corn, group: corn}
+  ingr_0000000049: {name: fish, group: fish}
+  ingr_0000000050: {name: tofu, group: tofu}
+  ingr_0000000052: {name: cheese, group: cheese}
+  ingr_0000000054: {name: apple, group: fruit_tree}
+  ingr_0000000058: {name: orange, group: fruit_tropical}  # mass check: confirmed
+  ingr_0000000059: {name: oatmeal, group: grain_other}
+  ingr_0000000060: {name: tortilla, group: bread, check: true}
+  ingr_0000000070: {name: figs, group: fruit_tree, check: true}
+  ingr_0000000072: {name: kale, group: leafy_greens}
+  ingr_0000000073: {name: radishes, group: vegetable_other}       # mass check: 7 regions
+  ingr_0000000074: {name: pasta, group: pasta}
+  ingr_0000000077: {name: almonds, group: nuts_seeds}
+  ingr_0000000080: {name: turkey bacon, group: poultry}
+  ingr_0000000081: {name: pickles, group: cucumber, check: true}
+  ingr_0000000082: {name: pecans, group: nuts_seeds}
+  ingr_0000000092: {name: wine, group: null}
+  ingr_0000000094: {name: onions, group: alium_vegetable}
+  ingr_0000000095: {name: artichokes, group: vegetable_other}
+  ingr_0000000102: {name: snow peas, group: legumes_green}
+  ingr_0000000105: {name: grilled chicken, group: poultry}
+  ingr_0000000112: {name: honeydew melons, group: melon}
+  ingr_0000000113: {name: ketchup, group: condiment_dressing}
+  ingr_0000000116: {name: mayonnaise, group: condiment_dressing}
+  ingr_0000000121: {name: watermelon, group: melon}
+  ingr_0000000122: {name: garlic, group: alium_vegetable}
+  ingr_0000000124: {name: walnuts, group: nuts_seeds}
+  ingr_0000000126: {name: mustard, group: condiment_dressing}
+  ingr_0000000128: {name: egg whites, group: egg_whites}
+  ingr_0000000129: {name: raisins, group: fruit_other, check: true}
+  ingr_0000000133: {name: shallots, group: alium_vegetable}
+  ingr_0000000137: {name: succotash, group: corn}
+  ingr_0000000140: {name: caesar dressing, group: condiment_dressing}
+  ingr_0000000141: {name: tuna salad, group: salad_prepared}
+  ingr_0000000148: {name: parmesan cheese, group: cheese}
+  ingr_0000000152: {name: cabbage, group: cruciferous}
+  ingr_0000000153: {name: bulgur, group: grain_other}
+  ingr_0000000154: {name: brown sugar, group: null}
+  ingr_0000000155: {name: chicken thighs, group: poultry}
+  ingr_0000000161: {name: olive oil, group: null}
+  ingr_0000000162: {name: parsnips, group: root_vegetable}
+  ingr_0000000166: {name: grapefruit juice, group: fruit_tropical}  # mass check: 2 regions
+  ingr_0000000177: {name: tempeh, group: tofu, check: true}
+  ingr_0000000179: {name: eggs, group: egg}
+  ingr_0000000180: {name: rice noodles, group: pasta, check: true}
+  ingr_0000000187: {name: chickpeas, group: legumes_other}
+  ingr_0000000189: {name: vinegar, group: null}
+  ingr_0000000192: {name: yam, group: tuber}
+  ingr_0000000194: {name: fried rice, group: rice}
+  ingr_0000000196: {name: cod, group: fish}
+  ingr_0000000200: {name: buttermilk, group: null}
+  ingr_0000000201: {name: blueberries, group: berry}
+  ingr_0000000203: {name: chili, group: peppers, check: true}
+  ingr_0000000205: {name: corn on the cob, group: corn}
+  ingr_0000000213: {name: pears, group: fruit_tree}
+  ingr_0000000221: {name: vegetable oil, group: null}
+  ingr_0000000238: {name: hominy, group: corn}
+  ingr_0000000243: {name: mozzarella cheese, group: cheese}
+  ingr_0000000244: {name: chicken breast, group: poultry}
+  ingr_0000000245: {name: wheat bread, group: bread}
+  ingr_0000000251: {name: tortilla chips, group: bread, check: true}
+  ingr_0000000257: {name: brownies, group: dessert}
+  ingr_0000000262: {name: yogurt, group: yogurt}
+  ingr_0000000264: {name: bagels, group: bread}
+  ingr_0000000273: {name: sandwiches, group: bread}
+  ingr_0000000291: {name: salt, group: null}
+  ingr_0000000294: {name: granola, group: grain_other, check: true}
+  ingr_0000000297: {name: pepperoni, group: sausage, check: true}
+  ingr_0000000306: {name: croutons, group: bread, check: true}
+  ingr_0000000312: {name: pepper, group: peppers}               # mass check: HandMasks counts it in peppers (6)
+  ingr_0000000318: {name: flour, group: null}
+  ingr_0000000319: {name: feta cheese, group: cheese}
+  ingr_0000000320: {name: black beans, group: legumes_other}
+  ingr_0000000328: {name: sugar, group: null}
+  ingr_0000000332: {name: salmon, group: fish}
+  ingr_0000000335: {name: eggplant, group: squash_eggplant}
+  ingr_0000000337: {name: waffles, group: dessert}
+  ingr_0000000338: {name: vinaigrette, group: condiment_dressing}
+  ingr_0000000341: {name: cream, group: null}  # mass check: confirmed
+  ingr_0000000342: {name: turnips, group: root_vegetable}
+  ingr_0000000347: {name: baby carrots, group: root_vegetable}
+  ingr_0000000349: {name: mangos, group: fruit_tropical}
+  ingr_0000000357: {name: lentils, group: legumes_other}
+  ingr_0000000364: {name: sunflower seeds, group: nuts_seeds}
+  ingr_0000000367: {name: lime, group: null}  # mass check: confirmed
+  ingr_0000000372: {name: chilaquiles, group: bread}  # mass check: confirmed
+  ingr_0000000375: {name: fruit salad, group: salad_prepared, check: true}
+  ingr_0000000377: {name: quinoa, group: grain_other}
+  ingr_0000000380: {name: pizza, group: pizza}
+  ingr_0000000392: {name: pepperoni pizza, group: pizza}
+  ingr_0000000402: {name: tuna, group: fish}
+  ingr_0000000409: {name: greek salad, group: salad_prepared}
+  ingr_0000000413: {name: pilaf, group: rice}
+  ingr_0000000415: {name: cereal, group: grain_other}
+  ingr_0000000421: {name: ground turkey, group: poultry}
+  ingr_0000000423: {name: plate only, group: null}
+  ingr_0000000425: {name: goat cheese, group: cheese}
+  ingr_0000000428: {name: white wine, group: null}
+  ingr_0000000433: {name: roasted potatoes, group: tuber}
+  ingr_0000000434: {name: sour cream, group: condiment_dressing, check: true}
+  ingr_0000000437: {name: sweet potato, group: tuber}
+  ingr_0000000440: {name: grapes, group: fruit_tree}
+  ingr_0000000441: {name: butter, group: null}
+  ingr_0000000448: {name: jalapenos, group: peppers}
+  ingr_0000000453: {name: deprecated, group: fruit_tree}      # mass check: 12 regions
+  ingr_0000000455: {name: cookies, group: dessert}
+  ingr_0000000457: {name: sun dried tomatoes, group: tomato}
+  ingr_0000000458: {name: deprecated, group: melon}           # mass check: 6 regions
+  ingr_0000000462: {name: pork, group: meat_red}
+  ingr_0000000463: {name: beets, group: root_vegetable}
+  ingr_0000000471: {name: cherry tomatoes, group: tomato}
+  ingr_0000000472: {name: couscous, group: grain_other}
+  ingr_0000000473: {name: cranberries, group: berry}
+  ingr_0000000475: {name: salsa, group: condiment_dressing}
+  ingr_0000000484: {name: chicken salad, group: salad_prepared}
+  ingr_0000000485: {name: zucchini, group: squash_eggplant}
+  ingr_0000000495: {name: cream cheese, group: cheese}
+  ingr_0000000498: {name: orange juice, group: null}
+  ingr_0000000502: {name: milk, group: null}
+  ingr_0000000507: {name: mandarin oranges, group: fruit_tropical}
+  ingr_0000000508: {name: soy sauce, group: null}
+  ingr_0000000510: {name: chicken apple sausage, group: sausage}
+  ingr_0000000511: {name: spinach (cooked), group: leafy_greens}
+  ingr_0000000512: {name: kimchi, group: vegetable_other}
+  ingr_0000000513: {name: millet, group: grain_other}
+  ingr_0000000514: {name: wheat berry, group: grain_other}
+  ingr_0000000515: {name: arugula, group: leafy_greens}
+  ingr_0000000516: {name: rosemary, group: herb}
+  ingr_0000000517: {name: chard, group: leafy_greens}
+  ingr_0000000518: {name: thyme, group: herb}
+  ingr_0000000519: {name: oregano, group: herb}
+  ingr_0000000520: {name: lemon juice, group: null}
+  ingr_0000000521: {name: basil, group: herb}
+  ingr_0000000522: {name: tatsoi, group: leafy_greens}
+  ingr_0000000523: {name: cilantro, group: herb}
+  ingr_0000000524: {name: parsley, group: herb}
+  ingr_0000000525: {name: bok choy, group: leafy_greens}
+  ingr_0000000526: {name: mustard greens, group: leafy_greens}
+  ingr_0000000527: {name: chive, group: alium_vegetable, check: true}
+  ingr_0000000528: {name: celery root, group: root_vegetable}
+  ingr_0000000529: {name: chayote squash, group: squash_eggplant}
+  ingr_0000000531: {name: pumpkin seeds, group: nuts_seeds}
+  ingr_0000000532: {name: pesto, group: condiment_dressing}
+  ingr_0000000534: {name: country rice, group: rice}
+  ingr_0000000535: {name: green onions, group: alium_vegetable}
+  ingr_0000000536: {name: banana with peel, group: fruit_tropical}
+  ingr_0000000537: {name: orange with peel, group: fruit_tropical, check: true}
+  ingr_0000000538: {name: jicama, group: root_vegetable, check: true}
+  ingr_0000000539: {name: nopales, group: vegetable_other}
+  ingr_0000000540: {name: ginger, group: null}  # mass check: confirmed
+  ingr_0000000541: {name: tomatillo, group: tomato, check: true}
+  ingr_0000000542: {name: white beans, group: legumes_other}
+  ingr_0000000543: {name: chia seeds, group: nuts_seeds}
+  ingr_0000000545: {name: greek yogurt, group: yogurt}

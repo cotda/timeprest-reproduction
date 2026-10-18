@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.14)  17 OCT 2026 19:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.4.14)  17 OCT 2026 23:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1768,65 +1768,69 @@ Package pdftex.def Info: ../../report/slides/section_bg.png  used on input line
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 389.
+ne 388.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [5
 
 ]
-<figures/fig_time.png, id=108, 718.87395pt x 241.89194pt>
+<figures/fig_time.png, id=107, 718.87395pt x 241.89194pt>
 File: figures/fig_time.png Graphic file (type png)
 <use figures/fig_time.png>
-Package pdftex.def Info: figures/fig_time.png  used on input line 400.
+Package pdftex.def Info: figures/fig_time.png  used on input line 399.
 (pdftex.def)             Requested size: 334.60295pt x 112.593pt.
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 400.
+ne 399.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [6
 
  <./figures/fig_time.png>]
-<figures/fig_mae_epoch_time.png, id=115, 680.18823pt x 276.75159pt>
+<figures/fig_mae_epoch_time.png, id=114, 680.18823pt x 276.75159pt>
 File: figures/fig_mae_epoch_time.png Graphic file (type png)
 <use figures/fig_mae_epoch_time.png>
-Package pdftex.def Info: figures/fig_mae_epoch_time.png  used on input line 411
+Package pdftex.def Info: figures/fig_mae_epoch_time.png  used on input line 410
 .
 (pdftex.def)             Requested size: 310.70361pt x 126.42046pt.
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 411.
+ne 410.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
 
 [7
 
  <./figures/fig_mae_epoch_time.png>]
-<figures/fig_oscillation.png, id=123, 670.83565pt x 232.11424pt>
+<figures/fig_oscillation.png, id=122, 670.83565pt x 232.11424pt>
 File: figures/fig_oscillation.png Graphic file (type png)
 <use figures/fig_oscillation.png>
-Package pdftex.def Info: figures/fig_oscillation.png  used on input line 430.
+Package pdftex.def Info: figures/fig_oscillation.png  used on input line 429.
 (pdftex.def)             Requested size: 318.67209pt x 110.26604pt.
-File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
-<use ../../report/slides/logo_nhom_nc.png>
-Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 430.
-(pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
- [8
 
- <./figures/fig_oscillation.png>]
-<figures/fig_lr_sweep.png, id=130, 356.24858pt x 229.13841pt>
-File: figures/fig_lr_sweep.png Graphic file (type png)
-<use figures/fig_lr_sweep.png>
-Package pdftex.def Info: figures/fig_lr_sweep.png  used on input line 443.
-(pdftex.def)             Requested size: 219.08743pt x 140.92102pt.
-
-Overfull \vbox (3.7526pt too high) detected at line 443
+Overfull \vbox (0.43188pt too high) detected at line 429
  []
 
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 443.
+ne 429.
+(pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
+[8
+
+ <./figures/fig_oscillation.png>]
+<figures/fig_lr_sweep.png, id=131, 356.24858pt x 229.13841pt>
+File: figures/fig_lr_sweep.png Graphic file (type png)
+<use figures/fig_lr_sweep.png>
+Package pdftex.def Info: figures/fig_lr_sweep.png  used on input line 442.
+(pdftex.def)             Requested size: 219.08743pt x 140.92102pt.
+
+Overfull \vbox (3.7526pt too high) detected at line 442
+ []
+
+File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
+<use ../../report/slides/logo_nhom_nc.png>
+Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
+ne 442.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
 [9
 
@@ -1834,7 +1838,7 @@ ne 443.
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 482.
+ne 481.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [10
 
@@ -1842,7 +1846,7 @@ ne 482.
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 501.
+ne 500.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [11
 
@@ -1850,98 +1854,114 @@ ne 501.
 File: ../../report/slides/section_bg.png Graphic file (type png)
 <use ../../report/slides/section_bg.png>
 Package pdftex.def Info: ../../report/slides/section_bg.png  used on input line
- 503.
+ 502.
 (pdftex.def)             Requested size: 455.28856pt x 256.09863pt.
  [12
 
 ]
-<figures/fig_map_1562170356.png, id=154, 1445.4pt x 739.76375pt>
+<figures/fig_map_1562170356.png, id=158, 1445.4pt x 739.76375pt>
 File: figures/fig_map_1562170356.png Graphic file (type png)
 <use figures/fig_map_1562170356.png>
-Package pdftex.def Info: figures/fig_map_1562170356.png  used on input line 514
+Package pdftex.def Info: figures/fig_map_1562170356.png  used on input line 513
 .
 (pdftex.def)             Requested size: 262.90492pt x 134.55142pt.
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 514.
+ne 513.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [13
 
  <./figures/fig_map_1562170356.png>]
-<figures/fig_deletion.png, id=164, 790.71883pt x 236.36542pt>
+<figures/fig_deletion.png, id=168, 790.71883pt x 236.36542pt>
 File: figures/fig_deletion.png Graphic file (type png)
 <use figures/fig_deletion.png>
-Package pdftex.def Info: figures/fig_deletion.png  used on input line 541.
+Package pdftex.def Info: figures/fig_deletion.png  used on input line 540.
 (pdftex.def)             Requested size: 231.03711pt x 69.06357pt.
+
+Overfull \vbox (5.47679pt too high) detected at line 540
+ []
+
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 541.
+ne 540.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
- [14
+[14
 
  <./figures/fig_deletion.png>]
-File: ../../report/slides/section_bg.png Graphic file (type png)
-<use ../../report/slides/section_bg.png>
-Package pdftex.def Info: ../../report/slides/section_bg.png  used on input line
- 543.
-(pdftex.def)             Requested size: 455.28856pt x 256.09863pt.
+File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
+<use ../../report/slides/logo_nhom_nc.png>
+Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
+ne 572.
+(pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [15
 
 ]
-File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
-<use ../../report/slides/logo_nhom_nc.png>
-Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 580.
-(pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
+File: ../../report/slides/section_bg.png Graphic file (type png)
+<use ../../report/slides/section_bg.png>
+Package pdftex.def Info: ../../report/slides/section_bg.png  used on input line
+ 574.
+(pdftex.def)             Requested size: 455.28856pt x 256.09863pt.
  [16
 
 ]
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 615.
+ne 611.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
  [17
+
+]
+File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
+<use ../../report/slides/logo_nhom_nc.png>
+Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
+ne 646.
+(pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
+ [18
 
 ]
 File: ../../report/slides/section_bg.png Graphic file (type png)
 <use ../../report/slides/section_bg.png>
 Package pdftex.def Info: ../../report/slides/section_bg.png  used on input line
- 617.
+ 648.
 (pdftex.def)             Requested size: 455.28856pt x 256.09863pt.
- [18
+ [19
 
 ]
-Overfull \vbox (3.05302pt too high) detected at line 655
- []
-
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 655.
+ne 686.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
-[19
+ [20
 
-] (bao_cao_n5k.bbl
+]
+(bao_cao_n5k.bbl
 
 LaTeX Font Warning: Font shape `T5/cmss/m/it' in size <5> not available
 (Font)              Font shape `T5/cmss/m/sl' tried instead on input line 24.
 
 )
-Overfull \vbox (6.99435pt too high) detected at line 665
- []
-
 File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
 <use ../../report/slides/logo_nhom_nc.png>
 Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
-ne 665.
+ne 694.
 (pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
-[20
+ [21
 
  <C:/Users/admin/AppData/Local/Programs/MiKTeXs/tex/latex/beamer/beamericonarti
 cle.pdf>]
+File: ../../report/slides/logo_nhom_nc.png Graphic file (type png)
+<use ../../report/slides/logo_nhom_nc.png>
+Package pdftex.def Info: ../../report/slides/logo_nhom_nc.png  used on input li
+ne 694.
+(pdftex.def)             Requested size: 136.5746pt x 53.0631pt.
+ [22
+
+
+]
 \tf@nav=\write6
 \openout6 = `bao_cao_n5k.nav'.
 
@@ -1960,11 +1980,11 @@ Package rerunfilecheck Info: File `bao_cao_n5k.out' has not changed.
 (rerunfilecheck)             Checksum: DB6E55125E5F14101A49882F898FB3A9;546.
  ) 
 Here is how much of TeX's memory you used:
- 47824 strings out of 467691
- 1157422 string characters out of 5414506
- 1677357 words of memory out of 5000000
- 75996 multiletter control sequences out of 15000+600000
- 657233 words of font info for 95 fonts, out of 8000000 for 9000
+ 47872 strings out of 467691
+ 1158510 string characters out of 5414506
+ 1677804 words of memory out of 5000000
+ 76035 multiletter control sequences out of 15000+600000
+ 661878 words of font info for 107 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,15n,123p,734b,1673s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/fontawesome
@@ -1973,22 +1993,28 @@ onts/type1/public/fontawesome5/FontAwesome5Free-Solid.pfb><C:/Users/admin/AppDa
 ta/Local/Programs/MiKTeXs/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/Use
 rs/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/amsfonts/cm/cmmi7.pf
 b><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/amsfonts/cm
-/cmss8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/am
-sfonts/cm/cmssi8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1
-/public/amsfonts/cm/cmsy5.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fo
-nts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/admin/AppData/Local/Programs/M
-iKTeXs/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/admin/AppData/Local/P
-rograms/MiKTeXs/fonts/type1/vntex/vnr/vnr7.pfb><C:/Users/admin/AppData/Local/Pr
-ograms/MiKTeXs/fonts/type1/vntex/vnr/vnss12.pfb><C:/Users/admin/AppData/Local/P
-rograms/MiKTeXs/fonts/type1/vntex/vnr/vnss8.pfb><C:/Users/admin/AppData/Local/P
-rograms/MiKTeXs/fonts/type1/vntex/vnr/vnss9.pfb><C:/Users/admin/AppData/Local/P
-rograms/MiKTeXs/fonts/type1/vntex/vnr/vnssbx10.pfb><C:/Users/admin/AppData/Loca
-l/Programs/MiKTeXs/fonts/type1/vntex/vnr/vnssi10.pfb><C:/Users/admin/AppData/Lo
-cal/Programs/MiKTeXs/fonts/type1/vntex/vnr/vnssi8.pfb><C:/Users/admin/AppData/L
-ocal/Programs/MiKTeXs/fonts/type1/vntex/vnr/vntt8.pfb>
-Output written on bao_cao_n5k.pdf (20 pages, 4707112 bytes).
+/cmss12.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/a
+msfonts/cm/cmss8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1
+/public/amsfonts/cm/cmss9.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fo
+nts/type1/public/amsfonts/cm/cmssi12.pfb><C:/Users/admin/AppData/Local/Programs
+/MiKTeXs/fonts/type1/public/amsfonts/cm/cmssi8.pfb><C:/Users/admin/AppData/Loca
+l/Programs/MiKTeXs/fonts/type1/public/amsfonts/cm/cmssi9.pfb><C:/Users/admin/Ap
+pData/Local/Programs/MiKTeXs/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/Users
+/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
+<C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/public/amsfonts/cm/c
+msy9.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/vnr/v
+nr7.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/vnr/vn
+ss10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/vnr/v
+nss12.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/vnr/
+vnss8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/vnr/
+vnss9.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/vnr/
+vnssbx10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex/v
+nr/vnssi10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vntex
+/vnr/vnssi8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeXs/fonts/type1/vnte
+x/vnr/vntt8.pfb>
+Output written on bao_cao_n5k.pdf (22 pages, 4743784 bytes).
 PDF statistics:
- 312 PDF objects out of 1000 (max. 8388607)
- 51 named destinations out of 1000 (max. 500000)
+ 350 PDF objects out of 1000 (max. 8388607)
+ 56 named destinations out of 1000 (max. 500000)
  221 words of extra memory for PDF output out of 10000 (max. 10000000)
 

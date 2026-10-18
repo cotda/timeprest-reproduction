@@ -1,0 +1,210 @@
+[
+  {
+    "dish_id": "dish_1558723926",
+    "index": 106,
+    "kcal_true": 19.260000228881836,
+    "kcal_pred": 27.46925926208496,
+    "top_ingredients": [
+      {
+        "name": "cherry tomatoes",
+        "p": 0.9972,
+        "grams_pred": 103.59,
+        "grams_true": 107.0
+      },
+      {
+        "name": "plate only",
+        "p": 0.0104,
+        "grams_pred": 0.05,
+        "grams_true": 0.0
+      },
+      {
+        "name": "tomatoes",
+        "p": 0.0088,
+        "grams_pred": 1.7,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1567107049",
+    "index": 463,
+    "kcal_true": 107.20299530029297,
+    "kcal_pred": 84.37033081054688,
+    "top_ingredients": [
+      {
+        "name": "milk",
+        "p": 0.3222,
+        "grams_pred": 6.58,
+        "grams_true": 0.0
+      },
+      {
+        "name": "greek yogurt",
+        "p": 0.2974,
+        "grams_pred": 10.92,
+        "grams_true": 0.0
+      },
+      {
+        "name": "chia seeds",
+        "p": 0.269,
+        "grams_pred": 3.08,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1565382733",
+    "index": 459,
+    "kcal_true": 287.6399841308594,
+    "kcal_pred": 241.31930541992188,
+    "top_ingredients": [
+      {
+        "name": "pepperoni pizza",
+        "p": 0.9846,
+        "grams_pred": 67.68,
+        "grams_true": 102.0
+      },
+      {
+        "name": "pizza",
+        "p": 0.3305,
+        "grams_pred": 20.85,
+        "grams_true": 0.0
+      },
+      {
+        "name": "cheese pizza",
+        "p": 0.0746,
+        "grams_pred": 9.42,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563302447",
+    "index": 308,
+    "kcal_true": 561.4170532226562,
+    "kcal_pred": 450.4776916503906,
+    "top_ingredients": [
+      {
+        "name": "salt",
+        "p": 1.0,
+        "grams_pred": 0.59,
+        "grams_true": 0.6723669767379761
+      },
+      {
+        "name": "garlic",
+        "p": 1.0,
+        "grams_pred": 1.38,
+        "grams_true": 0.901157021522522
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9999,
+        "grams_pred": 5.16,
+        "grams_true": 11.32449722290039
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1558721323",
+    "index": 131,
+    "kcal_true": 31.6200008392334,
+    "kcal_pred": 24.495141983032227,
+    "top_ingredients": [
+      {
+        "name": "cantaloupe",
+        "p": 1.0,
+        "grams_pred": 103.84,
+        "grams_true": 93.0
+      },
+      {
+        "name": "carrot",
+        "p": 0.0125,
+        "grams_pred": 6.6,
+        "grams_true": 0.0
+      },
+      {
+        "name": "deprecated",
+        "p": 0.0064,
+        "grams_pred": 0.24,
+        "grams_true": 0.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1562170356",
+    "index": 246,
+    "kcal_true": 385.333984375,
+    "kcal_pred": 300.84625244140625,
+    "top_ingredients": [
+      {
+        "name": "berries",
+        "p": 0.9994,
+        "grams_pred": 142.06,
+        "grams_true": 178.0
+      },
+      {
+        "name": "pineapple",
+        "p": 0.9973,
+        "grams_pred": 106.07,
+        "grams_true": 107.0
+      },
+      {
+        "name": "watermelon",
+        "p": 0.9933,
+        "grams_pred": 44.22,
+        "grams_true": 48.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1563207301",
+    "index": 409,
+    "kcal_true": 187.92999267578125,
+    "kcal_pred": 161.97396850585938,
+    "top_ingredients": [
+      {
+        "name": "yam",
+        "p": 0.991,
+        "grams_pred": 46.44,
+        "grams_true": 50.0
+      },
+      {
+        "name": "olive oil",
+        "p": 0.9844,
+        "grams_pred": 5.75,
+        "grams_true": 6.0
+      },
+      {
+        "name": "sweet potato",
+        "p": 0.9711,
+        "grams_pred": 30.13,
+        "grams_true": 50.0
+      }
+    ]
+  },
+  {
+    "dish_id": "dish_1568056046",
+    "index": 306,
+    "kcal_true": 88.08000183105469,
+    "kcal_pred": 179.89947509765625,
+    "top_ingredients": [
+      {
+        "name": "carrot",
+        "p": 0.9994,
+        "grams_pred": 83.08,
+        "grams_true": 58.0
+      },
+      {
+        "name": "olives",
+        "p": 0.9865,
+        "grams_pred": 56.47,
+        "grams_true": 32.0
+      },
+      {
+        "name": "cherry tomatoes",
+        "p": 0.9696,
+        "grams_pred": 37.33,
+        "grams_true": 55.0
+      }
+    ]
+  }
+]

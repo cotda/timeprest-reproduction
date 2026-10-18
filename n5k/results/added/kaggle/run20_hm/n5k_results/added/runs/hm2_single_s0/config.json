@@ -1,0 +1,226 @@
+{
+  "name": "hm2_single_s0",
+  "seed": 0,
+  "system": "pipedream",
+  "data": {
+    "dataset": "nutrition5k",
+    "root": "/kaggle/input",
+    "train_subset": null,
+    "test_subset": null,
+    "augment": true,
+    "num_workers": 2,
+    "download": true,
+    "split_dir": "n5k/splits",
+    "cache_dir": "/kaggle/working/n5k_cache",
+    "cache_search": "/kaggle/input",
+    "image_size": 224,
+    "decode_threads": 16,
+    "progress_every": 250
+  },
+  "model": {
+    "name": "n5k_resnet50",
+    "num_classes": 100,
+    "width": 1.0,
+    "global_pool": false,
+    "in_channels": 4,
+    "pretrained": "IMAGENET1K_V2",
+    "direct_totals": true,
+    "num_ingredients": 40,
+    "presence_prior": [
+      0.033738191632928474,
+      0.06342780026990553,
+      0.14439946018893388,
+      0.017543859649122806,
+      0.02834008097165992,
+      0.009446693657219974,
+      0.048582995951417005,
+      0.18758434547908232,
+      0.0310391363022942,
+      0.012145748987854251,
+      0.06612685560053981,
+      0.06747638326585695,
+      0.06747638326585695,
+      0.03508771929824561,
+      0.005398110661268556,
+      0.0931174089068826,
+      0.07557354925775979,
+      0.044534412955465584,
+      0.02564102564102564,
+      0.28609986504723345,
+      0.04048582995951417,
+      0.016194331983805668,
+      0.08232118758434548,
+      0.09851551956815115,
+      0.009446693657219974,
+      0.09986504723346828,
+      0.004048582995951417,
+      0.0310391363022942,
+      0.11875843454790823,
+      0.12010796221322537,
+      0.07557354925775979,
+      0.1039136302294197,
+      0.0620782726045884,
+      0.04993252361673414,
+      0.0553306342780027,
+      0.014844804318488529,
+      0.07422402159244265,
+      0.1484480431848853,
+      0.012145748987854251,
+      0.002699055330634278
+    ],
+    "gram_prior": [
+      0.033738191471270704,
+      0.06342780026990553,
+      0.14439945995558323,
+      0.01754385967081705,
+      0.02834008092880686,
+      0.009446693664347298,
+      0.04858299594800643,
+      0.18758434537717972,
+      0.03103913626942173,
+      0.012145748987854251,
+      0.06612685559599232,
+      0.06747638326585693,
+      0.06747638320474801,
+      0.03508771929737199,
+      0.005398110661268556,
+      0.09311740889291047,
+      0.07557354928981808,
+      0.04453441283540847,
+      0.025641025585046443,
+      0.2860998647599529,
+      0.04048582997015539,
+      0.016194332008698794,
+      0.08232118761707097,
+      0.09851551956815115,
+      0.009446693657219972,
+      0.09986504724707734,
+      0.004048583033930385,
+      0.03103913629605988,
+      0.11875843454790823,
+      0.12010796223285809,
+      0.07557354914005897,
+      0.10391363025311978,
+      0.0620782726045884,
+      0.04993252361673414,
+      0.055330634450444,
+      0.014844804318488527,
+      0.07422402156544271,
+      0.14844804315718685,
+      0.012145749103379394,
+      0.002699055330634278
+    ],
+    "total_mean": [
+      236.5016705006884,
+      193.88529014844804,
+      11.827262113031688,
+      18.49321243809423,
+      16.058741617661255
+    ]
+  },
+  "pipeline": {
+    "num_stages": 1,
+    "num_microbatches": 1,
+    "partition": "auto",
+    "max_inflight": "pipedream",
+    "schedule": "1F1B",
+    "vertical_sync": false,
+    "backward_version": "stashed",
+    "backward_rule": "graph",
+    "order": "dynamic",
+    "backward_mode": "auto",
+    "sync_each_op": true,
+    "recv_prefetch": null,
+    "timeout_s": 600
+  },
+  "dist": {
+    "backend": null,
+    "p2p_backend": "gloo",
+    "emulate_bandwidth_gbps": null,
+    "emulate_latency_ms": 0.0,
+    "timeout_s": 300,
+    "env": {}
+  },
+  "training": {
+    "epochs": 30,
+    "batch_size": 64,
+    "optimizer": "sgd",
+    "lr": 0.02,
+    "momentum": 0.9,
+    "nesterov": false,
+    "weight_decay": 0.0001,
+    "lr_schedule": "cosine",
+    "warmup_epochs": 2,
+    "drop_last": true
+  },
+  "runtime": {
+    "device": "cuda",
+    "deterministic": false,
+    "profile_ops": true,
+    "op_trace_every": 10,
+    "eval_batch_size": 64,
+    "comm_bandwidth_gbps": 10.0,
+    "comm_latency_ms": 0.05
+  },
+  "output": {
+    "dir": "n5k/results/added/runs/hm2_single_s0",
+    "require_checks": true,
+    "checks_file": "n5k/results/checks/latest.json"
+  },
+  "checks": {
+    "systems": [
+      "pipedream",
+      "timeprest"
+    ],
+    "num_microbatches": 2,
+    "static_batch": 16,
+    "static_steps": 4,
+    "dynamic_steps": 10,
+    "resume_subset": 256,
+    "short_epochs": 2,
+    "short_warmup_epochs": 0.5
+  },
+  "loss": {
+    "w_presence": 1.0,
+    "w_gram": 1.0,
+    "w_total": 3.0,
+    "ingredient_reduce": "sum"
+  },
+  "explain": {
+    "presence_threshold": 0.5,
+    "cells": [
+      2,
+      5,
+      10
+    ],
+    "random_draws": 5,
+    "rule_cells": 5,
+    "rule_alpha": 0.01,
+    "figure_dishes": 8,
+    "top_cams": 3,
+    "seed": 0,
+    "dir": "n5k/results/explain/{name}"
+  },
+  "handmasks": {
+    "root_search": [
+      "/tmp/handmasks_repo/data"
+    ],
+    "mask_hw": [
+      480,
+      640
+    ],
+    "groups_file": "n5k/configs/handmasks_groups.yaml",
+    "rules": {
+      "m1_margin": 0.05,
+      "m2_rel_gain": 0.1,
+      "m3_margin": 0.1,
+      "alpha": 0.01
+    },
+    "dir": "n5k/results/added/handmasks/{name}"
+  },
+  "added": {
+    "hm": {
+      "labels": "groups"
+    }
+  }
+}
