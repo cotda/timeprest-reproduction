@@ -1,0 +1,137 @@
+/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+Creating new Ultralytics Settings v0.0.8 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/usage/settings.
+python 3.13.15 | torch 2.11.0+cu128 | transformers 5.16.1 | ultralytics 8.4.170 | pillow 13.0.0
+GPU: ['Tesla T4', 'Tesla T4']
+index, name, memory.total [MiB]
+0, Tesla T4, 15360 MiB
+1, Tesla T4, 15360 MiB
+Writing foodbox/__init__.py
+Writing foodbox/data.py
+Writing foodbox/detectors.py
+Writing foodbox/labels.py
+Writing foodbox/metrics.py
+Writing foodbox/postprocess.py
+Writing foodbox/run_detect.py
+Writing foodbox/viz.py
+input/  (1 thư mục con, 0 ảnh)
+  datasets/  (1 thư mục con, 0 ảnh)
+    kaggleolap/  (1 thư mục con, 0 ảnh)
+      uecfood256-mini/  (256 thư mục con, 0 ảnh)
+        1/  (0 thư mục con, 20 ảnh)
+        10/  (0 thư mục con, 0 ảnh)
+        100/  (0 thư mục con, 0 ảnh)
+        101/  (0 thư mục con, 0 ảnh)
+        102/  (0 thư mục con, 0 ảnh)
+        103/  (0 thư mục con, 0 ảnh)
+        ... còn 250 thư mục nữa
+UEC root: /kaggle/input/datasets/kaggleolap/uecfood256-mini | 256 món | 28897 ảnh có box trong bb_info.txt
+200 ảnh, 300 box thật, ảnh nhiều box: 58, ảnh không có box: 0
+ảnh có tag EXIF xoay (box thật có thể lệch): ['ramen_noodle/10886']
+rice                  20
+sushi                 20
+bibimbap              20
+pizza                 20
+ramen_noodle          20
+miso_soup             20
+green_salad           20
+french_fries          20
+pho                   20
+fried_spring_rolls    20
+[launch] GPU 0: --items /kaggle/working/output/items.json --models gdino --prompts food --out /kaggle/working/output/preds --sam
+[launch] GPU 1: --items /kaggle/working/output/items.json --models owlv2,yoloworld --prompts food --out /kaggle/working/output/preds --sam
+[launch]    30s GPU 0: Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 2386.86it/s]
+[launch]    30s GPU 1: Loading weights: 100%|██████████| 418/418 [00:00<00:00, 2540.57it/s]
+[launch]    60s GPU 0: [run_detect] gdino: 50/200
+[launch]    60s GPU 1: [run_detect] owlv2: 75/200
+[launch]    90s GPU 0: [run_detect] gdino: 100/200
+[launch]    90s GPU 1: [run_detect] owlv2: 150/200
+[launch]   120s GPU 0: [run_detect] gdino: 150/200
+[launch]   120s GPU 1: [run_detect] owlv2+sam: 25/200
+[launch]   150s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds/preds_gdino_shard0.json (200 ảnh)
+[launch]   150s GPU 1: [run_detect] owlv2+sam: 125/200
+[launch]   180s GPU 0: [run_detect] gdino+sam: 75/200
+[launch]   180s GPU 1: [31m[1mrequirements:[0m Ultralytics requirement ['git+https://github.com/ultralytics/CLIP.git'] not found, attempting AutoUpdate...
+[launch]   210s GPU 0: [run_detect] gdino+sam: 175/200
+[launch]   210s GPU 1: [run_detect] yoloworld+sam: 25/200
+[launch]   240s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)
+[launch]   240s GPU 1: [run_detect] yoloworld+sam: 100/200
+[launch]   270s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)
+[launch]   270s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds/preds_yoloworld+sam_shard0.json (200 ảnh)
+[launch] GPU 0 mã thoát 0 (log: /kaggle/working/output/logs/detect_gpu0.log)
+[launch] GPU 1 mã thoát 0 (log: /kaggle/working/output/logs/detect_gpu1.log)
+----- /kaggle/working/output/logs/detect_gpu0.log
+[run_detect] gdino: 100/200
+[run_detect] gdino: 125/200
+[run_detect] gdino: 150/200
+[run_detect] gdino: 175/200
+[run_detect] gdino: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds/preds_gdino_shard0.json (200 ảnh)
+[run_detect] gdino+sam: 25/200
+[run_detect] gdino+sam: 50/200
+[run_detect] gdino+sam: 75/200
+[run_detect] gdino+sam: 100/200
+[run_detect] gdino+sam: 125/200
+[run_detect] gdino+sam: 150/200
+[run_detect] gdino+sam: 175/200
+[run_detect] gdino+sam: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)
+----- /kaggle/working/output/logs/detect_gpu1.log
+[run_detect] yoloworld: 100/200
+[run_detect] yoloworld: 125/200
+[run_detect] yoloworld: 150/200
+[run_detect] yoloworld: 175/200
+[run_detect] yoloworld: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds/preds_yoloworld_shard0.json (200 ảnh)
+[run_detect] yoloworld+sam: 25/200
+[run_detect] yoloworld+sam: 50/200
+[run_detect] yoloworld+sam: 75/200
+[run_detect] yoloworld+sam: 100/200
+[run_detect] yoloworld+sam: 125/200
+[run_detect] yoloworld+sam: 150/200
+[run_detect] yoloworld+sam: 175/200
+[run_detect] yoloworld+sam: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds/preds_yoloworld+sam_shard0.json (200 ảnh)
+Thời gian detect: 4.9 phút
+        model  ap50  ap30  precision  recall    f1  mean_iou  area_ratio  main_acc_largest  main_acc_score  conf  sec_per_img  peak_vram_mb  images_no_box  n_errors
+    yoloworld 0.647 0.767      0.660   0.627 0.643     0.540       0.824             0.640           0.610 0.218        0.057      1386.798             21         0
+yoloworld+sam 0.621 0.763      0.711   0.567 0.631     0.490       0.816             0.600           0.585 0.289        0.376      1950.395             28         0
+        gdino 0.618 0.739      0.764   0.583 0.662     0.489       0.804             0.565           0.565 0.535        0.582      2261.374             48         0
+    gdino+sam 0.593 0.738      0.747   0.570 0.647     0.478       0.787             0.545           0.545 0.535        0.919      2261.374             48         0
+        owlv2 0.290 0.404      0.410   0.397 0.403     0.348       0.801             0.345           0.300 0.186        0.379       780.410             63         0
+    owlv2+sam 0.285 0.400      0.417   0.387 0.401     0.334       0.792             0.340           0.295 0.189        0.713      1685.002             67         0
+
+AP@0.5 theo món:
+model               gdino  gdino+sam  owlv2  owlv2+sam  yoloworld  yoloworld+sam
+class                                                                           
+bibimbap             0.69       0.69   0.43       0.43       0.68           0.65
+french_fries         0.53       0.53   0.42       0.44       0.70           0.70
+fried_spring_rolls   0.30       0.28   0.32       0.31       0.31           0.22
+green_salad          0.69       0.69   0.49       0.49       0.68           0.68
+miso_soup            0.60       0.55   0.37       0.36       0.69           0.61
+pho                  1.00       1.00   0.70       0.64       1.00           1.00
+pizza                0.60       0.58   0.25       0.24       0.62           0.62
+ramen_noodle         0.79       0.70   0.33       0.33       0.71           0.71
+rice                 0.50       0.47   0.27       0.26       0.67           0.64
+sushi                0.53       0.52   0.10       0.10       0.58           0.58
+Đã lưu 200 hình so sánh vào /kaggle/working/output/compare/ và compare_grid.jpg
+Xong sau 5.0 phút
+34M	/kaggle/working/output
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+[NbConvertApp] Writing 82198 bytes to __notebook__.ipynb
+[NbConvertApp] Converting notebook __notebook__.ipynb to html
+[NbConvertApp] Writing 559436 bytes to __results__.html

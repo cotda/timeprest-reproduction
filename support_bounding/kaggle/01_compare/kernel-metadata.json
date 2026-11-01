@@ -1,0 +1,16 @@
+{
+ "id": "kaggleolap/foodbox-01-compare",
+ "title": "foodbox-01-compare",
+ "code_file": "01_compare.ipynb",
+ "language": "python",
+ "kernel_type": "notebook",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "kaggleolap/uecfood256-mini"
+ ],
+ "competition_sources": [],
+ "kernel_sources": []
+}

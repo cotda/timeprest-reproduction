@@ -1,0 +1,6 @@
+data/
+__pycache__/
+.pytest_cache/
+_push_tmp/
+*.pt
+results/*/weights/

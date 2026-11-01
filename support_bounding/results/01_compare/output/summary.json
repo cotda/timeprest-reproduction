@@ -1,0 +1,149 @@
+{
+ "config": {
+  "data_root": "/kaggle/input",
+  "uec_class_ids": [
+   1,
+   7,
+   11,
+   18,
+   23,
+   36,
+   87,
+   98,
+   206,
+   209
+  ],
+  "per_class": 20,
+  "seed": 0,
+  "prompts": [
+   "food"
+  ],
+  "gpu_jobs": {
+   "0": [
+    "gdino"
+   ],
+   "1": [
+    "owlv2",
+    "yoloworld"
+   ]
+  },
+  "sam": true,
+  "iou_thr": 0.5,
+  "nms_iou": 0.5,
+  "min_area": 0.002,
+  "max_area": 0.98,
+  "timeout_min": 45,
+  "out": "/kaggle/working/output"
+ },
+ "uec_root": "/kaggle/input/datasets/kaggleolap/uecfood256-mini",
+ "n_images": 200,
+ "minutes": 5.037609696388245,
+ "results": [
+  {
+   "model": "yoloworld",
+   "ap50": 0.6472,
+   "ap30": 0.7668,
+   "precision": 0.6596,
+   "recall": 0.6267,
+   "f1": 0.6427,
+   "mean_iou": 0.54,
+   "area_ratio": 0.8237,
+   "main_acc_largest": 0.64,
+   "main_acc_score": 0.61,
+   "conf": 0.2179,
+   "sec_per_img": 0.0569,
+   "peak_vram_mb": 1386.7983,
+   "images_no_box": 21,
+   "n_errors": 0
+  },
+  {
+   "model": "yoloworld+sam",
+   "ap50": 0.6206,
+   "ap30": 0.7631,
+   "precision": 0.7113,
+   "recall": 0.5667,
+   "f1": 0.6308,
+   "mean_iou": 0.4899,
+   "area_ratio": 0.8163,
+   "main_acc_largest": 0.6,
+   "main_acc_score": 0.585,
+   "conf": 0.2889,
+   "sec_per_img": 0.3757,
+   "peak_vram_mb": 1950.395,
+   "images_no_box": 28,
+   "n_errors": 0
+  },
+  {
+   "model": "gdino",
+   "ap50": 0.6179,
+   "ap30": 0.7392,
+   "precision": 0.7642,
+   "recall": 0.5833,
+   "f1": 0.6616,
+   "mean_iou": 0.4891,
+   "area_ratio": 0.8043,
+   "main_acc_largest": 0.565,
+   "main_acc_score": 0.565,
+   "conf": 0.5351,
+   "sec_per_img": 0.5815,
+   "peak_vram_mb": 2261.374,
+   "images_no_box": 48,
+   "n_errors": 0
+  },
+  {
+   "model": "gdino+sam",
+   "ap50": 0.5927,
+   "ap30": 0.738,
+   "precision": 0.7467,
+   "recall": 0.57,
+   "f1": 0.6465,
+   "mean_iou": 0.478,
+   "area_ratio": 0.787,
+   "main_acc_largest": 0.545,
+   "main_acc_score": 0.545,
+   "conf": 0.5351,
+   "sec_per_img": 0.9186,
+   "peak_vram_mb": 2261.374,
+   "images_no_box": 48,
+   "n_errors": 0
+  },
+  {
+   "model": "owlv2",
+   "ap50": 0.2904,
+   "ap30": 0.4039,
+   "precision": 0.4103,
+   "recall": 0.3967,
+   "f1": 0.4034,
+   "mean_iou": 0.3478,
+   "area_ratio": 0.8015,
+   "main_acc_largest": 0.345,
+   "main_acc_score": 0.3,
+   "conf": 0.1863,
+   "sec_per_img": 0.3788,
+   "peak_vram_mb": 780.4102,
+   "images_no_box": 63,
+   "n_errors": 0
+  },
+  {
+   "model": "owlv2+sam",
+   "ap50": 0.2848,
+   "ap30": 0.4005,
+   "precision": 0.4173,
+   "recall": 0.3867,
+   "f1": 0.4014,
+   "mean_iou": 0.3342,
+   "area_ratio": 0.7924,
+   "main_acc_largest": 0.34,
+   "main_acc_score": 0.295,
+   "conf": 0.1887,
+   "sec_per_img": 0.7134,
+   "peak_vram_mb": 1685.0024,
+   "images_no_box": 67,
+   "n_errors": 0
+  }
+ ],
+ "exit_codes": [
+  0,
+  0
+ ]
+}

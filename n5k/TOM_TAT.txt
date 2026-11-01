@@ -1,0 +1,186 @@
+TÓM TẮT TASK NUTRITION5K + TiMePReSt (2026-10-14 đến 2026-10-18)
+=================================================================
+
+File này tóm tắt dễ đọc toàn bộ những gì đã làm. Chi tiết đầy đủ (mọi quyết định, quy tắc đặt trước, số liệu) nằm ở
+n5k/PLAN.md (mục 10 = nhật ký quyết định, mục 11 = kết quả) và các ghi chú có giờ trong n5k/notes/ và n5k/added/notes/.
+
+
+1. ĐỀ TÀI LÀ GÌ?
+----------------
+Ghép hai thứ:
+  - TiMePReSt: một cách huấn luyện song song mô hình trên nhiều GPU kiểu "pipeline" (paper FGCS 2026), đã tái hiện ở
+    phần trước của project.
+  - Nutrition5k: bộ dữ liệu khoảng 3.200 món ăn, mỗi món có ảnh chụp từ trên xuống (màu RGB + ảnh độ sâu depth), danh sách
+    nguyên liệu kèm số gram, và tổng kcal / khối lượng / fat / carb / protein đo thật.
+
+Một mô hình duy nhất phải trả lời 3 câu hỏi nghiên cứu (đã thống nhất với mentor):
+  (1) Huấn luyện song song: TiMePReSt có tốt không, so với PipeDream, DDP và chạy 1 GPU?
+  (2) Nhận diện dinh dưỡng: món có nguyên liệu nào, bao nhiêu gram, tổng kcal (chỉ số chính), mass, fat, carb, protein.
+  (3) Vị trí: chỗ nào trên ảnh tạo ra lượng kcal đó (bản đồ calories).
+
+Phần cứng: Kaggle, 2 GPU T4 (15 GB mỗi GPU), cùng một máy. Hai tài khoản Kaggle (kaggleolap, ktanvn); agent tự đẩy và
+theo dõi các "kernel" (lần chạy) qua API.
+
+
+2. MÔ HÌNH VÀ DỮ LIỆU (NÓI ĐƠN GIẢN)
+-----------------------------------
+  - Ảnh: 4 kênh (RGB + depth), thu về 224×224. Giải mã trước một lần thành file cache để đọc nhanh.
+  - Chia dữ liệu cố định: 2270 món train / 486 val / 486 test (dùng lại split của các thí nghiệm cũ).
+  - Xương sống: ResNet-50 đã huấn luyện sẵn trên ImageNet. Phía cuối có:
+      * 195 "bản đồ CAM" 7×7, mỗi nguyên liệu một bản đồ: cho biết nguyên liệu đó có trong món không và nằm ở đâu.
+      * Nhánh gram: số gram từng nguyên liệu, từ đó tính kcal / fat / carb / protein theo bảng dinh dưỡng mỗi gram.
+      * Nhánh tổng trực tiếp: dự đoán thẳng 5 con số tổng của món (kcal, mass, fat, carb, protein). Đây là nguồn của MAE kcal.
+      * Bản đồ calories: lấy CAM của các nguyên liệu đoán có, nhân với kcal của từng nguyên liệu, cộng lại. Ra một bản đồ
+        "kcal nằm ở ô nào".
+  - Loss = phần nhận diện (có/không) + phần gram + phần tổng (nhân hệ số w_total).
+  - Chỉ số: MAE kcal (sai số tuyệt đối trung bình, càng THẤP càng tốt); mAP / F1 nhận diện nguyên liệu (càng CAO càng tốt).
+    Chọn checkpoint theo val, báo cáo trên test.
+
+
+3. CÁC CÁCH HUẤN LUYỆN ĐƯỢC SO SÁNH
+----------------------------------
+  - single (1 GPU): huấn luyện bình thường, làm mốc.
+  - DDP (Distributed Data Parallel): mỗi GPU giữ nguyên cả mô hình, mỗi GPU xử lý một nửa batch (32 + 32 ảnh), rồi lấy
+    trung bình gradient. Không có trọng số "cũ".
+  - Pipeline: chia mô hình làm 2 phần, GPU0 chạy các khối đầu, GPU1 chạy các khối sau (điểm cắt [0,8,18]).
+      * PipeDream: lịch 1F1B, giữ lại phiên bản trọng số cũ cho đúng (weight stashing).
+      * TiMePReSt (hệ chính ban đầu): chia batch 64 thành N = 2 micro-batch, bỏ weight stashing, chấp nhận forward và
+        backward lệch nhau 1 phiên bản trọng số để chạy nhanh hơn.
+      * TiMePReSt N = 4: thử thay số micro-batch.
+
+
+4. QUÁ TRÌNH LÀM (THEO THỜI GIAN)
+--------------------------------
+14/10 — Dựng nền tảng (B1–B5)
+  - Móc code dinh dưỡng vào engine và runtime pipeline sẵn có (chỉ sửa ở mức móc nối, test cũ vẫn PASS).
+  - Viết dữ liệu + cache, mô hình ResNet-50 4 kênh, checks D0–D4 (kiểm tra pipeline 2 GPU khớp 1 GPU, đúng phiên bản trọng
+    số, resume liền mạch), DDP.
+  - Gỡ các vấn đề Kaggle: kernel treo khi gắn dataset gốc 23 GB → tách kernel tạo cache chạy bằng CPU.
+  - Chọn thiết kế bằng thí nghiệm ngắn, mỗi lựa chọn có quy tắc ghi trước:
+      * Điểm cắt pipeline [0,8,18] (nhanh hơn 9% so với chia theo MACs).
+      * Lúc đầu mô hình gần như không học được nguyên liệu (mAP 8%) → đổi cách cộng loss nguyên liệu (sum) và thêm nhánh tổng
+        trực tiếp → học được cả hai.
+      * Giữ ảnh 224: ảnh 320 không chính xác hơn, lại chậm gấp 3 lần.
+      * lr theo sweep 8 epoch: 0.02 cho single / DDP / PipeDream, 0.01 cho TiMePReSt. Sweep 30 epoch sau đó (16–17/10) cho
+        thấy 0.02 tốt hơn cả cho TiMePReSt, nên giờ mọi hệ dùng 0.02.
+
+14–15/10 — B6: chạy dài 30 epoch, 3 seed, 5 hệ + đo mạng chậm giả lập (bench_comm).
+15/10 — Thí nghiệm phụ two-stream (hai ResNet-50 riêng cho RGB và depth): chính xác hơn ở 1 GPU, nhưng nặng gấp đôi; pipeline
+        chậm hơn cả single 10% và chậm hơn DDP 2,2 lần; TiMePReSt kém hơn. Giữ mô hình một nhánh làm chính.
+15–16/10 — B7: bản đồ calories + deletion test (che vùng bản đồ chỉ ra, so với che ngẫu nhiên).
+16–17/10 — Sweep lr ở 30 epoch (run12, run13): lr tốt nhất cho cả TiMePReSt và PipeDream là 0.02.
+          — Lịch 60 epoch (run14–16, 3 seed): chỉ giúp TiMePReSt bắt kịp PipeDream 60 epoch (vì PipeDream bị overfit);
+            PipeDream 30 epoch vẫn tốt nhất trong một nửa thời gian.
+17/10 — Phần "added" (thử nghiệm, chưa phải đóng góp): cân bằng tải, EMA, trọng số loss w_total (xem mục 6).
+      — DDP khi mạng chậm (run17).
+      — Đưa w_total = 3 vào cấu hình chính, chạy lại toàn bộ B6 + B7 (run18).
+      — Đánh giá vị trí so với mask thật bằng HandMasks (run19).
+17–18/10 — Thử nghiệm HM: chỉ huấn luyện trên các món có mask (run20).
+18/10 — Kế hoạch giả lập GPU không đồng đều: viết xong, HOÃN chờ ý kiến mentor.
+
+
+5. KẾT QUẢ CHÍNH (CẤU HÌNH HIỆN TẠI: w_total = 3, lr 0.02, 30 epoch, 3 seed)
+---------------------------------------------------------------------------
+5.1. Chất lượng và tốc độ (test, trung bình 3 seed, run18)
+
+  Hệ               MAE kcal       % sai số kcal   mAP    s/epoch   Bộ nhớ GPU
+  DDP              48,0 ± 1,5     18,0%           87,3   12,3      3,1 GB mỗi GPU
+  single (1 GPU)   48,4 ± 0,3     18,1%           87,1   23,1      5,6 GB
+  PipeDream        50,3 ± 0,5     18,9%           86,6   20,1      8,4 / 2,0 GB
+  TiMePReSt N=2    54,3 ± 1,1     20,3%           85,0   19,0      8,3 / 2,0 GB
+  TiMePReSt N=4    55,9 ± 1,6     20,9%           85,1   20,1      8,3 / 2,0 GB
+
+  - So với bài gốc Nutrition5k dùng depth làm kênh thứ 4 (18,8%): ngang hoặc tốt hơn chút. Các bài mới tách hai nhánh RGB / depth
+    đạt 12–15% (không so tuyệt đối được vì mỗi bài chia dữ liệu khác nhau).
+
+5.2. Câu hỏi 1 — Huấn luyện song song
+  - TiMePReSt nhanh hơn PipeDream khoảng 5% mỗi epoch (khớp paper), và 7–15% khi giả lập mạng 1–2 Gbit/s giữa hai GPU.
+  - Nhưng TiMePReSt kém PipeDream 3,9 kcal (8%), ở cả 3 seed (khớp paper: paper thừa nhận TiMePReSt học kém hơn mỗi epoch).
+  - TiMePReSt dao động mạnh ở giữa quá trình (val MAE nhảy kiểu 94 → 208 kcal ở epoch 6–18), PipeDream ổn định.
+  - DDP tốt nhất ở MỌI tiêu chí: chính xác nhất, nhanh nhất (gấp 1,55 lần TiMePReSt), ít bộ nhớ nhất.
+  - DDP khi mạng chậm (run17): vẫn nhanh hơn TiMePReSt 1,6–2,0 lần ở 2 và 1 Gbit/s. Lý do: mỗi epoch hai bên truyền lượng gần
+    bằng nhau (3,2 so với 3,4 GB), nhưng DDP truyền chồng lên lúc đang tính backward, còn pipeline phải chờ truyền.
+  - Vì sao pipeline không có lợi ở đây (phân tích từ op trace): hai GPU lệch tải ít (khoảng 1,1 lần), nhưng pipeline phải
+    làm thêm 23–41% việc so với 1 GPU, nên chỉ nhanh hơn 1 GPU 1,2–1,4 lần (DDP: 1,9 lần).
+  - Vì sao paper vẫn dùng pipeline: paper chạy trên GPU khác nhau (24 GB + 12 GB, mỗi GPU một máy) và có mô hình lớn
+    (TinyLlama 1,1 tỉ tham số), và paper KHÔNG so với DDP. Với mô hình vừa 1 GPU và hai GPU giống nhau như ở đây, DDP thắng.
+    Đây là điều paper chưa kiểm tra, và là một phát hiện của đề tài.
+
+5.3. Câu hỏi 2 — Nhận diện dinh dưỡng
+  - MAE kcal tốt nhất 48,0 (DDP); mAP nhận diện nguyên liệu 85–87 ở mọi hệ.
+  - w_total = 3 (tăng trọng số phần tổng trong loss) làm mọi hệ tốt hơn: DDP −5,2, single −3,5, PipeDream −1,6,
+    TiMePReSt −2,0 kcal so với w_total = 1 cũ.
+
+5.4. Câu hỏi 3 — Vị trí
+  - Deletion test (B7, run18): cả 4 loại bản đồ đều "trung thực với mô hình": che vùng bản đồ chỉ ra làm dự đoán giảm mạnh
+    hơn che ngẫu nhiên ở 93–97% trường hợp (p < 10^-76), ở cả 1 GPU, PipeDream và TiMePReSt.
+  - Vị trí THẬT (run19): dùng mask nguyên liệu do Hand và cộng sự (2026) vẽ trên chính ảnh Nutrition5k (gọi là HandMasks),
+    chấm trên 154 món test mô hình chưa thấy:
+        Hệ           kcal của bản đồ nằm   sai số chia kcal theo vùng   pointing game
+                     trên thức ăn          (so với chia theo diện tích)  (điểm sáng nhất đúng vùng)
+        Mốc          18%                   0,190                         50%
+        single       52%                   0,159 (tốt hơn 16%)           85%
+        PipeDream    52%                   0,147 (tốt hơn 22%)           83%
+        TiMePReSt    51%                   0,151 (tốt hơn 21%)           85%
+    → Bản đồ đặt kcal lên đúng vùng thức ăn và chia kcal giữa các vùng đúng hơn chia theo diện tích. Cách huấn luyện song
+      song không ảnh hưởng tới vị trí.
+  - Giới hạn: chỉ khoảng một nửa kcal nằm trên thức ăn vì bản đồ chỉ có 7×7 ô; nguyên liệu nhỏ (hành, tỏi) gần mức ngẫu nhiên.
+  - Để dùng HandMasks: viết bảng ánh xạ 195 nguyên liệu → 40 nhóm của họ, kiểm bằng khối lượng: khớp 99,9%. Bộ mask giữ tách
+    riêng hoàn toàn với dữ liệu huấn luyện, chỉ dùng để chấm.
+
+
+6. CÁC THỬ NGHIỆM PHỤ VÀ PHẦN "ADDED" (thử nghiệm, chưa phải đóng góp cho đến khi người dùng nói)
+---------------------------------------------------------------------------------------------
+  - C. Cân bằng tải 2 GPU: lệch tải chỉ khoảng 1,1; vấn đề thật là pipeline làm thêm việc (xem 5.2).
+  - A. EMA trọng số: không cải thiện kết quả cuối (lịch cosine đã làm việc đó), chỉ làm phẳng dao động giữa quá trình.
+  - B / B2. Trọng số loss phần tổng w_total: dao động của TiMePReSt tăng theo w_total. w_total = 3 tốt hơn w_total = 1 ở cả
+    TiMePReSt và PipeDream (3 seed) → người dùng cho đưa vào cấu hình chính.
+  - B3. w_total = 10: TiMePReSt kcal tốt hơn nữa (49,9–51,8), nhưng có 1/2 lần chạy đầu ra mass "chết" (dự đoán thành hằng
+    số); PipeDream không lợi ổn định → giữ w_total = 3.
+  - Phát hiện phụ: huấn luyện lại cùng cấu hình, TiMePReSt lệch khoảng ±2 kcal giữa các lần (PipeDream ít hơn).
+  - HM. Chỉ huấn luyện trên 741 món có mask (HM1: nhãn 195 nguyên liệu; HM2: nhãn 40 nhóm của HandMasks): kcal kém mô hình
+    chính 6–12 kcal, mAP giảm mạnh; HM2 định vị nhỉnh hơn rất ít (pointing +1–3 điểm); TiMePReSt HM1 chết đầu ra kcal.
+    Không đạt quy tắc → đề xuất không đưa vào chính.
+  - Đã thử và giữ làm kết quả phụ: two-stream, ảnh 320, lịch 60 epoch, sweep lr 30 epoch (xem mục 4).
+
+
+7. NHỮNG PHÁT HIỆN QUAN TRỌNG NHẤT
+---------------------------------
+  1. TiMePReSt đúng như paper khi so với PipeDream: nhanh hơn mỗi epoch, nhưng học kém hơn.
+  2. Khi mô hình vừa 1 GPU và hai GPU giống nhau, DDP tốt hơn mọi cách pipeline, kể cả khi mạng chậm.
+  3. TiMePReSt kém ổn định: dao động mạnh, và 2 lần bị "chết đầu ra" (mass ở B3, kcal ở HM1) khi gradient của phần tổng lớn
+     so với lượng dữ liệu.
+  4. Bản đồ calories định vị đúng thức ăn thật, tốt hơn rõ so với mốc, với mọi cách huấn luyện.
+  5. Pipeline với CNN ở ảnh lớn gặp bế tắc: activation dồn ở các khối đầu nên GPU0 hết bộ nhớ; cắt sớm thì truyền nhiều và
+     lệch tải.
+
+
+8. HẠN CHẾ
+---------
+  - Chỉ 2 GPU giống nhau, một loại phần cứng, một dataset; mô hình vừa 1 GPU.
+  - Mạng chậm là giả lập (chỉ đổi thời gian truyền).
+  - Chọn theo val trên 486 món có nhiễu 1–2 kcal; TiMePReSt có nhiễu khi huấn luyện lại khoảng ±2 kcal.
+  - Bản đồ vị trí thô (7×7); 18 tên trong bảng ánh xạ nhóm chưa kiểm chứng được (chỉ ảnh hưởng pointing game).
+  - Kết luận "DDP thắng" chỉ đúng với GPU giống nhau; paper dùng GPU khác nhau (chưa thử, kế hoạch đã hoãn).
+
+
+9. VIỆC CÒN MỞ / ĐỀ XUẤT
+-----------------------
+  - Báo cáo mentor. Hai câu nên hỏi: (a) đánh giá vị trí bằng HandMasks đã đủ chưa; (b) có viết theo hướng "khi nào
+    TiMePReSt có lợi / không có lợi" không.
+  - Đã viết kế hoạch nhưng hoãn: giả lập GPU không đồng đều (giống cluster của paper) để xem khi nào pipeline thắng DDP.
+  - Hướng có thể làm tiếp (vào n5k/added/): sửa sự kém ổn định của TiMePReSt; bản đồ chi tiết hơn (14×14) để định vị tốt hơn.
+  - Slides chỉ cập nhật khi người dùng yêu cầu.
+
+
+10. TÌM FILE Ở ĐÂU
+-----------------
+  n5k/PLAN.md                      kế hoạch, nhật ký quyết định (mục 10), kết quả đầy đủ (mục 11)
+  n5k/notes/, n5k/added/notes/      ghi chú từng kết luận, có giờ; README là mục lục
+  n5k/added/README.md              nhật ký và kết quả phần thử nghiệm
+  n5k/analysis/, n5k/added/analysis/   script tính lại các bảng từ kết quả đã tải về
+  n5k/results/                     kết quả tải từ Kaggle (CSV/JSON/log/hình; không có checkpoint)
+  n5k/kaggle/, n5k/added/kaggle/   script các kernel Kaggle (README có lưu ý vận hành)
+  n5k/configs/, n5k/added/configs/ cấu hình
+  timeprest/n5k/                   code (test CPU ở timeprest/n5k/tests/, 74 test PASS)
+  n5k/report/                      slides báo cáo (LaTeX)

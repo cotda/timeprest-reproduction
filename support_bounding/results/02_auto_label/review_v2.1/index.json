@@ -1,0 +1,1166 @@
+[
+{
+"idx": 0,
+"image": "apple_pie/1074942",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 1,
+"image": "apple_pie/1142597",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 2,
+"image": "apple_pie/1177254",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 3,
+"image": "apple_pie/1252879",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 4,
+"image": "apple_pie/1290425",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 5,
+"image": "apple_pie/1322211",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 6,
+"image": "apple_pie/1344873",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 7,
+"image": "apple_pie/1355206",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 8,
+"image": "apple_pie/1421796",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 9,
+"image": "apple_pie/1448488",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 10,
+"image": "apple_pie/1466791",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 11,
+"image": "apple_pie/1487150",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 12,
+"image": "apple_pie/1580276",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 13,
+"image": "apple_pie/1581853",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 14,
+"image": "apple_pie/1620714",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 15,
+"image": "apple_pie/1622276",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 16,
+"image": "apple_pie/1753164",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 17,
+"image": "apple_pie/1106961",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 18,
+"image": "apple_pie/1657587",
+"n_boxes": "3",
+"classes": "M o1 o2"
+},
+{
+"idx": 19,
+"image": "apple_pie/1674492",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 20,
+"image": "bibimbap/1066987",
+"n_boxes": "3",
+"classes": "M o1 o2"
+},
+{
+"idx": 21,
+"image": "bibimbap/1142274",
+"n_boxes": "2",
+"classes": "M o1"
+},
+{
+"idx": 22,
+"image": "bibimbap/1201921",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 23,
+"image": "bibimbap/1253808",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 24,
+"image": "bibimbap/1367033",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 25,
+"image": "bibimbap/1370660",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 26,
+"image": "bibimbap/1387995",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 27,
+"image": "bibimbap/1399173",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 28,
+"image": "bibimbap/1532705",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 29,
+"image": "bibimbap/1578998",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 30,
+"image": "bibimbap/1592370",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 31,
+"image": "bibimbap/1661419",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 32,
+"image": "bibimbap/1682807",
+"n_boxes": "3",
+"classes": "M o1 o2"
+},
+{
+"idx": 33,
+"image": "bibimbap/1686827",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 34,
+"image": "bibimbap/1018560",
+"n_boxes": "2",
+"classes": "M o1"
+},
+{
+"idx": 35,
+"image": "bibimbap/1039559",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 36,
+"image": "bibimbap/1089605",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 37,
+"image": "bibimbap/1240876",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 38,
+"image": "bibimbap/1305020",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 39,
+"image": "bibimbap/1373847",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 40,
+"image": "cannoli/1007970",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 41,
+"image": "cannoli/1019714",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 42,
+"image": "cannoli/1067240",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 43,
+"image": "cannoli/108003",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 44,
+"image": "cannoli/125648",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 45,
+"image": "cannoli/1282001",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 46,
+"image": "cannoli/1357794",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 47,
+"image": "cannoli/1359779",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 48,
+"image": "cannoli/1406840",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 49,
+"image": "cannoli/1446392",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 50,
+"image": "cannoli/1493254",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 51,
+"image": "cannoli/1511446",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 52,
+"image": "cannoli/1548466",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 53,
+"image": "cannoli/1140808",
+"n_boxes": "3",
+"classes": "M o1 o2"
+},
+{
+"idx": 54,
+"image": "cannoli/1166349",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 55,
+"image": "cannoli/1266692",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 56,
+"image": "cannoli/1337561",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 57,
+"image": "cannoli/134091",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 58,
+"image": "cannoli/1385122",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 59,
+"image": "edamame/1092863",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 60,
+"image": "edamame/109599",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 61,
+"image": "edamame/1114618",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 62,
+"image": "edamame/1129866",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 63,
+"image": "edamame/1149858",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 64,
+"image": "edamame/1182525",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 65,
+"image": "edamame/1255500",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 66,
+"image": "edamame/1278744",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 67,
+"image": "edamame/1315163",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 68,
+"image": "edamame/1346279",
+"n_boxes": "3",
+"classes": "M o1 o2"
+},
+{
+"idx": 69,
+"image": "edamame/1356398",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 70,
+"image": "edamame/1372112",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 71,
+"image": "edamame/155242",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 72,
+"image": "edamame/1615589",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 73,
+"image": "edamame/1659005",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 74,
+"image": "edamame/1693363",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 75,
+"image": "edamame/1693594",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 76,
+"image": "edamame/1695174",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 77,
+"image": "edamame/1719918",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 78,
+"image": "edamame/1456673",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 79,
+"image": "falafel/104775",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 80,
+"image": "falafel/114133",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 81,
+"image": "falafel/1208919",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 82,
+"image": "falafel/122098",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 83,
+"image": "falafel/1247066",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 84,
+"image": "falafel/1290690",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 85,
+"image": "falafel/1330860",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 86,
+"image": "falafel/1343482",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 87,
+"image": "falafel/1412347",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 88,
+"image": "falafel/1423746",
+"n_boxes": "4",
+"classes": "o0 o1 o2 M"
+},
+{
+"idx": 89,
+"image": "falafel/1486585",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 90,
+"image": "falafel/1565700",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 91,
+"image": "falafel/1645883",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 92,
+"image": "falafel/1670",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 93,
+"image": "falafel/1684053",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 94,
+"image": "falafel/102356",
+"n_boxes": "3",
+"classes": "o0 o1 M"
+},
+{
+"idx": 95,
+"image": "falafel/1046752",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 96,
+"image": "falafel/1070737",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 97,
+"image": "falafel/1104277",
+"n_boxes": "3",
+"classes": "o0 o1 M"
+},
+{
+"idx": 98,
+"image": "falafel/1336658",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 99,
+"image": "french_toast/105172",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 100,
+"image": "french_toast/1066687",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 101,
+"image": "french_toast/107493",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 102,
+"image": "french_toast/1078039",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 103,
+"image": "french_toast/1139825",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 104,
+"image": "french_toast/117182",
+"n_boxes": "2",
+"classes": "M o1"
+},
+{
+"idx": 105,
+"image": "french_toast/125190",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 106,
+"image": "french_toast/1285422",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 107,
+"image": "french_toast/1299998",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 108,
+"image": "french_toast/1324607",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 109,
+"image": "french_toast/1416513",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 110,
+"image": "french_toast/1518268",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 111,
+"image": "french_toast/1591600",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 112,
+"image": "french_toast/1593854",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 113,
+"image": "french_toast/160708",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 114,
+"image": "french_toast/1381192",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 115,
+"image": "french_toast/1381831",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 116,
+"image": "french_toast/1417664",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 117,
+"image": "french_toast/1427833",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 118,
+"image": "french_toast/1553684",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 119,
+"image": "ice_cream/116769",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 120,
+"image": "ice_cream/121650",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 121,
+"image": "ice_cream/137146",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 122,
+"image": "ice_cream/14484",
+"n_boxes": "6",
+"classes": "o0 M o2 o3 o4 o5"
+},
+{
+"idx": 123,
+"image": "ice_cream/1511291",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 124,
+"image": "ice_cream/1559298",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 125,
+"image": "ice_cream/1593765",
+"n_boxes": "4",
+"classes": "M o1 o2 o3"
+},
+{
+"idx": 126,
+"image": "ice_cream/164659",
+"n_boxes": "2",
+"classes": "M o1"
+},
+{
+"idx": 127,
+"image": "ice_cream/1710501",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 128,
+"image": "ice_cream/1758932",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 129,
+"image": "ice_cream/1770967",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 130,
+"image": "ice_cream/1812511",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 131,
+"image": "ice_cream/1004744",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 132,
+"image": "ice_cream/1161150",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 133,
+"image": "ice_cream/130043",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 134,
+"image": "ice_cream/138570",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 135,
+"image": "ice_cream/1467790",
+"n_boxes": "6",
+"classes": "M o1 o2 o3 o4 o5"
+},
+{
+"idx": 136,
+"image": "ice_cream/1498499",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 137,
+"image": "ice_cream/1609293",
+"n_boxes": "5",
+"classes": "M o1 o2 o3 o4"
+},
+{
+"idx": 138,
+"image": "ramen/1014141",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 139,
+"image": "ramen/1034646",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 140,
+"image": "ramen/1045249",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 141,
+"image": "ramen/1100403",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 142,
+"image": "ramen/1127591",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 143,
+"image": "ramen/1147641",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 144,
+"image": "ramen/1170570",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 145,
+"image": "ramen/121525",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 146,
+"image": "ramen/1313530",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 147,
+"image": "ramen/1397182",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 148,
+"image": "ramen/1421944",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 149,
+"image": "ramen/1496711",
+"n_boxes": "13",
+"classes": "o0 o1 M o3 o4 o5 o6 o7 o8 o9 o10 o11 o12"
+},
+{
+"idx": 150,
+"image": "ramen/1623485",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 151,
+"image": "ramen/167513",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 152,
+"image": "ramen/1018140",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 153,
+"image": "ramen/1105466",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 154,
+"image": "ramen/1252847",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 155,
+"image": "ramen/1313990",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 156,
+"image": "ramen/1368561",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 157,
+"image": "ramen/1542725",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 158,
+"image": "sushi/1022922",
+"n_boxes": "2",
+"classes": "M o1"
+},
+{
+"idx": 159,
+"image": "sushi/1025041",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 160,
+"image": "sushi/1049178",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 161,
+"image": "sushi/1085066",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 162,
+"image": "sushi/1112798",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 163,
+"image": "sushi/1129338",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 164,
+"image": "sushi/1132999",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 165,
+"image": "sushi/1138695",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 166,
+"image": "sushi/1193742",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 167,
+"image": "sushi/1194203",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 168,
+"image": "sushi/1200222",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 169,
+"image": "sushi/1216787",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 170,
+"image": "sushi/1369628",
+"n_boxes": "5",
+"classes": "o0 o1 o2 o3 M"
+},
+{
+"idx": 171,
+"image": "sushi/1412702",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 172,
+"image": "sushi/149174",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 173,
+"image": "sushi/1591167",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 174,
+"image": "sushi/105070",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 175,
+"image": "sushi/1143615",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 176,
+"image": "sushi/1421117",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 177,
+"image": "sushi/1457312",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 178,
+"image": "tiramisu/1026550",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 179,
+"image": "tiramisu/105532",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 180,
+"image": "tiramisu/1059966",
+"n_boxes": "2",
+"classes": "o0 M"
+},
+{
+"idx": 181,
+"image": "tiramisu/1084668",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 182,
+"image": "tiramisu/1236136",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 183,
+"image": "tiramisu/1280513",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 184,
+"image": "tiramisu/1320297",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 185,
+"image": "tiramisu/1450107",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 186,
+"image": "tiramisu/1535921",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 187,
+"image": "tiramisu/1555377",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 188,
+"image": "tiramisu/1612518",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 189,
+"image": "tiramisu/1705402",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 190,
+"image": "tiramisu/1061807",
+"n_boxes": "2",
+"classes": "M o1"
+},
+{
+"idx": 191,
+"image": "tiramisu/1143941",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 192,
+"image": "tiramisu/1203999",
+"n_boxes": "1",
+"classes": "M"
+},
+{
+"idx": 193,
+"image": "tiramisu/1297139",
+"n_boxes": "1",
+"classes": "M"
+}
+]

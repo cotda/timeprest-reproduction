@@ -1,0 +1,56 @@
+{
+ "config": {
+  "data_root": "/kaggle/input",
+  "input_dirs": null,
+  "classes": null,
+  "n_classes": 10,
+  "per_class": 20,
+  "seed": 0,
+  "model": "gdino",
+  "prompts": [
+   "food"
+  ],
+  "conf": 0.45,
+  "sam": false,
+  "nms_iou": 0.5,
+  "min_area": 0.002,
+  "max_area": 1.0,
+  "drop_container": false,
+  "main_rule": "largest",
+  "review_conf": null,
+  "max_boxes": 4,
+  "val_frac": 0.2,
+  "timeout_min": 60,
+  "out": "/kaggle/working/output"
+ },
+ "roots": [
+  "/kaggle/input/datasets/msarmi9/food101tiny/data/food-101-tiny/train",
+  "/kaggle/input/datasets/msarmi9/food101tiny/data/food-101-tiny/valid"
+ ],
+ "n_images": 200,
+ "minutes": 2.1228005329767865,
+ "exit_codes": [
+  0,
+  0
+ ],
+ "detector_meta": [
+  {
+   "model": "gdino",
+   "prompts": [
+    "food"
+   ],
+   "load_s": 25.529306888580322,
+   "peak_vram_mb": 2262.54052734375,
+   "gpu": "Tesla T4"
+  },
+  {
+   "model": "gdino",
+   "prompts": [
+    "food"
+   ],
+   "load_s": 25.542370796203613,
+   "peak_vram_mb": 2262.97412109375,
+   "gpu": "Tesla T4"
+  }
+ ]
+}

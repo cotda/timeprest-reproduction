@@ -1,0 +1,13 @@
+{
+ "run_dir": "results/02_auto_label",
+ "tag": "v2.1",
+ "variant": "gdino",
+ "conf": 0.35,
+ "other_conf": 0.45,
+ "review_conf": null,
+ "nms_iou": 0.5,
+ "min_area": 0.002,
+ "max_area": 1.0,
+ "max_boxes": 4,
+ "main_rule": "largest"
+}

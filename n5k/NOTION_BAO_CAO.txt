@@ -1,0 +1,550 @@
+NỘI DUNG ĐIỀN TEMPLATE NOTION
+[Implementation] [3.1.0] [2001] Detect món ăn + ước lượng dinh dưỡng (calo, protein, fat, carb)
+==========================================================================================
+Ghi chú khi dán:
+  - Điền theo đúng thứ tự các mục của template. Bảng viết dạng Markdown, dán vào Notion sẽ tự thành bảng.
+  - Số liệu lấy từ run18: cấu hình chính hiện tại, test 486 món, trung bình 3 seed. Nguồn là n5k/PLAN.md mục 11 và
+    n5k/results/kaggle/run18_s*/.../summary.json.
+  - Có 2 chỗ template hỏi nhưng project không làm: K-fold cross validation và đo riêng thời gian detect. Mình ghi rõ
+    là không làm, không bịa số.
+  - "Detect món ăn" ở đây nghĩa là nhận diện các NGUYÊN LIỆU có trong món (đa nhãn, 195 nguyên liệu), không phải phân loại
+    tên món. Nutrition5k không có nhãn tên món.
+
+
+# Hạng Mục Huấn Luyện
+-------------------------------------------------------------------------------------------
+
+| **Mục** | **Nội dung** |
+| --- | --- |
+| **Tên mô hình** | N5k-ResNet50-CAM (tên trong code: `n5k_resnet50`) huấn luyện song song bằng TiMePReSt / PipeDream / DDP |
+| **Loại mô hình** | CNN đa nhiệm (multi-task): phân loại đa nhãn (có/không từng nguyên liệu) + hồi quy (gram từng nguyên liệu, tổng kcal/mass/fat/carb/protein) + định vị yếu bằng bản đồ CAM |
+| **Mô tả ngắn gọn** | Từ 1 ảnh chụp từ trên xuống (RGB + depth), mô hình cho biết món có nguyên liệu nào, mỗi nguyên liệu bao nhiêu gram, tổng calo / protein / fat / carb / khối lượng, và bản đồ "calo nằm ở đâu" trên ảnh. Cùng một mô hình được huấn luyện bằng 5 cách (1 GPU, DDP, PipeDream, TiMePReSt N=2, N=4) để so sánh các cách huấn luyện song song. |
+| **Ứng dụng thực tế** | Nhật ký ăn uống tự động (chụp khay ăn → ra calo và macro), theo dõi dinh dưỡng cho bệnh nhân tiểu đường / béo phì, căng tin / bếp ăn bệnh viện ước lượng khẩu phần |
+| **Sơ đồ kiến trúc** | Ảnh RGB-D 4×224×224 → ResNet-50 (pretrained ImageNet, conv1 4 kênh) → feature 2048×7×7 → 3 conv 1×1 song song: (a) 195 bản đồ CAM → logit có/không; (b) 195 bản đồ gram → gram; (c) 5 bản đồ tổng → kcal/mass/fat/carb/protein. Bản đồ calo = Σ CAM × kcal từng nguyên liệu. Khi pipeline: GPU0 chạy block 0–7, GPU1 chạy block 8–17 + head (xem link trang kiến trúc) |
+| **Thuật toán sử dụng** | ResNet-50 + Class Activation Map; loss BCE + SmoothL1; SGD momentum + cosine LR + warmup; huấn luyện song song: TiMePReSt (lịch nF1B, bỏ weight stashing), PipeDream (1F1B + weight stashing), DDP (all-reduce gradient) |
+| **Dữ liệu đầu vào** | Nutrition5k (Google, CVPR 2021): 3.242 món có ảnh overhead, chia cố định 2.270 train / 486 val / 486 test. Mỗi món: rgb.png, depth_raw.png (16-bit), danh sách nguyên liệu + gram, tổng kcal/mass/fat/carb/protein đo thật. Ngoài ra dùng HandMasks (Hand và cộng sự 2026, CC BY 4.0) chỉ để chấm vị trí |
+| **Tiền xử lý dữ liệu** | Resize 224 (RGB bilinear, depth nearest), giải mã 1 lần thành cache .npy; RGB chuẩn hóa theo ImageNet; depth cắt theo phân vị 1–99% của train, đưa về [0,1], 0 = không đo được, rồi chuẩn hóa; nhãn = gram 195 nguyên liệu + 5 tổng; augment lật ngang / dọc đồng thời RGB và depth |
+| **Cách huấn luyện mô hình** | 30 epoch, batch 64, SGD; chọn checkpoint theo val MAE kcal, báo cáo test; 3 seed (0, 1, 2); Kaggle 2×T4; 5 cách: single, DDP (32+32 ảnh/GPU), PipeDream và TiMePReSt (2 stage, cắt [0,8,18], TiMePReSt chia batch thành N=2 micro-batch) |
+| **Siêu tham số quan trọng** | lr 0.02, momentum 0.9, weight decay 1e-4, cosine, warmup 2 epoch, batch 64, 30 epoch, ảnh 224, trọng số loss w_presence = 1 / w_gram = 1 / w_total = 3, loss nguyên liệu cộng (sum), N = 2 micro-batch, 2 stage |
+| **Đánh giá hiệu suất** | Test (TB 3 seed), tốt nhất là DDP: MAE kcal 48,0 (18,0% so với kcal trung bình), protein 4,8 g, fat 3,5 g, carb 4,9 g, mass 32,4 g, mAP nguyên liệu 87,3%. Đoán hằng bằng trung vị: 165,8 kcal. Định vị so với mask thật: 51–52% kcal của bản đồ nằm trên thức ăn (mốc 18%), pointing game 83–85% (mốc 50%) |
+| **So sánh với mô hình khác** | Bài gốc Nutrition5k: RGB 26,1%, depth làm kênh 4 18,8% → của mình 18,0–18,9% (1 GPU / DDP / PipeDream). Các bài RGB-D 2 nhánh mới: 12,2–14,9%. Giữa các cách huấn luyện: DDP tốt nhất cả độ chính xác lẫn tốc độ; TiMePReSt nhanh hơn PipeDream 5% nhưng kém 3,9 kcal |
+| **Ứng dụng & Triển khai** | Chưa triển khai. Hiện chỉ là code nghiên cứu, chạy trên Kaggle. Hướng triển khai: export checkpoint 1 GPU (~24,3 triệu tham số), app chụp ảnh từ trên xuống. Cần camera có depth (RealSense / LiDAR điện thoại) |
+| **Tài liệu tham khảo** | Nutrition5k (Thames et al., CVPR 2021); TiMePReSt (Dutta et al., FGCS 2026); PipeDream (Narayanan et al., SOSP 2019); ResNet (He et al., CVPR 2016); CAM (Zhou et al., CVPR 2016); HandMasks (Hand et al., Frontiers in Nutrition 2026) |
+
+
+# Overview Task
+-------------------------------------------------------------------------------------------
+
+Task gồm 3 thành phần trong MỘT mô hình, và 1 câu hỏi về cách huấn luyện:
+  1. Nhận diện (detect): món ăn có những nguyên liệu nào, trong 195 nguyên liệu (bài toán đa nhãn).
+  2. Ước lượng dinh dưỡng: gram từng nguyên liệu, và tổng calo (chỉ số chính), protein, fat, carb, khối lượng của món.
+  3. Vị trí: bản đồ calo cho biết vùng nào trên ảnh mang bao nhiêu calo.
+  4. Huấn luyện song song trên 2 GPU: so sánh TiMePReSt (phương pháp của paper FGCS 2026) với PipeDream, DDP và chạy
+     1 GPU, về độ chính xác, thời gian mỗi epoch và bộ nhớ.
+
+Kết quả chính:
+  - Sai số calo 48 kcal (18%), ngang bài gốc Nutrition5k.
+  - Bản đồ calo đặt đúng vùng thức ăn thật.
+  - Với mô hình vừa 1 GPU và 2 GPU giống nhau, DDP thắng mọi cách pipeline.
+  - TiMePReSt nhanh hơn PipeDream nhưng học kém hơn và kém ổn định.
+
+
+# Kiến trúc thiết kế mô hình
+-------------------------------------------------------------------------------------------
+(Tạo page riêng, dán nội dung dưới đây rồi copy link vào đây)
+
+Ảnh RGB-D 4 × 224 × 224
+  │
+  ▼
+ResNet-50 (18 block, pretrained ImageNet)
+  - conv1 có 4 kênh: 3 kênh RGB chép từ ImageNet, kênh depth = trung bình 3 filter RGB.
+  - Nếu chạy pipeline: GPU0 chạy block 0–7, GPU1 chạy block 8–17 và head.
+  │
+  ▼
+feature 2048 × 7 × 7
+  ├── conv 1×1 → 195 bản đồ CAM → global mean → logit có/không từng nguyên liệu   (BCE)
+  ├── conv 1×1 → 195 bản đồ gram → global mean → softplus × gram_scale → gram       (SmoothL1)
+  │         → kcal/fat/carb/protein "từ nguyên liệu" = Σ gram_k × hàm lượng mỗi gram của k
+  └── conv 1×1 → 5 bản đồ tổng → global mean → softplus × trung bình train
+            → kcal, mass, fat, carb, protein của cả món                               (SmoothL1, ×3)
+            (đây là nguồn của MAE kcal / protein / fat / carb báo cáo)
+
+Bản đồ calo (chỉ tính lúc đánh giá) có hai loại:
+  - Từ nguyên liệu: Σ_k ReLU(CAM_k) chuẩn hóa × kcal dự đoán của k, chỉ với các nguyên liệu có p ≥ 0,5.
+  - Trực tiếp: bản đồ kcal 7×7 của nhánh tổng.
+
+Số tham số: 24.320.523, trong đó head là 809.355.
+
+
+# Thư viện đính kèm
+-------------------------------------------------------------------------------------------
+
+**Code cài đặt thư viện**
+
+```bash
+git clone <repo> && cd pipe_dream_pj
+pip install -e .            # cài package timeprest và các phụ thuộc: torch, torchvision, pyyaml, numpy, matplotlib
+pip install pytest pillow   # chạy test CPU, đọc ảnh PNG
+```
+
+**Bảng thư viện diễn giải**
+
+| Tên thư viện | Phiên bản | Công dụng của thư viện |
+| --- | --- | --- |
+| PyTorch | 2.11.0+cu128 (Kaggle), 2.6.0 (máy local, test CPU) | Xây mô hình, huấn luyện, torch.distributed (NCCL cho DDP, gloo truyền giữa stage pipeline), torchrun |
+| torchvision | 0.21+ | Trọng số ResNet-50 pretrained ImageNet (IMAGENET1K_V2) |
+| NumPy | 2.2 | Cache ảnh .npy, thống kê chuẩn hóa, ghép nhãn |
+| Pillow | 11.1 | Đọc rgb.png và depth_raw.png 16-bit, resize |
+| PyYAML | 6.0 | Đọc config (kế thừa base, ghi đè bằng --set) |
+| Matplotlib | 3.10 | Vẽ bản đồ calo, biểu đồ kết quả |
+| pytest | — | 74 test CPU của phần n5k |
+| CUDA / cuDNN | 12.8 / 9.19 | GPU T4 trên Kaggle |
+| kaggle (CLI/API) | — | Đẩy và theo dõi kernel, tải kết quả |
+
+**Code import thư viện vào Python**
+
+```python
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.distributed as dist
+import torchvision
+from PIL import Image
+import yaml
+
+from timeprest.n5k.data import load_datasets          # dữ liệu + cache
+from timeprest.n5k.model import build_n5k_resnet50    # mô hình
+from timeprest.n5k.task import NutritionTask          # loss + metric
+```
+
+
+# Tiền xử lý dữ liệu và chuẩn hoá
+-------------------------------------------------------------------------------------------
+
+## Mô tả tiền xử lý dữ liệu và chuẩn hoá bằng diễn giải
+
+Chỉ dùng một phương pháp (PP1). Ảnh 320 có thử nhưng không chính xác hơn mà chậm gấp 3, nên bỏ.
+
+1. Chia dữ liệu: dùng split cố định n5k/splits/{train,val,test}.txt (2.270 / 487 / 487 id món, giữ lại 2.270 / 486 / 486).
+   Món thiếu ảnh, ảnh hỏng, depth không có pixel hợp lệ, hoặc không có dòng dinh dưỡng thì bị bỏ, kèm ghi lý do vào meta.json.
+2. Giải mã một lần: đọc rgb.png, resize 224×224 bằng bilinear; đọc depth_raw.png (uint16), resize bằng NEAREST để giá trị
+   0 (không đo được) không bị trộn với độ sâu thật. Lưu thành file .npy (cache), mỗi lần huấn luyện chỉ đọc cache.
+   Lý do: đọc PNG từ dataset 23 GB làm nghẽn.
+3. Nhãn mỗi món: vector [195 gram nguyên liệu | 5 tổng]. Nguyên liệu không có trong món thì gram = 0. Danh sách 195 nguyên
+   liệu = các nguyên liệu xuất hiện trong train. Nguyên liệu trùng trong một món thì cộng gram.
+4. Hàm lượng mỗi gram (kcal, fat, carb, protein) lấy từ ingredients_metadata.csv. Nếu thiếu thì lấy tỉ lệ trên train.
+5. Chuẩn hóa ảnh:
+   - RGB: chia 255, trừ mean và chia std của ImageNet.
+   - Depth: cắt trong [phân vị 1%, 99%] của depth train, đưa về [0,1] (pixel = 0 giữ là 0), rồi trừ mean / chia std
+     tính trên train.
+   - Ghép thành tensor 4 × 224 × 224.
+6. Chuẩn hóa nhãn (bên trong loss):
+   - gram / gram_scale, với gram_scale = gram trung bình của nguyên liệu đó trên các món train có nó.
+   - Tổng: (dự đoán − thật) / std của train.
+   - Nhánh tổng dự đoán bằng softplus × trung bình train, nên lúc khởi tạo đầu ra bằng trung bình train.
+7. Augment (chỉ train): lật ngang và lật dọc ngẫu nhiên, mỗi kiểu xác suất 0,5, áp dụng cùng lúc cho RGB và depth.
+   Ảnh chụp từ trên xuống nên lật không đổi nghĩa.
+8. Mọi thống kê chuẩn hóa chỉ tính trên train.
+
+## Mô tả tiền xử lý bằng Code
+
+PP1 (timeprest/n5k/data.py, rút gọn):
+
+```python
+def decode_dish(folder, size):
+    with Image.open(f"{folder}/rgb.png") as im:
+        rgb = np.asarray(im.convert("RGB").resize((size, size), Image.BILINEAR), dtype=np.uint8)
+    with Image.open(f"{folder}/depth_raw.png") as im:
+        d = np.asarray(im, dtype=np.int64)
+    if not (d > 0).any():
+        raise BadSample("depth has no valid pixel")
+    depth = np.asarray(Image.fromarray(d.astype(np.int32), mode="I")
+                       .resize((size, size), Image.NEAREST)).astype(np.uint16)   # nearest: 0 = không đo
+    return rgb, depth
+
+# thống kê depth trên train: cắt phân vị 1–99, đưa về [0, 1]
+lo, hi = np.percentile(px[px > 0], [1, 99])
+
+class N5kImages(Dataset):
+    def __init__(self, rgb, depth, y, meta, augment):
+        lo, hi = meta["depth_lo"], meta["depth_hi"]
+        d01 = np.clip((depth.astype(np.float32) - lo) / max(hi - lo, 1.0), 0, 1)
+        d01[depth == 0] = 0.0
+        ...
+    def __getitem__(self, i):
+        rgb = (self.rgb[i].permute(2, 0, 1).float().div_(255.0) - self.mean) / self.std    # ImageNet
+        dep = ((self.depth[i].float() - self.dmean) / self.dstd).unsqueeze(0)
+        x = torch.cat([rgb, dep], 0)                                                     # 4 x 224 x 224
+        if self.augment:
+            if torch.rand(()) < 0.5: x = x.flip(2)       # lật ngang
+            if torch.rand(()) < 0.5: x = x.flip(1)       # lật dọc
+        return x, self.targets[i]                        # [195 gram | kcal, mass, fat, carb, protein]
+```
+
+Lệnh dựng cache: `python -m timeprest.n5k.data --config n5k/configs/n5k_quick.yaml`
+
+
+# Định nghĩa mô hình
+-------------------------------------------------------------------------------------------
+
+- Backbone ResNet-50 (bottleneck 3-4-6-3) của torchvision, viết lại thành 18 block để chia được cho pipeline.
+  Trọng số IMAGENET1K_V2.
+- conv1 nhận 4 kênh; filter của kênh depth = trung bình 3 filter RGB pretrained.
+- Head N5kHead gồm 3 conv 1×1 (2048 → 195, 2048 → 195, 2048 → 5), rồi global mean. Không có lớp FC, để giữ bản đồ 7×7
+  dùng cho định vị.
+- Bias khởi tạo theo thống kê train: logit = log(p/(1−p)) với p là tỉ lệ có mặt; gram và tổng bắt đầu ở trung bình train.
+- Không dùng tool tìm siêu tham số tự động. lr được chọn bằng sweep thủ công (0.005–0.04, 8 epoch rồi 30 epoch), quy
+  tắc chọn ghi trước khi chạy (PLAN mục 10).
+
+N5kHead (timeprest/n5k/model.py):
+
+```python
+class N5kHead(nn.Module):
+    """Output [B, 2K + T] = [presence logits | raw grams | raw dish totals]; mỗi output là trung bình không gian của một bản đồ conv 1x1 (CAM)."""
+    def __init__(self, cin, K, presence_prior=None, gram_prior=None, direct_totals=False, total_mean=None, T=5):
+        super().__init__()
+        self.presence = nn.Conv2d(cin, K, 1)          # 195 bản đồ CAM
+        self.gram = nn.Conv2d(cin, K, 1)              # 195 bản đồ gram
+        self.total = nn.Conv2d(cin, T, 1) if direct_totals else None   # 5 bản đồ tổng
+        ...  # init normal(0, 0.01); bias = logit(p_k), softplus^-1(gram_prior), softplus^-1(1)
+
+    def forward(self, x):
+        outs = [self.presence(x).mean((2, 3)), self.gram(x).mean((2, 3))]
+        if self.total is not None:
+            outs.append(self.total(x).mean((2, 3)))
+        return torch.cat(outs, 1)
+```
+
+build_n5k_resnet50:
+
+```python
+def build_n5k_resnet50(model_cfg):
+    K = int(model_cfg["num_ingredients"])                                  # 195
+    blocks = resnet50_blocks(num_classes=1, stem="imagenet")
+    old = blocks[0][0]
+    blocks[0][0] = nn.Conv2d(4, old.out_channels, old.kernel_size, old.stride, old.padding, bias=False)
+    tv = torchvision.models.resnet50(weights="IMAGENET1K_V2")
+    load_torchvision_weights(blocks, tv.state_dict(), "rgb_mean")         # kênh depth = mean filter RGB
+    blocks[-1] = N5kHead(2048, K, presence_prior, gram_prior, direct_totals=True, total_mean=...)
+    return blocks                                                          # list block -> chia stage [0, 8, 18]
+```
+
+NutritionTask, phần loss (timeprest/n5k/task.py):
+
+```python
+def components(self, out, y):
+    p = self.predict(out)            # grams = softplus(raw) * gram_scale; totals = softplus(raw_tot) * train_mean
+    grams, totals = y[:, :K], y[:, K:]
+    bce  = F.binary_cross_entropy_with_logits(p["logits"], (grams > 0).float(), reduction="none")
+    gram = F.smooth_l1_loss(p["grams"] / scale, grams / scale, reduction="none")
+    tot  = F.smooth_l1_loss((p["totals"] - totals) / total_std, torch.zeros_like(totals), reduction="none").mean(1)
+    return bce.sum(1), gram.sum(1), tot              # ingredient_reduce = sum
+
+loss = 1.0 * bce + 1.0 * gram + 3.0 * tot            # w_presence, w_gram, w_total
+```
+
+Biến thể đã thử, không giữ: two-stream (n5k_resnet50_2s, mỗi luồng RGB / depth một ResNet-50). Chính xác hơn ở 1 GPU
+nhưng nặng gấp đôi, và chạy pipeline còn chậm hơn 1 GPU.
+
+
+# Quá trình huấn luyện mô hình
+-------------------------------------------------------------------------------------------
+
+### 1️⃣ Cấu hình huấn luyện mô hình
+
+📌 **Thông số mô hình:**
+- Learning Rate: `0.02`
+  - Warmup tuyến tính 2 epoch, sau đó cosine về 0.
+  - Chọn qua sweep 30 epoch. Sweep 8 epoch trước đó cho TiMePReSt 0.01, nhưng ở 30 epoch thì 0.02 tốt hơn.
+- Epochs: `30`. Lịch 60 epoch đã thử nhưng không tốt hơn.
+- Batch Size: `64` (mini-batch).
+  - DDP: 32 ảnh mỗi GPU.
+  - TiMePReSt: chia thành N = 2 micro-batch × 32 (N = 4 cũng thử).
+- Optimizer: `SGD`, momentum 0.9, weight decay 1e-4.
+- Loss Function: `BCE (có/không nguyên liệu) + SmoothL1 (gram) + 3 × SmoothL1 (5 tổng đã chuẩn hóa)`.
+- Regularization: `L2 (weight decay 1e-4)`, augment lật ảnh, pretrained ImageNet. Không dropout.
+- Độ chính xác số: fp32, không AMP.
+- Chọn checkpoint: epoch có val MAE kcal thấp nhất; test chỉ chạy trên checkpoint đó.
+- Hệ song song:
+  - Pipeline 2 stage, cắt tại block [0, 8, 18] (đo trên 2×T4, nhanh hơn chia theo MACs 9%).
+  - TiMePReSt bỏ weight stashing, giữ vertical sync.
+  - PipeDream giữ weight stashing.
+
+📌 **Dữ liệu huấn luyện:**
+- Số lượng mẫu: `2.270 món train`. Mỗi epoch dùng 2.240 (35 batch × 64, bỏ batch lẻ). Val 486, test 486.
+- Đầu vào: ảnh 4 kênh 224×224 (RGB + depth).
+- Nhãn: 195 gram nguyên liệu + 5 tổng.
+- Normalization: `Có`.
+  - RGB theo ImageNet.
+  - Depth cắt phân vị 1–99 rồi chuẩn hóa.
+  - Nhãn chuẩn hóa theo thống kê train.
+- Shuffle: `Có` (theo seed; DDP chia đúng các mini-batch của bản 1 GPU cho 2 GPU).
+- Seed: 0, 1, 2 (3 lần chạy mỗi hệ).
+
+---
+
+### 2️⃣ Cấu hình máy tính
+
+📌 **Phần cứng:**
+- Kaggle Notebook, 2 × NVIDIA Tesla T4, 15 GB mỗi GPU (dùng được 14,56 GB), cùng một máy.
+- Bộ nhớ GPU đỉnh đo được:
+  - single: 5,6 GB.
+  - DDP: 3,1 GB mỗi GPU.
+  - PipeDream / TiMePReSt: 8,4 GB / 2,0 GB (GPU0 / GPU1).
+- Máy local chỉ để viết code và chạy test CPU.
+
+📌 **Môi trường phần mềm:**
+- Kaggle:
+  - OS: Linux (image Kaggle).
+  - Python: `3.13` (ghi trong summary.json).
+  - PyTorch `2.11.0+cu128`, CUDA 12.8, cuDNN 9.19.
+- Máy local: Windows 11, Python 3.11.8, PyTorch 2.6.0 (CPU).
+- Package: NumPy 2.2, Pillow 11.1, PyYAML 6.0, Matplotlib 3.10.
+
+## Code Huấn luyện mô hình
+
+Chạy trên Kaggle. Script kernel: n5k/kaggle/run18_s{0,1,2}/. Mọi tham số nằm trong n5k/configs/*.yaml, ghi đè bằng `--set`.
+
+```bash
+# 0. kiểm tra trước khi chạy dài: D0 dữ liệu, D1 pipeline = 1 GPU, D2 version trọng số, D3 resume, D4 chạy ngắn
+torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.checks --config n5k/configs/n5k_quick.yaml
+
+# 1. một GPU
+python -m timeprest.n5k.train --config n5k/configs/n5k_single.yaml --set seed=0 name=n5k_single_w3_s0
+# 2. DDP 2 GPU
+torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.ddp_train --config n5k/configs/n5k_ddp.yaml --set seed=0
+# 3. PipeDream 2 stage
+torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.dist_train --config n5k/configs/n5k_pipedream.yaml --set seed=0
+# 4. TiMePReSt N=2 (N=4: n5k_timeprest_n4.yaml)
+torchrun --standalone --nproc_per_node=2 -m timeprest.n5k.dist_train --config n5k/configs/n5k_timeprest.yaml --set seed=0
+# 5. bản đồ calo + deletion test trên checkpoint tốt nhất
+python -m timeprest.n5k.explain --config n5k/configs/n5k_timeprest.yaml --set seed=0
+# 6. chấm vị trí so với mask thật (HandMasks)
+python -m timeprest.n5k.handmasks --config n5k/configs/n5k_handmasks.yaml
+```
+
+Config chính (n5k/configs/n5k_base.yaml, rút gọn):
+
+```yaml
+model:    {name: n5k_resnet50, in_channels: 4, pretrained: IMAGENET1K_V2, direct_totals: true}
+loss:     {w_presence: 1.0, w_gram: 1.0, w_total: 3.0, ingredient_reduce: sum}
+pipeline: {num_stages: 2, num_microbatches: 2, partition: [0, 8, 18]}
+training: {epochs: 30, batch_size: 64, optimizer: sgd, lr: 0.02, momentum: 0.9,
+           weight_decay: 1.0e-4, lr_schedule: cosine, warmup_epochs: 2}
+data:     {image_size: 224, augment: true}
+```
+
+
+# Đánh giá kết quả
+-------------------------------------------------------------------------------------------
+
+## Lần chạy đơn
+
+Một lần chạy = 30 epoch, seed 0, chọn epoch theo val, đánh giá trên 486 món test. Bảng dưới là hệ tốt nhất (DDP,
+seed 0, epoch 23). Đơn vị: kcal / gram.
+
+| **Chỉ số** | **Giá trị** | **Ghi chú** |
+| --- | --- | --- |
+| **Loss Function** | `9,33` (test) | BCE + SmoothL1 gram + 3 × SmoothL1 tổng. Phần BCE chiếm nhiều nhất vì cộng trên 195 nguyên liệu |
+| **MAE kcal** | `48,5 kcal` | Chỉ số chính. Đoán hằng bằng trung vị: 165,8 kcal |
+| **PMAE kcal** | `18,2%` | MAE / kcal trung bình của test (cách tính của bài Nutrition5k) |
+| **MAE protein** | `4,9 g` | |
+| **MAE fat** | `3,5 g` | |
+| **MAE carb** | `5,0 g` | |
+| **MAE khối lượng (mass)** | `32,8 g` | |
+| **mAP nhận diện nguyên liệu** | `86,9%` | Macro AP trên 195 nguyên liệu |
+| **F1 nhận diện (micro, ngưỡng 0,5)** | `86,3%` | |
+| **MAE gram (nguyên liệu có mặt)** | `12,3 g` | |
+| **Thời gian huấn luyện** | `11,5 s/epoch`, khoảng 6 phút / 30 epoch | Đo bằng time.time() mỗi epoch. single: 23 s/epoch, TiMePReSt: 19 s/epoch |
+| **Số lượng epoch** | `30` (tốt nhất ở epoch 23) | |
+| **Số lượng mẫu** | `2.270` train / 486 val / 486 test | |
+| **Số đặc trưng (features)** | Ảnh 4 × 224 × 224 | 195 nguyên liệu + 5 tổng ở đầu ra |
+| **Sử dụng Regularization** | `L2` (weight decay 1e-4) + augment lật | |
+| **Thời gian detect** | Chưa đo riêng | Project chỉ đo thời gian huấn luyện. Muốn có số này phải đo riêng thời gian forward 1 ảnh |
+
+Vị trí (bản đồ calo, seed 0, chấm trên 154 món test có mask HandMasks):
+
+| **Chỉ số** | **Mốc** | **single** | **PipeDream** | **TiMePReSt** |
+| --- | --- | --- | --- | --- |
+| M1: phần kcal của bản đồ nằm trên thức ăn | 18% (theo diện tích) | 52% | 52% | 51% |
+| M2: sai số chia kcal theo vùng (thấp hơn = tốt) | 0,190 (chia theo diện tích) | 0,159 | 0,147 | 0,151 |
+| M3: pointing game (điểm sáng nhất đúng vùng) | 50% | 85% | 83% | 85% |
+| Deletion test: che vùng bản đồ chỉ ra làm dự đoán giảm mạnh hơn che ngẫu nhiên | — | 93–97% số món, p < 1e-76 | như trên | như trên |
+
+**Hình bản đồ calo "calo nằm ở đâu" (chèn ảnh vào Notion)**
+
+Hình ở thư mục n5k/results/kaggle/run18_s0/n5k_results/explain/<hệ>/figures/, với <hệ> là n5k_single_w3_s0,
+n5k_pipedream_w3_s0 hoặc n5k_timeprest_w3_s0. Mỗi hệ có 8 món test: 4 món chọn theo mức sai số kcal, 4 món chọn ngẫu
+nhiên. Danh sách món và số kcal nằm trong figures.json cùng thư mục.
+
+Mỗi hình gồm:
+  - Hàng 1:
+      * Ảnh RGB và ảnh depth.
+      * "calories from ingredients": bản đồ calo, có thang màu kcal/ô.
+      * "direct kcal map": bản đồ kcal của nhánh tổng, chỉ cho giá trị tương đối.
+  - Hàng 2: bản đồ CAM của 3 nguyên liệu mô hình chắc nhất.
+  - Bảng dưới: từng nguyên liệu với p, gram và kcal (dự đoán so với thật), rồi tổng kcal / mass / fat / carb / protein.
+
+| **Hình gợi ý** | **Món** | **kcal thật / dự đoán** | **Dùng để** |
+| --- | --- | --- | --- |
+| n5k/results/kaggle/run18_s0/n5k_results/explain/n5k_single_w3_s0/figures/dish_dish_1558631932.png | bắp, táo, cà chua bi | 215 / 146 | Minh họa định vị: CAM táo, cà chua, bắp nằm đúng từng vật (kcal đoán thấp hơn thật) |
+| n5k/results/kaggle/run18_s0/n5k_results/explain/n5k_single_w3_s0/figures/dish_dish_1563984242.png | lòng trắng trứng, dầu ô liu, dứa | 402 / 440 | Món dự đoán sát |
+| n5k/results/kaggle/run18_s0/n5k_results/explain/n5k_single_w3_s0/figures/dish_dish_1560455179.png | rau arugula, rau trộn, mù tạt | 103 / 112 | Món ít calo, dự đoán sát |
+| n5k/results/kaggle/run18_s0/n5k_results/explain/n5k_single_w3_s0/figures/dish_dish_1558718906.png | bắp, súp lơ, hạnh nhân | 283 / 552 | Ca sai nhiều (để nói hạn chế) |
+| n5k/results/kaggle/run18_s0/n5k_results/explain/n5k_single_w3_s0/figures/dish_dish_1558721323.png và n5k/results/kaggle/run18_s0/n5k_results/explain/n5k_timeprest_w3_s0/figures/dish_dish_1558721323.png | dưa lưới, cà rốt | 32 / 34 (1 GPU), 32 / 24 (TiMePReSt) | So cùng một món giữa 1 GPU và TiMePReSt |
+
+Lưu ý khi chú thích hình:
+  - Bản đồ chỉ có 7×7 ô, phóng lên 224 nên trông mờ và loang ra ngoài vật.
+  - Tổng của bản đồ "from ingredients" không bằng kcal dự đoán. Bản đồ cho biết calo phân bố ở đâu, không phải con số
+    calo chính xác.
+
+**Mã code đánh giá lần chạy đơn**
+
+```python
+# timeprest/n5k/task.py, NutritionTask.eval_result (rút gọn)
+mae = st["abs_err"] / n                                        # [kcal, mass, fat, carb, protein]
+for k, name in enumerate(("kcal", "mass", "fat", "carb", "protein")):
+    res[f"mae_{name}"] = mae[k].item()
+res["pmae_kcal"] = mae[0].item() / (st["sum_true"][0].item() / n) * 100.0
+res["mae_gram_present"] = st["gram_err"] / st["gram_n"]
+res["ingr_f1"]  = micro_f1(scores >= 0.5, present)
+res["ingr_map"] = mean_average_precision(scores, present)
+```
+
+```bash
+# in lại bảng 5 hệ × 3 seed từ kết quả đã tải về
+python n5k/analysis/analyze_run18.py
+```
+
+
+## Lần chạy Cross Validation
+
+Project KHÔNG chạy K-fold, vì 2 lý do:
+  - Dùng split cố định của các thí nghiệm trước để so được với nhau.
+  - Mỗi lần chạy tốn 2 GPU trong 6–12 phút, mà có 5 hệ cần so.
+Thay vào đó, đánh giá độ ổn định bằng 3 seed (0, 1, 2) trên cùng split. Seed đổi khởi tạo head, thứ tự dữ liệu và augment.
+
+### 1️⃣ Kết Quả theo seed (test, run18)
+
+| **Hệ** | **Seed** | **MAE kcal** | **PMAE** | **Protein (g)** | **Fat (g)** | **Carb (g)** | **Mass (g)** | **mAP** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DDP | 0 | 48,47 | 18,16% | 4,91 | 3,48 | 4,98 | 32,76 | 86,85 |
+| DDP | 1 | 46,41 | 17,39% | 4,65 | 3,41 | 4,86 | 32,45 | 87,65 |
+| DDP | 2 | 49,27 | 18,46% | 4,71 | 3,46 | 4,87 | 32,08 | 87,26 |
+| **DDP** | **TB ± std** | **48,05 ± 1,47** | **18,00%** | **4,76** | **3,45** | **4,90** | **32,43** | **87,25** |
+| single (1 GPU) | TB ± std | 48,38 ± 0,30 | 18,13% | 4,77 | 3,49 | 4,71 | 31,41 | 87,08 |
+| PipeDream | TB ± std | 50,34 ± 0,52 | 18,86% | 4,87 | 3,54 | 4,87 | 32,72 | 86,56 |
+| TiMePReSt N=2 | TB ± std | 54,28 ± 1,12 | 20,34% | 5,22 | 3,69 | 5,11 | 37,50 | 85,03 |
+| TiMePReSt N=4 | TB ± std | 55,88 ± 1,57 | 20,94% | 5,32 | 3,73 | 5,17 | 37,99 | 85,12 |
+
+Tốc độ và bộ nhớ (TB 3 seed):
+
+| **Hệ** | **s/epoch** | **Bộ nhớ GPU đỉnh** |
+| --- | --- | --- |
+| DDP | 12,3 | 3,1 GB mỗi GPU |
+| single | 23,1 | 5,6 GB |
+| PipeDream | 20,1 | 8,4 / 2,0 GB |
+| TiMePReSt N=2 | 19,0 | 8,3 / 2,0 GB |
+| TiMePReSt N=4 | 20,1 | 8,3 / 2,0 GB |
+
+### 2️⃣ Mã nguồn thực hiện "nhiều seed" (thay cho cross validation)
+
+```python
+# n5k/kaggle/run18_s{SEED}/run18_s{SEED}.py (rút gọn): mỗi kernel một seed, chạy lần lượt 5 hệ trên cùng máy 2xT4
+for system, launch, module in [("single", [PY], "train"), ("ddp", TORCHRUN, "ddp_train"),
+                               ("pipedream", TORCHRUN, "dist_train"), ("timeprest", TORCHRUN, "dist_train"),
+                               ("timeprest_n4", TORCHRUN, "dist_train")]:
+    steps.append(launch + ["-m", f"timeprest.n5k.{module}", "--config", f"n5k/configs/n5k_{system}.yaml",
+                           "--set", f"seed={SEED}", f"name=n5k_{system}_w3_s{SEED}"])
+
+# gộp 3 seed: trung bình và độ lệch chuẩn của test_mae_* trong summary.json
+import json, glob, statistics as st
+for system in ["single", "ddp", "pipedream", "timeprest", "timeprest_n4"]:
+    ds = [json.load(open(f)) for f in glob.glob(f"n5k/results/kaggle/run18_s*/**/n5k_{system}_w3_s*/summary.json", recursive=True)]
+    v = [d["test_mae_kcal"] for d in ds]
+    print(system, f"{st.mean(v):.2f} ± {st.stdev(v):.2f}")
+```
+
+
+# Nhận xét rút ra kết luận
+-------------------------------------------------------------------------------------------
+
+### 1️⃣ Phần Nhận Xét
+
+✅ **Hiệu suất tổng thể của mô hình**
+- MAE calo 48–50 kcal (18,0–18,9%) với 1 GPU / DDP / PipeDream. Con số này tốt hơn nhiều so với đoán hằng (165,8 kcal),
+  và ngang bài gốc Nutrition5k khi depth làm kênh thứ 4 (18,8%).
+- Macro: protein khoảng 4,8 g, fat khoảng 3,5 g, carb khoảng 4,9 g. Nhận diện nguyên liệu mAP khoảng 87%.
+- Kcal tính từ gram từng nguyên liệu kém hơn nhiều (MAE khoảng 100 kcal). Vì vậy con số calo nên lấy từ nhánh tổng trực
+  tiếp; nhánh nguyên liệu dùng để biết "có gì" và "ở đâu".
+
+✅ **Tính ổn định của mô hình**
+- Giữa 3 seed: single rất ổn định (std 0,3 kcal), DDP 1,5 kcal, PipeDream 0,5 kcal, TiMePReSt 1,1–1,6 kcal.
+- TiMePReSt dao động mạnh giữa quá trình huấn luyện: val MAE nhảy từ 94 lên 208 kcal ở epoch 6–18, trong khi PipeDream
+  ổn định. Có 2 lần đầu ra bị "chết" (dự đoán thành hằng số): đầu ra mass khi w_total = 10, và đầu ra kcal khi huấn
+  luyện trên ít dữ liệu.
+- Cùng cấu hình, huấn luyện lại thì TiMePReSt lệch khoảng ±2 kcal.
+
+✅ **Thời gian huấn luyện**
+- DDP nhanh nhất: 12,3 s/epoch, nhanh gấp 1,9 lần 1 GPU và 1,55 lần TiMePReSt. DDP cũng ít bộ nhớ nhất.
+- TiMePReSt nhanh hơn PipeDream khoảng 5% mỗi epoch (khớp paper), và 7–15% khi giả lập mạng chậm 1–2 Gbit/s.
+  Nhưng trong cả trường hợp mạng chậm, DDP vẫn nhanh hơn TiMePReSt 1,6–2,0 lần.
+- Pipeline chỉ nhanh hơn 1 GPU 1,2–1,4 lần, vì phải làm thêm 23–41% việc. Hai GPU chỉ lệch tải khoảng 1,1 lần.
+
+✅ **Overfitting / Underfitting**
+- Có overfit: train MAE kcal cuối khoảng 28 so với val khoảng 45 (DDP).
+- Lịch 60 epoch không tốt hơn 30 epoch: PipeDream overfit thêm, TiMePReSt chỉ bắt kịp.
+- Augment lật, weight decay và chọn checkpoint theo val giữ test sát val.
+
+Ví dụ nhận xét:
+> "Mô hình ResNet-50 RGB-D đa nhiệm đạt MAE calo 48,0 kcal (18,0%), protein 4,8 g, fat 3,5 g, carb 4,9 g và mAP nhận diện
+> nguyên liệu 87% trên 486 món test (trung bình 3 seed), ngang bài gốc Nutrition5k. Bản đồ calo đặt khoảng 52% calo lên
+> đúng vùng thức ăn thật (mốc 18%). Về huấn luyện song song, TiMePReSt nhanh hơn PipeDream 5% mỗi epoch nhưng kém
+> 3,9 kcal và dao động mạnh; với mô hình vừa 1 GPU và 2 GPU giống nhau, DDP vừa chính xác nhất vừa nhanh nhất."
+
+---
+
+### 2️⃣ Phần Kết Luận
+
+1️⃣ **Mô hình có phù hợp với bài toán không?**
+Có, với mức độ chính xác của các mô hình một nhánh: đủ để ước lượng calo và macro, và định vị được vùng thức ăn.
+Về cách huấn luyện: TiMePReSt KHÔNG phù hợp cho bài toán này. Mô hình vừa 1 GPU và 2 GPU giống nhau, nên DDP tốt hơn.
+TiMePReSt chỉ có lợi khi mô hình quá lớn so với 1 GPU, hoặc khi các GPU khác nhau như trong paper. Paper không so với DDP.
+
+2️⃣ **Có cần cải thiện không? Nếu có, cách nào?**
+- Độ chính xác: các bài RGB-D mới đạt 12–15% vì tách hai nhánh RGB / depth và có module hợp nhất. Two-stream đã thử
+  và chính xác hơn ở 1 GPU, nhưng nặng gấp đôi.
+- Vị trí: bản đồ 7×7 quá thô, nguyên liệu nhỏ (hành, tỏi) gần mức ngẫu nhiên. Có thể dùng bản đồ 14×14 (bỏ stride của
+  block cuối).
+- TiMePReSt: cần xử lý dao động và hiện tượng đầu ra chết, ví dụ giảm lr hoặc giới hạn gradient phần tổng.
+
+3️⃣ **Hướng nghiên cứu tiếp theo?**
+- Giả lập GPU không đồng đều (giống cluster của paper) để xem khi nào pipeline thắng DDP. Kế hoạch đã viết, đang chờ
+  mentor.
+- Bản đồ calo độ phân giải cao hơn.
+- Đo thời gian suy luận cho một ảnh để đánh giá khả năng triển khai.
+
+Ví dụ kết luận:
+> "Mô hình ResNet-50 RGB-D với head CAM đáp ứng được cả ba yêu cầu: nhận diện nguyên liệu, ước lượng calo/protein/fat/carb
+> (18% sai số calo) và định vị calo trên ảnh. Kết luận quan trọng nhất về huấn luyện song song là khi mô hình vừa một
+> GPU, DDP tốt hơn TiMePReSt ở mọi tiêu chí, kể cả khi mạng chậm; TiMePReSt chỉ hơn PipeDream về tốc độ. Hướng tiếp theo
+> là thử GPU không đồng đều, mô hình hai nhánh và bản đồ chi tiết hơn."
+
+
+# Tài liệu tham khảo
+-------------------------------------------------------------------------------------------
+
+1. Thames, Q., Karpur, A., Norris, W., Xia, F., Panait, L., Weyand, T., Sim, J. (2021). Nutrition5k: Towards automatic
+   nutritional understanding of generic food. CVPR 2021.
+2. Dutta, A., Chaki, N., De, R. K. (2026). TiMePReSt: Time and memory efficient pipeline parallel DNN training with
+   removed staleness. Future Generation Computer Systems, vol. 178.
+3. Narayanan, D., Harlap, A., Phanishayee, A., Seshadri, V., Devanur, N. R., Ganger, G. R., Gibbons, P. B., Zaharia, M.
+   (2019). PipeDream: Generalized pipeline parallelism for DNN training. SOSP 2019.
+4. He, K., Zhang, X., Ren, S., Sun, J. (2016). Deep residual learning for image recognition. CVPR 2016.
+5. Zhou, B., Khosla, A., Lapedriza, A., Oliva, A., Torralba, A. (2016). Learning deep features for discriminative
+   localization (CAM). CVPR 2016.
+6. Hand, L., Camps, G., da Silva Torres, R., Salah, A. A. (2026). Effects of segmentation granularity on nutrient
+   prediction from real-world food images. Frontiers in Nutrition. (Bộ mask HandMasks, CC BY 4.0)
+7. Số liệu so sánh DPF-Nutrition (2023), RDINet (2026), IGSMNet (2025): trích từ bảng so sánh trong n5k/report/references.bib.
+8. Li, S. et al. (2020). PyTorch Distributed: Experiences on accelerating data parallel training (DDP). VLDB 2020.

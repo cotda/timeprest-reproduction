@@ -1,0 +1,91 @@
+[{"stream_name":"stderr","time":6.708320486,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":6.708372524,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":7.664118168,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.664151719,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.664165093,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.6641682410000005,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.308043949,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.308077384,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.308083262,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.308087341,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":35.171041173,"data":"Creating new Ultralytics Settings v0.0.8 file ✅ \n"}
+,{"stream_name":"stdout","time":35.171076372,"data":"View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'\n"}
+,{"stream_name":"stdout","time":35.171093448,"data":"Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/usage/settings.\n"}
+,{"stream_name":"stdout","time":35.475413304,"data":"python 3.13.15 | torch 2.11.0+cu128 | transformers 5.16.1 | ultralytics 8.4.170 | pillow 13.0.0\n"}
+,{"stream_name":"stdout","time":35.477858811,"data":"GPU: ['Tesla T4', 'Tesla T4']\n"}
+,{"stream_name":"stdout","time":35.509613121,"data":"Writing foodbox/__init__.py\n"}
+,{"stream_name":"stdout","time":35.525496278,"data":"Writing foodbox/autolabel.py\n"}
+,{"stream_name":"stdout","time":35.544791105,"data":"Writing foodbox/data.py\n"}
+,{"stream_name":"stdout","time":35.561180435,"data":"Writing foodbox/detectors.py\n"}
+,{"stream_name":"stdout","time":35.575895393,"data":"Writing foodbox/labels.py\n"}
+,{"stream_name":"stdout","time":35.592782978,"data":"Writing foodbox/metrics.py\n"}
+,{"stream_name":"stdout","time":35.608381473,"data":"Writing foodbox/postprocess.py\n"}
+,{"stream_name":"stdout","time":35.625635647,"data":"Writing foodbox/run_detect.py\n"}
+,{"stream_name":"stdout","time":35.640118515,"data":"Writing foodbox/viz.py\n"}
+,{"stream_name":"stdout","time":36.951341402,"data":"input/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":36.951394092,"data":"  datasets/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":36.951400121,"data":"    msarmi9/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":37.267238555,"data":"      food101tiny/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":37.267281859,"data":"        data/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":39.964158722,"data":"Thư mục gốc dùng: ['/kaggle/input/datasets/msarmi9/food101tiny/data/food-101-tiny/train', '/kaggle/input/datasets/msarmi9/food101tiny/data/food-101-tiny/valid']\n"}
+,{"stream_name":"stdout","time":41.981219429,"data":"10 món, 2000 ảnh\n"}
+,{"stream_name":"stdout","time":41.981252263,"data":"Tập con: 200 ảnh, món: ['apple_pie', 'bibimbap', 'cannoli', 'edamame', 'falafel', 'french_toast', 'ice_cream', 'ramen', 'sushi', 'tiramisu']\n"}
+,{"stream_name":"stdout","time":42.004617946,"data":"[launch] GPU 0: --items /kaggle/working/tmp_preds/items.json --models gdino --prompts food --out /kaggle/working/tmp_preds/preds --shard 0 --nshards 2\n"}
+,{"stream_name":"stdout","time":42.005684348,"data":"[launch] GPU 1: --items /kaggle/working/tmp_preds/items.json --models gdino --prompts food --out /kaggle/working/tmp_preds/preds --shard 1 --nshards 2\n"}
+,{"stream_name":"stdout","time":72.014589942,"data":"[launch]    30s GPU 0: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2385.71it/s]\n"}
+,{"stream_name":"stdout","time":72.014897873,"data":"[launch]    30s GPU 1: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2487.63it/s]\n"}
+,{"stream_name":"stdout","time":102.00961125,"data":"[launch]    60s GPU 0: [run_detect] gdino: 25/100\n"}
+,{"stream_name":"stdout","time":102.010386135,"data":"[launch]    60s GPU 1: [run_detect] gdino: 25/100\n"}
+,{"stream_name":"stdout","time":132.017114765,"data":"[launch]    90s GPU 0: [run_detect] gdino: 75/100\n"}
+,{"stream_name":"stdout","time":132.018042657,"data":"[launch]    90s GPU 1: [run_detect] gdino: 75/100\n"}
+,{"stream_name":"stdout","time":162.016471128,"data":"[launch]   120s GPU 0: [run_detect] đã ghi /kaggle/working/tmp_preds/preds/preds_gdino_shard0.json (100 ảnh)\n"}
+,{"stream_name":"stdout","time":162.02194807,"data":"[launch]   120s GPU 1: [run_detect] đã ghi /kaggle/working/tmp_preds/preds/preds_gdino_shard1.json (100 ảnh)\n"}
+,{"stream_name":"stdout","time":162.022849958,"data":"[launch] GPU 0 mã thoát 0 (log: /kaggle/working/tmp_preds/logs/detect_gpu0.log)\n"}
+,{"stream_name":"stdout","time":162.023727526,"data":"[launch] GPU 1 mã thoát 0 (log: /kaggle/working/tmp_preds/logs/detect_gpu1.log)\n"}
+,{"stream_name":"stdout","time":162.03126917,"data":"----- /kaggle/working/tmp_preds/logs/detect_gpu0.log\n"}
+,{"stream_name":"stdout","time":162.03128617,"data":"Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2385.71it/s]\n"}
+,{"stream_name":"stdout","time":162.031293512,"data":"/usr/local/lib/python3.13/dist-packages/transformers/models/grounding_dino/modeling_grounding_dino.py:2149: UserWarning: Specified kernel cache directory could not be created! This disables kernel caching. Specified directory is /root/.cache/torch/kernels. This warning will appear only once per process. (Triggered internally at /pytorch/aten/src/ATen/native/cuda/jit_utils.cpp:1505.)\n"}
+,{"stream_name":"stdout","time":162.031300674,"data":"  level_start_index = torch.cat((spatial_shapes.new_zeros((1,)), spatial_shapes.prod(1).cumsum(0)[:-1]))\n"}
+,{"stream_name":"stdout","time":162.031305561,"data":"[run_detect] gdino: 25/100\n"}
+,{"stream_name":"stdout","time":162.031309921,"data":"[run_detect] gdino: 50/100\n"}
+,{"stream_name":"stdout","time":162.031314404,"data":"[run_detect] gdino: 75/100\n"}
+,{"stream_name":"stdout","time":162.031318944,"data":"[run_detect] gdino: 100/100\n"}
+,{"stream_name":"stdout","time":162.03132356,"data":"[run_detect] đã ghi /kaggle/working/tmp_preds/preds/preds_gdino_shard0.json (100 ảnh)\n"}
+,{"stream_name":"stdout","time":162.031328916,"data":"----- /kaggle/working/tmp_preds/logs/detect_gpu1.log\n"}
+,{"stream_name":"stdout","time":162.031333654,"data":"Loading weights:  51%|█████     | 604/1182 [00:00\u003c00:00, 2062.75it/s]\n"}
+,{"stream_name":"stdout","time":162.03134803,"data":"Loading weights:  69%|██████▊   | 812/1182 [00:00\u003c00:00, 2067.29it/s]\n"}
+,{"stream_name":"stdout","time":162.031352472,"data":"Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2487.63it/s]\n"}
+,{"stream_name":"stdout","time":162.031356568,"data":"[run_detect] gdino: 25/100\n"}
+,{"stream_name":"stdout","time":162.031360194,"data":"[run_detect] gdino: 50/100\n"}
+,{"stream_name":"stdout","time":162.031363667,"data":"[run_detect] gdino: 75/100\n"}
+,{"stream_name":"stdout","time":162.031366962,"data":"[run_detect] gdino: 100/100\n"}
+,{"stream_name":"stdout","time":162.031370405,"data":"[run_detect] đã ghi /kaggle/working/tmp_preds/preds/preds_gdino_shard1.json (100 ảnh)\n"}
+,{"stream_name":"stdout","time":162.031374326,"data":"200/200 ảnh có kết quả; thời gian detect 2.1 phút\n"}
+,{"stream_name":"stdout","time":163.927920697,"data":"Ảnh có ít nhất 1 box: 78.5% | box/ảnh trung bình: 1.06 | cần xem lại: 117 ảnh | failed: 43\n"}
+,{"stream_name":"stdout","time":163.927951724,"data":"\n"}
+,{"stream_name":"stdout","time":163.927956884,"data":"Theo món:\n"}
+,{"stream_name":"stdout","time":163.927961055,"data":"              n_img  box_per_img  mean_conf  review\n"}
+,{"stream_name":"stdout","time":163.927964814,"data":"class                                              \n"}
+,{"stream_name":"stdout","time":163.927967929,"data":"apple_pie        20         1.00       0.65       8\n"}
+,{"stream_name":"stdout","time":163.927971503,"data":"bibimbap         20         1.35       0.62       7\n"}
+,{"stream_name":"stdout","time":163.92797484,"data":"cannoli          20         0.65       0.59      15\n"}
+,{"stream_name":"stdout","time":163.927978278,"data":"edamame          20         1.10       0.70       5\n"}
+,{"stream_name":"stdout","time":163.927981494,"data":"falafel          20         1.00       0.56      15\n"}
+,{"stream_name":"stdout","time":163.927984792,"data":"french_toast     20         0.85       0.61      12\n"}
+,{"stream_name":"stdout","time":163.927988376,"data":"ice_cream        20         1.70       0.58      14\n"}
+,{"stream_name":"stdout","time":163.927991924,"data":"ramen            20         1.45       0.72       9\n"}
+,{"stream_name":"stdout","time":163.92799541,"data":"sushi            20         1.00       0.53      17\n"}
+,{"stream_name":"stdout","time":163.927998832,"data":"tiramisu         20         0.55       0.59      15\n"}
+,{"stream_name":"stdout","time":163.928002852,"data":"\n"}
+,{"stream_name":"stdout","time":163.92800683,"data":"Lý do cần xem lại: {'low_conf': 49, 'no_box': 43, 'box_near_full_image': 32, 'many_boxes': 4}\n"}
+,{"stream_name":"stdout","time":164.108419986,"data":"Xong sau 2.1 phút\n"}
+,{"stream_name":"stdout","time":164.131125395,"data":"22M\t/kaggle/working/output\r\n"}
+,{"stream_name":"stderr","time":167.664754744,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":167.664788081,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":167.825631108,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":167.825657823,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":168.634701926,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":168.730125904,"data":"[NbConvertApp] Writing 83348 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":171.317608613,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":172.021145252,"data":"[NbConvertApp] Writing 576355 bytes to __results__.html\n"}
+]

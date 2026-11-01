@@ -1,0 +1,16 @@
+{
+ "id": "kaggleolap/foodbox-02-auto-label",
+ "title": "foodbox-02-auto-label",
+ "code_file": "02_auto_label.ipynb",
+ "language": "python",
+ "kernel_type": "notebook",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "msarmi9/food101tiny"
+ ],
+ "competition_sources": [],
+ "kernel_sources": []
+}

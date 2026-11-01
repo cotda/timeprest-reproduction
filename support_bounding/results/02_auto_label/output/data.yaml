@@ -1,0 +1,16 @@
+# Train: yolo detect train data=data.yaml model=yolo11n.pt
+train: train.txt
+val: val.txt
+nc: 11
+names:
+  0: apple_pie
+  1: bibimbap
+  2: cannoli
+  3: edamame
+  4: falafel
+  5: french_toast
+  6: ice_cream
+  7: ramen
+  8: sushi
+  9: tiramisu
+  10: food_other

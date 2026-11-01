@@ -1,0 +1,138 @@
+[{"stream_name":"stderr","time":7.092938934,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":7.09298954,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":8.119442755,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.119478977,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.119482797,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.11948564,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.77069868,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.770756664,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.770765123,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.770770026,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":36.651021603,"data":"Creating new Ultralytics Settings v0.0.8 file ✅ \n"}
+,{"stream_name":"stdout","time":36.651049273,"data":"View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'\n"}
+,{"stream_name":"stdout","time":36.651054337,"data":"Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/usage/settings.\n"}
+,{"stream_name":"stdout","time":36.95984396,"data":"python 3.13.15 | torch 2.11.0+cu128 | transformers 5.16.1 | ultralytics 8.4.170 | pillow 13.0.0\n"}
+,{"stream_name":"stdout","time":37.01959201,"data":"GPU: ['Tesla T4', 'Tesla T4']\n"}
+,{"stream_name":"stdout","time":37.019622075,"data":"index, name, memory.total [MiB]\r\n"}
+,{"stream_name":"stdout","time":37.019625585,"data":"0, Tesla T4, 15360 MiB\r\n"}
+,{"stream_name":"stdout","time":37.019628097,"data":"1, Tesla T4, 15360 MiB\r\n"}
+,{"stream_name":"stdout","time":37.156420539,"data":"Writing foodbox/__init__.py\n"}
+,{"stream_name":"stdout","time":37.173783076,"data":"Writing foodbox/data.py\n"}
+,{"stream_name":"stdout","time":37.190649754,"data":"Writing foodbox/detectors.py\n"}
+,{"stream_name":"stdout","time":37.206442414,"data":"Writing foodbox/labels.py\n"}
+,{"stream_name":"stdout","time":37.223398898,"data":"Writing foodbox/metrics.py\n"}
+,{"stream_name":"stdout","time":37.239603854,"data":"Writing foodbox/postprocess.py\n"}
+,{"stream_name":"stdout","time":37.257229681,"data":"Writing foodbox/run_detect.py\n"}
+,{"stream_name":"stdout","time":37.272807399,"data":"Writing foodbox/viz.py\n"}
+,{"stream_name":"stdout","time":38.602173658,"data":"input/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.602209894,"data":"  datasets/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.602214456,"data":"    kaggleolap/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.602221704,"data":"      uecfood256-mini/  (256 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.602224113,"data":"        1/  (0 thư mục con, 20 ảnh)\n"}
+,{"stream_name":"stdout","time":38.602242781,"data":"        10/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.806652694,"data":"        100/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.806686291,"data":"        101/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.806707478,"data":"        102/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.806715579,"data":"        103/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":38.806718258,"data":"        ... còn 250 thư mục nữa\n"}
+,{"stream_name":"stdout","time":53.546369846,"data":"UEC root: /kaggle/input/datasets/kaggleolap/uecfood256-mini | 256 món | 28897 ảnh có box trong bb_info.txt\n"}
+,{"stream_name":"stdout","time":60.815626995,"data":"200 ảnh, 300 box thật, ảnh nhiều box: 58, ảnh không có box: 0\n"}
+,{"stream_name":"stdout","time":60.815673553,"data":"ảnh có tag EXIF xoay (box thật có thể lệch): ['ramen_noodle/10886']\n"}
+,{"stream_name":"stdout","time":60.815680712,"data":"rice                  20\n"}
+,{"stream_name":"stdout","time":60.815685987,"data":"sushi                 20\n"}
+,{"stream_name":"stdout","time":60.815693404,"data":"bibimbap              20\n"}
+,{"stream_name":"stdout","time":60.815700611,"data":"pizza                 20\n"}
+,{"stream_name":"stdout","time":60.815706283,"data":"ramen_noodle          20\n"}
+,{"stream_name":"stdout","time":60.815711902,"data":"miso_soup             20\n"}
+,{"stream_name":"stdout","time":60.815717138,"data":"green_salad           20\n"}
+,{"stream_name":"stdout","time":60.815743234,"data":"french_fries          20\n"}
+,{"stream_name":"stdout","time":60.815748615,"data":"pho                   20\n"}
+,{"stream_name":"stdout","time":60.815753484,"data":"fried_spring_rolls    20\n"}
+,{"stream_name":"stdout","time":60.840444209,"data":"[launch] GPU 0: --items /kaggle/working/output/items.json --models gdino --prompts food --out /kaggle/working/output/preds --sam\n"}
+,{"stream_name":"stdout","time":60.842506369,"data":"[launch] GPU 1: --items /kaggle/working/output/items.json --models owlv2,yoloworld --prompts food --out /kaggle/working/output/preds --sam\n"}
+,{"stream_name":"stdout","time":90.851571684,"data":"[launch]    30s GPU 0: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2386.86it/s]\n"}
+,{"stream_name":"stdout","time":90.851647772,"data":"[launch]    30s GPU 1: Loading weights: 100%|██████████| 418/418 [00:00\u003c00:00, 2540.57it/s]\n"}
+,{"stream_name":"stdout","time":120.849752184,"data":"[launch]    60s GPU 0: [run_detect] gdino: 50/200\n"}
+,{"stream_name":"stdout","time":120.856398428,"data":"[launch]    60s GPU 1: [run_detect] owlv2: 75/200\n"}
+,{"stream_name":"stdout","time":150.854064877,"data":"[launch]    90s GPU 0: [run_detect] gdino: 100/200\n"}
+,{"stream_name":"stdout","time":150.855158902,"data":"[launch]    90s GPU 1: [run_detect] owlv2: 150/200\n"}
+,{"stream_name":"stdout","time":180.86288125,"data":"[launch]   120s GPU 0: [run_detect] gdino: 150/200\n"}
+,{"stream_name":"stdout","time":180.863098886,"data":"[launch]   120s GPU 1: [run_detect] owlv2+sam: 25/200\n"}
+,{"stream_name":"stdout","time":210.858786015,"data":"[launch]   150s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds/preds_gdino_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":210.859904471,"data":"[launch]   150s GPU 1: [run_detect] owlv2+sam: 125/200\n"}
+,{"stream_name":"stdout","time":240.868045607,"data":"[launch]   180s GPU 0: [run_detect] gdino+sam: 75/200\n"}
+,{"stream_name":"stdout","time":240.869305244,"data":"[launch]   180s GPU 1: \u001b[31m\u001b[1mrequirements:\u001b[0m Ultralytics requirement ['git+https://github.com/ultralytics/CLIP.git'] not found, attempting AutoUpdate...\n"}
+,{"stream_name":"stdout","time":270.86341501,"data":"[launch]   210s GPU 0: [run_detect] gdino+sam: 175/200\n"}
+,{"stream_name":"stdout","time":270.864238921,"data":"[launch]   210s GPU 1: [run_detect] yoloworld+sam: 25/200\n"}
+,{"stream_name":"stdout","time":300.870872542,"data":"[launch]   240s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":300.871851078,"data":"[launch]   240s GPU 1: [run_detect] yoloworld+sam: 100/200\n"}
+,{"stream_name":"stdout","time":330.868153574,"data":"[launch]   270s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":330.869075481,"data":"[launch]   270s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds/preds_yoloworld+sam_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":330.869976998,"data":"[launch] GPU 0 mã thoát 0 (log: /kaggle/working/output/logs/detect_gpu0.log)\n"}
+,{"stream_name":"stdout","time":330.875830453,"data":"[launch] GPU 1 mã thoát 0 (log: /kaggle/working/output/logs/detect_gpu1.log)\n"}
+,{"stream_name":"stdout","time":330.876704812,"data":"----- /kaggle/working/output/logs/detect_gpu0.log\n"}
+,{"stream_name":"stdout","time":330.876739191,"data":"[run_detect] gdino: 100/200\n"}
+,{"stream_name":"stdout","time":330.876746195,"data":"[run_detect] gdino: 125/200\n"}
+,{"stream_name":"stdout","time":330.87675243,"data":"[run_detect] gdino: 150/200\n"}
+,{"stream_name":"stdout","time":330.876757338,"data":"[run_detect] gdino: 175/200\n"}
+,{"stream_name":"stdout","time":330.876761573,"data":"[run_detect] gdino: 200/200\n"}
+,{"stream_name":"stdout","time":330.876765853,"data":"[run_detect] đã ghi /kaggle/working/output/preds/preds_gdino_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":330.876770854,"data":"[run_detect] gdino+sam: 25/200\n"}
+,{"stream_name":"stdout","time":330.876775899,"data":"[run_detect] gdino+sam: 50/200\n"}
+,{"stream_name":"stdout","time":330.876780075,"data":"[run_detect] gdino+sam: 75/200\n"}
+,{"stream_name":"stdout","time":330.876784637,"data":"[run_detect] gdino+sam: 100/200\n"}
+,{"stream_name":"stdout","time":330.876789641,"data":"[run_detect] gdino+sam: 125/200\n"}
+,{"stream_name":"stdout","time":330.876794014,"data":"[run_detect] gdino+sam: 150/200\n"}
+,{"stream_name":"stdout","time":330.876798443,"data":"[run_detect] gdino+sam: 175/200\n"}
+,{"stream_name":"stdout","time":330.876802804,"data":"[run_detect] gdino+sam: 200/200\n"}
+,{"stream_name":"stdout","time":330.876807084,"data":"[run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":330.876811677,"data":"----- /kaggle/working/output/logs/detect_gpu1.log\n"}
+,{"stream_name":"stdout","time":330.876816046,"data":"[run_detect] yoloworld: 100/200\n"}
+,{"stream_name":"stdout","time":330.876820403,"data":"[run_detect] yoloworld: 125/200\n"}
+,{"stream_name":"stdout","time":330.876825271,"data":"[run_detect] yoloworld: 150/200\n"}
+,{"stream_name":"stdout","time":330.87682967,"data":"[run_detect] yoloworld: 175/200\n"}
+,{"stream_name":"stdout","time":330.876834062,"data":"[run_detect] yoloworld: 200/200\n"}
+,{"stream_name":"stdout","time":330.876838209,"data":"[run_detect] đã ghi /kaggle/working/output/preds/preds_yoloworld_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":330.876842695,"data":"[run_detect] yoloworld+sam: 25/200\n"}
+,{"stream_name":"stdout","time":330.876862511,"data":"[run_detect] yoloworld+sam: 50/200\n"}
+,{"stream_name":"stdout","time":330.876866056,"data":"[run_detect] yoloworld+sam: 75/200\n"}
+,{"stream_name":"stdout","time":330.876869307,"data":"[run_detect] yoloworld+sam: 100/200\n"}
+,{"stream_name":"stdout","time":330.876872725,"data":"[run_detect] yoloworld+sam: 125/200\n"}
+,{"stream_name":"stdout","time":330.876875884,"data":"[run_detect] yoloworld+sam: 150/200\n"}
+,{"stream_name":"stdout","time":330.876879104,"data":"[run_detect] yoloworld+sam: 175/200\n"}
+,{"stream_name":"stdout","time":330.876882565,"data":"[run_detect] yoloworld+sam: 200/200\n"}
+,{"stream_name":"stdout","time":330.876885917,"data":"[run_detect] đã ghi /kaggle/working/output/preds/preds_yoloworld+sam_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":330.876889199,"data":"Thời gian detect: 4.9 phút\n"}
+,{"stream_name":"stdout","time":333.219348252,"data":"        model  ap50  ap30  precision  recall    f1  mean_iou  area_ratio  main_acc_largest  main_acc_score  conf  sec_per_img  peak_vram_mb  images_no_box  n_errors\n"}
+,{"stream_name":"stdout","time":333.219380127,"data":"    yoloworld 0.647 0.767      0.660   0.627 0.643     0.540       0.824             0.640           0.610 0.218        0.057      1386.798             21         0\n"}
+,{"stream_name":"stdout","time":333.219386005,"data":"yoloworld+sam 0.621 0.763      0.711   0.567 0.631     0.490       0.816             0.600           0.585 0.289        0.376      1950.395             28         0\n"}
+,{"stream_name":"stdout","time":333.2193911,"data":"        gdino 0.618 0.739      0.764   0.583 0.662     0.489       0.804             0.565           0.565 0.535        0.582      2261.374             48         0\n"}
+,{"stream_name":"stdout","time":333.219396173,"data":"    gdino+sam 0.593 0.738      0.747   0.570 0.647     0.478       0.787             0.545           0.545 0.535        0.919      2261.374             48         0\n"}
+,{"stream_name":"stdout","time":333.219399991,"data":"        owlv2 0.290 0.404      0.410   0.397 0.403     0.348       0.801             0.345           0.300 0.186        0.379       780.410             63         0\n"}
+,{"stream_name":"stdout","time":333.219404237,"data":"    owlv2+sam 0.285 0.400      0.417   0.387 0.401     0.334       0.792             0.340           0.295 0.189        0.713      1685.002             67         0\n"}
+,{"stream_name":"stdout","time":333.219408647,"data":"\n"}
+,{"stream_name":"stdout","time":333.219412611,"data":"AP@0.5 theo món:\n"}
+,{"stream_name":"stdout","time":333.219417337,"data":"model               gdino  gdino+sam  owlv2  owlv2+sam  yoloworld  yoloworld+sam\n"}
+,{"stream_name":"stdout","time":333.219421185,"data":"class                                                                           \n"}
+,{"stream_name":"stdout","time":333.219425005,"data":"bibimbap             0.69       0.69   0.43       0.43       0.68           0.65\n"}
+,{"stream_name":"stdout","time":333.219428691,"data":"french_fries         0.53       0.53   0.42       0.44       0.70           0.70\n"}
+,{"stream_name":"stdout","time":333.219443569,"data":"fried_spring_rolls   0.30       0.28   0.32       0.31       0.31           0.22\n"}
+,{"stream_name":"stdout","time":333.219446521,"data":"green_salad          0.69       0.69   0.49       0.49       0.68           0.68\n"}
+,{"stream_name":"stdout","time":333.219449085,"data":"miso_soup            0.60       0.55   0.37       0.36       0.69           0.61\n"}
+,{"stream_name":"stdout","time":333.219451657,"data":"pho                  1.00       1.00   0.70       0.64       1.00           1.00\n"}
+,{"stream_name":"stdout","time":333.219454349,"data":"pizza                0.60       0.58   0.25       0.24       0.62           0.62\n"}
+,{"stream_name":"stdout","time":333.219466158,"data":"ramen_noodle         0.79       0.70   0.33       0.33       0.71           0.71\n"}
+,{"stream_name":"stdout","time":333.219470387,"data":"rice                 0.50       0.47   0.27       0.26       0.67           0.64\n"}
+,{"stream_name":"stdout","time":333.219472954,"data":"sushi                0.53       0.52   0.10       0.10       0.58           0.58\n"}
+,{"stream_name":"stdout","time":340.621370933,"data":"Đã lưu 200 hình so sánh vào /kaggle/working/output/compare/ và compare_grid.jpg\n"}
+,{"stream_name":"stdout","time":340.679200164,"data":"Xong sau 5.0 phút\n"}
+,{"stream_name":"stdout","time":340.679231346,"data":"34M\t/kaggle/working/output\r\n"}
+,{"stream_name":"stderr","time":344.50525345,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":344.505293228,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":344.677517217,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":344.677543932,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":345.477909621,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":345.572585075,"data":"[NbConvertApp] Writing 82198 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":348.192595328,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":348.900142196,"data":"[NbConvertApp] Writing 559436 bytes to __results__.html\n"}
+]

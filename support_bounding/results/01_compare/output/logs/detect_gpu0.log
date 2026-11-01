@@ -1,0 +1,21 @@
+[run_detect] shard 0/1: 200 ảnh, models=['gdino'], sam=True, device=Tesla T4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/1182 [00:00<?, ?it/s]Loading weights:  21%|██        | 248/1182 [00:00<00:00, 2466.71it/s]Loading weights:  42%|████▏     | 495/1182 [00:00<00:00, 2355.24it/s]Loading weights:  63%|██████▎   | 740/1182 [00:00<00:00, 2396.79it/s]Loading weights:  83%|████████▎ | 980/1182 [00:00<00:00, 2351.15it/s]Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 2386.86it/s]
+[run_detect] gdino: 25/200
+[run_detect] gdino: 50/200
+[run_detect] gdino: 75/200
+[run_detect] gdino: 100/200
+[run_detect] gdino: 125/200
+[run_detect] gdino: 150/200
+[run_detect] gdino: 175/200
+[run_detect] gdino: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds/preds_gdino_shard0.json (200 ảnh)
+[run_detect] gdino+sam: 25/200
+[run_detect] gdino+sam: 50/200
+[run_detect] gdino+sam: 75/200
+[run_detect] gdino+sam: 100/200
+[run_detect] gdino+sam: 125/200
+[run_detect] gdino+sam: 150/200
+[run_detect] gdino+sam: 175/200
+[run_detect] gdino+sam: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds/preds_gdino+sam_shard0.json (200 ảnh)
