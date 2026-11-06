@@ -1,0 +1,72 @@
+/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+python 3.13.16 | torch 2.11.0+cu130 | transformers 5.20.2 | pillow 13.0.0
+GPU: ['Tesla T4', 'Tesla T4']
+Writing foodbox/__init__.py
+Writing foodbox/api.py
+Writing foodbox/autolabel.py
+Writing foodbox/cli.py
+Writing foodbox/crop.py
+Writing foodbox/data.py
+Writing foodbox/detectors.py
+Writing foodbox/labels.py
+Writing foodbox/metrics.py
+Writing foodbox/postprocess.py
+Writing foodbox/run_detect.py
+Writing foodbox/viz.py
+UEC 200 ảnh (58 ảnh nhiều món), Food-101 200 ảnh
+[launch] GPU 0: --items /kaggle/working/output/items_uec.json --models gdino --containers --out /kaggle/working/output/preds_uec
+[launch] GPU 1: --items /kaggle/working/output/items_food.json --models gdino --containers --out /kaggle/working/output/preds_food
+[launch]    30s GPU 0: Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 3524.45it/s]
+[launch]    30s GPU 1: Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 2982.31it/s]
+[launch]    60s GPU 0:   level_start_index = torch.cat((spatial_shapes.new_zeros((1,)), spatial_shapes.prod(1).cumsum(0)[:-1]))
+[launch]    60s GPU 1: Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 2982.31it/s]
+[launch]    90s GPU 0: [run_detect] gdino: 25/200
+[launch]    90s GPU 1: [run_detect] gdino: 25/200
+[launch]   120s GPU 0: [run_detect] gdino: 50/200
+[launch]   120s GPU 1: [run_detect] gdino: 75/200
+[launch]   150s GPU 0: [run_detect] gdino: 75/200
+[launch]   150s GPU 1: [run_detect] gdino: 100/200
+[launch]   180s GPU 0: [run_detect] gdino: 100/200
+[launch]   180s GPU 1: [run_detect] gdino: 100/200
+[launch]   210s GPU 0: [run_detect] gdino: 125/200
+[launch]   210s GPU 1: [run_detect] gdino: 125/200
+[launch]   240s GPU 0: [run_detect] gdino: 150/200
+[launch]   240s GPU 1: [run_detect] gdino: 150/200
+[launch]   270s GPU 0: [run_detect] gdino: 175/200
+[launch]   270s GPU 1: [run_detect] gdino: 175/200
+[launch]   300s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_shard0.json (200 ảnh)
+[launch]   300s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_shard0.json (200 ảnh)
+[launch] GPU 0 mã thoát 0 (log: /kaggle/working/output/logs/detect_uec.log)
+[launch] GPU 1 mã thoát 0 (log: /kaggle/working/output/logs/detect_food.log)
+----- /kaggle/working/output/logs/detect_uec.log
+[run_detect] gdino: 125/200
+[run_detect] gdino: 150/200
+[run_detect] gdino: 175/200
+[run_detect] gdino: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_shard0.json (200 ảnh)
+----- /kaggle/working/output/logs/detect_food.log
+[run_detect] gdino: 125/200
+[run_detect] gdino: 150/200
+[run_detect] gdino: 175/200
+[run_detect] gdino: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_shard0.json (200 ảnh)
+uec: 200 ảnh có kết quả, 200 ảnh có box vật chứa
+food: 200 ảnh có kết quả, 200 ảnh có box vật chứa
+Xong sau 7.2 phút
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+[NbConvertApp] Writing 106290 bytes to __notebook__.ipynb
+[NbConvertApp] Converting notebook __notebook__.ipynb to html
+[NbConvertApp] Writing 690016 bytes to __results__.html

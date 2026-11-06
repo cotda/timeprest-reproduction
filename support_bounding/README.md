@@ -3,6 +3,16 @@
 Input: ảnh chia theo thư mục tên món (`<tên_món>/*.jpg`). Output: box ôm phần thức ăn, mỗi món một box và một màu,
 nhãn YOLO train được ngay. Box không phải món chính (ảnh nhiều món) có class `food_other`.
 
+## Dùng như module: nhập 1 ảnh → ra bounding box
+
+```bash
+pip install -e .                               # trong support_bounding/
+foodbox-detect khay_com.jpg --out ketqua/      # -> khay_com_bbox.jpg, khay_com_1.jpg..., khay_com.json
+```
+
+Hoặc trong Python: `from foodbox import FoodBoxDetector; FoodBoxDetector().detect("khay_com.jpg")`.
+Chi tiết: `MODULE_README.md`. Đóng gói zip để gửi: `python tools/make_module_zip.py` → `dist/foodbox_module_v0.2.0.zip`.
+
 ## Cấu trúc
 
 | Đường dẫn | Nội dung |
@@ -12,6 +22,7 @@ nhãn YOLO train được ngay. Box không phải món chính (ảnh nhiều mó
 | `foodbox/` | Thư viện dùng chung: dò dữ liệu, chuyển nhãn UEC sang YOLO, model, hậu xử lý, đo độ chính xác, xuất bộ nhãn |
 | `kaggle/01_compare/` | So sánh model trên UECFOOD-256 (có box thật) → `results.csv` + hình so sánh |
 | `kaggle/02_auto_label/` | Tự gán nhãn tập ảnh (Food-101 tiny; sau này là dataset của nhóm) |
+| `kaggle/03_prompts/` | Thử text prompt khác cho Grounding DINO ("food", tên món, thêm "plate. bowl. cup. tray.") |
 | `kaggle/*/notebook.py` | **Nguồn** của notebook (sửa ở đây). File `.ipynb` được ghép tự động, có nhúng code `foodbox/` |
 | `run_kaggle.py` | Một lệnh: build → đẩy lên Kaggle (2×T4) → chờ → tải output + log về `results/<tên>/` |
 | `tools/make_uec_mini.py` | Cắt bản UECFOOD-256 mini (10 món × 20 ảnh + toàn bộ `bb_info.txt`) để kernel gắn nhanh |
@@ -35,6 +46,8 @@ python run_kaggle.py kaggle/02_auto_label --download-only   # chỉ tải lại 
 Kaggle API không trả log khi kernel đang chạy; xem log trực tiếp trên trang web của kernel
 (`https://www.kaggle.com/code/<user>/<slug>`). API cũng không hủy được kernel: muốn hủy thì vào trang web.
 Mỗi bước chạy model có giới hạn thời gian (`timeout_min`), nên kernel không treo vô hạn.
+Kết quả detector được **lưu theo đợt** (mặc định mỗi 50 ảnh, `--ckpt-every`) vào `partial_*.json`: kernel bị dừng giữa
+chừng thì phần đã chạy vẫn đọc được, chạy lại cùng lệnh thì chỉ làm tiếp ảnh còn thiếu.
 
 Đẩy lên tài khoản khác: `--user <tên>`. Khi đó dataset riêng tư `kaggleolap/uecfood256-mini` không dùng được, phải tạo
 lại bằng `tools/make_uec_mini.py` rồi `kaggle datasets create`.
@@ -63,15 +76,22 @@ Nên chạy thử với `per_class=5` trước để ước lượng thời gian
 images/<món>/*.jpg        ảnh (chép nguyên bản; ảnh có tag xoay EXIF thì lưu bản đã xoay)
 labels/<món>/*.txt        nhãn YOLO: class_id x_center y_center width height (0-1)
 labels/classes.txt        bản sao classes.txt cho X-AnyLabeling
-visualized/<món>/*.jpg    ảnh đã vẽ box, mỗi class một màu, kèm confidence
+visualized/<món>/*.jpg    ảnh đã vẽ box, mỗi box một màu (box món chính luôn màu đầu), kèm tên class + confidence
 classes.txt, data.yaml    train ngay: yolo detect train data=data.yaml model=yolo11n.pt
 train.txt, val.txt        chia 80/20 theo từng món (không gồm ảnh không có box)
+crops/<món>/<ảnh>_<k>.jpg  từng box cắt thành ảnh riêng từ ảnh gốc (không có khung), k = 0 là món chính; crops/crops.csv
 report.csv                mọi ảnh: số box, confidence trung bình/cao nhất, needs_review + lý do
 failed.csv                ảnh không có box hoặc lỗi → sửa tay
 ```
 
 Lý do cần xem lại: `no_box`, `low_conf` (confidence cao nhất < `review_conf`), `many_boxes`,
 `box_near_full_image` (box món chính > 90% ảnh, thường là ôm cả đĩa/bàn).
+
+## Cắt box thành ảnh riêng
+
+- Bước 02 tự cắt **đúng vùng box model khoanh được** (`crops=True`, `crop_pad=0`; vd. `crop_pad=0.05` nếu muốn nới 5% mỗi phía).
+- Cắt lại sau khi sửa tay nhãn: `python tools/crop_from_labels.py <thư mục output>` (đọc `images/` + `labels/`, cắt đúng box đã sửa).
+- Xem trước: `python tools/crops_preview.py <thư mục crops> --images-root <thư mục output>`.
 
 ## Sửa nhãn bằng X-AnyLabeling
 

@@ -18,7 +18,7 @@ def yolo_to_xyxy(yolo, w, h):
 def write_yolo_txt(path, class_ids, boxes, w, h):
     """Một dòng mỗi box. Ảnh không có box vẫn ghi file rỗng (YOLO hiểu là ảnh nền)."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         for c, b in zip(class_ids, boxes):
             f.write(f"{int(c)} " + " ".join(f"{min(max(v, 0.0), 1.0):.6f}" for v in xyxy_to_yolo(b, w, h)) + "\n")
 
@@ -26,7 +26,7 @@ def write_yolo_txt(path, class_ids, boxes, w, h):
 def read_yolo_txt(path, w, h):
     """Đọc lại file YOLO -> (class_ids, boxes pixel)."""
     cls, boxes = [], []
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             p = line.split()
             if len(p) == 5:

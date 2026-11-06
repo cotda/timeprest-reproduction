@@ -1,0 +1,74 @@
+{
+ "image": "mod_in\\ice_cream_1609293.jpg",
+ "width": 512,
+ "height": 512,
+ "n_boxes": 5,
+ "boxes": [
+  {
+   "id": 1,
+   "x1": 104.3,
+   "y1": 302.0,
+   "x2": 312.2,
+   "y2": 441.2,
+   "score": 0.6667,
+   "largest": true,
+   "crop": "ice_cream_1609293_1.jpg"
+  },
+  {
+   "id": 2,
+   "x1": 0.4,
+   "y1": 178.3,
+   "x2": 151.3,
+   "y2": 247.5,
+   "score": 0.5945,
+   "largest": false,
+   "crop": "ice_cream_1609293_2.jpg"
+  },
+  {
+   "id": 3,
+   "x1": 333.1,
+   "y1": 81.1,
+   "x2": 453.4,
+   "y2": 117.1,
+   "score": 0.5803,
+   "largest": false,
+   "crop": "ice_cream_1609293_3.jpg"
+  },
+  {
+   "id": 4,
+   "x1": 401.9,
+   "y1": 279.5,
+   "x2": 512.1,
+   "y2": 383.9,
+   "score": 0.5755,
+   "largest": false,
+   "crop": "ice_cream_1609293_4.jpg"
+  },
+  {
+   "id": 5,
+   "x1": 144.6,
+   "y1": 96.3,
+   "x2": 259.1,
+   "y2": 133.8,
+   "score": 0.5396,
+   "largest": false,
+   "crop": "ice_cream_1609293_5.jpg"
+  }
+ ],
+ "files": {
+  "bbox": "ice_cream_1609293_bbox.jpg"
+ },
+ "model": "IDEA-Research/grounding-dino-base",
+ "device": "cpu",
+ "params": {
+  "prompts": [
+   "food"
+  ],
+  "conf": 0.35,
+  "other_conf": 0.45,
+  "nms_iou": 0.5,
+  "min_area": 0.002,
+  "max_det": 20
+ },
+ "seconds": 9.419
+}

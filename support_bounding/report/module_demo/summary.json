@@ -1,0 +1,17 @@
+[
+ {
+  "image": "mod_in\\bibimbap_13995.jpg",
+  "n_boxes": 4,
+  "out": "mod_out\\"
+ },
+ {
+  "image": "mod_in\\ice_cream_1609293.jpg",
+  "n_boxes": 5,
+  "out": "mod_out\\"
+ },
+ {
+  "image": "mod_in\\miso_soup_38.jpg",
+  "n_boxes": 6,
+  "out": "mod_out\\"
+ }
+]

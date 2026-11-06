@@ -42,6 +42,9 @@ CFG = dict(
     review_conf=None,            # None = conf + 0.1
     max_boxes=4,                 # nhiều box hơn thế thì đánh dấu xem lại
     val_frac=0.2,                # tỉ lệ ảnh val mỗi món trong train.txt / val.txt
+    crops=True,                  # cắt từng box thành ảnh riêng (từ ảnh gốc, không có khung) vào crops/<món>/
+    crop_pad=0.0,                # 0 = cắt đúng box model khoanh được; vd. 0.05 = nới thêm 5% mỗi phía
+    group=True,                  # gộp các miếng cùng đĩa/thớt thành 1 khung (chỉ gdino; thêm 1 lượt tìm vật chứa; NOTES v5)
     timeout_min=60,
     out="/kaggle/working/output",
 )
@@ -71,13 +74,7 @@ print("Thư mục gốc dùng:", roots)
 class_images = data.list_class_images(roots)
 print(f"{len(class_images)} món, {sum(map(len, class_images.values()))} ảnh")
 items = data.sample_images(class_images, CFG["classes"], CFG["n_classes"], CFG["per_class"], CFG["seed"])
-seen = {}
-for it in items:  # trùng tên file trong cùng món (vd. từ train/ và valid/) -> thêm hậu tố
-    n = seen.get(it["key"], 0)
-    seen[it["key"]] = n + 1
-    if n:
-        it["stem"] += f"_{n}"
-        it["key"] = f"{it['class']}/{it['stem']}"
+items = data.dedupe_keys(items)  # trùng tên file trong cùng món (vd. từ train/ và valid/) -> thêm hậu tố
 with open(f"{WORK}/items.json", "w") as f:
     json.dump(items, f)
 print(f"Tập con: {len(items)} ảnh, món: {sorted({it['class'] for it in items})}")
@@ -92,11 +89,12 @@ jobs = []
 for g in range(n_gpu):
     args = ["--items", f"{WORK}/items.json", "--models", CFG["model"], "--prompts", "|".join(CFG["prompts"]),
             "--out", f"{WORK}/preds", "--shard", str(g), "--nshards", str(n_gpu)] + (["--sam"] if CFG["sam"] else [])
+    args += ["--containers"] if CFG["group"] and CFG["model"] == "gdino" else []
     jobs.append((g, args, f"{WORK}/logs/detect_gpu{g}.log"))
 codes = launch(jobs, timeout_min=CFG["timeout_min"], cwd="/tmp/foodbox_models")  # trọng số model không vào output
 for _, _, log in jobs:
     print(f"----- {log}")
-    print("\n".join(open(log, errors="replace").read().splitlines()[-8:]))
+    print("\n".join(open(log, encoding="utf-8", errors="replace").read().splitlines()[-8:]))
 variant = CFG["model"] + ("+sam" if CFG["sam"] else "")
 preds = load_preds(f"{WORK}/preds")
 assert variant in preds, f"Không có kết quả {variant}: xem log ở trên"
@@ -113,7 +111,9 @@ report, failed = build_dataset(items, results, OUT, conf=CFG["conf"], nms_iou=CF
                                min_area=CFG["min_area"], max_area=CFG["max_area"],
                                drop_container=CFG["drop_container"], main_rule=CFG["main_rule"],
                                review_conf=CFG["review_conf"], max_boxes=CFG["max_boxes"],
-                               val_frac=CFG["val_frac"], seed=CFG["seed"], other_conf=CFG["other_conf"])
+                               val_frac=CFG["val_frac"], seed=CFG["seed"], other_conf=CFG["other_conf"],
+                               crops=CFG["crops"], crop_pad=CFG["crop_pad"],
+                               group=CFG["group"] and CFG["model"] == "gdino")
 rep = pd.DataFrame(report)
 print(f"Ảnh có ít nhất 1 box: {(rep.n_boxes > 0).mean():.1%} | box/ảnh trung bình: {rep.n_boxes.mean():.2f} | "
       f"cần xem lại: {rep.needs_review.sum()} ảnh | failed: {len(failed)}")

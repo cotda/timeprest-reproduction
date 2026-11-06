@@ -1,0 +1,17 @@
+{
+ "id": "kaggleolap/foodbox-03-prompts",
+ "title": "foodbox-03-prompts",
+ "code_file": "03_prompts.ipynb",
+ "language": "python",
+ "kernel_type": "notebook",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [
+  "kaggleolap/uecfood256-mini",
+  "msarmi9/food101tiny"
+ ],
+ "competition_sources": [],
+ "kernel_sources": []
+}

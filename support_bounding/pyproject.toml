@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "foodbox"
+version = "0.2.0"
+description = "Auto bounding box cho món ăn: nhập ảnh -> ra box từng món (Grounding DINO zero-shot)"
+readme = "MODULE_README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "torch",
+    "transformers>=4.40",
+    "pillow",
+    "numpy",
+]
+
+[project.optional-dependencies]
+# Chỉ cần cho các notebook so sánh model / đánh giá (bước 01, 03), không cần để chạy module
+compare = ["ultralytics==8.4.170", "pandas"]
+dev = ["pytest"]
+
+[project.scripts]
+foodbox-detect = "foodbox.cli:main"
+
+[tool.setuptools]
+packages = ["foodbox"]

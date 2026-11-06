@@ -1,0 +1,64 @@
+{
+ "image": "mod_in\\bibimbap_13995.jpg",
+ "width": 640,
+ "height": 480,
+ "n_boxes": 4,
+ "boxes": [
+  {
+   "id": 1,
+   "x1": 478.5,
+   "y1": 305.3,
+   "x2": 625.7,
+   "y2": 456.4,
+   "score": 0.6935,
+   "largest": false,
+   "crop": "bibimbap_13995_1.jpg"
+  },
+  {
+   "id": 2,
+   "x1": 412.3,
+   "y1": 22.6,
+   "x2": 600.8,
+   "y2": 202.6,
+   "score": 0.6819,
+   "largest": false,
+   "crop": "bibimbap_13995_2.jpg"
+  },
+  {
+   "id": 3,
+   "x1": 33.5,
+   "y1": 9.1,
+   "x2": 273.8,
+   "y2": 242.1,
+   "score": 0.6702,
+   "largest": true,
+   "crop": "bibimbap_13995_3.jpg"
+  },
+  {
+   "id": 4,
+   "x1": 61.2,
+   "y1": 283.2,
+   "x2": 136.2,
+   "y2": 359.0,
+   "score": 0.5082,
+   "largest": false,
+   "crop": "bibimbap_13995_4.jpg"
+  }
+ ],
+ "files": {
+  "bbox": "bibimbap_13995_bbox.jpg"
+ },
+ "model": "IDEA-Research/grounding-dino-base",
+ "device": "cpu",
+ "params": {
+  "prompts": [
+   "food"
+  ],
+  "conf": 0.35,
+  "other_conf": 0.45,
+  "nms_iou": 0.5,
+  "min_area": 0.002,
+  "max_det": 20
+ },
+ "seconds": 15.05
+}

@@ -1,0 +1,335 @@
+NỘI DUNG ĐIỀN TEMPLATE NOTION
+[Literature Review / Model] Auto bounding box món ăn theo vùng trong hình (FoodAI)
+==========================================================================================
+Ghi chú khi dán:
+  - Điền theo đúng thứ tự các mục của template. Bảng viết dạng Markdown, dán vào Notion sẽ tự thành bảng.
+  - Số liệu lấy từ support_bounding/NOTES.md (nhật ký từng phiên bản) và support_bounding/results/.
+    Phiên bản số liệu: bước 01 = v1.1/v1.2, bước 02 = v2.1, prompt = v3, cắt ảnh = v2.3.
+  - Mô hình KHÔNG huấn luyện: dùng Grounding DINO có sẵn (zero-shot). Các mục template về huấn luyện / K-fold ghi rõ là
+    không làm, không bịa số.
+  - "Đưa model lên task": model là trọng số công khai trên HuggingFace (ghi link), code pipeline là thư mục
+    support_bounding/ trên GitHub (cần commit + push trước khi dán link). Ảnh đính kèm: xem mục "File đính kèm" ở cuối.
+
+
+# Hạng Mục Huấn Luyện
+-------------------------------------------------------------------------------------------
+
+| **Mục** | **Nội dung** |
+| --- | --- |
+| **Tên mô hình** | Grounding DINO base (`IDEA-Research/grounding-dino-base`, HuggingFace) + pipeline `foodbox` (code của nhóm) |
+| **Loại mô hình** | Phát hiện đối tượng theo câu chữ (open-vocabulary / zero-shot object detection), kiến trúc Transformer (DETR) |
+| **Mô tả ngắn gọn** | Đưa vào ảnh món ăn và câu chữ "food", mô hình trả về các bounding box chứa thức ăn kèm điểm tin cậy. Pipeline lọc box, gán box lớn nhất là món theo tên thư mục, các box còn lại là `food_other`, rồi xuất nhãn YOLO, ảnh đã vẽ box và từng box cắt thành ảnh riêng. Không cần huấn luyện, không cần nhãn có sẵn. |
+| **Ứng dụng thực tế** | Tự gán nhãn box cho dataset món ăn của nhóm (~300 món, ảnh chia thư mục theo tên món) thay cho vẽ tay; cắt từng món trong khay cơm thành ảnh riêng để nhận diện món và tính dinh dưỡng từng món; làm dữ liệu để train YOLO nhận diện món |
+| **Sơ đồ kiến trúc** | Ảnh → Swin-B (đặc trưng ảnh) ; "food." → BERT-base (đặc trưng chữ) → Feature Enhancer (trộn ảnh–chữ) → chọn 900 query theo chữ → Decoder ảnh–chữ → mỗi query: 1 box + điểm khớp với từng token chữ. Pipeline: box → NMS → lọc diện tích / ngưỡng → gán class → nhãn YOLO + ảnh vẽ box + ảnh cắt (xem trang kiến trúc) |
+| **Thuật toán sử dụng** | Grounding DINO (DETR + grounded pre-training); NMS không phân biệt class (IoU 0,5); ngưỡng tin cậy riêng cho món chính / món phụ; quy tắc "box lớn nhất = món theo thư mục" |
+| **Dữ liệu đầu vào** | Đánh giá: UECFOOD-256 (món châu Á, CÓ box thật), tập con 10 món × 20 ảnh = 200 ảnh (58 ảnh có 2–4 món). Gán nhãn thử: Food-101 (món Tây, KHÔNG có box), tập con 10 món × 20 ảnh = 200 ảnh. Dataset thật của nhóm chưa có |
+| **Tiền xử lý dữ liệu** | Đọc ảnh, xoay theo EXIF, đổi sang RGB; processor của Grounding DINO tự resize và chuẩn hóa ImageNet. Câu chữ viết thường, kết thúc bằng dấu chấm ("food."). Không augment |
+| **Cách huấn luyện mô hình** | Không huấn luyện. Dùng trọng số pretrained của tác giả (zero-shot). Chỉ chọn ngưỡng và quy tắc hậu xử lý dựa trên tập UEC có box thật |
+| **Siêu tham số quan trọng** | prompt "food"; ngưỡng món chính 0,35; ngưỡng `food_other` 0,45; NMS IoU 0,5; bỏ box < 0,2% diện tích ảnh; tối đa 20 box/ảnh; ảnh cắt = đúng vùng box model khoanh (không nới) |
+| **Đánh giá hiệu suất** | UEC 200 ảnh: AP@0.5 = 0,732, AP@0.3 = 0,836, recall 0,717, IoU TB 0,611. Ảnh 1 món: AP@0.5 0,875, tìm được 90% món; ảnh nhiều món: AP@0.5 0,571, tìm được 68% món. Food-101 200 ảnh (chấm tay): 97% ảnh có box, 89,5% box đúng, box món chính đúng 94,8% |
+| **So sánh với mô hình khác** | Cùng 200 ảnh UEC: YOLO-World v2-x AP@0.5 0,735 (nhanh gấp 10 lần), OWLv2 base 0,386; thêm SAM 2.1 để siết box không tăng điểm (−0,02). Thử 4 cách viết prompt: "food" tốt nhất (0,732), tên món 0,590, thêm "plate. bowl." 0,632 |
+| **Ứng dụng & Triển khai** | Đã đóng gói thành module Python `foodbox` (pip install): nhập 1 ảnh → ra ảnh có khung đánh số, từng box cắt thành ảnh riêng và JSON toạ độ; lệnh `foodbox-detect anh.jpg --out ketqua/` hoặc `FoodBoxDetector().detect(anh)`. Chạy được trên máy cá nhân: GPU ~0,6 s/ảnh (T4), CPU 9–15 s/ảnh. Gán nhãn cả bộ ảnh: Kaggle 2×T4 bằng 1 lệnh. Chưa có web app / API HTTP |
+| **Tài liệu tham khảo** | Grounding DINO (Liu et al., ECCV 2024); UECFOOD-256 (Kawano & Yanai, 2014); Food-101 (Bossard et al., ECCV 2014); YOLO-World (Cheng et al., CVPR 2024); OWLv2 (Minderer et al., NeurIPS 2023); SAM 2 (Ravi et al., 2024) |
+
+
+# Overview Task
+-------------------------------------------------------------------------------------------
+
+Task: xây LUỒNG (pipeline) tự động vẽ bounding box cho món ăn trong ảnh, để gán nhãn dataset FoodAI của nhóm.
+  1. Khảo sát các model auto bounding box (survey.md): Grounding DINO, OWLv2, YOLO-World, Florence-2, SAM 2/3, autodistill.
+  2. So sánh 3 model trên UECFOOD-256 có box thật → chọn Grounding DINO.
+  3. Tự gán nhãn ảnh dạng <tên_món>/*.jpg: xuất nhãn YOLO, classes.txt, data.yaml, ảnh đã vẽ box, report.csv / failed.csv
+     (ảnh cần sửa tay), và cắt từng box thành ảnh riêng.
+  4. Khi có dataset thật: chỉ cần đổi tên dataset trên Kaggle là chạy.
+
+Kết quả chính:
+  - Ảnh 1 món: box tốt (tìm được 90% món, box món chính đúng ~95% khi chấm tay trên Food-101).
+  - Ảnh khay nhiều món: còn yếu (tìm được 68% món, chọn đúng món chính 38%).
+  - Box ôm phần thức ăn, không ôm cả đĩa (box nhỏ hơn box thật UEC ~20%, vì box thật UEC ôm cả bát).
+
+
+# Kiến trúc thiết kế mô hình
+-------------------------------------------------------------------------------------------
+(Tạo page riêng, dán nội dung dưới đây rồi copy link vào đây)
+
+Ảnh món ăn (RGB, xoay theo EXIF)               Câu chữ "food."
+  │                                              │
+  ▼                                              ▼
+Swin-B (backbone ảnh)                          BERT-base (backbone chữ)
+  └──────────────┬───────────────────────────────┘
+                 ▼
+Feature Enhancer: self-attention + cross-attention ảnh ↔ chữ
+                 ▼
+Language-guided query selection: chọn 900 vị trí ảnh khớp chữ nhất
+                 ▼
+Cross-modality decoder (6 lớp) → mỗi query: box (cx, cy, w, h) + điểm khớp với token "food"
+                 ▼
+──────────── Pipeline foodbox (code nhóm) ────────────
+  1. Giữ box điểm ≥ 0,05, tối đa 100 box/ảnh (kết quả thô, lưu theo đợt mỗi 50 ảnh)
+  2. NMS (IoU 0,5) bỏ box trùng; bỏ box < 0,2% diện tích ảnh
+  3. Ngưỡng: box ≥ 0,35; box lớn nhất = món theo tên thư mục; box còn lại = food_other nếu điểm ≥ 0,45
+  4. Xuất: labels/<món>/*.txt (YOLO), visualized/ (mỗi box một màu), crops/<món>/<ảnh>_<k>.jpg (cắt đúng box, từ ảnh gốc),
+     classes.txt, data.yaml, train.txt/val.txt (80/20), report.csv, failed.csv
+
+Chạy song song 2 GPU T4 trên Kaggle: mỗi GPU một nửa số ảnh.
+
+
+# Thư viện đính kèm
+-------------------------------------------------------------------------------------------
+
+**Code cài đặt thư viện**
+
+```bash
+git clone https://github.com/cotda/timeprest-reproduction.git && cd timeprest-reproduction/support_bounding
+pip install torch transformers pillow numpy pandas pytest   # Kaggle có sẵn torch/transformers
+pip install ultralytics==8.4.170                             # chỉ cần cho YOLO-World / SAM 2.1 (bước so sánh)
+pip install kaggle                                           # đẩy kernel, tải kết quả
+python -m pytest                                              # 18 test CPU
+```
+
+**Bảng thư viện diễn giải**
+
+| Tên thư viện | Phiên bản | Công dụng của thư viện |
+| --- | --- | --- |
+| PyTorch | 2.11.0+cu128 (Kaggle), 2.6.0 (máy local) | Chạy mô hình trên GPU / CPU |
+| transformers | 5.16.1 (Kaggle), 4.49 (máy local) | Tải và chạy Grounding DINO, OWLv2 |
+| ultralytics | 8.4.170 | YOLO-World và SAM 2.1 (chỉ dùng khi so sánh model) |
+| Pillow | 13.0.0 (Kaggle), 11.1 (local) | Đọc ảnh, xoay EXIF, vẽ box, cắt ảnh |
+| NumPy | 2.2 | NMS, IoU, chỉ số đánh giá |
+| pandas | có sẵn trên Kaggle | Bảng kết quả, report.csv |
+| pytest | 9.1 | 18 test CPU |
+| kaggle (CLI/API) | 2.1.2 | Đẩy kernel, tải đủ mọi trang output |
+
+**Code import thư viện vào Python**
+
+```python
+import numpy as np
+import torch
+from PIL import Image, ImageOps
+from transformers import AutoModelForZeroShotObjectDetection, AutoProcessor
+
+from foodbox import data, postprocess, metrics          # dò dữ liệu, NMS/lọc, chỉ số
+from foodbox.detectors import GroundingDINO             # bọc Grounding DINO
+from foodbox.autolabel import build_dataset             # xuất nhãn YOLO + ảnh vẽ box + ảnh cắt
+```
+
+
+# Tiền xử lý dữ liệu và chuẩn hoá
+-------------------------------------------------------------------------------------------
+
+## Mô tả tiền xử lý dữ liệu và chuẩn hoá bằng diễn giải
+
+1. Dò dữ liệu: tự tìm mọi thư mục dạng <tên_món>/*.jpg (mỗi bản upload có cấu trúc khác nhau); gộp train/valid nếu có.
+2. Chọn tập con: 10 món × 20 ảnh, chọn ngẫu nhiên với seed 0 (chạy lại ra cùng ảnh).
+3. Đọc ảnh: xoay theo tag EXIF (giống cách YOLO và X-AnyLabeling đọc ảnh), đổi sang RGB. Ảnh gốc không bị sửa.
+4. Câu chữ: "food." (viết thường, kết thúc bằng dấu chấm, theo yêu cầu của Grounding DINO).
+5. Processor của Grounding DINO tự resize (cạnh ngắn ~800) và chuẩn hóa theo mean/std ImageNet.
+6. Box thật UEC (đánh giá): gộp bb_info.txt của mọi thư mục món (ảnh nhiều món nằm ở nhiều thư mục), kẹp box vào trong
+   ảnh, chuyển sang YOLO (class_id x_center y_center width height, chuẩn hoá 0–1).
+
+## Mô tả tiền xử lý bằng Code
+
+```python
+# foodbox/data.py
+def load_image(path):
+    """Mở ảnh RGB, xoay theo EXIF (giống cv2.imread mà YOLO/Ultralytics và X-AnyLabeling dùng)."""
+    with Image.open(path) as im:
+        return ImageOps.exif_transpose(im).convert("RGB")
+
+# foodbox/labels.py
+def xyxy_to_yolo(box, w, h):
+    x1, y1, x2, y2 = box
+    return ((x1 + x2) / 2 / w, (y1 + y2) / 2 / h, (x2 - x1) / w, (y2 - y1) / h)
+```
+
+
+# Định nghĩa mô hình
+-------------------------------------------------------------------------------------------
+
+- Grounding DINO bản base (Swin-B + BERT-base), trọng số `IDEA-Research/grounding-dino-base` (license Apache-2.0),
+  tải tự động từ HuggingFace (~900 MB). Không sửa kiến trúc, không fine-tune.
+- Gọi qua `transformers` (`AutoModelForZeroShotObjectDetection`). Lấy box có điểm ≥ 0,05 (giữ nhiều để còn tính AP), lọc
+  ngưỡng thật ở bước hậu xử lý.
+- Khi thử prompt khác (bước 03), điểm của box = điểm cao nhất trên các token của prompt chính.
+
+```python
+# foodbox/detectors.py (rút gọn)
+class GroundingDINO:
+    def __init__(self, prompts=("food",), device="cuda", low_thr=0.05, max_det=100):
+        mid = "IDEA-Research/grounding-dino-base"
+        self.processor = AutoProcessor.from_pretrained(mid)
+        self.model = AutoModelForZeroShotObjectDetection.from_pretrained(mid).to(device).eval()
+        self.text = " ".join(p.strip().lower().rstrip(".") + "." for p in prompts)   # "food."
+        ...
+
+    @torch.no_grad()
+    def predict(self, img):
+        inputs = self.processor(images=img, text=self.text, return_tensors="pt").to(self.device)
+        out = self.model(**inputs)
+        r = self.processor.post_process_grounded_object_detection(
+            out, inputs["input_ids"], threshold=self.low_thr, text_threshold=self.low_thr,
+            target_sizes=[(img.height, img.width)])[0]
+        return r["boxes"].cpu().numpy(), r["scores"].cpu().numpy()     # box pixel (x1, y1, x2, y2), điểm
+```
+
+
+# Quá trình huấn luyện mô hình
+-------------------------------------------------------------------------------------------
+
+Không huấn luyện (zero-shot). Các bước thay cho huấn luyện:
+  1. Chọn model: so sánh Grounding DINO, OWLv2, YOLO-World (± SAM 2.1) trên 200 ảnh UEC có box thật.
+  2. Chọn hậu xử lý: phát hiện 2 bộ lọc làm hỏng kết quả (lọc box gần cả ảnh, lọc box chứa box khác), bỏ đi thì AP@0.5
+     tăng 0,62 → 0,73.
+  3. Chọn ngưỡng: 0,45 (theo UEC) quá chặt với Food-101 (chỉ 78,5% ảnh có box) → hạ 0,35 cho món chính, giữ 0,45 cho
+     food_other → 97% ảnh có box, không tăng box sai.
+  4. Thử prompt: "food" / tên món / thêm "plate. bowl. cup. tray." → giữ "food".
+
+## Module: nhập 1 ảnh → ra bounding box
+
+```bash
+cd support_bounding && pip install -e .         # hoặc giải nén foodbox_module_v0.2.0.zip rồi pip install -e .
+foodbox-detect khay_com.jpg --out ketqua/
+#   ketqua/khay_com_bbox.jpg   ảnh có khung, đánh số 1, 2, ... (theo điểm tin cậy)
+#   ketqua/khay_com_1.jpg ...  khung i cắt thành ảnh riêng (đúng vùng khung, từ ảnh gốc)
+#   ketqua/khay_com.json       toạ độ + điểm tin cậy từng khung
+```
+
+```python
+from foodbox import FoodBoxDetector
+det = FoodBoxDetector()                         # GPU nếu có, không thì CPU
+boxes = det.detect("khay_com.jpg")              # [{'id': 1, 'x1': 175.5, 'y1': 305.7, 'x2': 255.1, 'y2': 387.2, 'score': 0.6493, ...}, ...]
+det.detect_and_save("khay_com.jpg", "ketqua/")
+```
+
+Đã chạy thử trên máy (CPU, 3 ảnh: 2 khay UEC + 1 ảnh Food-101): 4 / 6 / 5 box, đúng số box của pipeline; toạ độ trùng box
+pipeline (IoU ≥ 0,976), trừ 1 box sát ngưỡng 0,45 ở ảnh khay miso (GPU: bát súp 0,4506; CPU: gói gia vị 0,4512).
+
+## Code chạy pipeline
+
+```bash
+cd support_bounding
+python run_kaggle.py kaggle/01_compare        # so sánh model trên UEC (~6 phút GPU)
+python run_kaggle.py kaggle/02_auto_label     # gán nhãn + cắt ảnh (~3 phút GPU / 200 ảnh)
+python run_kaggle.py kaggle/03_prompts        # thử prompt (~10 phút GPU)
+python tools/crop_from_labels.py <thư mục output>          # cắt lại sau khi sửa tay nhãn
+python tools/make_crop_folders.py <thư mục crops> <ra> --images-root <thư mục output>   # mỗi ảnh gốc 1 thư mục
+```
+
+
+# Đánh giá kết quả
+-------------------------------------------------------------------------------------------
+
+## Lần chạy đơn
+
+Đánh giá trên 200 ảnh UECFOOD-256 có box thật (không phân biệt tên món: box nào là thức ăn). P/R/F1 ở ngưỡng cho F1
+cao nhất (0,468). Kaggle 2×T4.
+
+| **Chỉ số** | **Giá trị** | **Ghi chú** |
+| --- | --- | --- |
+| **AP@0.5** | `0,732` | Chỉ số chính (box đúng khi IoU ≥ 0,5 với box thật) |
+| **AP@0.3** | `0,836` | Box thật UEC ôm cả bát/đĩa, box model ôm phần thức ăn → IoU thấp hơn dù box đúng ý |
+| **Precision / Recall / F1** | `0,676 / 0,717 / 0,696` | |
+| **IoU trung bình** | `0,611` | Mỗi box thật lấy IoU cao nhất với box dự đoán |
+| **area_ratio** | `0,815` | Box dự đoán nhỏ hơn box thật ~20% → ôm sát thức ăn hơn |
+| **Ảnh 1 món (142 ảnh)** | AP@0.5 `0,875`, tìm được 128/142 món (90%) | |
+| **Ảnh nhiều món (58 ảnh, 158 món)** | AP@0.5 `0,571`, tìm được 107/158 món (68%) | Chọn đúng món chính 22/58 (38%) |
+| **Food-101, chấm tay 194 ảnh có box** | 97% ảnh có box; 230/257 box đúng (89,5%) | Box món chính đúng 94,8%; box food_other đúng 73% |
+| **Thời gian detect** | `0,58 s/ảnh` (T4), nạp model 24,5 s | CPU máy cá nhân ~11 s/ảnh; YOLO-World 0,06 s/ảnh |
+| **Bộ nhớ GPU** | `2,26 GB` | Vừa T4 16 GB |
+| **Số lượng mẫu** | 200 ảnh UEC + 200 ảnh Food-101 | Tập con để thử; dataset thật chưa có |
+| **Số lượng epoch** | Không có | Không huấn luyện |
+
+So sánh model (cùng 200 ảnh UEC):
+
+| **Model** | **AP@0.5** | **AP@0.3** | **Recall** | **IoU TB** | **s/ảnh (T4)** | **VRAM** |
+| --- | --- | --- | --- | --- | --- | --- |
+| Grounding DINO base (chọn) | 0,732 | 0,836 | 0,717 | 0,611 | 0,58 | 2,3 GB |
+| YOLO-World v2-x | 0,735 | 0,834 | 0,683 | 0,596 | 0,06 | 1,4 GB |
+| OWLv2 base | 0,386 | 0,475 | 0,503 | 0,427 | 0,38 | 0,8 GB |
+| + SAM 2.1 (mỗi model) | thấp hơn 0,02–0,03 | | | | +0,3 | |
+
+## Lần chạy Cross Validation
+
+Không làm K-fold vì mô hình không huấn luyện. Thay vào đó đánh giá trên 2 bộ dữ liệu khác nhau (UEC có box thật, Food-101
+chấm tay toàn bộ) và tách riêng ảnh 1 món / nhiều món. Kết quả đã ở bảng trên.
+
+
+# Nhận xét rút ra kết luận
+-------------------------------------------------------------------------------------------
+
+### 1️⃣ Phần Nhận Xét
+
+✅ **Hiệu suất tổng thể của mô hình**
+- Ảnh 1 món: tốt, tìm được 90% món; trên Food-101 box món chính đúng 94,8%.
+- Ảnh khay nhiều món: còn yếu, chỉ tìm được 68% món; quy tắc "box lớn nhất = món chính" chỉ đúng 38%.
+- Box ôm phần thức ăn chứ không ôm cả đĩa. Đây là điều đề bài cần, nhưng làm điểm IoU so với box thật UEC thấp hơn.
+
+✅ **Tính ổn định của mô hình**
+- Không có yếu tố ngẫu nhiên khi chạy (không huấn luyện): chạy lại ra cùng kết quả (bước 03 chạy lại "food" ra đúng 0,732).
+- Lỗi lặp lại ở món gồm nhiều miếng rời (sushi, falafel, french toast): lúc ôm cả đĩa, lúc ôm từng miếng.
+
+✅ **Thời gian chạy**
+- 0,58 s/ảnh trên T4, 2 GPU song song: 1.500 ảnh (dataset dự kiến) khoảng 8 phút. CPU: ~11 s/ảnh.
+
+✅ **Overfitting / Underfitting**
+- Không áp dụng (không huấn luyện). Ngưỡng chọn trên UEC lệch với Food-101 (0,45 → 0,35), nên khi có dataset thật cần
+  kiểm tra lại ngưỡng trên vài chục ảnh.
+
+Ví dụ nhận xét:
+> "Grounding DINO zero-shot với prompt 'food' đạt AP@0.5 0,73 trên 200 ảnh UECFOOD-256, ngang YOLO-World và hơn hẳn OWLv2.
+> Với ảnh 1 món, pipeline tìm được 90% món và box món chính đúng 95% khi chấm tay trên Food-101; box ôm phần thức ăn chứ
+> không ôm cả đĩa. Với ảnh khay nhiều món, pipeline mới tìm được 68% món và hay chọn sai món chính."
+
+---
+
+### 2️⃣ Phần Kết Luận
+
+1️⃣ **Mô hình có phù hợp với bài toán không?**
+Có, cho ảnh 1 món (phần lớn dataset dự kiến: mỗi món một thư mục): dùng làm nhãn nháp rồi sửa tay các ảnh bị đánh dấu.
+Chưa phù hợp cho ảnh khay nhiều món nếu cần biết box nào là món nào.
+
+2️⃣ **Có cần cải thiện không? Nếu có, cách nào?**
+- Ảnh nhiều món: chọn món chính bằng prompt tên món thay vì box lớn nhất.
+- Ảnh không có box: thử lại bằng prompt tên món (thử trên dữ liệu có sẵn: cứu được 5/6 ảnh, cả 5 box đúng; chưa đưa vào pipeline).
+- Món nhiều miếng: gộp các box con nằm trong box món chính.
+- Tốc độ: train YOLO trên nhãn tự động (đã có sẵn data.yaml) để có model nhỏ, nhanh của nhóm.
+
+3️⃣ **Hướng nghiên cứu tiếp theo?**
+- Chạy trên dataset thật của nhóm khi có; sửa tay bằng X-AnyLabeling; train YOLO nhận diện món (YOLOv9/v10/v11).
+- Ghép với phần nhận diện món và tính dinh dưỡng (kế hoạch tháng 12).
+
+Ví dụ kết luận:
+> "Luồng auto bounding box dựa trên Grounding DINO chạy được bằng một lệnh trên Kaggle, xuất sẵn nhãn YOLO, ảnh vẽ box và
+> ảnh cắt từng món, đủ tốt cho ảnh 1 món (90% món được tìm thấy). Ảnh khay nhiều món còn yếu và là hướng cải thiện tiếp theo,
+> cùng với việc train YOLO trên nhãn tự động để có model nhanh cho web app."
+
+
+# File đính kèm (kéo vào Notion)
+-------------------------------------------------------------------------------------------
+
+- So sánh ảnh gốc | ảnh đã vẽ box (Food-101, 30 cặp): support_bounding/report/pairs_1.jpg, pairs_2.jpg, pairs_3.jpg
+- Ảnh nhiều món: ảnh gốc | pipeline | box thật: support_bounding/report/multi_dish_clean/pages_01.jpg, pages_02.jpg
+- Ảnh gốc → các ảnh cắt: support_bounding/report/multi_dish_crops/preview.jpg
+- Ví dụ thư mục cắt ảnh: support_bounding/report/multi_dish_preview/miso_soup_38/ (ảnh gốc, ảnh có khung đánh số
+  miso_soup_38_bbox.jpg, và 6 ảnh cắt miso_soup_38_1..6.jpg; khung số i = file _i)
+- Khảo sát model: support_bounding/survey.md; tổng hợp: support_bounding/report/TONG_HOP.md
+- Model: https://huggingface.co/IDEA-Research/grounding-dino-base
+- Code: https://github.com/cotda/timeprest-reproduction/tree/main/support_bounding (sau khi commit + push)
+- Kết quả chạy thử module (3 ảnh, đúng đầu ra của foodbox-detect): support_bounding/report/module_demo/
+  (vd. bibimbap_13995_bbox.jpg + bibimbap_13995_1..4.jpg + bibimbap_13995.json)
+- Module đóng gói (kéo vào task): support_bounding/dist/foodbox_module_v0.2.0.zip (~35 KB; giải nén → pip install -e . →
+  foodbox-detect anh.jpg --out ketqua/; hướng dẫn trong MODULE_README.md bên trong zip)
+
+
+# Tài liệu tham khảo
+-------------------------------------------------------------------------------------------
+
+1. Liu, S., Zeng, Z., Ren, T., Li, F., Zhang, H., Yang, J., Li, C., Yang, J., Su, H., Zhu, J., Zhang, L. (2024).
+   Grounding DINO: Marrying DINO with grounded pre-training for open-set object detection. ECCV 2024.
+2. Kawano, Y., Yanai, K. (2014). Automatic expansion of a food image dataset leveraging existing categories with domain
+   adaptation (UECFOOD-256). ECCV Workshops 2014.
+3. Bossard, L., Guillaumin, M., Van Gool, L. (2014). Food-101 – Mining discriminative components with random forests. ECCV 2014.
+4. Cheng, T., Song, L., Ge, Y., Liu, W., Wang, X., Shan, Y. (2024). YOLO-World: Real-time open-vocabulary object detection.
+   CVPR 2024.
+5. Minderer, M., Gritsenko, A., Houlsby, N. (2023). Scaling open-vocabulary object detection (OWLv2). NeurIPS 2023.
+6. Ravi, N. et al. (2024). SAM 2: Segment anything in images and videos. arXiv:2408.00714.

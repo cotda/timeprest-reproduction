@@ -1,0 +1,73 @@
+[{"stream_name":"stderr","time":6.089686024,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":6.089740576,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":6.984507197,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.984535258,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.984544169,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.984546851,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":7.568379715,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.568417221,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.568422818,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.568426898,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":24.244114629,"data":"python 3.13.16 | torch 2.11.0+cu130 | transformers 5.20.2 | pillow 13.0.0\n"}
+,{"stream_name":"stdout","time":24.245790975,"data":"GPU: ['Tesla T4', 'Tesla T4']\n"}
+,{"stream_name":"stdout","time":24.276742682,"data":"Writing foodbox/__init__.py\n"}
+,{"stream_name":"stdout","time":24.290576357,"data":"Writing foodbox/api.py\n"}
+,{"stream_name":"stdout","time":24.306531386,"data":"Writing foodbox/autolabel.py\n"}
+,{"stream_name":"stdout","time":24.32128307,"data":"Writing foodbox/cli.py\n"}
+,{"stream_name":"stdout","time":24.33521418,"data":"Writing foodbox/crop.py\n"}
+,{"stream_name":"stdout","time":24.352320455,"data":"Writing foodbox/data.py\n"}
+,{"stream_name":"stdout","time":24.370087744,"data":"Writing foodbox/detectors.py\n"}
+,{"stream_name":"stdout","time":24.384260672,"data":"Writing foodbox/labels.py\n"}
+,{"stream_name":"stdout","time":24.399657873,"data":"Writing foodbox/metrics.py\n"}
+,{"stream_name":"stdout","time":24.416052846,"data":"Writing foodbox/postprocess.py\n"}
+,{"stream_name":"stdout","time":24.434490105,"data":"Writing foodbox/run_detect.py\n"}
+,{"stream_name":"stdout","time":24.448781211,"data":"Writing foodbox/viz.py\n"}
+,{"stream_name":"stdout","time":154.369551433,"data":"UEC 200 ảnh (58 ảnh nhiều món), Food-101 200 ảnh\n"}
+,{"stream_name":"stdout","time":154.386815322,"data":"[launch] GPU 0: --items /kaggle/working/output/items_uec.json --models gdino --containers --out /kaggle/working/output/preds_uec\n"}
+,{"stream_name":"stdout","time":154.387919102,"data":"[launch] GPU 1: --items /kaggle/working/output/items_food.json --models gdino --containers --out /kaggle/working/output/preds_food\n"}
+,{"stream_name":"stdout","time":184.39453123,"data":"[launch]    30s GPU 0: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 3524.45it/s]\n"}
+,{"stream_name":"stdout","time":184.39547509,"data":"[launch]    30s GPU 1: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2982.31it/s]\n"}
+,{"stream_name":"stdout","time":214.392807514,"data":"[launch]    60s GPU 0:   level_start_index = torch.cat((spatial_shapes.new_zeros((1,)), spatial_shapes.prod(1).cumsum(0)[:-1]))\n"}
+,{"stream_name":"stdout","time":214.394074163,"data":"[launch]    60s GPU 1: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2982.31it/s]\n"}
+,{"stream_name":"stdout","time":244.400832002,"data":"[launch]    90s GPU 0: [run_detect] gdino: 25/200\n"}
+,{"stream_name":"stdout","time":244.400861904,"data":"[launch]    90s GPU 1: [run_detect] gdino: 25/200\n"}
+,{"stream_name":"stdout","time":274.397427696,"data":"[launch]   120s GPU 0: [run_detect] gdino: 50/200\n"}
+,{"stream_name":"stdout","time":274.398644555,"data":"[launch]   120s GPU 1: [run_detect] gdino: 75/200\n"}
+,{"stream_name":"stdout","time":304.405371521,"data":"[launch]   150s GPU 0: [run_detect] gdino: 75/200\n"}
+,{"stream_name":"stdout","time":304.40638874,"data":"[launch]   150s GPU 1: [run_detect] gdino: 100/200\n"}
+,{"stream_name":"stdout","time":334.40159213,"data":"[launch]   180s GPU 0: [run_detect] gdino: 100/200\n"}
+,{"stream_name":"stdout","time":334.40277347,"data":"[launch]   180s GPU 1: [run_detect] gdino: 100/200\n"}
+,{"stream_name":"stdout","time":364.409443055,"data":"[launch]   210s GPU 0: [run_detect] gdino: 125/200\n"}
+,{"stream_name":"stdout","time":364.410512241,"data":"[launch]   210s GPU 1: [run_detect] gdino: 125/200\n"}
+,{"stream_name":"stdout","time":394.406000609,"data":"[launch]   240s GPU 0: [run_detect] gdino: 150/200\n"}
+,{"stream_name":"stdout","time":394.40603405,"data":"[launch]   240s GPU 1: [run_detect] gdino: 150/200\n"}
+,{"stream_name":"stdout","time":424.414366889,"data":"[launch]   270s GPU 0: [run_detect] gdino: 175/200\n"}
+,{"stream_name":"stdout","time":424.414397495,"data":"[launch]   270s GPU 1: [run_detect] gdino: 175/200\n"}
+,{"stream_name":"stdout","time":454.41034994,"data":"[launch]   300s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":454.411416711,"data":"[launch]   300s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":454.412246209,"data":"[launch] GPU 0 mã thoát 0 (log: /kaggle/working/output/logs/detect_uec.log)\n"}
+,{"stream_name":"stdout","time":454.412957847,"data":"[launch] GPU 1 mã thoát 0 (log: /kaggle/working/output/logs/detect_food.log)\n"}
+,{"stream_name":"stdout","time":454.449226884,"data":"----- /kaggle/working/output/logs/detect_uec.log\n"}
+,{"stream_name":"stdout","time":454.449245507,"data":"[run_detect] gdino: 125/200\n"}
+,{"stream_name":"stdout","time":454.449251798,"data":"[run_detect] gdino: 150/200\n"}
+,{"stream_name":"stdout","time":454.449256474,"data":"[run_detect] gdino: 175/200\n"}
+,{"stream_name":"stdout","time":454.449260798,"data":"[run_detect] gdino: 200/200\n"}
+,{"stream_name":"stdout","time":454.449264987,"data":"[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":454.449270579,"data":"----- /kaggle/working/output/logs/detect_food.log\n"}
+,{"stream_name":"stdout","time":454.449275931,"data":"[run_detect] gdino: 125/200\n"}
+,{"stream_name":"stdout","time":454.449280825,"data":"[run_detect] gdino: 150/200\n"}
+,{"stream_name":"stdout","time":454.449285172,"data":"[run_detect] gdino: 175/200\n"}
+,{"stream_name":"stdout","time":454.449289594,"data":"[run_detect] gdino: 200/200\n"}
+,{"stream_name":"stdout","time":454.449294635,"data":"[run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":454.449299392,"data":"uec: 200 ảnh có kết quả, 200 ảnh có box vật chứa\n"}
+,{"stream_name":"stdout","time":454.449313048,"data":"food: 200 ảnh có kết quả, 200 ảnh có box vật chứa\n"}
+,{"stream_name":"stdout","time":454.449316719,"data":"Xong sau 7.2 phút\n"}
+,{"stream_name":"stderr","time":457.31045633,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":457.310479411,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":457.457351337,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":457.457371833,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":458.172795151,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":458.258767791,"data":"[NbConvertApp] Writing 106290 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":460.68335996,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":461.473592761,"data":"[NbConvertApp] Writing 690016 bytes to __results__.html\n"}
+]

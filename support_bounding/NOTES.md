@@ -12,6 +12,13 @@ bằng `tools/reeval_01.py`). Git do người dùng tự commit: khi commit, ghi
 
 | Phiên bản | Ngày | Việc chính | Model tốt nhất (AP@0.5 trên UEC mini) | Trạng thái |
 |---|---|---|---|---|
+| v3 | 2026-11-01 | Kernel 03: thử 4 prompt ("food", tên món, thêm "plate. bowl. cup. tray.") trên UEC + Food-101 | "food" vẫn tốt nhất (0.732) | Giữ "food"; đề xuất dự phòng bằng tên món cho ảnh không có box (chờ người dùng) |
+| v2.2 | 2026-11-01 | Mỗi box một màu; lưu kết quả detector theo đợt + chạy tiếp | — | Xong (số liệu v2.1 không đổi) |
+| v5 | 2026-11-06 | Gộp các miếng cùng đĩa/thớt thành 1 khung (lượt 2 tìm vật chứa); kernel 04 kiểm tra | GDINO + gộp: ảnh 1 món recall 0.901→0.937, precision 0.744→0.821 | Bật mặc định trong module + notebook gán nhãn |
+| v4.1 | 2026-11-06 | Notebook `kaggle/02_food2001` cho dataset thật của nhóm (300 món × 5 ảnh); sửa lỗi tên món có dấu trên Windows | — | Chạy thử trên máy 3 ảnh thật OK; chưa chạy trên Kaggle |
+| v4 | 2026-11-06 | Đóng gói module `foodbox`: nhập 1 ảnh → ra box (ảnh có khung, ảnh cắt, JSON); lệnh `foodbox-detect`; zip | — | Xong, chạy thử thật trên CPU 3 ảnh |
+| v2.3 | 2026-11-05 | Cắt từng box thành ảnh riêng (từ ảnh gốc, không khung) | — | Xong: 257 ảnh cắt (Food-101 v2.1), 192 ảnh cắt (58 ảnh nhiều món UEC) |
+| v1.2 | 2026-11-05 | Tách kết quả 01 theo ảnh 1 món / nhiều món (UEC); hình so sánh 58 ảnh nhiều món | GDINO: 1 món 0.875, nhiều món 0.571 | Ảnh nhiều món yếu: món chính đúng 22/58, món phụ 40/99 (ghép 1-1) |
 | v2.1 | 2026-11-01 | Dựng lại 02: conf 0.35 + `other_conf` 0.45; chấm tay toàn bộ 194 ảnh có box | (GDINO) | **Đạt tiêu chí**: 97% ảnh có box, 89.5% box đúng (box chính 94.8%) |
 | v2 | 2026-11-01 | Kernel 02: gán nhãn 200 ảnh Food-101 tiny bằng GDINO conf 0.45 | (GDINO, chọn bởi người dùng) | Xong; 78.5% ảnh có box, conf 0.45 quá chặt cho món tráng miệng |
 | v1.1 | 2026-11-01 | Bỏ 2 bộ lọc làm hỏng kết quả (max_area 0.98, drop_container) | YOLO-World 0.735 ≈ GDINO 0.732 | Chờ người dùng chọn model cho 02 |
@@ -21,6 +28,238 @@ bằng `tools/reeval_01.py`). Git do người dùng tự commit: khi commit, ghi
 ---
 
 ## Các phiên bản
+
+### v3 — Kernel `kaggleolap/foodbox-03-prompts`, version 1 (2026-11-01): thử text prompt khác
+
+**Mục đích:** yêu cầu 3 của đề ("box ôm cả đĩa → thử text prompt khác"). Bốn biến thể, cùng Grounding DINO base:
+`_food` ("food."), `_food_pb` ("food. plate. bowl. cup. tray.", bỏ box mà điểm token đĩa/bát/cốc/khay cao hơn điểm "food"),
+`_class` (tên món theo thư mục, vd. "french toast."), `_class_pb` (tên món + "plate. bowl. cup. tray.").
+Cài đặt: `GroundingDINO.predict(img, prompts=, extras=)` tính điểm box = điểm cao nhất trên token của prompt chính
+(`foodbox/detectors.py`); `run_detect --prompt-sets`. Kiểm chứng: `_food` cho kết quả trùng đúng v1.1 (AP@0.5 0.732, cùng conf 0.468).
+
+**Chạy:** GPU 0 = 200 ảnh UEC mini, GPU 1 = đúng 200 ảnh Food-101 tiny của bước 02; detect 9,8 phút, ~0,63 s/ảnh/biến thể;
+output 8,6 MB (`results/03_prompts/output/`: `prompts_uec.csv`, `prompts_food.csv`, `compare_uec/`, `compare_food/`, `preds_*/`).
+
+**UEC** (P/R/F1 ở ngưỡng F1 tốt nhất của từng biến thể):
+
+| biến thể | AP@0.5 | AP@0.3 | P | R | F1 | IoU TB | area_ratio | conf | ảnh không box |
+|---|---|---|---|---|---|---|---|---|---|
+| `_food` | **0.732** | **0.836** | 0.676 | **0.717** | **0.696** | **0.611** | 0.815 | 0.468 | **17** |
+| `_food_pb` | 0.632 | 0.760 | 0.654 | 0.667 | 0.660 | 0.570 | 0.798 | 0.486 | 23 |
+| `_class` | 0.590 | 0.663 | 0.736 | 0.530 | 0.616 | 0.482 | 0.934 | 0.358 | 28 |
+| `_class_pb` | 0.412 | 0.512 | 0.549 | 0.390 | 0.456 | 0.368 | 0.888 | 0.374 | 52 |
+
+**Food-101** (200 ảnh; `main_area` = diện tích box món chính / ảnh, nhỏ hơn = ôm sát hơn; `near_full` = box chính > 90% ảnh):
+
+| biến thể | ngưỡng | ảnh có box | box/ảnh | main_area | near_full |
+|---|---|---|---|---|---|
+| `_food` | 0.35 | **194** | 1.80 | 0.641 | 39 |
+| `_food_pb` | 0.35 | 195 | 1.94 | 0.620 | 39 |
+| `_class` | 0.35 | 172 | 1.25 | 0.515 | 25 |
+| `_class_pb` | 0.35 | 105 | 0.94 | 0.388 | 4 |
+
+**Xem hình** (`compare_uec/`, `compare_food/`):
+- `_food_pb` (thêm "plate. bowl."): box gần như y hệt `_food`, không ôm sát hơn (main_area 0.62 so với 0.64), nhưng **mất các món
+  đựng trong bát** (súp miso, edamame, cơm): model gán cả bát + thức ăn cho từ "bowl" → bị bỏ. Có hại.
+- `_class` (tên món): chỉ tìm món theo tên thư mục, **bỏ qua món khác trong khay** (recall UEC 0.53); với tên ít phổ biến
+  (phở, bibimbap ảnh cận) điểm thấp; french toast bị tách từng lát. Nhưng với món tráng miệng mà "food" yếu thì lại tốt
+  (tiramisu 0.73 khi "food" < 0.47). Box nhỏ hơn (`main_area` 0.52) một phần vì hay ôm từng miếng.
+- `_class_pb`: mất quá nhiều (105/200 ảnh có box). Loại.
+- Box của `_food` vốn đã ôm phần thức ăn chứ không ôm cả đĩa (đúng như 01: area_ratio 0.8 so với box thật UEC ôm cả bát),
+  nên vấn đề "ôm cả đĩa" chủ yếu nằm ở box thật UEC, không phải ở prompt.
+
+**Phương án kết hợp (tính trên máy từ `preds_*`):** dùng "food"; ảnh nào không có box ≥ 0.35 thì lấy kết quả prompt tên món.
+Food-101: cứu 5/6 ảnh failed của v2.1 ở ngưỡng 0.35 (6/6 ở 0.30): cannoli/1417238, tiramisu/1039481, /1060127, /1380802,
+/1644287 (+ ice_cream/155035 ở 0.32); xem hình: **cả 6 box đúng**. UEC: không đổi gì (không ảnh nào trống ở 0.35).
+→ Nếu áp dụng: 199/200 ảnh có box. Chi phí: chạy thêm prompt tên món chỉ cho ảnh không có box (~0,6 s/ảnh).
+
+**Kết luận v3:** giữ prompt **"food"** làm mặc định. Không dùng "plate/bowl" (hại món đựng trong bát).
+Đề xuất v3.1: thêm bước dự phòng bằng tên món cho ảnh không có box. **Chờ người dùng đồng ý** (cần sửa notebook 02 và chạy lại trên Kaggle).
+
+---
+
+### v5 — Gộp các miếng cùng đĩa/thớt thành 1 khung (2026-11-06)
+
+**Yêu cầu người dùng** (gửi 2 ảnh bruschetta 10 và 13 khung): một đĩa/thớt nhiều miếng của cùng món = 1 món → chỉ cần 1 khung
+to; khung nhỏ chỉ dành cho món khác nhau ở đĩa khác nhau. Người dùng chọn: khung gộp ôm sát phần thức ăn (hợp các khung nhỏ,
+không ôm cả đĩa); cùng đĩa nhưng khác thứ (bít tết + khoai) cũng gộp 1 khung; làm luôn, có kiểm tra trên Kaggle.
+
+**Thử trước (CPU, 5 ảnh bruschetta của dataset 2001):** hỏi thêm "plate. bowl. tray. cutting board." → model khoanh đúng
+thớt/đĩa ở cả 5 ảnh (điểm 0.45–0.67); ly nước, chén muối cũng được khoanh nhưng không chứa miếng nào nên không ảnh hưởng.
+
+**Cài đặt:** `postprocess.group_dishes` (1) box to bao ≥ 2 box con (≥ 80% diện tích) → giữ box to; (2) mỗi box thuộc vật chứa
+nhỏ nhất bao nó (≥ 70%), vật chứa điểm ≥ 0.30 và ≥ 1% ảnh; box cùng vật chứa → hợp, điểm = max; vật chứa bao ≥ 2 vật chứa
+khác (khay) không dùng để gộp; (3) NMS lại. Gộp làm TRƯỚC luật box phụ ≥ 0.45 (miếng điểm 0.35–0.45 được gộp vào món).
+`detectors.CONTAINER_PROMPTS`, `run_detect --containers` (lưu c_boxes/c_scores), `build_dataset(group=)`, `FoodBoxDetector(group=True)`
+mặc định, `foodbox-detect --no-group`; notebook 02 / 02_food2001 `group=True`. Chậm gấp ~2 (2 lượt model).
+Test: 3 test luật gộp + 1 test module (27 test PASS).
+
+**Kiểm tra: kernel `kaggleolap/foodbox-04-group` version 1** (2×T4, 7,2 phút; 200 ảnh UEC + 200 ảnh Food-101 như bước 01/02,
+mỗi ảnh 2 lượt). Đánh giá trên máy: `python tools/eval_group.py results/04_group/output`
+(cùng dự đoán, chỉ đổi hậu xử lý; box ≥ 0.35, box phụ ≥ 0.45; ghép 1-1 IoU ≥ 0.5 với box thật UEC):
+
+| nhóm ảnh UEC | phương án | recall | precision | box/ảnh | đúng số món | ảnh có 1 khung bao ≥ 2 món thật |
+|---|---|---|---|---|---|---|
+| 1 món (142) | không gộp (v2.1) | 0.901 | 0.744 | 1.21 | 85.9% | 0 |
+| 1 món (142) | **gộp** | **0.937** | **0.821** | 1.14 | **89.4%** | 0 |
+| 1 món (142) | chỉ theo vật chứa | 0.937 | 0.816 | 1.15 | 88.7% | 0 |
+| 1 món (142) | chỉ luật box to | 0.901 | 0.753 | 1.20 | 87.3% | 0 |
+| nhiều món (58) | không gộp | 0.677 | 0.554 | 3.33 | 24.1% | 10 |
+| nhiều món (58) | **gộp** | 0.652 | 0.566 | 3.14 | 24.1% | 17 |
+
+Xem hình 17 ảnh UEC có số khung thay đổi (`results/04_group/output/group_uec_1.jpg`, `_2.jpg`): các lần "1 khung bao ≥ 2 món
+thật" đều là các món trên **cùng 1 đĩa** (salad + cốt lết, đĩa hamburg kèm bắp + khoai, 2 con cá, nhiều miếng sushi/chả giò) =
+gộp đúng theo quy tắc người dùng (box thật UEC chấm riêng từng món trên cùng đĩa, nên recall nhiều món giảm 0.025). Không thấy
+ca nào gộp 2 bát/đĩa khác nhau; cơm, súp miso, chén nước chấm vẫn tách. Lưng chừng: fried_spring_rolls/266882 (chén nước chấm
+đặt trên cùng mâm chả giò → gộp); sushi/699 chỉ gộp được một phần (1 miếng nằm ngoài khung đĩa).
+Food-101: 5/200 ảnh thay đổi, cả 5 đúng các lỗi đã chấm tay ở v2.1: falafel #88, #94, #97 (từng viên / hummus), sushi #166, #170
+(khung chỉ 1–2 miếng) → nay 1 khung cả đĩa. Ảnh ≥ 3 khung: 14 → 10.
+
+**Dataset 2001 (CPU, module `foodbox-detect` bản gộp):** bruschetta 001–005: 2, 1, 1, 1, 1 khung (trước: 10–13 khung; khung
+thứ 2 ở 001 là chén muối); bánh_cannoli 001–005: 1, 2, 1, 1, 3 khung (003 trước 11 khung; 005: 2 đĩa riêng + 1 miếng ở mép ảnh).
+Tốc độ CPU bản gộp 27–42 s/ảnh. (So sánh đủ 30 ảnh có/không gộp: đang chạy.)
+
+**Đóng gói:** module lên **0.2.0** (gộp theo đĩa bật mặc định; 0.1.0 = mỗi miếng 1 khung, nay là `--no-group`).
+`dist/foodbox_module_v0.2.0.zip` (34 KB, 15 file; bản 0.1.0 trong dist/ đã thay). Kiểm tra: giải nén ra thư mục mới → venv →
+`pip install -e .` → 4 test PASS → `foodbox-detect` bruschetta/002 (trước 13 khung) → 1 khung, CPU 64 s/ảnh (CPU đang chạy song
+song việc khác), nạp model 35 s.
+
+---
+
+### v4.1 — Notebook cho dataset thật 2001_food_dataset + sửa lỗi tiếng Việt (2026-11-06, chạy trên máy)
+
+**Dataset của nhóm:** `D:/University/Research/2001_food_dataset/2001_food_dataset` (469 MB): `images/<tên_món>/001..005.jpg`
+(300 món × 5 = 1.500 ảnh; 1.490 jpg, 6 png, 4 jpeg) + `food_dataset.csv` (food_name, food_img). Tên món có dấu tiếng Việt.
+
+**Notebook `kaggle/02_food2001/`** (người dùng hỏi cách chạy trên Kaggle; chưa upload dataset, chưa chạy trên Kaggle):
+chạy hết 1.500 ảnh (Grounding DINO, tham số v2.1), xuất bộ nhãn YOLO + ảnh cắt (`yolo/`), thư mục theo ảnh
+`theo_anh/<món>/001.jpg, 001_bbox.jpg, 001_1.jpg...` (giống đầu ra foodbox-detect), nén thành 1 file `ketqua_2001.zip`
+(ZIP_STORED) rồi xoá thư mục đã nén (output tải về 1 file thay vì ~10.000 file). Không cần pip install trên Kaggle.
+Hướng dẫn từng bước (web Kaggle / dòng lệnh): `kaggle/02_food2001/HUONG_DAN.md`. `foodbox/crop.write_image_folder`
+(dùng chung với `tools/make_crop_folders.py`, kiểm tra cho ra file giống hệt bản cũ trên 58 thư mục UEC).
+
+**Lỗi tìm được khi chạy thử với dataset thật trên Windows (E8):** `build_dataset` ghi `train.txt` không chỉ định mã hoá →
+`UnicodeEncodeError` với tên món có dấu (cp1252). Trên Kaggle (Linux, UTF-8) không lộ ra. Sửa: mọi `open()` trong `foodbox/`
+dùng `encoding="utf-8"`; tiến trình con `run_detect` chạy với `PYTHONIOENCODING=utf-8`; notebook đọc log bằng UTF-8.
+Thêm test tên món có dấu (`test_build_dataset_vietnamese_class_names`). 23 test PASS. Module zip đóng gói lại.
+
+**Chạy thử notebook trên máy** (CPU, dataset thật, 3 món × 1 ảnh): 3/3 ảnh có box (1, 1, 11 box), 13 ảnh cắt, zip 24 MB, 1,5 phút.
+Ảnh `bánh_cannoli/003` có 11 box: xem ảnh, đúng 11 chiếc cannoli, mỗi chiếc 1 box (bị gắn `many_boxes` để xem lại; trong nhãn
+YOLO 1 chiếc là `bánh_cannoli`, 10 chiếc là `food_other` theo quy tắc box lớn nhất).
+Ước tính trên Kaggle 2×T4: ~0,6 s/ảnh/GPU → 1.500 ảnh ~8 phút detect; cộng nạp model, xuất file, nén → ~15 phút.
+
+---
+
+### v4 — Đóng gói module: nhập 1 ảnh → ra bounding box (2026-11-06)
+
+**Yêu cầu (anh hướng dẫn):** "đóng gói thành module, nhập một bức ảnh, ra bounding" + báo cáo, up code lên task.
+Người dùng chọn: up code bằng GitHub + zip; chạy trên máy cá nhân bằng Python; đầu ra = ảnh có khung + ảnh cắt + JSON.
+
+**Cài đặt:**
+- `foodbox/api.py`: `FoodBoxDetector(device="auto")`, `.detect(ảnh)` → list box {id, x1, y1, x2, y2, score, largest}
+  (sắp theo điểm, id từ 1), `.detect_and_save(ảnh, thư_mục)` → `<tên>_bbox.jpg` (khung đánh số), `<tên>_<i>.jpg` (cắt đúng
+  box i, từ ảnh gốc), `<tên>.json`. Tham số = pipeline v2.1 (prompt "food", 0.35 / 0.45, NMS 0.5, min_area 0.002, tối đa 20 box).
+  Không đặt tên món (1 ảnh lẻ không có tên thư mục).
+- `foodbox/cli.py` + `pyproject.toml`: `pip install -e .` → lệnh `foodbox-detect <ảnh|thư mục>... --out ...`
+  (`--device`, `--conf`, `--other-conf`, `--prompt`, `--no-crops`, `--no-vis`, `--pad`); ảnh lỗi thì báo rồi chạy tiếp.
+  Phụ thuộc chỉ torch, transformers ≥ 4.40, pillow, numpy (ultralytics/pandas là tuỳ chọn `[compare]`).
+- `import foodbox` không nạp torch (FoodBoxDetector nạp khi cần).
+- `MODULE_README.md` (hướng dẫn cho người dùng module), `tools/make_module_zip.py` → `dist/foodbox_module_v0.1.0.zip`
+  (31 KB, 15 file: foodbox/, pyproject.toml, MODULE_README.md, tests/test_api.py).
+- `tests/test_api.py`: 3 test với model giả (luật lọc box, file ghi ra, CLI với thư mục con). Tổng 22 test PASS.
+
+**Chạy thử thật** (venv riêng, `pip install -e .`, CPU laptop, transformers 4.49): nạp model 30 s; 3 ảnh
+(bibimbap_13995, miso_soup_38 của UEC; ice_cream_1609293 của Food-101): 4 / 6 / 5 box, 9–15 s/ảnh. So với kết quả pipeline
+trên GPU Kaggle (transformers 5.16): cùng số box; bibimbap và ice cream trùng hết (IoU ≥ 0.976, lệch ≤ 2,6 px);
+miso_soup_38: 5/6 box trùng, box thứ 6 nằm sát ngưỡng 0.45: GPU giữ bát súp miso (0.4506), CPU giữ gói gia vị (0.4512)
+(điểm lệch ~0.01–0.03 giữa CPU/GPU và giữa 2 phiên bản transformers). Ghi chú này đã đưa vào MODULE_README.
+Zip đã kiểm tra: giải nén ra thư mục mới → `pip install -e .` → 3 test PASS.
+
+---
+
+### v2.3 — Cắt box thành ảnh riêng (2026-11-05, chỉ chạy trên máy)
+
+**Yêu cầu người dùng:** cắt vùng trong khung bounding box thành các file ảnh riêng, không có khung.
+
+**Cài đặt:**
+- `foodbox/crop.py`: `crop_box` (cắt từ ảnh gốc đã xoay EXIF, nới `pad` x cạnh box mỗi phía, kẹp trong ảnh), `save_crops`
+  (bỏ ảnh cắt có cạnh ngắn < 16 px), `crops.csv` (ảnh cắt, ảnh nguồn, thứ tự box k, class, món chính hay không, điểm, toạ độ).
+- Bước 02: `build_dataset(..., crops=True, crop_pad=0.05)`; CFG notebook 02 mặc định `crops=True`, `crop_pad=0.05`
+  → `output/crops/<món>/<ảnh>_<k>.jpg` (k = 0 là box món chính khi box được sắp theo điểm; xem cột `is_main`).
+- `tools/crop_from_labels.py`: cắt theo nhãn YOLO có sẵn (dùng sau khi sửa tay bằng X-AnyLabeling).
+- `tools/make_multi_dish_pairs.py --crops-dir`: cắt box pipeline của 58 ảnh nhiều món UEC.
+- `tools/crops_preview.py`: hình xem trước "ảnh gốc → các ảnh cắt" (8 ảnh gốc ngẫu nhiên, seed 0).
+- 2 test mới (cắt có nới + kẹp mép; build_dataset cắt đúng và cắt lại từ nhãn ra cùng kết quả): 18 test PASS.
+
+**Kết quả:**
+- Food-101 (`results/02_auto_label/output_v2.1/crops/`): 194 ảnh → 257 ảnh cắt (194 món chính + 63 `food_other`), 13 MB.
+- 58 ảnh nhiều món UEC (`report/multi_dish_crops/`): 192 ảnh cắt (1 box < 16 px bị bỏ), 3,5 MB; `preview.jpg`.
+- Xem `preview.jpg`: mỗi ảnh cắt là một món, không có khung. Chất lượng ảnh cắt phụ thuộc box: box sai/thiếu (xem v1.2, v2.1)
+  thì ảnh cắt cũng sai/thiếu (vd. french_fries/15283: khoai tây chiên bị bỏ sót nên không có ảnh cắt). Ảnh UEC độ phân giải thấp
+  nên ảnh cắt nhỏ (vài trăm pixel).
+- Thư mục xem trước theo yêu cầu người dùng (`tools/make_crop_folders.py`): `report/multi_dish_preview/<món>_<ảnh>/` gồm ảnh gốc
+  `<món>_<ảnh>.jpg` (sạch) + `<món>_<ảnh>_bbox.jpg` (khung đánh số 1..n, khung i = vùng của file `_i`) + ảnh cắt
+  `<món>_<ảnh>_1.jpg`, `_2`, ... (58 thư mục, 192 ảnh cắt; `index.csv`). Ảnh cắt lấy từ ảnh gốc theo toạ độ box, không
+  cắt từ ảnh đã vẽ khung.
+  Số ảnh cắt/thư mục: 1 → 11 thư mục (pipeline gộp cả khay/đĩa thành 1 box hoặc bỏ sót món), 2 → 10, 3 → 9, 4 → 15, 5 → 8, 6–8 → 5.
+- **Sửa (cùng ngày, theo người dùng: "phải cắt theo bounding mà nó khoanh được"):** bản đầu nới 5% mỗi phía
+  (`pad=0.05`) nên ảnh cắt lớn hơn box và ảnh `_bbox.jpg` vẽ vùng đã nới. Nay mặc định `pad=0`: cắt đúng box model khoanh;
+  `crops.csv` thêm cột `box_x1..box_y2` (box model) bên cạnh `x1..y2` (vùng cắt); `_bbox.jpg` vẽ đúng box model.
+  Kiểm tra 449 ảnh cắt: vùng cắt = box làm tròn (lệch ≤ 0,5 px), trừ 22 chỗ box vượt mép ảnh tối đa 1,7 px (bị kẹp ở mép).
+  Đã cắt lại toàn bộ (`output_v2.1/crops/`, `report/multi_dish_crops/`, `report/multi_dish_preview/`). 19 test PASS.
+- Chưa chạy lại kernel 02 trên Kaggle với `crops=True` (code giống hệt bản đã chạy trên máy; sẽ chạy khi có dataset thật).
+
+---
+
+### v1.2 — Tách kết quả bước 01 theo ảnh 1 món / nhiều món (2026-11-05, chỉ chạy trên máy)
+
+**Câu hỏi của người dùng:** đã test ảnh nhiều món chưa? Có: 58/200 ảnh UEC mini có ≥ 2 món (27 ảnh 2 món, 20 ảnh 3 món,
+11 ảnh 4 món; 158 box thật), nằm sẵn trong tập đánh giá của v1/v1.1 nhưng trước đây chỉ báo số chung.
+Tính lại từ `results/01_compare/output/preds/` với hậu xử lý v1.1, ở ngưỡng F1 tốt nhất trên cả 200 ảnh (GDINO 0.47, YOLO-World 0.22).
+"Món phụ" = box thật của món khác món theo thư mục (sẽ thành `food_other`).
+
+| model | nhóm ảnh | AP@0.5 | AP@0.3 | P | R | IoU TB | chọn đúng món chính (box lớn nhất) | tìm thấy món phụ (IoU ≥ 0.5) |
+|---|---|---|---|---|---|---|---|---|
+| GDINO | 1 món (142) | 0.875 | 0.941 | 0.768 | 0.817 | 0.694 | 80% | — |
+| GDINO | nhiều món (58) | 0.571 | 0.712 | 0.593 | 0.627 | 0.537 | **47%** | 61/99 = 62% |
+| YOLO-World | 1 món (142) | 0.858 | 0.924 | 0.685 | 0.859 | 0.736 | 85% | — |
+| YOLO-World | nhiều món (58) | 0.629 | 0.767 | 0.659 | 0.525 | 0.471 | 40% | 57/99 = 58% |
+
+**Sửa số liệu "tìm thấy món phụ" (cùng ngày, khi làm hình so sánh):** cột "tìm thấy món phụ" ở bảng trên đếm DƯ: một box
+dự đoán bất kỳ (kể cả box đã bị gán làm món chính) trùng box thật món phụ là tính "tìm thấy", nên một box được tính cho hai việc
+(vd. french_fries/15414: box ôm bát cơm bị gán nhầm là french_fries vẫn được tính là tìm thấy món phụ "rice").
+Chấm lại đúng theo đầu ra pipeline (`tools/make_multi_dish_pairs.py`: món chính ≥ 0.35, `food_other` ≥ 0.45, box lớn nhất = món
+chính; món phụ ghép 1-1 chỉ với box `food_other`, IoU ≥ 0.5) trên 58 ảnh nhiều món, GDINO:
+- món chính đúng **22/58 (38%)**; món phụ tìm đúng **40/99 (40%)**; ảnh đúng hoàn toàn (món chính đúng + đủ món phụ) **7/58 (12%)**.
+- Hình: `report/multi_dish/pages_01..10.jpg` (6 ảnh/trang: ảnh gốc | pipeline | box thật UEC) + `report/multi_dish/images/` (từng ảnh)
+  + `multi_dish_list.csv` (từng ảnh: số món, món chính đúng/sai, món phụ tìm thấy, box food_other thừa/lệch, tên các món thật).
+  Bản gửi thầy (không dòng chấm điểm, không chữ trên box, chỉ khung box): `report/multi_dish_clean/` (`--no-notes --no-box-labels`).
+- **Chỉ xét vẽ box, không xét tên món** (người dùng chỉ cần bounding, 2026-11-05; cùng tham số pipeline, IoU ≥ 0.5 với box thật):
+  ảnh 1 món: tìm được 128/142 món (90%), box đúng 128/172 (74%); ảnh nhiều món: tìm được 107/158 món (68%), box đúng 107/193 (55%).
+  "Box đúng" bị ước lượng thấp vì box thật UEC thiếu các món ngoài 256 món và box thật ôm cả bát/đĩa.
+- Lưu ý khi đọc hình: box thật UEC **không đầy đủ** (chỉ gán nhãn món thuộc 256 món của UEC, vd. bánh socola trong khay bibimbap/13995,
+  gà viên trong french_fries/15283 không có nhãn) và đôi khi sai (french_fries/11365 có box "samul" cả ảnh; french_fries/12952 có box
+  "twice cooked pork" chồng lên khoai tây). Vì vậy một phần "box thừa" là thức ăn thật và số liệu nhiều món là ước lượng thấp.
+
+**Kết luận v1.2:** ảnh nhiều món (khay cơm) yếu hơn rõ: AP@0.5 giảm ~0.3, chỉ tìm được ~60% món phụ. Điểm yếu lớn nhất là
+**chọn món chính**: quy tắc "box lớn nhất = món theo thư mục" chỉ đúng 47% (trong khay, bát cơm/đĩa phụ thường to hơn món chính).
+Food-101 (bước 02) chủ yếu là ảnh 1 món nên chưa phản ánh tình huống khay cơm; ảnh mẫu người dùng gửi (khay 4 món) giống nhóm "nhiều món" của UEC.
+Hướng cải thiện (chưa làm): chọn món chính bằng prompt tên món (v3 cho thấy prompt tên món tìm đúng món theo thư mục,
+bỏ qua món khác); nếu dataset thật có nhiều ảnh khay thì cần đánh giá riêng trên ảnh khay.
+
+---
+
+### v2.2 — Mỗi box một màu + lưu theo đợt (2026-11-01, sửa code, không chạy GPU riêng)
+
+- **Mỗi box một màu** (đề bài: "mỗi box một màu"): `autolabel.box_colors`: trong một ảnh box món chính màu đầu, các box
+  `food_other` các màu tiếp theo, không trùng. Trước đây mỗi *class* một màu nên các box `food_other` trùng màu.
+  Đã dựng lại `output_v2.1/visualized/` và `report/pairs_*.jpg` bằng màu mới (số liệu v2.1 không đổi: 194/200, 257 box).
+- **Lưu theo đợt (checkpoint):** `run_detect` ghi `partial_<biến thể>_shard<i>.json` mỗi `--ckpt-every` ảnh (mặc định 50,
+  ghi file tạm rồi đổi tên); chạy lại cùng lệnh thì bỏ qua ảnh đã xong; `load_preds` đọc được phần đã lưu khi kernel bị dừng.
+  Có test giả lập bị dừng giữa chừng rồi chạy tiếp. Kernel 03 (v3) đã chạy với bản này.
+- 16 test CPU PASS.
+
+---
 
 ### v2.1 — Dựng lại bước 02 với ngưỡng mới + chấm tay toàn bộ (2026-11-01, chỉ chạy trên máy)
 
@@ -61,6 +300,8 @@ box gần cả ảnh vẫn đúng); "thiếu" = bỏ sót phần lớn món (vd.
 **Kết luận v2.1:** đạt tiêu chí, dùng được làm nhãn nháp cho dataset thật. Ngưỡng 0.35 không làm tăng box sai: các ảnh mới có
 box nhờ hạ ngưỡng (tiramisu #178/#182/#185, apple_pie #10, cannoli #54...) đều đúng.
 Điểm yếu chính là **món nhiều miếng**: model khi thì ôm cả đĩa, khi thì ôm từng miếng, làm sinh `food_other` sai hoặc box chính thiếu.
+
+**Báo cáo (2026-11-01):** `report/TONG_HOP.md` + `report/pairs_{1,2,3}.jpg` (30 cặp ảnh gốc | đã vẽ box, chọn ngẫu nhiên 3 ảnh/món, seed 0, từ `output_v2.1`; 28/30 đúng theo chấm tay). Tạo bằng `tools/make_report_pairs.py`.
 
 **Lưu ý về độ tin cậy:** chỉ một người chấm (Claude), xem ảnh thu nhỏ, có vài ca không chắc (#135). Nên để một thành viên
 nhóm chấm lại khoảng 30 ảnh ngẫu nhiên để đối chiếu.
@@ -229,10 +470,13 @@ notebook 01 (YOLO-World, 20 ảnh) và 02 (20 ảnh Food-101 tiny); train thử 
 | E5 | v1 | Output tải về 665 MB thay vì 33 MB | Ultralytics tải `sam2.1_b.pt`, `yolov8x-worldv2.pt`, CLIP vào thư mục hiện tại `/kaggle/working` | Tiến trình con chạy với `cwd=/tmp/foodbox_models` | Đã sửa (chưa kiểm chứng trên Kaggle) |
 | E6 | v2 (kernel version 1) | Notebook 02 dừng ở bước dò dữ liệu: "Không tìm thấy thư mục dạng <tên_món>/*.jpg" | Kaggle gắn dataset ở `/kaggle/input/datasets/<owner>/<slug>/...`; thư mục món của food101tiny sâu 6 cấp, hàm dò chỉ tìm 5 cấp (chạy thử trên máy thư mục nông hơn nên không lộ) | `max_depth` 5 → 8 cho `find_class_roots`, `find_uec_root`; thêm test cấu trúc sâu kiểu Kaggle | Đã sửa (version 2 chạy được) |
 | E7 | v2 | Kết quả tải về thiếu file: `visualized/` 76/200, không có `tmp_preds/`, `preview_grid.jpg` | `kaggle kernels output` chỉ tải trang đầu (500 file) rồi in "Next page token"; `--file-pattern` cũng chỉ lọc trong trang đầu | `run_kaggle.py` tự tải mọi trang qua Kaggle API (`download_output`); thêm `--download-only` | Đã sửa (tải lại đủ 631 file) |
+| E8 | v4.1 | `UnicodeEncodeError` khi ghi train.txt với tên món có dấu (Windows) | `open()` không chỉ định encoding → cp1252 | Mọi file I/O trong foodbox dùng UTF-8; subprocess PYTHONIOENCODING=utf-8; test mới | Đã sửa |
 | L1 | v1 | Box thật UEC ôm cả bát/đĩa, ngược với mục tiêu "ôm sát thức ăn" | Cách gán nhãn của UEC | Báo thêm AP@0.3, `area_ratio`, xem hình so sánh; nếu cần đo đúng "ôm sát" thì dùng dataset có mask thức ăn (UECFoodPix Complete, FoodSeg103) | Ghi nhận |
 | L2 | v0 | Kaggle CLI trên Windows: Git Bash đổi `/kaggle/...` thành `C:\Program Files\Git\kaggle\...` khi truyền làm đối số | Chuyển đường dẫn tự động của MSYS | Đặt `MSYS_NO_PATHCONV=1` khi chạy script có đối số dạng `/kaggle/...` | Ghi nhận |
 
 ## Việc tiếp theo
+
+0. Người dùng quyết định v3.1 (dự phòng bằng tên món cho ảnh không có box).
 
 1. ~~Chọn model cho 02~~ (GDINO conf 0.45, v2).
 2. ~~v2.1: hạ conf 0.35 + lọc `food_other`~~ (đạt tiêu chí, đã thành mặc định).

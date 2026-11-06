@@ -1,0 +1,9 @@
+variant,threshold,conf,images_with_box,box_per_img,main_area,near_full
+gdino_class,0.35,0.35,172,1.245,0.5146013615351678,25
+gdino_class,best_uec,0.358,166,1.155,0.5100220158958428,24
+gdino_class_pb,0.35,0.35,105,0.935,0.3877552347554672,4
+gdino_class_pb,best_uec,0.374,96,0.825,0.39320766055876133,4
+gdino_food,0.35,0.35,194,1.8,0.6414921556198654,39
+gdino_food,best_uec,0.468,148,0.965,0.6257652121553956,32
+gdino_food_pb,0.35,0.35,195,1.935,0.6203791840289329,39
+gdino_food_pb,best_uec,0.486,130,0.9,0.584728767119122,22

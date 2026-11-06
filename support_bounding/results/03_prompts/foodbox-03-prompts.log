@@ -1,0 +1,119 @@
+[{"stream_name":"stderr","time":5.215996931,"data":"/usr/local/lib/python3.13/dist-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":5.216037962,"data":"  _validate(nbdict, ref, version, version_minor, relax_add_props)\n"}
+,{"stream_name":"stderr","time":5.9930974710000005,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":5.993136437,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":5.9931416859999995,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":5.993145662,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":6.534660876,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.53469065,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.53469434,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.534696831,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":23.872419221,"data":"python 3.13.15 | torch 2.11.0+cu128 | transformers 5.16.1 | pillow 13.0.0\n"}
+,{"stream_name":"stdout","time":23.874144643,"data":"GPU: ['Tesla T4', 'Tesla T4']\n"}
+,{"stream_name":"stdout","time":23.905327166,"data":"Writing foodbox/__init__.py\n"}
+,{"stream_name":"stdout","time":23.920289827,"data":"Writing foodbox/autolabel.py\n"}
+,{"stream_name":"stdout","time":23.936551766,"data":"Writing foodbox/data.py\n"}
+,{"stream_name":"stdout","time":23.95253114,"data":"Writing foodbox/detectors.py\n"}
+,{"stream_name":"stdout","time":23.966522988,"data":"Writing foodbox/labels.py\n"}
+,{"stream_name":"stdout","time":23.980950783,"data":"Writing foodbox/metrics.py\n"}
+,{"stream_name":"stdout","time":23.994447132,"data":"Writing foodbox/postprocess.py\n"}
+,{"stream_name":"stdout","time":24.012572011,"data":"Writing foodbox/run_detect.py\n"}
+,{"stream_name":"stdout","time":24.025972027,"data":"Writing foodbox/viz.py\n"}
+,{"stream_name":"stdout","time":25.079790159,"data":"input/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.079817191,"data":"  datasets/  (2 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.07982165,"data":"    kaggleolap/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.28820594,"data":"      uecfood256-mini/  (256 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.288229962,"data":"        1/  (0 thư mục con, 20 ảnh)\n"}
+,{"stream_name":"stdout","time":25.288234528,"data":"        10/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.288238048,"data":"        100/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.288241481,"data":"        101/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.508341771,"data":"        102/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.508361941,"data":"        103/  (0 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.508367031,"data":"        ... còn 250 thư mục nữa\n"}
+,{"stream_name":"stdout","time":25.508392679,"data":"    msarmi9/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.508395685,"data":"      food101tiny/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":25.711210702,"data":"        data/  (1 thư mục con, 0 ảnh)\n"}
+,{"stream_name":"stdout","time":62.800765723,"data":"UEC: 200 ảnh, 300 box thật\n"}
+,{"stream_name":"stdout","time":71.636130822,"data":"Food-101: ['/kaggle/input/datasets/msarmi9/food101tiny/data/food-101-tiny/train', '/kaggle/input/datasets/msarmi9/food101tiny/data/food-101-tiny/valid']\n"}
+,{"stream_name":"stdout","time":72.396255041,"data":"Food-101: 200 ảnh, món ['apple_pie', 'bibimbap', 'cannoli', 'edamame', 'falafel', 'french_toast', 'ice_cream', 'ramen', 'sushi', 'tiramisu']\n"}
+,{"stream_name":"stdout","time":72.419821429,"data":"[launch] GPU 0: --items /kaggle/working/output/items_uec.json --models gdino --prompt-sets /kaggle/working/output/prompt_sets.json --out /kaggle/working/output/preds_uec --ckpt-every 50\n"}
+,{"stream_name":"stdout","time":72.421593524,"data":"[launch] GPU 1: --items /kaggle/working/output/items_food.json --models gdino --prompt-sets /kaggle/working/output/prompt_sets.json --out /kaggle/working/output/preds_food --ckpt-every 50\n"}
+,{"stream_name":"stdout","time":102.430918739,"data":"[launch]    30s GPU 0: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2392.90it/s]\n"}
+,{"stream_name":"stdout","time":102.430968056,"data":"[launch]    30s GPU 1: Loading weights: 100%|██████████| 1182/1182 [00:00\u003c00:00, 2395.89it/s]\n"}
+,{"stream_name":"stdout","time":132.426816779,"data":"[launch]    60s GPU 0: [run_detect] gdino_food: 50/200\n"}
+,{"stream_name":"stdout","time":132.427849138,"data":"[launch]    60s GPU 1: [run_detect] gdino_food: 50/200\n"}
+,{"stream_name":"stdout","time":162.434093871,"data":"[launch]    90s GPU 0: [run_detect] gdino_food: 100/200\n"}
+,{"stream_name":"stdout","time":162.435071041,"data":"[launch]    90s GPU 1: [run_detect] gdino_food: 100/200\n"}
+,{"stream_name":"stdout","time":192.430457481,"data":"[launch]   120s GPU 0: [run_detect] gdino_food: 150/200\n"}
+,{"stream_name":"stdout","time":192.431247455,"data":"[launch]   120s GPU 1: [run_detect] gdino_food: 150/200\n"}
+,{"stream_name":"stdout","time":222.440836031,"data":"[launch]   150s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_food_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":222.441366456,"data":"[launch]   150s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_food_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":252.435495051,"data":"[launch]   180s GPU 0: [run_detect] gdino_food_pb: 25/200\n"}
+,{"stream_name":"stdout","time":252.435525873,"data":"[launch]   180s GPU 1: [run_detect] gdino_food_pb: 50/200\n"}
+,{"stream_name":"stdout","time":282.442180037,"data":"[launch]   210s GPU 0: [run_detect] gdino_food_pb: 75/200\n"}
+,{"stream_name":"stdout","time":282.443267119,"data":"[launch]   210s GPU 1: [run_detect] gdino_food_pb: 100/200\n"}
+,{"stream_name":"stdout","time":312.43886786,"data":"[launch]   240s GPU 0: [run_detect] gdino_food_pb: 125/200\n"}
+,{"stream_name":"stdout","time":312.441792247,"data":"[launch]   240s GPU 1: [run_detect] gdino_food_pb: 150/200\n"}
+,{"stream_name":"stdout","time":342.450225661,"data":"[launch]   270s GPU 0: [run_detect] gdino_food_pb: 175/200\n"}
+,{"stream_name":"stdout","time":342.450256578,"data":"[launch]   270s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_food_pb_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":372.445801895,"data":"[launch]   300s GPU 0: [run_detect] gdino_class: 25/200\n"}
+,{"stream_name":"stdout","time":372.44584846,"data":"[launch]   300s GPU 1: [run_detect] gdino_class: 50/200\n"}
+,{"stream_name":"stdout","time":402.454561878,"data":"[launch]   330s GPU 0: [run_detect] gdino_class: 75/200\n"}
+,{"stream_name":"stdout","time":402.455583234,"data":"[launch]   330s GPU 1: [run_detect] gdino_class: 100/200\n"}
+,{"stream_name":"stdout","time":432.448669988,"data":"[launch]   360s GPU 0: [run_detect] gdino_class: 125/200\n"}
+,{"stream_name":"stdout","time":432.450471025,"data":"[launch]   360s GPU 1: [run_detect] gdino_class: 150/200\n"}
+,{"stream_name":"stdout","time":462.459943697,"data":"[launch]   390s GPU 0: [run_detect] gdino_class: 175/200\n"}
+,{"stream_name":"stdout","time":462.460436734,"data":"[launch]   390s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_class_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":492.454001827,"data":"[launch]   420s GPU 0: [run_detect] gdino_class_pb: 25/200\n"}
+,{"stream_name":"stdout","time":492.454852275,"data":"[launch]   420s GPU 1: [run_detect] gdino_class_pb: 50/200\n"}
+,{"stream_name":"stdout","time":522.46490452,"data":"[launch]   450s GPU 0: [run_detect] gdino_class_pb: 50/200\n"}
+,{"stream_name":"stdout","time":522.466256663,"data":"[launch]   450s GPU 1: [run_detect] gdino_class_pb: 125/200\n"}
+,{"stream_name":"stdout","time":552.45934116,"data":"[launch]   480s GPU 0: [run_detect] gdino_class_pb: 100/200\n"}
+,{"stream_name":"stdout","time":552.460147338,"data":"[launch]   480s GPU 1: [run_detect] gdino_class_pb: 175/200\n"}
+,{"stream_name":"stdout","time":582.465716546,"data":"[launch]   510s GPU 0: [run_detect] gdino_class_pb: 150/200\n"}
+,{"stream_name":"stdout","time":582.466477177,"data":"[launch]   510s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_class_pb_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":612.463407287,"data":"[launch]   540s GPU 0: [run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_class_pb_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":612.464444805,"data":"[launch]   540s GPU 1: [run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_class_pb_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":612.465297201,"data":"[launch] GPU 0 mã thoát 0 (log: /kaggle/working/output/logs/detect_uec.log)\n"}
+,{"stream_name":"stdout","time":612.471441695,"data":"[launch] GPU 1 mã thoát 0 (log: /kaggle/working/output/logs/detect_food.log)\n"}
+,{"stream_name":"stdout","time":612.47226585,"data":"----- /kaggle/working/output/logs/detect_uec.log\n"}
+,{"stream_name":"stdout","time":612.472277637,"data":"[run_detect] gdino_class_pb: 100/200\n"}
+,{"stream_name":"stdout","time":612.472282285,"data":"[run_detect] gdino_class_pb: 125/200\n"}
+,{"stream_name":"stdout","time":612.472286483,"data":"[run_detect] gdino_class_pb: 150/200\n"}
+,{"stream_name":"stdout","time":612.472292754,"data":"[run_detect] gdino_class_pb: 175/200\n"}
+,{"stream_name":"stdout","time":612.472299802,"data":"[run_detect] gdino_class_pb: 200/200\n"}
+,{"stream_name":"stdout","time":612.472302637,"data":"[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_class_pb_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":612.472305807,"data":"----- /kaggle/working/output/logs/detect_food.log\n"}
+,{"stream_name":"stdout","time":612.472308634,"data":"[run_detect] gdino_class_pb: 100/200\n"}
+,{"stream_name":"stdout","time":612.472311784,"data":"[run_detect] gdino_class_pb: 125/200\n"}
+,{"stream_name":"stdout","time":612.47231455,"data":"[run_detect] gdino_class_pb: 150/200\n"}
+,{"stream_name":"stdout","time":612.472317284,"data":"[run_detect] gdino_class_pb: 175/200\n"}
+,{"stream_name":"stdout","time":612.472328213,"data":"[run_detect] gdino_class_pb: 200/200\n"}
+,{"stream_name":"stdout","time":612.47233068,"data":"[run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_class_pb_shard0.json (200 ảnh)\n"}
+,{"stream_name":"stdout","time":612.472333047,"data":"Thời gian detect: 9.8 phút\n"}
+,{"stream_name":"stdout","time":613.760906077,"data":"       variant  ap50  ap30  precision  recall    f1  mean_iou  area_ratio  conf  images_no_box  sec_per_img  partial\n"}
+,{"stream_name":"stdout","time":613.760930979,"data":"    gdino_food 0.732 0.836      0.676   0.717 0.696     0.611       0.815 0.468             17        0.609    False\n"}
+,{"stream_name":"stdout","time":613.760936506,"data":" gdino_food_pb 0.632 0.760      0.654   0.667 0.660     0.570       0.798 0.486             23        0.631    False\n"}
+,{"stream_name":"stdout","time":613.760941202,"data":"   gdino_class 0.590 0.663      0.736   0.530 0.616     0.482       0.934 0.358             28        0.629    False\n"}
+,{"stream_name":"stdout","time":613.760945734,"data":"gdino_class_pb 0.412 0.512      0.549   0.390 0.456     0.368       0.888 0.374             52        0.631    False\n"}
+,{"stream_name":"stdout","time":614.522504911,"data":"       variant threshold  conf  images_with_box  box_per_img  main_area  near_full\n"}
+,{"stream_name":"stdout","time":614.522549111,"data":"   gdino_class      0.35 0.350              172        1.245      0.515         25\n"}
+,{"stream_name":"stdout","time":614.522554349,"data":"   gdino_class  best_uec 0.358              166        1.155      0.510         24\n"}
+,{"stream_name":"stdout","time":614.52255876,"data":"gdino_class_pb      0.35 0.350              105        0.935      0.388          4\n"}
+,{"stream_name":"stdout","time":614.522563075,"data":"gdino_class_pb  best_uec 0.374               96        0.825      0.393          4\n"}
+,{"stream_name":"stdout","time":614.522567313,"data":"    gdino_food      0.35 0.350              194        1.800      0.641         39\n"}
+,{"stream_name":"stdout","time":614.522571422,"data":"    gdino_food  best_uec 0.468              148        0.965      0.626         32\n"}
+,{"stream_name":"stdout","time":614.5225756,"data":" gdino_food_pb      0.35 0.350              195        1.935      0.620         39\n"}
+,{"stream_name":"stdout","time":614.522579729,"data":" gdino_food_pb  best_uec 0.486              130        0.900      0.585         22\n"}
+,{"stream_name":"stdout","time":615.899186128,"data":"Đã lưu hình so sánh: 20 UEC, 30 Food-101\n"}
+,{"stream_name":"stdout","time":615.949875698,"data":"Xong sau 9.9 phút\n"}
+,{"stream_name":"stdout","time":615.949900226,"data":"8.6M\t/kaggle/working/output\r\n"}
+,{"stream_name":"stderr","time":619.248992545,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":619.24902609,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":619.394639479,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":619.394666749,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":620.127594443,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":620.221307324,"data":"[NbConvertApp] Writing 99100 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":622.683442984,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":623.393425773,"data":"[NbConvertApp] Writing 633919 bytes to __results__.html\n"}
+]

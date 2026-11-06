@@ -1,0 +1,14 @@
+[run_detect] shard 0/1: 200 ảnh, models=['gdino'], sam=False, device=Tesla T4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/1182 [00:00<?, ?it/s]Loading weights:  16%|█▌        | 189/1182 [00:00<00:00, 1879.35it/s]Loading weights:  32%|███▏      | 377/1182 [00:00<00:00, 1752.54it/s]Loading weights:  60%|█████▉    | 707/1182 [00:00<00:00, 2431.08it/s]Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 3524.45it/s]
+/usr/local/lib/python3.13/dist-packages/transformers/models/grounding_dino/modeling_grounding_dino.py:2149: UserWarning: Specified kernel cache directory could not be created! This disables kernel caching. Specified directory is /root/.cache/torch/kernels. This warning will appear only once per process. (Triggered internally at /pytorch/aten/src/ATen/native/cuda/jit_utils.cpp:1505.)
+  level_start_index = torch.cat((spatial_shapes.new_zeros((1,)), spatial_shapes.prod(1).cumsum(0)[:-1]))
+[run_detect] gdino: 25/200
+[run_detect] gdino: 50/200
+[run_detect] gdino: 75/200
+[run_detect] gdino: 100/200
+[run_detect] gdino: 125/200
+[run_detect] gdino: 150/200
+[run_detect] gdino: 175/200
+[run_detect] gdino: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_shard0.json (200 ảnh)

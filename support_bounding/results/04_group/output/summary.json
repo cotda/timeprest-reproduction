@@ -1,0 +1,28 @@
+{
+ "config": {
+  "data_root": "/kaggle/input",
+  "uec_class_ids": [
+   1,
+   7,
+   11,
+   18,
+   23,
+   36,
+   87,
+   98,
+   206,
+   209
+  ],
+  "uec_per_class": 20,
+  "food_n_classes": 10,
+  "food_per_class": 20,
+  "seed": 0,
+  "timeout_min": 45,
+  "out": "/kaggle/working/output"
+ },
+ "minutes": 7.165815019607544,
+ "exit_codes": [
+  0,
+  0
+ ]
+}

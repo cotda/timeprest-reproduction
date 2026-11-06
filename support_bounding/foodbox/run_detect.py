@@ -4,7 +4,9 @@ Ví dụ:
   CUDA_VISIBLE_DEVICES=0 python -m foodbox.run_detect --items items.json --models gdino --sam --out preds
   CUDA_VISIBLE_DEVICES=1 python -m foodbox.run_detect --items items.json --models gdino --shard 1 --nshards 2 ...
 
-Kết quả: <out>/preds_<biến thể>_shard<i>.json, biến thể = tên model hoặc '<model>+sam'.
+Kết quả: <out>/preds_<biến thể>_shard<i>.json, biến thể = tên model hoặc '<model>+sam' (hoặc '<model><tag>' khi
+dùng --prompt-sets). Trong lúc chạy, cứ --ckpt-every ảnh lại ghi <out>/partial_<biến thể>_shard<i>.json; chạy lại cùng
+lệnh thì bỏ qua ảnh đã xong (chạy tiếp). Kernel bị dừng giữa chừng thì load_preds vẫn đọc được phần đã lưu.
 """
 import argparse
 import glob
@@ -16,7 +18,7 @@ import numpy as np
 import torch
 
 from .data import load_image
-from .detectors import SAMRefiner, build_detector
+from .detectors import CONTAINER_PROMPTS, SAMRefiner, build_detector
 from .postprocess import postprocess
 
 
@@ -34,20 +36,54 @@ def _peak_mb():
     return torch.cuda.max_memory_allocated() / 2**20 if torch.cuda.is_available() else 0.0
 
 
-def _save(path, variant, meta, images):
-    with open(path, "w") as f:
+def _save(path, variant, meta, images, quiet=False):
+    tmp = path + ".tmp"  # ghi file tạm rồi đổi tên: bị dừng giữa lúc ghi cũng không hỏng file cũ
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump({"variant": variant, "meta": meta, "images": images}, f)
-    print(f"[run_detect] đã ghi {path} ({len(images)} ảnh)", flush=True)
+    os.replace(tmp, path)
+    if not quiet:
+        print(f"[run_detect] đã ghi {path} ({len(images)} ảnh)", flush=True)
+
+
+def _resume(out, variant, shard):
+    """Kết quả đã lưu theo đợt của lần chạy trước (nếu có): {key: kết quả}."""
+    p = os.path.join(out, f"partial_{variant}_shard{shard}.json")
+    if not os.path.exists(p):
+        return {}
+    with open(p, encoding="utf-8") as f:
+        images = json.load(f)["images"]
+    print(f"[run_detect] chạy tiếp {variant}: đã có {len(images)} ảnh trong {p}", flush=True)
+    return images
+
+
+def _finish(out, variant, shard, meta, images):
+    _save(os.path.join(out, f"preds_{variant}_shard{shard}.json"), variant, meta, images)
+    p = os.path.join(out, f"partial_{variant}_shard{shard}.json")
+    if os.path.exists(p):
+        os.remove(p)
+
+
+def _item_prompts(ps, it):
+    """Prompt cho 1 ảnh: cố định, hoặc theo tên món (thư mục) khi mode='class' ('french_toast' -> 'french toast')."""
+    return [it["class"].replace("_", " ")] if ps.get("mode") == "class" else ps["prompts"]
 
 
 def run(items, models, prompts, out, sam=False, sam_top=20, device="cuda", low_thr=None, shard=0, nshards=1,
-        log_every=25):
+        log_every=25, ckpt_every=50, prompt_sets=None, containers=False):
+    """prompt_sets (chỉ Grounding DINO): list {tag, mode: fixed|class, prompts, extras}. Mỗi bộ là một biến thể
+    '<model><tag>'; extras (vd. ['plate', 'bowl']) được thêm vào câu chữ rồi bỏ các box mang nhãn đó.
+    containers (chỉ gdino): chạy thêm 1 lượt tìm vật chứa (CONTAINER_PROMPTS), lưu c_boxes/c_scores để gộp món."""
     os.makedirs(out, exist_ok=True)
     items = items[shard::nshards]
     gpu = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"
     print(f"[run_detect] shard {shard}/{nshards}: {len(items)} ảnh, models={models}, sam={sam}, device={gpu}", flush=True)
+    sets = prompt_sets or [{"tag": "", "mode": "fixed", "prompts": prompts, "extras": []}]
     refiner = None
     for name in models:
+        if containers and name != "gdino":
+            raise ValueError("containers chỉ hỗ trợ gdino")
+        if prompt_sets and name != "gdino":
+            raise ValueError("prompt_sets chỉ hỗ trợ gdino (prompt đổi theo từng ảnh)")
         # 1) Detector: nạp model, chạy thử 1 ảnh (khởi động CUDA), rồi đo thời gian từng ảnh
         _reset_peak()
         t0 = time.time()
@@ -55,31 +91,46 @@ def run(items, models, prompts, out, sam=False, sam_top=20, device="cuda", low_t
         load_s = time.time() - t0
         if items:
             det.predict(load_image(items[0]["path"]))
-        images = {}
-        for k, it in enumerate(items):
-            try:
-                img = load_image(it["path"])
-                _sync()
-                t = time.time()
-                boxes, scores = det.predict(img)
-                _sync()
-                images[it["key"]] = {"w": img.width, "h": img.height, "boxes": boxes.round(2).tolist(),
-                                     "scores": scores.round(5).tolist(), "time_s": time.time() - t}
-            except Exception as e:  # ảnh lỗi: ghi lại rồi chạy tiếp
-                images[it["key"]] = {"w": 0, "h": 0, "boxes": [], "scores": [], "time_s": 0.0, "error": repr(e)}
-                print(f"[run_detect] LỖI {it['key']}: {e!r}", flush=True)
-            if (k + 1) % log_every == 0 or k + 1 == len(items):
-                print(f"[run_detect] {name}: {k + 1}/{len(items)}", flush=True)
-        meta = {"model": name, "prompts": prompts, "load_s": load_s, "peak_vram_mb": _peak_mb(), "gpu": gpu}
-        _save(os.path.join(out, f"preds_{name}_shard{shard}.json"), name, meta, images)
+        for ps in sets:
+            variant = name + ps["tag"]
+            images = _resume(out, variant, shard)
+            todo = [it for it in items if it["key"] not in images]
+            for k, it in enumerate(todo):
+                try:
+                    img = load_image(it["path"])
+                    _sync()
+                    t = time.time()
+                    if prompt_sets:
+                        boxes, scores = det.predict(img, prompts=_item_prompts(ps, it), extras=ps.get("extras"))
+                    else:
+                        boxes, scores = det.predict(img)
+                    r = {"w": img.width, "h": img.height, "boxes": boxes.round(2).tolist(),
+                         "scores": scores.round(5).tolist()}
+                    if containers:  # lượt 2: vật chứa (đĩa, bát, khay, thớt)
+                        cb, cs = det.predict(img, prompts=CONTAINER_PROMPTS)
+                        r.update(c_boxes=cb.round(2).tolist(), c_scores=cs.round(5).tolist())
+                    _sync()
+                    r["time_s"] = time.time() - t
+                    images[it["key"]] = r
+                except Exception as e:  # ảnh lỗi: ghi lại rồi chạy tiếp
+                    images[it["key"]] = {"w": 0, "h": 0, "boxes": [], "scores": [], "time_s": 0.0, "error": repr(e)}
+                    print(f"[run_detect] LỖI {it['key']}: {e!r}", flush=True)
+                if (k + 1) % ckpt_every == 0:  # lưu theo đợt
+                    _save(os.path.join(out, f"partial_{variant}_shard{shard}.json"), variant, {}, images, quiet=True)
+                if (k + 1) % log_every == 0 or k + 1 == len(todo):
+                    print(f"[run_detect] {variant}: {len(images)}/{len(items)}", flush=True)
+            meta = {"model": variant, "prompts": ps["prompts"], "mode": ps.get("mode", "fixed"),
+                    "extras": ps.get("extras", []), "load_s": load_s, "peak_vram_mb": _peak_mb(), "gpu": gpu}
+            _finish(out, variant, shard, meta, images)
 
         # 2) SAM: lấy top sam_top box (sau NMS) của mỗi ảnh, thay bằng box bao quanh mask
         if sam:
             if refiner is None:
                 refiner = SAMRefiner(device=device)
             _reset_peak()
-            sam_images = {}
-            for k, it in enumerate(items):
+            sam_images = _resume(out, f"{name}+sam", shard)
+            todo = [it for it in items if it["key"] not in sam_images]
+            for k, it in enumerate(todo):
                 r = images[it["key"]]
                 if "error" in r:
                     sam_images[it["key"]] = r
@@ -93,10 +144,13 @@ def run(items, models, prompts, out, sam=False, sam_top=20, device="cuda", low_t
                 _sync()
                 sam_images[it["key"]] = {"w": r["w"], "h": r["h"], "boxes": nb.round(2).tolist(),
                                          "scores": s.round(5).tolist(), "time_s": r["time_s"] + time.time() - t}
-                if (k + 1) % log_every == 0 or k + 1 == len(items):
-                    print(f"[run_detect] {name}+sam: {k + 1}/{len(items)}", flush=True)
+                if (k + 1) % ckpt_every == 0:
+                    _save(os.path.join(out, f"partial_{name}+sam_shard{shard}.json"), f"{name}+sam", {}, sam_images,
+                          quiet=True)
+                if (k + 1) % log_every == 0 or k + 1 == len(todo):
+                    print(f"[run_detect] {name}+sam: {len(sam_images)}/{len(items)}", flush=True)
             meta_sam = dict(meta, model=f"{name}+sam", peak_vram_mb=max(meta["peak_vram_mb"], _peak_mb()))
-            _save(os.path.join(out, f"preds_{name}+sam_shard{shard}.json"), f"{name}+sam", meta_sam, sam_images)
+            _finish(out, f"{name}+sam", shard, meta_sam, sam_images)
         del det
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -105,11 +159,16 @@ def run(items, models, prompts, out, sam=False, sam_top=20, device="cuda", low_t
 def load_preds(out):
     """Gộp các shard: {biến thể: {"meta": [meta mỗi shard], "images": {key: kết quả}}}."""
     res = {}
-    for p in sorted(glob.glob(os.path.join(out, "preds_*_shard*.json"))):
-        with open(p) as f:
+    finals = sorted(glob.glob(os.path.join(out, "preds_*_shard*.json")))
+    done = {os.path.basename(p)[len("preds_"):] for p in finals}
+    # Kết quả lưu theo đợt của shard chưa chạy xong (kernel bị dừng): vẫn đọc, meta ghi partial=True
+    partials = [p for p in sorted(glob.glob(os.path.join(out, "partial_*_shard*.json")))
+                if os.path.basename(p)[len("partial_"):] not in done]
+    for p in finals + partials:
+        with open(p, encoding="utf-8") as f:
             d = json.load(f)
         r = res.setdefault(d["variant"], {"meta": [], "images": {}})
-        r["meta"].append(d["meta"])
+        r["meta"].append(d["meta"] or {"partial": True, "peak_vram_mb": 0.0, "load_s": 0.0})
         r["images"].update(d["images"])
     return res
 
@@ -134,9 +193,9 @@ def launch(jobs, timeout_min=40, poll_s=30, cwd=None):
     procs = []
     lib_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # để tiến trình con import được foodbox
     for gpu, args, log in jobs:
-        env = dict(os.environ, CUDA_VISIBLE_DEVICES=str(gpu), PYTHONUNBUFFERED="1",
+        env = dict(os.environ, CUDA_VISIBLE_DEVICES=str(gpu), PYTHONUNBUFFERED="1", PYTHONIOENCODING="utf-8",
                    PYTHONPATH=os.pathsep.join(p for p in [lib_parent, os.environ.get("PYTHONPATH")] if p))
-        fh = open(log, "w")
+        fh = open(log, "w", encoding="utf-8")
         p = subprocess.Popen([sys.executable, "-m", "foodbox.run_detect", *args], stdout=fh,
                              stderr=subprocess.STDOUT, env=env, cwd=cwd, start_new_session=True)
         procs.append((p, fh, log, gpu))
@@ -151,7 +210,7 @@ def launch(jobs, timeout_min=40, poll_s=30, cwd=None):
             break
         time.sleep(poll_s)
         for p, _, log, gpu in procs:
-            with open(log, errors="replace") as f:
+            with open(log, encoding="utf-8", errors="replace") as f:
                 lines = [l for l in f.read().splitlines() if l.strip()]
             print(f"[launch] {time.time() - t0:5.0f}s GPU {gpu}: {lines[-1] if lines else '(chưa có log)'}", flush=True)
     for k, (p, fh, log, gpu) in enumerate(procs):
@@ -173,11 +232,20 @@ def main():
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--nshards", type=int, default=1)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--ckpt-every", type=int, default=50, help="lưu kết quả theo đợt mỗi N ảnh")
+    ap.add_argument("--containers", action="store_true", help="lưu thêm box vật chứa để gộp món cùng đĩa (gdino)")
+    ap.add_argument("--prompt-sets", default=None,
+                    help='file JSON: list {"tag","mode":"fixed|class","prompts":[...],"extras":[...]} (chỉ gdino)')
     a = ap.parse_args()
-    with open(a.items) as f:
+    with open(a.items, encoding="utf-8") as f:
         items = json.load(f)
+    prompt_sets = None
+    if a.prompt_sets:
+        with open(a.prompt_sets, encoding="utf-8") as f:
+            prompt_sets = json.load(f)
     run(items, a.models.split(","), [p for p in a.prompts.split("|") if p.strip()], a.out, sam=a.sam,
-        sam_top=a.sam_top, device=a.device, low_thr=a.low_thr, shard=a.shard, nshards=a.nshards)
+        sam_top=a.sam_top, device=a.device, low_thr=a.low_thr, shard=a.shard, nshards=a.nshards,
+        ckpt_every=a.ckpt_every, prompt_sets=prompt_sets, containers=a.containers)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,84 @@
+{
+ "image": "mod_in\\miso_soup_38.jpg",
+ "width": 531,
+ "height": 450,
+ "n_boxes": 6,
+ "boxes": [
+  {
+   "id": 1,
+   "x1": 175.5,
+   "y1": 305.7,
+   "x2": 255.1,
+   "y2": 387.2,
+   "score": 0.6493,
+   "largest": false,
+   "crop": "miso_soup_38_1.jpg"
+  },
+  {
+   "id": 2,
+   "x1": 288.9,
+   "y1": 259.6,
+   "x2": 407.6,
+   "y2": 375.5,
+   "score": 0.6377,
+   "largest": false,
+   "crop": "miso_soup_38_2.jpg"
+  },
+  {
+   "id": 3,
+   "x1": 152.8,
+   "y1": 136.9,
+   "x2": 251.7,
+   "y2": 234.0,
+   "score": 0.6112,
+   "largest": false,
+   "crop": "miso_soup_38_3.jpg"
+  },
+  {
+   "id": 4,
+   "x1": 273.8,
+   "y1": 125.6,
+   "x2": 397.7,
+   "y2": 236.8,
+   "score": 0.5772,
+   "largest": true,
+   "crop": "miso_soup_38_4.jpg"
+  },
+  {
+   "id": 5,
+   "x1": 212.3,
+   "y1": 47.8,
+   "x2": 315.5,
+   "y2": 121.3,
+   "score": 0.5315,
+   "largest": false,
+   "crop": "miso_soup_38_5.jpg"
+  },
+  {
+   "id": 6,
+   "x1": 69.0,
+   "y1": 344.4,
+   "x2": 121.0,
+   "y2": 404.8,
+   "score": 0.4512,
+   "largest": false,
+   "crop": "miso_soup_38_6.jpg"
+  }
+ ],
+ "files": {
+  "bbox": "miso_soup_38_bbox.jpg"
+ },
+ "model": "IDEA-Research/grounding-dino-base",
+ "device": "cpu",
+ "params": {
+  "prompts": [
+   "food"
+  ],
+  "conf": 0.35,
+  "other_conf": 0.45,
+  "nms_iou": 0.5,
+  "min_area": 0.002,
+  "max_det": 20
+ },
+ "seconds": 10.95
+}

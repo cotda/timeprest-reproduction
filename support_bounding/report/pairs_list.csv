@@ -1,0 +1,31 @@
+page,image,n_boxes,max_conf,review
+1,apple_pie/1106961,1,0.6919,đúng
+1,apple_pie/1487150,1,0.6428,đúng
+1,apple_pie/1580276,1,0.8478,đúng
+1,bibimbap/1305020,1,0.6969,đúng
+1,bibimbap/1578998,1,0.6283,đúng
+1,bibimbap/1592370,1,0.5501,đúng
+1,cannoli/1337561,1,0.443,đúng
+1,cannoli/1359779,1,0.354,đúng
+1,cannoli/1446392,1,0.7539,đúng
+1,edamame/1255500,1,0.6763,đúng
+2,edamame/1372112,1,0.7737,đúng
+2,edamame/1695174,1,0.6424,đúng
+2,falafel/1104277,3,0.5807,box sai; 2 box food_other sai
+2,falafel/1290690,1,0.383,đúng
+2,falafel/1565700,1,0.5164,đúng
+2,french_toast/1078039,1,0.6565,đúng
+2,french_toast/1139825,1,0.7296,đúng
+2,french_toast/1299998,2,0.5422,box thiếu một phần món
+2,ice_cream/130043,1,0.4023,đúng
+2,ice_cream/1498499,1,0.5957,đúng
+3,ice_cream/1770967,1,0.4374,đúng
+3,ramen/1034646,1,0.6969,đúng
+3,ramen/1045249,1,0.7848,đúng
+3,ramen/1252847,1,0.7452,đúng
+3,sushi/105070,1,0.4282,đúng
+3,sushi/1412702,1,0.4703,đúng
+3,sushi/1457312,1,0.5185,đúng
+3,tiramisu/1143941,1,0.4273,đúng
+3,tiramisu/1203999,1,0.7483,đúng
+3,tiramisu/1450107,1,0.3654,đúng

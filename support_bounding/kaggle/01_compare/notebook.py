@@ -92,7 +92,7 @@ for gpu, models in gpu_jobs.items():
 codes = launch(jobs, timeout_min=CFG["timeout_min"], cwd="/tmp/foodbox_models")  # trọng số model không vào output
 for _, _, log in jobs:  # in 15 dòng cuối log của mỗi GPU
     print(f"----- {log}")
-    print("\n".join(open(log, errors="replace").read().splitlines()[-15:]))
+    print("\n".join(open(log, encoding="utf-8", errors="replace").read().splitlines()[-15:]))
 print(f"Thời gian detect: {(time.time() - T0) / 60:.1f} phút")
 
 # %% [markdown]

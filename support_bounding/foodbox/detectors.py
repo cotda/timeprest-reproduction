@@ -34,11 +34,17 @@ class GroundingDINO:
         mid = model_id or DEFAULT_IDS["gdino"]
         self.processor = AutoProcessor.from_pretrained(mid)
         self.model = AutoModelForZeroShotObjectDetection.from_pretrained(mid).to(device).eval()
+        self.prompts = list(prompts)
         self.text = " ".join(p.strip().lower().rstrip(".") + "." for p in prompts)
         self.device, self.low_thr, self.max_det = device, low_thr, max_det
 
     @torch.no_grad()
-    def predict(self, img):
+    def predict(self, img, prompts=None, extras=None):
+        """prompts: đổi câu chữ cho ảnh này (vd. tên món); extras: vật phụ (vd. ['plate', 'bowl']) đưa vào câu chữ để
+        model gán đĩa/bát cho chúng. Khi có prompts/extras, điểm của box = điểm cao nhất trên các token của prompts
+        chính, và bỏ box có điểm token extras cao hơn (box đó là đĩa/bát chứ không phải thức ăn)."""
+        if prompts is not None or extras:
+            return self._predict_tokens(img, list(prompts or self.prompts), list(extras or []))
         inputs = self.processor(images=img, text=self.text, return_tensors="pt").to(self.device)
         out = self.model(**inputs)
         size = [(img.height, img.width)]
@@ -50,6 +56,35 @@ class GroundingDINO:
         if len(r["scores"]) == 0:
             return _empty()
         return _topk(r["boxes"].float().cpu().numpy(), r["scores"].float().cpu().numpy(), self.max_det)
+
+    def _predict_tokens(self, img, prompts, extras):
+        # Ghép câu chữ "p1. p2. plate. bowl." và nhớ vị trí ký tự của từng cụm để tìm token tương ứng
+        phrases = [p.strip().lower().rstrip(".") for p in prompts + extras]
+        text, spans = "", []
+        for ph in phrases:
+            spans.append((len(text), len(text) + len(ph)))
+            text += ph + ". "
+        text = text.strip()
+        inputs = self.processor(images=img, text=text, return_tensors="pt").to(self.device)
+        out = self.model(**inputs)
+        offs = self.processor.tokenizer(text, return_offsets_mapping=True)["offset_mapping"]
+
+        def tokens(sp):
+            return [i for i, (a, b) in enumerate(offs) if b > a and a >= sp[0] and b <= sp[1]]
+
+        main_idx = [i for sp in spans[:len(prompts)] for i in tokens(sp)]
+        extra_idx = [i for sp in spans[len(prompts):] for i in tokens(sp)]
+        probs = out.logits[0].float().sigmoid()  # (số query, số token)
+        s_main = probs[:, main_idx].max(-1).values
+        keep = s_main >= self.low_thr
+        if extra_idx:
+            keep &= s_main >= probs[:, extra_idx].max(-1).values
+        if not bool(keep.any()):
+            return _empty()
+        cx, cy, w, h = out.pred_boxes[0][keep].float().unbind(-1)  # toạ độ chuẩn hoá (tâm, rộng, cao)
+        boxes = torch.stack([(cx - w / 2) * img.width, (cy - h / 2) * img.height,
+                             (cx + w / 2) * img.width, (cy + h / 2) * img.height], -1)
+        return _topk(boxes.cpu().numpy(), s_main[keep].cpu().numpy(), self.max_det)
 
 
 class OWLv2:
@@ -144,6 +179,10 @@ class SAMRefiner:
             if len(xs) / (sx * sy) >= self.min_fill * box_area:
                 out[k] = nb
         return out
+
+
+# Vật chứa để gộp các miếng cùng đĩa/thớt thành 1 món (postprocess.group_dishes, NOTES v5)
+CONTAINER_PROMPTS = ["plate", "bowl", "tray", "cutting board"]
 
 
 DETECTORS = {"gdino": GroundingDINO, "owlv2": OWLv2, "yoloworld": YOLOWorld}

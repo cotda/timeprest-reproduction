@@ -1,0 +1,59 @@
+image,file,n_dishes,n_boxes,main_ok,side_found,n_side,food_other_extra_or_off,dishes
+bibimbap/13995,images/bibimbap__13995.jpg,4,4,1,2,3,1,bibimbap; miso soup; cold tofu; green salad
+french_fries/11365,images/french_fries__11365.jpg,3,1,0,0,2,0,samul; roast chicken; french fries
+french_fries/12952,images/french_fries__12952.jpg,2,1,1,0,1,0,twice cooked pork; french fries
+french_fries/14919,images/french_fries__14919.jpg,2,3,0,1,1,1,rice; french fries
+french_fries/15283,images/french_fries__15283.jpg,2,2,0,0,1,1,hamburger; french fries
+french_fries/15414,images/french_fries__15414.jpg,3,2,0,1,2,0,rice; miso soup; french fries
+french_fries/15763,images/french_fries__15763.jpg,2,2,0,0,1,1,hambarg steak; french fries
+french_fries/16486,images/french_fries__16486.jpg,2,2,1,1,1,0,hamburger; french fries
+french_fries/4416,images/french_fries__4416.jpg,2,1,0,0,1,0,fried fish; french fries
+green_salad/11869,images/green_salad__11869.jpg,2,3,1,1,1,1,toast; green salad
+green_salad/13319,images/green_salad__13319.jpg,3,7,1,2,2,4,croquette; green salad; kinpira-style sauteed burdock
+green_salad/13788,images/green_salad__13788.jpg,2,5,0,0,1,4,spaghetti meat sauce; green salad
+green_salad/14378,images/green_salad__14378.jpg,2,6,0,0,1,5,sausage; green salad
+green_salad/14890,images/green_salad__14890.jpg,4,4,0,2,3,1,rice; miso soup; sirloin cutlet; green salad
+green_salad/15832,images/green_salad__15832.jpg,4,8,1,3,3,4,rice; miso soup; sirloin cutlet; green salad
+green_salad/16062,images/green_salad__16062.jpg,4,4,0,2,3,1,croquette; miso soup; cold tofu; green salad
+green_salad/16603,images/green_salad__16603.jpg,3,3,0,1,2,1,miso soup; jiaozi; green salad
+green_salad/16706,images/green_salad__16706.jpg,3,4,0,1,2,2,rice; miso soup; green salad
+miso_soup/12421,images/miso_soup__12421.jpg,3,3,0,1,2,1,miso soup; green salad; beef bowl
+miso_soup/13646,images/miso_soup__13646.jpg,3,4,0,1,2,2,rice; gratin; miso soup
+miso_soup/14012,images/miso_soup__14012.jpg,4,5,0,2,3,2,rice; miso soup; cold tofu; green salad
+miso_soup/14505,images/miso_soup__14505.jpg,3,4,0,0,2,3,rice; miso soup; green salad
+miso_soup/14723,images/miso_soup__14723.jpg,3,3,1,0,2,2,rice; miso soup; yakitori
+miso_soup/15123,images/miso_soup__15123.jpg,3,2,0,0,2,1,miso soup; sirloin cutlet; green salad
+miso_soup/15215,images/miso_soup__15215.jpg,2,2,0,0,1,1,miso soup; sashimi bowl
+miso_soup/15364,images/miso_soup__15364.jpg,4,5,0,1,3,3,rice; rice; miso soup; grilled salmon
+miso_soup/15719,images/miso_soup__15719.jpg,3,4,0,1,2,2,rice; miso soup; spicy chili-flavored tofu
+miso_soup/16255,images/miso_soup__16255.jpg,2,3,0,1,1,1,miso soup; green salad
+miso_soup/16557,images/miso_soup__16557.jpg,3,4,0,1,2,2,rice; miso soup; green salad
+miso_soup/38,images/miso_soup__38.jpg,4,6,0,2,3,3,rice; miso soup; egg sunny-side up; natto
+miso_soup/4936,images/miso_soup__4936.jpg,3,3,0,1,2,1,rice; miso soup; grilled pacific saury
+miso_soup/5021,images/miso_soup__5021.jpg,2,4,0,0,1,3,miso soup; sukiyaki
+miso_soup/87,images/miso_soup__87.jpg,3,4,1,1,2,2,rice; mango pudding; miso soup
+miso_soup/955,images/miso_soup__955.jpg,2,1,0,0,1,0,tempura bowl; miso soup
+pizza/15928,images/pizza__15928.jpg,2,2,1,0,1,1,toast; pizza
+pizza/16727,images/pizza__16727.jpg,2,1,1,0,1,0,kushikatu; pizza
+pizza/1707,images/pizza__1707.jpg,2,1,1,0,1,0,okinawa soba; pizza
+pizza/1758,images/pizza__1758.jpg,2,1,1,0,1,0,almond jelly; pizza
+ramen_noodle/13880,images/ramen_noodle__13880.jpg,2,1,1,0,1,0,pancake; ramen noodle
+ramen_noodle/14859,images/ramen_noodle__14859.jpg,2,2,0,0,1,1,ramen noodle; pork cutlet on rice
+rice/13297,images/rice__13297.jpg,2,3,1,1,1,1,rice; kinpira-style sauteed burdock
+rice/13764,images/rice__13764.jpg,3,4,0,1,2,2,rice; miso soup; seasoned beef with potatoes
+rice/13774,images/rice__13774.jpg,3,2,1,1,2,0,rice; miso soup; boiled fish
+rice/14249,images/rice__14249.jpg,3,5,1,0,2,4,rice; miso soup; sirloin cutlet
+rice/14522,images/rice__14522.jpg,2,5,0,0,1,4,rice; salmon meuniere
+rice/14596,images/rice__14596.jpg,4,5,0,1,3,3,rice; miso soup; cold tofu; potato salad
+rice/14877,images/rice__14877.jpg,2,4,1,1,1,2,rice; miso soup
+rice/15393,images/rice__15393.jpg,3,4,0,1,2,2,rice; miso soup; spicy chili-flavored tofu
+rice/15973,images/rice__15973.jpg,4,3,0,1,3,1,rice; miso soup; sirloin cutlet; green salad
+rice/31,images/rice__31.jpg,3,5,0,1,2,3,rice; miso soup; omelet
+rice/4004,images/rice__4004.jpg,4,5,0,1,3,3,rice; miso soup; ganmodoki; natto
+rice/4953,images/rice__4953.jpg,4,8,1,1,3,6,rice; green curry; miso soup; grilled pacific saury
+rice/5245,images/rice__5245.jpg,3,4,0,0,2,3,rice; lightly roasted fish; cold tofu
+rice/91,images/rice__91.jpg,2,4,0,1,1,2,rice; miso soup
+rice/9366,images/rice__9366.jpg,2,1,1,0,1,0,rice; champon
+sushi/10852,images/sushi__10852.jpg,2,2,1,0,0,1,sushi; sushi
+sushi/14677,images/sushi__14677.jpg,2,1,1,0,1,0,twice cooked pork; sushi
+sushi/639,images/sushi__639.jpg,2,1,1,0,1,0,almond jelly; sushi

@@ -105,6 +105,18 @@ def sample_images(class_images, classes=None, n_classes=10, per_class=20, seed=0
     return items
 
 
+def dedupe_keys(items):
+    """Trùng tên file trong cùng món (vd. cùng tên ở train/ và valid/) -> thêm hậu tố _1, _2 vào stem và key."""
+    seen = {}
+    for it in items:
+        n = seen.get(it["key"], 0)
+        seen[it["key"]] = n + 1
+        if n:
+            it["stem"] += f"_{n}"
+            it["key"] = f"{it['class']}/{it['stem']}"
+    return items
+
+
 def load_image(path):
     """Mở ảnh RGB, xoay theo EXIF (giống cv2.imread mà YOLO/Ultralytics và X-AnyLabeling dùng)."""
     with Image.open(path) as im:

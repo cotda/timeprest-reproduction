@@ -1,0 +1,225 @@
+{
+ "config": {
+  "data_root": "/kaggle/input",
+  "uec_class_ids": [
+   1,
+   7,
+   11,
+   18,
+   23,
+   36,
+   87,
+   98,
+   206,
+   209
+  ],
+  "uec_per_class": 20,
+  "food_n_classes": 10,
+  "food_per_class": 20,
+  "seed": 0,
+  "prompt_sets": [
+   {
+    "tag": "_food",
+    "mode": "fixed",
+    "prompts": [
+     "food"
+    ],
+    "extras": []
+   },
+   {
+    "tag": "_food_pb",
+    "mode": "fixed",
+    "prompts": [
+     "food"
+    ],
+    "extras": [
+     "plate",
+     "bowl",
+     "cup",
+     "tray"
+    ]
+   },
+   {
+    "tag": "_class",
+    "mode": "class",
+    "prompts": [],
+    "extras": []
+   },
+   {
+    "tag": "_class_pb",
+    "mode": "class",
+    "prompts": [],
+    "extras": [
+     "plate",
+     "bowl",
+     "cup",
+     "tray"
+    ]
+   }
+  ],
+  "food_conf": 0.35,
+  "timeout_min": 45,
+  "out": "/kaggle/working/output"
+ },
+ "minutes": 9.850976634025574,
+ "exit_codes": [
+  0,
+  0
+ ],
+ "uec": [
+  {
+   "variant": "gdino_food",
+   "ap50": 0.7325,
+   "conf": 0.4683,
+   "precision": 0.6761,
+   "recall": 0.7167,
+   "f1": 0.6958,
+   "mean_iou": 0.6113,
+   "area_ratio": 0.8149,
+   "main_acc_largest": 0.7,
+   "main_acc_score": 0.69,
+   "n_images": 200,
+   "n_gt": 300,
+   "n_pred": 318,
+   "n_tp": 215,
+   "images_no_box": 17,
+   "ap30": 0.8362,
+   "sec_per_img": 0.6092,
+   "partial": false
+  },
+  {
+   "variant": "gdino_food_pb",
+   "ap50": 0.6321,
+   "conf": 0.486,
+   "precision": 0.6536,
+   "recall": 0.6667,
+   "f1": 0.6601,
+   "mean_iou": 0.5697,
+   "area_ratio": 0.7975,
+   "main_acc_largest": 0.66,
+   "main_acc_score": 0.635,
+   "n_images": 200,
+   "n_gt": 300,
+   "n_pred": 306,
+   "n_tp": 200,
+   "images_no_box": 23,
+   "ap30": 0.7601,
+   "sec_per_img": 0.6306,
+   "partial": false
+  },
+  {
+   "variant": "gdino_class",
+   "ap50": 0.5897,
+   "conf": 0.3578,
+   "precision": 0.7361,
+   "recall": 0.53,
+   "f1": 0.6163,
+   "mean_iou": 0.4815,
+   "area_ratio": 0.9339,
+   "main_acc_largest": 0.785,
+   "main_acc_score": 0.75,
+   "n_images": 200,
+   "n_gt": 300,
+   "n_pred": 216,
+   "n_tp": 159,
+   "images_no_box": 28,
+   "ap30": 0.6625,
+   "sec_per_img": 0.629,
+   "partial": false
+  },
+  {
+   "variant": "gdino_class_pb",
+   "ap50": 0.4118,
+   "conf": 0.3739,
+   "precision": 0.5493,
+   "recall": 0.39,
+   "f1": 0.4561,
+   "mean_iou": 0.3675,
+   "area_ratio": 0.8881,
+   "main_acc_largest": 0.56,
+   "main_acc_score": 0.545,
+   "n_images": 200,
+   "n_gt": 300,
+   "n_pred": 213,
+   "n_tp": 117,
+   "images_no_box": 52,
+   "ap30": 0.5115,
+   "sec_per_img": 0.6307,
+   "partial": false
+  }
+ ],
+ "food": [
+  {
+   "variant": "gdino_class",
+   "threshold": "0.35",
+   "conf": 0.35,
+   "images_with_box": 172,
+   "box_per_img": 1.245,
+   "main_area": 0.5146,
+   "near_full": 25
+  },
+  {
+   "variant": "gdino_class",
+   "threshold": "best_uec",
+   "conf": 0.358,
+   "images_with_box": 166,
+   "box_per_img": 1.155,
+   "main_area": 0.51,
+   "near_full": 24
+  },
+  {
+   "variant": "gdino_class_pb",
+   "threshold": "0.35",
+   "conf": 0.35,
+   "images_with_box": 105,
+   "box_per_img": 0.935,
+   "main_area": 0.3878,
+   "near_full": 4
+  },
+  {
+   "variant": "gdino_class_pb",
+   "threshold": "best_uec",
+   "conf": 0.374,
+   "images_with_box": 96,
+   "box_per_img": 0.825,
+   "main_area": 0.3932,
+   "near_full": 4
+  },
+  {
+   "variant": "gdino_food",
+   "threshold": "0.35",
+   "conf": 0.35,
+   "images_with_box": 194,
+   "box_per_img": 1.8,
+   "main_area": 0.6415,
+   "near_full": 39
+  },
+  {
+   "variant": "gdino_food",
+   "threshold": "best_uec",
+   "conf": 0.468,
+   "images_with_box": 148,
+   "box_per_img": 0.965,
+   "main_area": 0.6258,
+   "near_full": 32
+  },
+  {
+   "variant": "gdino_food_pb",
+   "threshold": "0.35",
+   "conf": 0.35,
+   "images_with_box": 195,
+   "box_per_img": 1.935,
+   "main_area": 0.6204,
+   "near_full": 39
+  },
+  {
+   "variant": "gdino_food_pb",
+   "threshold": "best_uec",
+   "conf": 0.486,
+   "images_with_box": 130,
+   "box_per_img": 0.9,
+   "main_area": 0.5847,
+   "near_full": 22
+  }
+ ]
+}

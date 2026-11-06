@@ -1,0 +1,39 @@
+[run_detect] shard 0/1: 200 ảnh, models=['gdino'], sam=False, device=Tesla T4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/1182 [00:00<?, ?it/s]Loading weights:  18%|█▊        | 215/1182 [00:00<00:00, 2146.06it/s]Loading weights:  37%|███▋      | 434/1182 [00:00<00:00, 2160.77it/s]Loading weights:  55%|█████▌    | 653/1182 [00:00<00:00, 2173.50it/s]Loading weights:  74%|███████▎  | 871/1182 [00:00<00:00, 2133.20it/s]Loading weights: 100%|██████████| 1182/1182 [00:00<00:00, 2392.90it/s]
+[run_detect] gdino_food: 25/200
+[run_detect] gdino_food: 50/200
+[run_detect] gdino_food: 75/200
+[run_detect] gdino_food: 100/200
+[run_detect] gdino_food: 125/200
+[run_detect] gdino_food: 150/200
+[run_detect] gdino_food: 175/200
+[run_detect] gdino_food: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_food_shard0.json (200 ảnh)
+[run_detect] gdino_food_pb: 25/200
+[run_detect] gdino_food_pb: 50/200
+[run_detect] gdino_food_pb: 75/200
+[run_detect] gdino_food_pb: 100/200
+[run_detect] gdino_food_pb: 125/200
+[run_detect] gdino_food_pb: 150/200
+[run_detect] gdino_food_pb: 175/200
+[run_detect] gdino_food_pb: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_food_pb_shard0.json (200 ảnh)
+[run_detect] gdino_class: 25/200
+[run_detect] gdino_class: 50/200
+[run_detect] gdino_class: 75/200
+[run_detect] gdino_class: 100/200
+[run_detect] gdino_class: 125/200
+[run_detect] gdino_class: 150/200
+[run_detect] gdino_class: 175/200
+[run_detect] gdino_class: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_class_shard0.json (200 ảnh)
+[run_detect] gdino_class_pb: 25/200
+[run_detect] gdino_class_pb: 50/200
+[run_detect] gdino_class_pb: 75/200
+[run_detect] gdino_class_pb: 100/200
+[run_detect] gdino_class_pb: 125/200
+[run_detect] gdino_class_pb: 150/200
+[run_detect] gdino_class_pb: 175/200
+[run_detect] gdino_class_pb: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_class_pb_shard0.json (200 ảnh)

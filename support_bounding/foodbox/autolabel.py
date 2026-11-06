@@ -7,8 +7,9 @@ import shutil
 import numpy as np
 
 from . import labels, viz
+from .crop import save_crops, write_crops_csv
 from .data import exif_rotated, load_image
-from .postprocess import assign_classes, postprocess
+from .postprocess import assign_classes, group_dishes, postprocess
 
 REPORT_FIELDS = ["image", "class", "n_boxes", "mean_conf", "max_conf", "main_conf", "needs_review", "reasons"]
 
@@ -28,9 +29,19 @@ def review_reasons(scores, n_boxes, main_area_frac, review_conf, max_boxes):
     return ";".join(r)
 
 
+def box_colors(cls, main_id):
+    """Mỗi box một màu (yêu cầu đề bài): box món chính màu đầu, các box food_other các màu tiếp theo,
+    nên trong một ảnh không có hai box trùng màu."""
+    order = sorted(range(len(cls)), key=lambda k: cls[k] != main_id)
+    out = [None] * len(cls)
+    for rank, k in enumerate(order):
+        out[k] = viz.color_for(rank)
+    return out
+
+
 def build_dataset(items, results, out, conf, nms_iou=0.5, min_area=0.002, max_area=1.0, drop_container=False,
                   main_rule="largest", review_conf=None, max_boxes=4, val_frac=0.2, seed=0, max_det=20,
-                  other_conf=None):
+                  other_conf=None, crops=False, crop_pad=0.0, group=False):
     """items: list {key, class, path, stem}; results: {key: {w, h, boxes, scores[, error]}} từ run_detect.
 
     Ghi vào out/: images/<món>/, labels/<món>/, visualized/<món>/, classes.txt, data.yaml, train.txt, val.txt,
@@ -39,12 +50,14 @@ def build_dataset(items, results, out, conf, nms_iou=0.5, min_area=0.002, max_ar
 
     other_conf: ngưỡng riêng cho box food_other (None = conf). Box món chính được dùng ngưỡng thấp hơn vì đã biết
     ảnh có món đó (tên thư mục); box thêm cần điểm cao hơn mới giữ, để bớt nhận nhầm đồ trang trí (02 v2: 56 box food_other).
+    crops: cắt thêm từng box thành ảnh riêng từ ảnh gốc (không có khung): out/crops/<món>/<ảnh>_<k>.jpg + crops/crops.csv;
+    crop_pad: mặc định 0 = cắt đúng box model khoanh; > 0 thì nới mỗi phía crop_pad x cạnh box.
+    group: gộp các miếng cùng đĩa/thớt thành 1 box (cần c_boxes/c_scores từ run_detect --containers; NOTES v5).
     """
     review_conf = conf + 0.1 if review_conf is None else review_conf
     names = labels.class_list(sorted({it["class"] for it in items}))
     cid = {n: i for i, n in enumerate(names)}
-    colors = {i: viz.color_for(i) for i in range(len(names))}
-    report, failed, ok_images = [], [], []
+    report, failed, ok_images, crop_rows = [], [], [], []
     for it in items:
         r = results.get(it["key"])
         rel = f"{it['class']}/{it['stem']}"
@@ -54,6 +67,9 @@ def build_dataset(items, results, out, conf, nms_iou=0.5, min_area=0.002, max_ar
         boxes, scores = postprocess(r["boxes"], r["scores"], r["w"], r["h"], conf=conf, nms_iou=nms_iou,
                                     min_area=min_area, max_area=max_area, drop_container=drop_container,
                                     max_det=max_det)
+        if group:
+            boxes, scores = group_dishes(boxes, scores, r.get("c_boxes"), r.get("c_scores"), r["w"], r["h"],
+                                         nms_iou=nms_iou)
         cls = assign_classes(boxes, scores, cid[it["class"]], cid[labels.OTHER_CLASS], main_rule)
         if other_conf is not None:
             keep = [k for k, c in enumerate(cls) if c != cid[labels.OTHER_CLASS] or scores[k] >= other_conf]
@@ -70,7 +86,11 @@ def build_dataset(items, results, out, conf, nms_iou=0.5, min_area=0.002, max_ar
             shutil.copy2(it["path"], os.path.join(out, img_rel))
         labels.write_yolo_txt(os.path.join(out, "labels", rel + ".txt"), cls, boxes, r["w"], r["h"])
         vis = viz.draw_boxes(img, boxes, labels=[f"{names[c]} {s:.2f}" for c, s in zip(cls, scores)],
-                             colors=[colors[c] for c in cls])
+                             colors=box_colors(cls, cid[it["class"]]))
+        if crops and len(scores):
+            crop_rows += save_crops(img, boxes, [names[c] for c in cls], os.path.join(out, "crops"), it["class"],
+                                    it["stem"], img_rel, scores=scores,
+                                    main_flags=[c == cid[it["class"]] for c in cls], pad=crop_pad)
         os.makedirs(os.path.join(out, "visualized", it["class"]), exist_ok=True)
         vis.save(os.path.join(out, "visualized", rel + ".jpg"), quality=85)
 
@@ -100,14 +120,17 @@ def build_dataset(items, results, out, conf, nms_iou=0.5, min_area=0.002, max_ar
         val += imgs[:n_val]
         train += imgs[n_val:]
     for fname, lst in [("train.txt", train), ("val.txt", val)]:
-        with open(os.path.join(out, fname), "w") as f:
+        with open(os.path.join(out, fname), "w", encoding="utf-8") as f:  # tên món có dấu tiếng Việt
             f.write("\n".join(sorted(lst)) + ("\n" if lst else ""))
     labels.write_classes(out, names)
     labels.write_data_yaml(out, names)
-    with open(os.path.join(out, "classes.txt")) as f:  # X-AnyLabeling cần classes.txt cạnh thư mục nhãn
+    with open(os.path.join(out, "classes.txt"), encoding="utf-8") as f:  # X-AnyLabeling cần classes.txt cạnh thư mục nhãn
         content = f.read()
-    with open(os.path.join(out, "labels", "classes.txt"), "w") as f:
+    with open(os.path.join(out, "labels", "classes.txt"), "w", encoding="utf-8") as f:
         f.write(content)
+    if crops:
+        os.makedirs(os.path.join(out, "crops"), exist_ok=True)
+        write_crops_csv(os.path.join(out, "crops"), crop_rows)
     _write_csv(os.path.join(out, "report.csv"), REPORT_FIELDS, report)
     _write_csv(os.path.join(out, "failed.csv"), ["image", "class", "reason"], failed)
     return report, failed

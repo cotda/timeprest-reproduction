@@ -4,3 +4,6 @@ __pycache__/
 _push_tmp/
 *.pt
 results/*/weights/
+dist/
+*.egg-info/
+_upload_food2001/

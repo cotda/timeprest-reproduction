@@ -1,0 +1,40 @@
+[
+ {
+  "tag": "_food",
+  "mode": "fixed",
+  "prompts": [
+   "food"
+  ],
+  "extras": []
+ },
+ {
+  "tag": "_food_pb",
+  "mode": "fixed",
+  "prompts": [
+   "food"
+  ],
+  "extras": [
+   "plate",
+   "bowl",
+   "cup",
+   "tray"
+  ]
+ },
+ {
+  "tag": "_class",
+  "mode": "class",
+  "prompts": [],
+  "extras": []
+ },
+ {
+  "tag": "_class_pb",
+  "mode": "class",
+  "prompts": [],
+  "extras": [
+   "plate",
+   "bowl",
+   "cup",
+   "tray"
+  ]
+ }
+]

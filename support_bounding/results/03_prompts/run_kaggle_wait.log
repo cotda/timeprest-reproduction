@@ -1,0 +1,47 @@
+[run_kaggle] 14:51:38 kaggleolap/foodbox-03-prompts: running
+[run_kaggle] 15:02:27 kaggleolap/foodbox-03-prompts: complete
+Warning: Looks like you're using an outdated `kaggle` version (installed: 2.1.2), please consider upgrading to the latest version (2.2.5)
+[run_kaggle] trang 1: đã tải 284 file
+[run_kaggle] đã tải 284 file output vào results\03_prompts/
+----- 40 dòng cuối log (results\03_prompts/log.txt) -----
+----- /kaggle/working/output/logs/detect_uec.log
+[run_detect] gdino_class_pb: 100/200
+[run_detect] gdino_class_pb: 125/200
+[run_detect] gdino_class_pb: 150/200
+[run_detect] gdino_class_pb: 175/200
+[run_detect] gdino_class_pb: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_uec/preds_gdino_class_pb_shard0.json (200 ảnh)
+----- /kaggle/working/output/logs/detect_food.log
+[run_detect] gdino_class_pb: 100/200
+[run_detect] gdino_class_pb: 125/200
+[run_detect] gdino_class_pb: 150/200
+[run_detect] gdino_class_pb: 175/200
+[run_detect] gdino_class_pb: 200/200
+[run_detect] đã ghi /kaggle/working/output/preds_food/preds_gdino_class_pb_shard0.json (200 ảnh)
+Thời gian detect: 9.8 phút
+       variant  ap50  ap30  precision  recall    f1  mean_iou  area_ratio  conf  images_no_box  sec_per_img  partial
+    gdino_food 0.732 0.836      0.676   0.717 0.696     0.611       0.815 0.468             17        0.609    False
+ gdino_food_pb 0.632 0.760      0.654   0.667 0.660     0.570       0.798 0.486             23        0.631    False
+   gdino_class 0.590 0.663      0.736   0.530 0.616     0.482       0.934 0.358             28        0.629    False
+gdino_class_pb 0.412 0.512      0.549   0.390 0.456     0.368       0.888 0.374             52        0.631    False
+       variant threshold  conf  images_with_box  box_per_img  main_area  near_full
+   gdino_class      0.35 0.350              172        1.245      0.515         25
+   gdino_class  best_uec 0.358              166        1.155      0.510         24
+gdino_class_pb      0.35 0.350              105        0.935      0.388          4
+gdino_class_pb  best_uec 0.374               96        0.825      0.393          4
+    gdino_food      0.35 0.350              194        1.800      0.641         39
+    gdino_food  best_uec 0.468              148        0.965      0.626         32
+ gdino_food_pb      0.35 0.350              195        1.935      0.620         39
+ gdino_food_pb  best_uec 0.486              130        0.900      0.585         22
+Đã lưu hình so sánh: 20 UEC, 30 Food-101
+Xong sau 9.9 phút
+8.6M	/kaggle/working/output
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+[NbConvertApp] Writing 99100 bytes to __notebook__.ipynb
+[NbConvertApp] Converting notebook __notebook__.ipynb to html
+[NbConvertApp] Writing 633919 bytes to __results__.html
+[run_kaggle] trạng thái cuối: complete; kết quả ở results\03_prompts/

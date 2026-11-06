@@ -1,0 +1,11 @@
+bibimbap
+french_fries
+fried_spring_rolls
+green_salad
+miso_soup
+pho
+pizza
+ramen_noodle
+rice
+sushi
+food_other
